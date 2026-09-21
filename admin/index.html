@@ -1148,6 +1148,22 @@ main.shell{
   color:#ff8fc5;
 }
 
+
+.marketing-price-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.price-plan-note{
+  margin-top:4px;
+  color:#777;
+  font-size:7px;
+  line-height:1.35;
+}
+@media(max-width:430px){
+  .marketing-price-grid{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -1299,10 +1315,19 @@ main.shell{
             <span class="marketing-number">1</span>
             <div><h3>Atur Harga</h3><p>Harga ini dipakai untuk pendaftaran baru.</p></div>
           </div>
-          <div class="manage-field full">
-            <label>Harga BADAI</label>
-            <input id="marketingPrice" type="number" min="1" step="1" inputmode="numeric" required/>
+          <div class="marketing-price-grid">
+            <div class="manage-field">
+              <label>Harga NEWBIE</label>
+              <input id="marketingNewbiePrice" type="number" min="1" step="1" inputmode="numeric" required/>
+              <div class="price-plan-note">Belajar Ilmu AI + Update</div>
+            </div>
+            <div class="manage-field">
+              <label>Harga PRO</label>
+              <input id="marketingProPrice" type="number" min="1" step="1" inputmode="numeric" required/>
+              <div class="price-plan-note">Semua Newbie + Program Afiliasi</div>
+            </div>
           </div>
+          <div class="template-help">Untuk sementara pendaftaran dari landing page yang lama tetap menggunakan harga <b>NEWBIE</b> sampai pilihan paket dipasang di landing page.</div>
         </div>
 
         <div class="marketing-card">
@@ -1556,6 +1581,8 @@ main.shell{
   let financeTransactions = [];
   let marketingSettings = {
     product_price:123000,
+    newbie_price:123000,
+    pro_price:123000,
     registration_notification:'',
     followup_1:'',
     followup_2:'',
@@ -1740,7 +1767,7 @@ main.shell{
   async function loadMarketingSettings(){
     try{
       const rows = await api(
-        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,registration_notification,followup_1,followup_2,followup_3,success_notification'
+        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,newbie_price,pro_price,registration_notification,followup_1,followup_2,followup_3,success_notification'
       );
       if(rows?.[0]) marketingSettings = rows[0];
     }catch(_){}
@@ -1753,7 +1780,8 @@ main.shell{
       '/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,active,created_at&order=created_at.desc'
     ) || [];
 
-    $('marketingPrice').value = marketingSettings.product_price || 123000;
+    $('marketingNewbiePrice').value = marketingSettings.newbie_price || marketingSettings.product_price || 123000;
+    $('marketingProPrice').value = marketingSettings.pro_price || marketingSettings.product_price || 123000;
     $('marketingRegisterMessage').value = marketingSettings.registration_notification || '';
     $('marketingFollow1').value = marketingSettings.followup_1 || '';
     $('marketingFollow2').value = marketingSettings.followup_2 || '';
@@ -1769,11 +1797,15 @@ main.shell{
   async function saveMarketing(){
     if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mengubah Marketing.');
 
-    const price = Number($('marketingPrice').value);
-    if(!price || price < 1) throw new Error('Harga belum valid.');
+    const newbiePrice = Number($('marketingNewbiePrice').value);
+    const proPrice = Number($('marketingProPrice').value);
+
+    if(!newbiePrice || newbiePrice < 1) throw new Error('Harga NEWBIE belum valid.');
+    if(!proPrice || proPrice < 1) throw new Error('Harga PRO belum valid.');
 
     const body = {
-      product_price:Math.round(price),
+      newbie_price:Math.round(newbiePrice),
+      pro_price:Math.round(proPrice),
       registration_notification:$('marketingRegisterMessage').value.trim(),
       followup_1:$('marketingFollow1').value.trim(),
       followup_2:$('marketingFollow2').value.trim(),
