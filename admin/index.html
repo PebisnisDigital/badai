@@ -1808,7 +1808,7 @@ main.shell{
                 <label>Jenis Metode</label>
                 <select id="paymentMethodType">
                   <option value="manual_transfer">Transfer Manual</option>
-                  <option value="qris">QRIS — buatqris.site</option>
+                  <option value="qris">QRIS Statis / Manual</option>
                   <option value="payment_gateway">Payment Gateway</option>
                 </select>
               </div>
@@ -3016,6 +3016,9 @@ main.shell{
     }
 
     if(isPaid){
+      if(!r.user_id){
+        parts.push('<button class="action approve" data-action="approve" data-id="' + r.id + '">ACC + BUAT AKUN</button>');
+      }
       parts.push('<button class="action manage" data-action="manage" data-id="' + r.id + '">KELOLA</button>');
       parts.push('<button class="action manage" data-action="reset-access" data-id="' + r.id + '">RESET AKSES</button>');
       parts.push('<button class="action suspend" data-action="suspend" data-id="' + r.id + '">SUSPEND</button>');
