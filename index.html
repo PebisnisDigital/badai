@@ -1776,6 +1776,238 @@ h2{font-weight:900}
   }
 }
 
+
+/* TWO PACKAGE PRICING */
+.package-pricing-head{
+  text-align:center;
+  max-width:620px;
+  margin:0 auto 20px;
+}
+.package-kicker{
+  color:#ff4fa3;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+  margin-bottom:7px;
+}
+.package-pricing-head h2{
+  margin:0 0 8px;
+}
+.package-pricing-head p{
+  margin:0 auto;
+  max-width:540px;
+  color:#a6a6a6;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:13px;
+  line-height:1.55;
+}
+.package-pricing-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  align-items:stretch;
+}
+.package-card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  padding:20px;
+  border:1px solid #2b2b2b;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 90% 5%,rgba(255,255,255,.035),transparent 24%),
+    linear-gradient(180deg,#111,#090909);
+  box-shadow:0 20px 48px rgba(0,0,0,.24);
+}
+.package-card-featured{
+  border-color:#7b3157;
+  box-shadow:
+    0 22px 54px rgba(0,0,0,.28),
+    0 0 0 1px rgba(255,79,163,.09) inset;
+}
+.package-popular{
+  position:absolute;
+  top:12px;
+  right:12px;
+  border-radius:999px;
+  padding:5px 8px;
+  background:#ff4fa3;
+  color:#111;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.04em;
+}
+.package-label{
+  display:inline-flex;
+  width:max-content;
+  max-width:100%;
+  align-items:center;
+  min-height:27px;
+  padding:0 9px;
+  border:1px solid #363636;
+  border-radius:999px;
+  background:#151515;
+  color:#ddd;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:8px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+.package-label.hot{
+  border-color:#5f2946;
+  background:#211018;
+  color:#ff90c5;
+}
+.package-card-top h3{
+  margin:0 0 6px;
+  padding-right:20px;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:21px;
+  line-height:1.1;
+  letter-spacing:-.025em;
+}
+.package-card-top p{
+  margin:0;
+  min-height:42px;
+  color:#929292;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:11px;
+  line-height:1.45;
+}
+.package-price-wrap{
+  margin:15px 0 12px;
+  padding:13px;
+  border:1px solid #272727;
+  border-radius:15px;
+  background:#0b0b0b;
+}
+.package-card-featured .package-price-wrap{
+  border-color:#432439;
+  background:#110b0f;
+}
+.package-price-label{
+  color:#777;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:9px;
+  margin-bottom:3px;
+}
+.package-price{
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:30px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.04em;
+}
+.package-card-featured .package-price{color:#ff8fc5}
+.package-feature-list{
+  display:grid;
+  gap:0;
+  margin-bottom:16px;
+}
+.package-feature{
+  display:flex;
+  gap:8px;
+  padding:10px 0;
+  border-bottom:1px solid #202020;
+}
+.package-feature:last-child{border-bottom:0}
+.package-feature>span{
+  width:20px;
+  height:20px;
+  flex:0 0 20px;
+  display:grid;
+  place-items:center;
+  margin-top:1px;
+  border-radius:50%;
+  background:#17261c;
+  color:#72d495;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:9px;
+  font-weight:950;
+}
+.package-feature b{
+  display:block;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:10px;
+  line-height:1.3;
+}
+.package-feature small{
+  display:block;
+  margin-top:2px;
+  color:#777;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:8px;
+  line-height:1.4;
+}
+.package-select-btn{
+  width:100%;
+  min-height:45px;
+  margin-top:auto;
+  border:1px solid #373737;
+  border-radius:13px;
+  background:#fff;
+  color:#111;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:9px;
+  font-weight:950;
+  cursor:pointer;
+}
+.package-select-btn.hot{
+  border-color:#ff4fa3;
+  background:#ff4fa3;
+}
+.package-card.is-selected{
+  outline:2px solid rgba(255,255,255,.8);
+  outline-offset:2px;
+}
+.package-card-featured.is-selected{
+  outline-color:#ff4fa3;
+}
+.selected-package-box{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+  padding:12px 14px;
+  border:1px solid #5a2945;
+  border-radius:14px;
+  background:#160d12;
+}
+.selected-package-box span{
+  display:block;
+  color:#8f8f8f;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.08em;
+  margin-bottom:2px;
+}
+.selected-package-box strong{
+  display:block;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:13px;
+}
+.selected-package-box>b{
+  color:#ff8fc5;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:15px;
+  white-space:nowrap;
+}
+@media(max-width:640px){
+  .package-pricing-grid{grid-template-columns:1fr}
+  .package-card{padding:17px;border-radius:20px}
+  .package-card-top p{min-height:0}
+  .package-price{font-size:28px}
+}
+
 </style>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="icon" type="image/png"/>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="shortcut icon"/>
@@ -2316,129 +2548,121 @@ h2{font-weight:900}
 </div>
 </div>
 </section>
-<section>
+<section id="pricing">
 <div class="container">
-<h2>Yang Kamu Dapatkan :</h2>
-<div class="pricing-lux">
-<div class="pricing-topline">
-<div class="pricing-pill">AKSES RESMI BADAI</div>
-<div class="pricing-divider"></div>
-<div class="value-stack">
-<div class="value-row">
-<div class="value-left">
-<span class="value-check">✓</span>
-<div>
-<span class="value-title">7 BAB Video AI Praktis</span>
-<span class="value-desc">Materi inti dari dasar sampai penerapan untuk konten dan peluang cuan.</span>
-</div>
-</div>
-<div class="value-price">Rp297.000</div>
-</div>
-<div class="value-row">
-<div class="value-left">
-<span class="value-check">✓</span>
-<div>
-<span class="value-title">Video Tutorial + Langkah Sederhana</span>
-<span class="value-desc">Belajar dengan penjelasan yang ringkas, runtut, dan enak diikuti pemula.</span>
-</div>
-</div>
-<div class="value-price">Rp147.000</div>
-</div>
-<div class="value-row">
-<div class="value-left">
-<span class="value-check">✓</span>
-<div>
-<span class="value-title">Contoh Ide Video Viral</span>
-<span class="value-desc">Referensi jenis video yang bisa kamu tiru, modifikasi, lalu pakai untuk konten.</span>
-</div>
-</div>
-<div class="value-price">Rp123.000</div>
-</div>
-<div class="value-row">
-<div class="value-left">
-<span class="value-check">✓</span>
-<div>
-<span class="value-title">Update Materi / Penambahan Materi</span>
-<span class="value-desc">Akses materi yang bisa terus ditambah agar pembelajaran tetap relevan.</span>
-</div>
-</div>
-<div class="value-price">Rp95.000</div>
-</div>
-<div class="value-row">
-<div class="value-left">
-<span class="value-check">✓</span>
-<div>
-<span class="value-title">Akses Bonus di Member Area</span>
-<span class="value-desc">Fasilitas tambahan yang membantu member lebih mudah memanfaatkan materi.</span>
-</div>
-</div>
-<div class="value-price">Rp100.000</div>
-</div>
-<div class="value-row">
-<div class="value-left">
-<span class="value-check">✓</span>
-<div>
-<span class="value-title">Program Affiliate BADAI 50%</span>
-<span class="value-desc">Kesempatan mendapatkan komisi dari penjualan valid sesuai sistem yang berlaku.</span>
-</div>
-</div>
-<div class="value-price">Rp200.000</div>
-</div>
-</div>
-<div class="price-panel bottom-centered">
-<div class="price-label">Total nilai fasilitas</div>
-<div class="price-total">Rp962.000</div>
-<div class="price-now">
-<div class="price-now-label">Harga berlaku sekarang</div>
-<div class="price-now-value" id="dynamicBadaiPrice">Rp123.000</div>
-</div>
-<div class="price-note">Selisih nilainya jauh, tapi aksesnya tetap dibuka dengan harga yang ramah buat pemula.</div>
-</div>
-<div class="pricing-register" id="daftar">
-  <div class="register-head">
-    <h3>Daftar BADAI Sekarang</h3>
-    <p>Isi data di bawah ini. Setelah klik daftar, data kamu disimpan dulu lalu WhatsApp admin akan terbuka.</p>
+  <div class="package-pricing-head">
+    <div class="package-kicker">PILIH PAKET BADAI</div>
+    <h2>Pilih Paket yang Paling Cocok Buat Kamu</h2>
+    <p>Mau fokus belajar AI dulu, pilih Paket Pemula. Mau belajar sekaligus punya program afiliasi, pilih Paket Untung.</p>
   </div>
 
-  <form id="badaiRegisterForm" class="register-form">
-    <div class="form-group">
-      <label for="regNama">Nama</label>
-      <input id="regNama" name="nama" type="text" placeholder="Tulis nama lengkap" autocomplete="name" required>
+  <div class="package-pricing-grid">
+    <article class="package-card" data-package-card="newbie">
+      <div class="package-card-top">
+        <div class="package-label">PAKET PEMULA</div>
+        <h3>Belajar AI dari Dasar</h3>
+        <p>Pas buat yang ingin fokus belajar dulu tanpa mikirin jualan.</p>
+      </div>
+
+      <div class="package-price-wrap">
+        <div class="package-price-label">Harga akses</div>
+        <div class="package-price" id="dynamicNewbiePrice">Rp99.000</div>
+      </div>
+
+      <div class="package-feature-list">
+        <div class="package-feature"><span>✓</span><div><b>Belajar Ilmu AI</b><small>Materi dibuat sederhana dan mudah diikuti pemula.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Video Tutorial Praktis</b><small>Tonton, ikuti, lalu langsung praktek.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Akses Member Area</b><small>Semua materi tersusun rapi dalam satu tempat.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Update Materi</b><small>Dapat materi baru selama masih menjadi member aktif.</small></div></div>
+      </div>
+
+      <button class="package-select-btn" type="button" data-package-select="newbie">
+        PILIH PAKET PEMULA
+      </button>
+    </article>
+
+    <article class="package-card package-card-featured" data-package-card="pro">
+      <div class="package-popular">LEBIH LENGKAP</div>
+
+      <div class="package-card-top">
+        <div class="package-label hot">PAKET UNTUNG</div>
+        <h3>Belajar AI + Program Afiliasi</h3>
+        <p>Belajar tetap dapat, sekaligus punya jalur untuk mendapatkan komisi.</p>
+      </div>
+
+      <div class="package-price-wrap">
+        <div class="package-price-label">Harga akses</div>
+        <div class="package-price" id="dynamicProPrice">Rp99.000</div>
+      </div>
+
+      <div class="package-feature-list">
+        <div class="package-feature"><span>✓</span><div><b>Semua di Paket Pemula</b><small>Materi, tutorial, member area, dan update tetap dapat.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Program Afiliasi BADAI</b><small>Dapat link afiliasi pribadi untuk mulai promosi.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Link Afiliasi Bisa Diedit</b><small>Buat kode sendiri seperti /AMBYAR agar mudah dibagikan.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Bahan Promosi Siap Pakai</b><small>Ambil teks, gambar, dan video langsung dari Member Area.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Pantau Sales & Komisi</b><small>Lihat hasil referral dan komisi dari akun sendiri.</small></div></div>
+      </div>
+
+      <button class="package-select-btn hot" type="button" data-package-select="pro">
+        PILIH PAKET UNTUNG
+      </button>
+    </article>
+  </div>
+
+  <div class="pricing-register" id="daftar">
+    <div class="register-head">
+      <h3>Daftar BADAI Sekarang</h3>
+      <p>Pilih paket, isi data, lalu WhatsApp admin akan terbuka untuk melanjutkan pendaftaran.</p>
     </div>
 
-    <div class="form-group">
-      <label for="regEmail">Email</label>
-      <input id="regEmail" name="email" type="email" placeholder="contoh@email.com" autocomplete="email" required>
+    <div class="selected-package-box">
+      <div>
+        <span>PAKET YANG DIPILIH</span>
+        <strong id="selectedPackageLabel">Paket Pemula</strong>
+      </div>
+      <b id="selectedPackagePrice">Rp99.000</b>
     </div>
 
-    <div class="form-group">
-      <label for="regWa">WA</label>
-      <input id="regWa" name="wa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
-    </div>
+    <form id="badaiRegisterForm" class="register-form">
+      <input type="hidden" id="selectedPackage" value="newbie">
 
-    <div class="payment-box">
-      <span class="payment-label">Rekening Bayar ke :</span>
-      <div class="bank-name">BCA</div>
-      <div class="bank-number">1480945529</div>
-      <div class="bank-owner">an PURKON N</div>
-    </div>
+      <div class="form-group">
+        <label for="regNama">Nama</label>
+        <input id="regNama" name="nama" type="text" placeholder="Tulis nama lengkap" autocomplete="name" required>
+      </div>
 
-    <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
-    <div class="register-note" id="registerStatus">Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.</div>
-  </form>
+      <div class="form-group">
+        <label for="regEmail">Email</label>
+        <input id="regEmail" name="email" type="email" placeholder="contoh@email.com" autocomplete="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="regWa">WA</label>
+        <input id="regWa" name="wa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
+      </div>
+
+      <div class="payment-box">
+        <span class="payment-label">Rekening Bayar ke :</span>
+        <div class="bank-name">BCA</div>
+        <div class="bank-number">1480945529</div>
+        <div class="bank-owner">an PURKON N</div>
+      </div>
+
+      <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
+      <div class="register-note" id="registerStatus">Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.</div>
+    </form>
+  </div>
 </div>
-</div>
-</div>
-</div></section>
+</section>
 <section>
 <div class="container">
 <h2>Masih kepikiran ini?</h2>
 <div class="faq">
 <details><summary>BADAI cocok untuk pemula?</summary><p>Iya. BADAI memang dibuat untuk orang yang pengen mulai bikin Video AI tanpa harus paham hal teknis dulu.</p></details>
 <details><summary>Harus punya laptop?</summary><p>Tergantung tool Video AI yang sedang digunakan. Sebagian proses dapat dilakukan lewat browser di HP, tetapi pengalaman penggunaan bisa berbeda tergantung perangkat dan tool.</p></details>
-<details><summary>Apakah biaya tool AI sudah termasuk Rp123.000?</summary><p>Tidak. Rp123.000 adalah harga akses BADAI. Jika tool pihak ketiga menggunakan kredit atau paket berbayar, biaya tersebut mengikuti kebijakan tool masing-masing.</p></details>
+<details><summary>Apakah biaya tool AI sudah termasuk harga paket BADAI?</summary><p>Tidak. Harga yang tertera adalah harga akses BADAI. Jika tool pihak ketiga menggunakan kredit atau paket berbayar, biaya tersebut mengikuti kebijakan tool masing-masing.</p></details>
 <details><summary>Materinya berupa apa?</summary><p>Materi utama disajikan melalui Member Area berupa video tutorial, judul materi, dan langkah praktek.</p></details>
-<details><summary>BADAI benar-benar bisa menghasilkan cuan?</summary><p>BADAI membuka beberapa peluang: skill Video AI bisa dipakai untuk konten, promosi, atau jasa, dan member juga bisa ikut affiliate BADAI dengan komisi 50% per transaksi valid. Namun hasil tetap bergantung pada cara masing-masing orang memanfaatkan dan mempromosikannya.</p></details>
+<details><summary>BADAI benar-benar bisa menghasilkan cuan?</summary><p>BADAI membuka beberapa peluang: skill Video AI bisa dipakai untuk konten, promosi, atau jasa, dan member juga bisa ikut program afiliasi BADAI dengan komisi sesuai pengaturan yang berlaku. Namun hasil tetap bergantung pada cara masing-masing orang memanfaatkan dan mempromosikannya.</p></details>
 <details><summary>Kalau belum pernah pakai AI sama sekali?</summary><p>Nggak masalah. Mulai saja dari BAB pertama dan ikuti langkahnya satu per satu.</p></details>
 </div>
 </div>
@@ -2573,6 +2797,8 @@ h2{font-weight:900}
 
   let marketingConfig = {
     product_price: 123000,
+    newbie_price: 99000,
+    pro_price: 99000,
     registration_notification:
 `Halo Admin BADAI 👋
 
@@ -2591,6 +2817,44 @@ an PURKON N
 
 Mohon dibantu proses pendaftarannya ya.`
   };
+
+  let selectedPackage = 'newbie';
+
+  function selectedPackagePrice(){
+    return selectedPackage === 'pro'
+      ? Number(marketingConfig.pro_price || marketingConfig.product_price || 0)
+      : Number(marketingConfig.newbie_price || marketingConfig.product_price || 0);
+  }
+
+  function selectedPackageName(){
+    return selectedPackage === 'pro' ? 'Paket Untung' : 'Paket Pemula';
+  }
+
+  function syncSelectedPackageUI(){
+    const hidden = document.getElementById('selectedPackage');
+    const label = document.getElementById('selectedPackageLabel');
+    const price = document.getElementById('selectedPackagePrice');
+
+    if(hidden) hidden.value = selectedPackage;
+    if(label) label.textContent = selectedPackageName();
+    if(price) price.textContent = formatRupiah(selectedPackagePrice());
+
+    document.querySelectorAll('[data-package-card]').forEach(card => {
+      card.classList.toggle('is-selected', card.dataset.packageCard === selectedPackage);
+    });
+  }
+
+  document.querySelectorAll('[data-package-select]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedPackage = btn.dataset.packageSelect === 'pro' ? 'pro' : 'newbie';
+      syncSelectedPackageUI();
+
+      document.getElementById('daftar')?.scrollIntoView({
+        behavior:'smooth',
+        block:'start'
+      });
+    });
+  });
 
   function formatRupiah(value){
     return new Intl.NumberFormat('id-ID',{
@@ -2611,19 +2875,26 @@ Mohon dibantu proses pendaftarannya ya.`
   async function loadMarketingConfig(){
     try{
       const res = await fetch(
-        SUPABASE_URL + '/rest/v1/marketing_public_config?id=eq.1&select=product_price,registration_notification',
+        SUPABASE_URL + '/rest/v1/marketing_public_config?id=eq.1&select=product_price,newbie_price,pro_price,registration_notification',
         { headers:{ 'apikey':SUPABASE_PUBLISHABLE_KEY } }
       );
       if(!res.ok) return;
       const rows = await res.json();
       if(rows?.[0]){
         marketingConfig = rows[0];
-        const priceEl = document.getElementById('dynamicBadaiPrice');
-        if(priceEl) priceEl.textContent = formatRupiah(marketingConfig.product_price);
+
+        const newbieEl = document.getElementById('dynamicNewbiePrice');
+        const proEl = document.getElementById('dynamicProPrice');
+
+        if(newbieEl) newbieEl.textContent = formatRupiah(marketingConfig.newbie_price || marketingConfig.product_price);
+        if(proEl) proEl.textContent = formatRupiah(marketingConfig.pro_price || marketingConfig.product_price);
+
+        syncSelectedPackageUI();
       }
     }catch(_){}
   }
 
+  syncSelectedPackageUI();
   loadMarketingConfig();
 
   function normalizeWhatsapp(value){
@@ -2674,6 +2945,7 @@ Mohon dibantu proses pendaftarannya ya.`
           full_name: nama,
           email: email,
           whatsapp: wa,
+          membership_plan: selectedPackage,
           referred_by_code: (
             window.BADAI_AFFILIATE_REF ||
             localStorage.getItem('badai_affiliate_ref') ||
@@ -2692,7 +2964,8 @@ Mohon dibantu proses pendaftarannya ya.`
           nama,
           email,
           wa,
-          harga:formatRupiah(marketingConfig.product_price)
+          paket:selectedPackageName(),
+          harga:formatRupiah(selectedPackagePrice())
         }
       );
 
