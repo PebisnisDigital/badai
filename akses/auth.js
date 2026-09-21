@@ -778,4 +778,21 @@
       refreshMemberProfile();
     }
   });
+
+  function memberHasFocusedEditor(){
+    const el = document.activeElement;
+    if(!el) return false;
+    return ['INPUT','TEXTAREA','SELECT'].includes(el.tagName) || el.isContentEditable;
+  }
+
+  setInterval(() => {
+    if(
+      document.visibilityState === 'visible' &&
+      session?.access_token &&
+      currentUser?.id &&
+      !memberHasFocusedEditor()
+    ){
+      refreshMemberProfile();
+    }
+  }, 5000);
 })();
