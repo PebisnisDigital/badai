@@ -3127,7 +3127,7 @@ body.register-modal-open{
 
         <div class="qris-countdown-box">
           <span>Selesaikan pembayaran dalam</span>
-          <b id="qrisCountdown">15:00</b>
+          <b id="qrisCountdown">15:00:00</b>
         </div>
 
         <div class="qris-image-wrap">
@@ -3487,19 +3487,21 @@ Mohon dibantu proses pendaftarannya ya.`
     if(!el || !qrisExpiresAt) return;
 
     const diff = Math.max(0, qrisExpiresAt - Date.now());
-    const totalSeconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    const hundredths = Math.floor((diff % 1000) / 10);
 
     el.textContent =
       String(minutes).padStart(2,'0') + ':' +
-      String(seconds).padStart(2,'0');
+      String(seconds).padStart(2,'0') + ':' +
+      String(hundredths).padStart(2,'0');
 
     if(diff <= 0){
       if(qrisCountdownTimer){
         clearInterval(qrisCountdownTimer);
         qrisCountdownTimer = null;
       }
+      el.textContent = '00:00:00';
     }
   }
 
@@ -3509,12 +3511,22 @@ Mohon dibantu proses pendaftarannya ya.`
       qrisCountdownTimer = null;
     }
 
-    qrisExpiresAt = expiresAt
-      ? new Date(expiresAt).getTime()
-      : Date.now() + (15 * 60 * 1000);
+    const now = Date.now();
+    const maxExpiry = now + (15 * 60 * 1000);
+    const apiExpiry = expiresAt ? new Date(expiresAt).getTime() : NaN;
+
+    // QRIS BADAI maksimal 15 menit. Ini juga mencegah bug timezone
+    // yang sebelumnya bisa terbaca ratusan menit.
+    qrisExpiresAt = Number.isFinite(apiExpiry)
+      ? Math.min(apiExpiry, maxExpiry)
+      : maxExpiry;
+
+    if(qrisExpiresAt <= now){
+      qrisExpiresAt = maxExpiry;
+    }
 
     updateQrisCountdown();
-    qrisCountdownTimer = setInterval(updateQrisCountdown,1000);
+    qrisCountdownTimer = setInterval(updateQrisCountdown,10);
   }
 
   function showRegistrationForm(){
@@ -3526,7 +3538,7 @@ Mohon dibantu proses pendaftarannya ya.`
     modalCard?.classList.remove('qris-mode');
 
     const countdown = document.getElementById('qrisCountdown');
-    if(countdown) countdown.textContent = '15:00';
+    if(countdown) countdown.textContent = '15:00:00';
 
     form.classList.remove('hidden');
     form.style.display = '';
