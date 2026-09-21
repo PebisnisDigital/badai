@@ -55,6 +55,35 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }
 
+  function captureMagicLinkSession(){
+    try{
+      const hash = String(location.hash || '').replace(/^#/,'');
+      if(!hash) return false;
+
+      const params = new URLSearchParams(hash);
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
+
+      if(!accessToken) return false;
+
+      const expiresIn = Number(params.get('expires_in') || 3600);
+      const tokenType = params.get('token_type') || 'bearer';
+
+      saveSession({
+        access_token:accessToken,
+        refresh_token:refreshToken || '',
+        expires_in:expiresIn,
+        expires_at:Math.floor(Date.now()/1000) + expiresIn,
+        token_type:tokenType
+      });
+
+      history.replaceState({}, document.title, location.pathname + location.search);
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
   function clearSession(){
     session = null;
     localStorage.removeItem(STORAGE_KEY);
@@ -722,6 +751,13 @@
     bindAccountForm();
 
     try{
+      const captured = captureMagicLinkSession();
+
+      if(captured){
+        verifyAccess();
+        return;
+      }
+
       const stored = localStorage.getItem(STORAGE_KEY);
 
       if(stored){
