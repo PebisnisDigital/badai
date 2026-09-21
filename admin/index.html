@@ -838,44 +838,6 @@ main.shell{
 }
 
 
-.invoice-line{
-  display:flex;
-  align-items:center;
-  gap:5px;
-  margin-bottom:4px;
-}
-.invoice-stack{
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-}
-.invoice-no{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:18px;
-  padding:0 6px;
-  border-radius:999px;
-  background:#171717;
-  border:1px solid #2c2c2c;
-  color:#a8a8a8;
-  font-size:7px;
-  font-weight:900;
-}
-.invoice-code{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:18px;
-  padding:0 7px;
-  border-radius:999px;
-  background:#211018;
-  border:1px solid #4a2238;
-  color:var(--pink2);
-  font-size:7px;
-  font-weight:900;
-  letter-spacing:.04em;
-}
 
 </style>
 </head>
@@ -968,7 +930,7 @@ main.shell{
         <table>
           <thead>
             <tr>
-              <th>No / Invoice</th><th>Pendaftar</th><th>WhatsApp</th><th>Harga</th><th>Pembayaran</th>
+              <th>Pendaftar</th><th>WhatsApp</th><th>Harga</th><th>Pembayaran</th>
               <th>Member</th><th>Tanggal</th><th>Aksi</th>
             </tr>
           </thead>
@@ -1298,7 +1260,7 @@ main.shell{
 
   async function loadRegistrations(){
     registrations = await api(
-      '/rest/v1/registrations?select=id,invoice_code,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,admin_note,created_at,activated_at&order=created_at.desc'
+      '/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,admin_note,created_at,activated_at&order=created_at.desc'
     ) || [];
     renderSales();
     renderFinance();
@@ -1352,11 +1314,6 @@ main.shell{
     }).length;
   }
 
-  function invoiceNumber(r){
-    const match = String(r.invoice_code || '').match(/(\d+)$/);
-    return match ? String(Number(match[1])).padStart(2,'0') : '--';
-  }
-
   function waLink(r){
     const msg = 'Halo Kak ' + r.full_name + ', saya admin BADAI. Saya lihat pendaftaran Kakak sudah masuk.';
     return 'https://wa.me/' + encodeURIComponent(r.whatsapp) + '?text=' + encodeURIComponent(msg);
@@ -1401,7 +1358,6 @@ main.shell{
 
     $('tableBody').innerHTML = rows.map(r => `
       <tr>
-        <td><div class="invoice-stack"><span class="invoice-no">#${invoiceNumber(r)}</span><span class="invoice-code">${esc(r.invoice_code || '-')}</span></div></td>
         <td><div class="name">${esc(r.full_name)}</div><div class="meta">${esc(r.email)}</div></td>
         <td>${esc(r.whatsapp)}</td>
         <td>${rupiah(r.amount)}</td>
@@ -1415,10 +1371,7 @@ main.shell{
     $('mobileList').innerHTML = rows.map(r => `
       <div class="card">
         <div class="card-head">
-          <div>
-            <div class="invoice-line"><span class="invoice-no">#${invoiceNumber(r)}</span><span class="invoice-code">${esc(r.invoice_code || '-')}</span></div>
-            <div class="name">${esc(r.full_name)}</div><div class="meta">${esc(r.email)}</div>
-          </div>
+          <div><div class="name">${esc(r.full_name)}</div><div class="meta">${esc(r.email)}</div></div>
           <div>${pill(r.member_status)}</div>
         </div>
         <div class="card-data">
