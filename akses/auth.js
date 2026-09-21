@@ -45,6 +45,8 @@
   document.documentElement.classList.add('badai-auth-lock');
 
   let session = null;
+  let currentUser = null;
+  let currentProfile = null;
 
   function saveSession(data){
     session = data;
@@ -80,6 +82,146 @@
     }
 
     return data;
+  }
+
+  function normalizeWhatsapp(value){
+    let digits = String(value || '').replace(/\D/g,'');
+    if(digits.startsWith('0')) digits = '62' + digits.slice(1);
+    else if(digits.startsWith('8')) digits = '62' + digits;
+    return digits;
+  }
+
+  function setAccountStatus(message, type){
+    const el = document.getElementById('memberAccountStatus');
+    if(!el) return;
+    el.textContent = message || '';
+    el.className = 'account-status' + (type ? ' ' + type : '');
+  }
+
+  function populateAccount(profile, user){
+    const name = document.getElementById('memberAccountName');
+    const email = document.getElementById('memberAccountEmail');
+    const wa = document.getElementById('memberAccountWa');
+    const password = document.getElementById('memberAccountPassword');
+
+    if(name) name.value = profile?.full_name || user?.user_metadata?.full_name || '';
+    if(email) email.value = user?.email || profile?.email || '';
+    if(wa) wa.value = profile?.whatsapp || user?.user_metadata?.whatsapp || '';
+    if(password) password.value = '';
+  }
+
+  async function saveMemberAccount(){
+    if(!session?.access_token) throw new Error('Session habis. Silakan login ulang.');
+
+    const name = document.getElementById('memberAccountName')?.value.trim() || '';
+    const requestedEmail = document.getElementById('memberAccountEmail')?.value.trim().toLowerCase() || '';
+    const wa = normalizeWhatsapp(document.getElementById('memberAccountWa')?.value || '');
+    const password = document.getElementById('memberAccountPassword')?.value || '';
+    const saveBtn = document.getElementById('memberAccountSave');
+
+    if(!name || !requestedEmail || !wa){
+      throw new Error('Nama, email, dan WhatsApp wajib diisi.');
+    }
+
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestedEmail)){
+      throw new Error('Format email belum valid.');
+    }
+
+    if(!/^62\d{8,13}$/.test(wa)){
+      throw new Error('Nomor WhatsApp belum valid.');
+    }
+
+    if(password && password.length < 8){
+      throw new Error('Password baru minimal 8 karakter.');
+    }
+
+    const currentEmail = String(currentUser?.email || session?.user?.email || '').toLowerCase();
+    const emailChanged = currentEmail && currentEmail !== requestedEmail;
+
+    if(emailChanged && !confirm(
+      'Email login akan diganti dari ' + currentEmail + ' menjadi ' + requestedEmail + '. Lanjutkan?'
+    )){
+      return;
+    }
+
+    if(password && !confirm(
+      'Password login akan diganti. Password lama tidak bisa dipakai lagi. Lanjutkan?'
+    )){
+      return;
+    }
+
+    const payload = {
+      data:{
+        full_name:name,
+        whatsapp:wa
+      }
+    };
+
+    if(emailChanged) payload.email = requestedEmail;
+    if(password) payload.password = password;
+
+    const oldText = saveBtn?.textContent || 'SIMPAN PERUBAHAN';
+    if(saveBtn){
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'MENYIMPAN...';
+    }
+
+    setAccountStatus('Menyimpan perubahan...', '');
+
+    try{
+      const updatedUser = await api('/auth/v1/user', {
+        method:'PUT',
+        body:JSON.stringify(payload)
+      });
+
+      currentUser = updatedUser || currentUser;
+
+      if(session){
+        session.user = Object.assign({}, session.user || {}, updatedUser || {});
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      }
+
+      currentProfile = Object.assign({}, currentProfile || {}, {
+        full_name:name,
+        whatsapp:wa,
+        email:updatedUser?.email || currentProfile?.email || currentEmail
+      });
+
+      populateAccount(currentProfile, currentUser);
+
+      const emailApplied = String(updatedUser?.email || '').toLowerCase() === requestedEmail;
+
+      if(emailChanged && !emailApplied){
+        setAccountStatus(
+          'Nama/WA tersimpan. Untuk email baru, cek inbox email dan lakukan konfirmasi terlebih dahulu.',
+          'ok'
+        );
+      }else if(password){
+        setAccountStatus('Data akun dan password berhasil diperbarui.', 'ok');
+      }else{
+        setAccountStatus('Data akun berhasil diperbarui.', 'ok');
+      }
+    }finally{
+      if(saveBtn){
+        saveBtn.disabled = false;
+        saveBtn.textContent = oldText;
+      }
+    }
+  }
+
+  function bindAccountForm(){
+    const form = document.getElementById('memberAccountForm');
+    if(!form || form.dataset.bound === '1') return;
+
+    form.dataset.bound = '1';
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try{
+        await saveMemberAccount();
+      }catch(err){
+        setAccountStatus(err.message || 'Gagal menyimpan data akun.', 'error');
+      }
+    });
   }
 
   function buildGate(){
@@ -150,7 +292,7 @@
 
       const rows = await api(
         '/rest/v1/profiles?id=eq.' + encodeURIComponent(userId) +
-        '&select=id,email,full_name,role,member_status'
+        '&select=id,email,full_name,whatsapp,role,member_status'
       );
 
       const profile = rows?.[0];
@@ -165,7 +307,9 @@
         return;
       }
 
-      unlock(profile);
+      currentUser = user;
+      currentProfile = profile;
+      unlock(profile, user);
     }catch(err){
       clearSession();
 
@@ -176,7 +320,7 @@
     }
   }
 
-  function unlock(profile){
+  function unlock(profile, user){
     document.documentElement.classList.remove('badai-auth-lock');
 
     const gate = document.getElementById('badaiAuthGate');
@@ -198,11 +342,14 @@
       document.body.appendChild(logout);
     }
 
+    populateAccount(profile, user);
+    setAccountStatus('', '');
     console.log('BADAI member active:', profile?.email || '');
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     buildGate();
+    bindAccountForm();
 
     try{
       const stored = localStorage.getItem(STORAGE_KEY);
