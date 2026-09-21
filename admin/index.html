@@ -985,6 +985,72 @@ main.shell{
   .finance-type-btn small{font-size:6.5px}
 }
 
+
+.finance-statement-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:8px;
+}
+.finance-add-btn{
+  border:1px solid #713052;
+  background:var(--pink);
+  color:#070707;
+  min-height:34px;
+  padding:0 11px;
+  border-radius:999px;
+  font-size:8px;
+  font-weight:950;
+}
+.cash-amount.out{color:#ff8585}
+.cash-item.manual{border-color:#2a2227}
+.cash-item-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:5px;
+  margin-top:5px;
+}
+.finance-mini-delete{
+  border:1px solid #552323;
+  background:#180b0b;
+  color:#ff8e8e;
+  min-height:24px;
+  padding:0 7px;
+  border-radius:999px;
+  font-size:7px;
+  font-weight:900;
+}
+.flow-options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+.flow-option{
+  position:relative;
+}
+.flow-option input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.flow-option span{
+  min-height:40px;
+  border:1px solid #303030;
+  border-radius:11px;
+  background:#090909;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  font-weight:900;
+  color:#aaa;
+}
+.flow-option input:checked + span{
+  border-color:#713052;
+  background:#211018;
+  color:var(--pink2);
+}
+
 </style>
 </head>
 <body>
@@ -1165,6 +1231,67 @@ main.shell{
   </section>
 
 
+
+<div id="manualTransactionModal" class="cred-modal hidden">
+  <div class="cred-box">
+    <h2>Transaksi Manual</h2>
+    <p>Catat pemasukan atau pengeluaran yang tidak berasal langsung dari pembayaran member.</p>
+
+    <form id="manualTransactionForm">
+      <div class="manage-grid">
+        <div class="manage-field full">
+          <label>Tanggal</label>
+          <input id="manualDate" type="date" required/>
+        </div>
+
+        <div class="manage-field full">
+          <label>Keterangan</label>
+          <input id="manualDescription" type="text" required placeholder="Contoh: Bayar iklan Meta"/>
+        </div>
+
+        <div class="manage-field full">
+          <label>Jenis Transaksi</label>
+          <div class="flow-options">
+            <label class="flow-option">
+              <input type="radio" name="manualFlow" value="in" required/>
+              <span>MASUK</span>
+            </label>
+            <label class="flow-option">
+              <input type="radio" name="manualFlow" value="out" checked required/>
+              <span>KELUAR</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="manage-field full">
+          <label>Jumlah</label>
+          <input id="manualAmount" type="number" min="1" step="1" inputmode="numeric" required placeholder="Contoh: 50000"/>
+        </div>
+
+        <div class="manage-field full">
+          <label>Kategori</label>
+          <input id="manualCategory" list="financeCategories" type="text" required placeholder="Pilih atau ketik kategori"/>
+          <datalist id="financeCategories">
+            <option value="Penjualan"></option>
+            <option value="Iklan / Marketing"></option>
+            <option value="Tools / Software"></option>
+            <option value="Operasional"></option>
+            <option value="Gaji / Freelance"></option>
+            <option value="Refund"></option>
+            <option value="Modal"></option>
+            <option value="Lainnya"></option>
+          </datalist>
+        </div>
+      </div>
+
+      <div class="cred-actions">
+        <button id="saveManualTransactionBtn" class="primary-act" type="submit">SIMPAN TRANSAKSI</button>
+        <button id="closeManualTransactionBtn" type="button">TUTUP</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div id="teamCredentialModal" class="cred-modal hidden">
   <div class="cred-box">
     <h2>Akses Tim Dibuat</h2>
@@ -1238,6 +1365,7 @@ main.shell{
   let currentTeam = null;
   let teamMembers = [];
   let currentFinanceType = 'profitloss';
+  let financeTransactions = [];
 
   const $ = (id) => document.getElementById(id);
   const authView = $('authView');
@@ -1347,7 +1475,7 @@ main.shell{
       tab.classList.toggle('active', name === page);
     });
 
-    if(page === 'finance') renderFinance();
+    if(page === 'finance') loadFinanceTransactions();
     if(page === 'team') loadTeamMembers();
   }
 
@@ -1390,6 +1518,14 @@ main.shell{
     renderSales();
     renderFinance();
   }
+
+  async function loadFinanceTransactions(){
+    financeTransactions = await api(
+      '/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'
+    ) || [];
+    renderFinance();
+  }
+
 
   function rupiah(n){
     return new Intl.NumberFormat('id-ID',{
@@ -1561,14 +1697,28 @@ main.shell{
     }).format(new Date());
   }
 
+  function manualFinanceTotals(){
+    const manualIn = financeTransactions
+      .filter(t => t.flow_type === 'in')
+      .reduce((sum,t) => sum + Number(t.amount || 0), 0);
+
+    const manualOut = financeTransactions
+      .filter(t => t.flow_type === 'out')
+      .reduce((sum,t) => sum + Number(t.amount || 0), 0);
+
+    return {manualIn, manualOut};
+  }
+
   function renderFinance(){
     const paid = paidRows();
-    const revenue = paid.reduce((sum,r)=>sum+Number(r.amount||0),0);
-    const expenses = 0;
+    const salesRevenue = paid.reduce((sum,r)=>sum + Number(r.amount||0),0);
+    const {manualIn, manualOut} = manualFinanceTotals();
+
+    const revenue = salesRevenue + manualIn;
+    const expenses = manualOut;
     const liabilities = 0;
-    const cashOut = 0;
     const netProfit = revenue - expenses;
-    const cash = revenue - cashOut;
+    const cash = revenue - expenses;
 
     let html = '';
 
@@ -1579,16 +1729,18 @@ main.shell{
             <h3>Laporan Laba Rugi</h3>
             <p>Per ${financePeriodLabel()}</p>
           </div>
+
           <div class="statement-section">
             <div class="statement-title">Pendapatan</div>
-            <div class="statement-row"><span>Penjualan BADAI</span><strong>${rupiah(revenue)}</strong></div>
-            <div class="statement-row"><span>Transaksi Lunas</span><strong>${paid.length}</strong></div>
+            <div class="statement-row"><span>Penjualan BADAI</span><strong>${rupiah(salesRevenue)}</strong></div>
+            <div class="statement-row"><span>Pemasukan Manual</span><strong>${rupiah(manualIn)}</strong></div>
+            <div class="statement-row total"><span>Total Pendapatan</span><strong>${rupiah(revenue)}</strong></div>
           </div>
+
           <div class="statement-section">
             <div class="statement-title">Beban</div>
-            <div class="statement-row"><span>Beban Operasional Tercatat</span><strong>${rupiah(expenses)}</strong></div>
+            <div class="statement-row"><span>Pengeluaran Manual</span><strong>${rupiah(expenses)}</strong></div>
             <div class="statement-row total"><span>Laba Bersih</span><strong>${rupiah(netProfit)}</strong></div>
-            <div class="statement-note">Saat ini sistem baru mencatat pendapatan dari transaksi PAID. Pencatatan biaya/beban akan kita tambahkan saat modul pengeluaran dibuat.</div>
           </div>
         </div>
       `;
@@ -1596,58 +1748,99 @@ main.shell{
 
     if(currentFinanceType === 'balance'){
       const equity = cash - liabilities;
+
       html = `
         <div class="statement-card">
           <div class="statement-head">
             <h3>Laporan Neraca</h3>
             <p>Posisi keuangan per ${financePeriodLabel()}</p>
           </div>
+
           <div class="statement-section">
             <div class="statement-title">Aset</div>
-            <div class="statement-row"><span>Kas dari Penjualan</span><strong>${rupiah(cash)}</strong></div>
+            <div class="statement-row"><span>Kas Bersih</span><strong>${rupiah(cash)}</strong></div>
             <div class="statement-row total"><span>Total Aset</span><strong>${rupiah(cash)}</strong></div>
           </div>
+
           <div class="statement-section">
             <div class="statement-title">Liabilitas</div>
             <div class="statement-row"><span>Utang Tercatat</span><strong>${rupiah(liabilities)}</strong></div>
           </div>
+
           <div class="statement-section">
             <div class="statement-title">Ekuitas</div>
             <div class="statement-row"><span>Ekuitas / Saldo Bersih</span><strong>${rupiah(equity)}</strong></div>
             <div class="statement-row total"><span>Liabilitas + Ekuitas</span><strong>${rupiah(liabilities + equity)}</strong></div>
-            <div class="statement-note">Neraca saat ini menggunakan data yang tersedia di BADAI. Aset lain, modal, dan utang belum memiliki pencatatan terpisah.</div>
+            <div class="statement-note">Utang dan aset non-kas belum memiliki modul pencatatan tersendiri.</div>
           </div>
         </div>
       `;
     }
 
     if(currentFinanceType === 'cashflow'){
+      const salesItems = paid.map(r => ({
+        id:null,
+        date:r.activated_at || r.created_at,
+        title:r.full_name,
+        category:'Penjualan BADAI',
+        flow_type:'in',
+        amount:Number(r.amount||0),
+        manual:false
+      }));
+
+      const manualItems = financeTransactions.map(t => ({
+        id:t.id,
+        date:t.transaction_date,
+        title:t.description,
+        category:t.category,
+        flow_type:t.flow_type,
+        amount:Number(t.amount||0),
+        manual:true
+      }));
+
+      const allItems = [...salesItems,...manualItems].sort((a,b) =>
+        String(b.date).localeCompare(String(a.date))
+      );
+
       html = `
+        <div class="finance-statement-actions">
+          <button class="finance-add-btn" data-finance-action="add" type="button">+ TRANSAKSI MANUAL</button>
+        </div>
+
         <div class="statement-card">
           <div class="statement-head">
             <h3>Laporan Arus Kas</h3>
-            <p>Arus kas berdasarkan pembayaran member</p>
+            <p>Pembayaran member + transaksi manual</p>
           </div>
+
           <div class="statement-section">
-            <div class="statement-title">Aktivitas Operasional</div>
-            <div class="statement-row"><span>Kas Masuk dari Penjualan</span><strong>${rupiah(revenue)}</strong></div>
-            <div class="statement-row"><span>Kas Keluar Tercatat</span><strong>${rupiah(cashOut)}</strong></div>
+            <div class="statement-title">Ringkasan Arus Kas</div>
+            <div class="statement-row"><span>Kas Masuk Penjualan</span><strong>${rupiah(salesRevenue)}</strong></div>
+            <div class="statement-row"><span>Kas Masuk Manual</span><strong>${rupiah(manualIn)}</strong></div>
+            <div class="statement-row"><span>Kas Keluar Manual</span><strong>${rupiah(manualOut)}</strong></div>
             <div class="statement-row total"><span>Arus Kas Bersih</span><strong>${rupiah(cash)}</strong></div>
           </div>
+
           <div class="statement-section">
-            <div class="statement-title">Rincian Kas Masuk</div>
+            <div class="statement-title">Riwayat Transaksi</div>
             <div class="cash-list">
-              ${paid.length ? paid.map(r => `
-                <div class="cash-item">
+              ${allItems.length ? allItems.map(item => `
+                <div class="cash-item ${item.manual ? 'manual' : ''}">
                   <div>
-                    <strong>${esc(r.full_name)}</strong>
-                    <small>${dateTime(r.activated_at || r.created_at)}</small>
+                    <strong>${esc(item.title)}</strong>
+                    <small>${esc(item.category)} • ${dateTime(item.date)}</small>
+                    ${item.manual ? `
+                      <div class="cash-item-actions">
+                        <button class="finance-mini-delete" data-finance-action="delete" data-id="${item.id}" type="button">HAPUS</button>
+                      </div>
+                    ` : ''}
                   </div>
-                  <div class="cash-amount">+${rupiah(r.amount)}</div>
+                  <div class="cash-amount ${item.flow_type === 'out' ? 'out' : ''}">
+                    ${item.flow_type === 'out' ? '-' : '+'}${rupiah(item.amount)}
+                  </div>
                 </div>
-              `).join('') : '<div class="statement-note">Belum ada transaksi PAID.</div>'}
+              `).join('') : '<div class="statement-note">Belum ada transaksi.</div>'}
             </div>
-            <div class="statement-note">Kas keluar belum dicatat karena modul pengeluaran belum tersedia.</div>
           </div>
         </div>
       `;
@@ -1658,10 +1851,72 @@ main.shell{
 
   function setFinanceType(type){
     currentFinanceType = type;
+
     document.querySelectorAll('[data-finance-type]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.financeType === type);
     });
+
     renderFinance();
+  }
+
+  function localToday(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function openManualTransactionModal(){
+    $('manualTransactionForm').reset();
+    $('manualDate').value = localToday();
+    document.querySelector('input[name="manualFlow"][value="out"]').checked = true;
+    $('manualTransactionModal').classList.remove('hidden');
+  }
+
+  async function saveManualTransaction(){
+    const flow = document.querySelector('input[name="manualFlow"]:checked')?.value;
+    const amount = Number($('manualAmount').value);
+
+    if(!$('manualDate').value || !$('manualDescription').value.trim() || !flow || !amount || !$('manualCategory').value.trim()){
+      throw new Error('Lengkapi semua data transaksi.');
+    }
+
+    $('saveManualTransactionBtn').disabled = true;
+    const oldText = $('saveManualTransactionBtn').textContent;
+    $('saveManualTransactionBtn').textContent = 'MENYIMPAN...';
+
+    try{
+      await api('/rest/v1/finance_transactions', {
+        method:'POST',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({
+          transaction_date:$('manualDate').value,
+          description:$('manualDescription').value.trim(),
+          flow_type:flow,
+          amount:Math.round(amount),
+          category:$('manualCategory').value.trim(),
+          created_by:session.user.id
+        })
+      });
+
+      $('manualTransactionModal').classList.add('hidden');
+      await loadFinanceTransactions();
+    }finally{
+      $('saveManualTransactionBtn').disabled = false;
+      $('saveManualTransactionBtn').textContent = oldText;
+    }
+  }
+
+  async function deleteManualTransaction(id){
+    if(!confirm('Hapus transaksi manual ini?')) return;
+
+    await api('/rest/v1/finance_transactions?id=eq.' + encodeURIComponent(id), {
+      method:'DELETE',
+      headers:{'Prefer':'return=minimal'}
+    });
+
+    await loadFinanceTransactions();
   }
 
   function openCredentialModal(row, password){
@@ -2061,6 +2316,18 @@ main.shell{
     if(e.target === $('credentialModal')) $('credentialModal').classList.add('hidden');
   });
 
+  $('manualTransactionForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try{ await saveManualTransaction(); }
+    catch(err){ alert('Gagal menyimpan transaksi: ' + err.message); }
+  });
+
+  $('closeManualTransactionBtn').addEventListener('click', () => $('manualTransactionModal').classList.add('hidden'));
+
+  $('manualTransactionModal').addEventListener('click', (e) => {
+    if(e.target === $('manualTransactionModal')) $('manualTransactionModal').classList.add('hidden');
+  });
+
   $('closeTeamCredentialBtn').addEventListener('click', () => $('teamCredentialModal').classList.add('hidden'));
   $('teamCredentialModal').addEventListener('click', (e) => {
     if(e.target === $('teamCredentialModal')) $('teamCredentialModal').classList.add('hidden');
@@ -2074,6 +2341,24 @@ main.shell{
   });
 
   document.addEventListener('click', async (e) => {
+    const financeBtn = e.target.closest('[data-finance-action]');
+    if(financeBtn){
+      const action = financeBtn.dataset.financeAction;
+
+      if(action === 'add'){
+        openManualTransactionModal();
+        return;
+      }
+
+      if(action === 'delete'){
+        financeBtn.disabled = true;
+        try{ await deleteManualTransaction(financeBtn.dataset.id); }
+        catch(err){ alert('Aksi transaksi gagal: ' + err.message); }
+        finally{ financeBtn.disabled = false; }
+        return;
+      }
+    }
+
     const teamBtn = e.target.closest('[data-team-action]');
     if(teamBtn){
       teamBtn.disabled = true;
