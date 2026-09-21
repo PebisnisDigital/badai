@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Komunitas BADAI — Belajar Apa Saja Dengan Artificial Intelligence</title>
-<link rel="icon" type="image/png" href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png">
+<link rel="icon" type="image/png" href="/assets/brand/badai-logo-utama.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
@@ -1366,6 +1366,36 @@ html.badai-auth-lock body > .app{
   font-size:9px;
 }
 
+
+/* BADAI PRIMARY LOGO */
+.member-brand-logo{
+  position:relative;
+  width:min(82%,240px);
+  height:98px;
+  margin:4px auto -2px;
+  overflow:hidden;
+}
+.member-brand-logo img{
+  position:absolute;
+  display:block;
+  width:240px;
+  height:auto;
+  max-width:none;
+  left:50%;
+  top:-67px;
+  transform:translateX(-50%);
+}
+@media(max-width:420px){
+  .member-brand-logo{
+    width:210px;
+    height:86px;
+  }
+  .member-brand-logo img{
+    width:210px;
+    top:-59px;
+  }
+}
+
 </style>
 <script src="/akses/auth.js?v=20260921-2" defer></script>
 </head>
@@ -1373,8 +1403,9 @@ html.badai-auth-lock body > .app{
 <div class="app">
   <header class="hero">
     <div class="badge">MEMBER AREA</div>
-    <div class="logo">Komunitas BADAI</div>
-    <div class="tagline">BELAJAR APA SAJA DENGAN ARTIFICIAL INTELLIGENCE</div>
+    <div class="member-brand-logo">
+      <img src="/assets/brand/badai-logo-utama.png" alt="Komunitas BADAI — Belajar Apa Saja Dengan Artificial Intelligence">
+    </div>
   </header>
 
   <main class="main">
