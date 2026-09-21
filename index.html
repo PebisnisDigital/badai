@@ -2008,6 +2008,79 @@ h2{font-weight:900}
   .package-price{font-size:28px}
 }
 
+
+/* PRICING REGISTRATION POPUP */
+.register-modal-overlay{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.82);
+  backdrop-filter:blur(9px);
+  -webkit-backdrop-filter:blur(9px);
+}
+.register-modal-overlay.open{
+  display:flex;
+}
+.register-modal-shell{
+  position:relative;
+  width:min(100%,520px);
+  max-height:calc(100vh - 36px);
+  overflow:auto;
+  border-radius:24px;
+  scrollbar-width:thin;
+}
+.registration-modal-card{
+  margin:0 !important;
+  padding:20px !important;
+  border-color:#4b2840 !important;
+  box-shadow:0 30px 90px rgba(0,0,0,.55);
+}
+.register-modal-close{
+  position:absolute;
+  z-index:4;
+  top:10px;
+  right:10px;
+  width:34px;
+  height:34px;
+  border:1px solid #353535;
+  border-radius:50%;
+  background:#0b0b0b;
+  color:#fff;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+}
+.register-modal-kicker{
+  margin-bottom:6px;
+  color:#ff4fa3;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.11em;
+}
+body.register-modal-open{
+  overflow:hidden;
+}
+@media(max-width:520px){
+  .register-modal-overlay{
+    padding:10px;
+    align-items:flex-end;
+  }
+  .register-modal-shell{
+    width:100%;
+    max-height:92vh;
+    border-radius:22px 22px 0 0;
+  }
+  .registration-modal-card{
+    border-radius:22px 22px 0 0 !important;
+    padding:18px !important;
+  }
+}
+
 </style>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="icon" type="image/png"/>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="shortcut icon"/>
@@ -2016,7 +2089,7 @@ h2{font-weight:900}
 <body>
 <header class="nav"><div class="container nav-inner"><a aria-label="BADAI" class="brand brand-logo" href="#">
 <img alt="BADAI" src="https://ulva.my.id/uploads/1789901602_245f037026612d7ed6a3.png"/>
-</a><a class="nav-btn" href="#daftar">GABUNG BADAI</a></div></header>
+</a><a class="nav-btn" href="#pricing">GABUNG BADAI</a></div></header>
 <main>
 <section class="hero">
 <div class="container">
@@ -2025,7 +2098,7 @@ h2{font-weight:900}
 <div class="hero-video hero-image" id="video-ulva">
 <img alt="BADAI — Untung Lewat Video AI" loading="eager" src="https://ulva.my.id/uploads/1789957681_a933acaec7d686701c22.png"/>
 </div>
-<a class="cta" href="#daftar">GABUNG BADAI SEKARANG →</a>
+<a class="cta" href="#pricing">GABUNG BADAI SEKARANG →</a>
 <a class="cta secondary" href="#materi">LIHAT DULU MATERINYA</a>
 <div class="micro">Cocok untuk pemula. Nggak perlu ngerti istilah AI yang ribet.</div>
 </div>
@@ -2577,7 +2650,7 @@ h2{font-weight:900}
       </div>
 
       <button class="package-select-btn" type="button" data-package-select="newbie">
-        PILIH PAKET PEMULA
+        DAFTAR PAKET PEMULA
       </button>
     </article>
 
@@ -2604,54 +2677,12 @@ h2{font-weight:900}
       </div>
 
       <button class="package-select-btn hot" type="button" data-package-select="pro">
-        PILIH PAKET UNTUNG
+        DAFTAR PAKET UNTUNG
       </button>
     </article>
   </div>
 
-  <div class="pricing-register" id="daftar">
-    <div class="register-head">
-      <h3>Daftar BADAI Sekarang</h3>
-      <p>Pilih paket, isi data, lalu WhatsApp admin akan terbuka untuk melanjutkan pendaftaran.</p>
-    </div>
 
-    <div class="selected-package-box">
-      <div>
-        <span>PAKET YANG DIPILIH</span>
-        <strong id="selectedPackageLabel">Paket Pemula</strong>
-      </div>
-      <b id="selectedPackagePrice">Rp99.000</b>
-    </div>
-
-    <form id="badaiRegisterForm" class="register-form">
-      <input type="hidden" id="selectedPackage" value="newbie">
-
-      <div class="form-group">
-        <label for="regNama">Nama</label>
-        <input id="regNama" name="nama" type="text" placeholder="Tulis nama lengkap" autocomplete="name" required>
-      </div>
-
-      <div class="form-group">
-        <label for="regEmail">Email</label>
-        <input id="regEmail" name="email" type="email" placeholder="contoh@email.com" autocomplete="email" required>
-      </div>
-
-      <div class="form-group">
-        <label for="regWa">WA</label>
-        <input id="regWa" name="wa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
-      </div>
-
-      <div class="payment-box">
-        <span class="payment-label">Rekening Bayar ke :</span>
-        <div class="bank-name">BCA</div>
-        <div class="bank-number">1480945529</div>
-        <div class="bank-owner">an PURKON N</div>
-      </div>
-
-      <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
-      <div class="register-note" id="registerStatus">Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.</div>
-    </form>
-  </div>
 </div>
 </section>
 <section>
@@ -2669,7 +2700,58 @@ h2{font-weight:900}
 </section>
 </main>
 <footer><div class="container">BADAI — Untung Lewat Video AI<br/>Materi edukasi. Hasil setiap pengguna dapat berbeda.</div></footer>
-<a href="#daftar">GABUNG SEKARANG</a>
+<a href="#pricing">GABUNG SEKARANG</a>
+<div id="registrationModal" class="register-modal-overlay" aria-hidden="true">
+  <div class="register-modal-shell" role="dialog" aria-modal="true" aria-labelledby="registrationModalTitle">
+    <button id="closeRegistrationModal" class="register-modal-close" type="button" aria-label="Tutup formulir">×</button>
+
+    <div class="pricing-register registration-modal-card">
+      <div class="register-head">
+        <div class="register-modal-kicker">PENDAFTARAN BADAI</div>
+        <h3 id="registrationModalTitle">Daftar Paket Pemula</h3>
+        <p id="registrationModalDesc">Isi data di bawah ini untuk melanjutkan pendaftaran Paket Pemula.</p>
+      </div>
+
+      <div class="selected-package-box">
+        <div>
+          <span>PAKET YANG DIPILIH</span>
+          <strong id="selectedPackageLabel">Paket Pemula</strong>
+        </div>
+        <b id="selectedPackagePrice">Rp99.000</b>
+      </div>
+
+      <form id="badaiRegisterForm" class="register-form">
+        <input type="hidden" id="selectedPackage" value="newbie">
+
+        <div class="form-group">
+          <label for="regNama">Nama</label>
+          <input id="regNama" name="nama" type="text" placeholder="Tulis nama lengkap" autocomplete="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="regEmail">Email</label>
+          <input id="regEmail" name="email" type="email" placeholder="contoh@email.com" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="regWa">WA</label>
+          <input id="regWa" name="wa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
+        </div>
+
+        <div class="payment-box">
+          <span class="payment-label">Rekening Bayar ke :</span>
+          <div class="bank-name">BCA</div>
+          <div class="bank-number">1480945529</div>
+          <div class="bank-owner">an PURKON N</div>
+        </div>
+
+        <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
+        <div class="register-note" id="registerStatus">Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.</div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   const slider = document.getElementById('chapterSlider');
@@ -2844,16 +2926,57 @@ Mohon dibantu proses pendaftarannya ya.`
     });
   }
 
+  const registrationModal = document.getElementById('registrationModal');
+  const closeRegistrationModalBtn = document.getElementById('closeRegistrationModal');
+
+  function openRegistrationModal(plan){
+    selectedPackage = plan === 'pro' ? 'pro' : 'newbie';
+    syncSelectedPackageUI();
+
+    const title = document.getElementById('registrationModalTitle');
+    const desc = document.getElementById('registrationModalDesc');
+    const status = document.getElementById('registerStatus');
+
+    if(title) title.textContent = 'Daftar ' + selectedPackageName();
+    if(desc){
+      desc.textContent = 'Isi data di bawah ini untuk melanjutkan pendaftaran ' + selectedPackageName() + '.';
+    }
+    if(status){
+      status.textContent = 'Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.';
+      status.style.color = '#7e7e7e';
+    }
+
+    registrationModal?.classList.add('open');
+    registrationModal?.setAttribute('aria-hidden','false');
+    document.body.classList.add('register-modal-open');
+
+    setTimeout(() => document.getElementById('regNama')?.focus(), 80);
+  }
+
+  function closeRegistrationModal(){
+    registrationModal?.classList.remove('open');
+    registrationModal?.setAttribute('aria-hidden','true');
+    document.body.classList.remove('register-modal-open');
+  }
+
   document.querySelectorAll('[data-package-select]').forEach(btn => {
     btn.addEventListener('click', () => {
-      selectedPackage = btn.dataset.packageSelect === 'pro' ? 'pro' : 'newbie';
-      syncSelectedPackageUI();
-
-      document.getElementById('daftar')?.scrollIntoView({
-        behavior:'smooth',
-        block:'start'
-      });
+      openRegistrationModal(btn.dataset.packageSelect);
     });
+  });
+
+  closeRegistrationModalBtn?.addEventListener('click', closeRegistrationModal);
+
+  registrationModal?.addEventListener('click', (e) => {
+    if(e.target === registrationModal){
+      closeRegistrationModal();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && registrationModal?.classList.contains('open')){
+      closeRegistrationModal();
+    }
   });
 
   function formatRupiah(value){
