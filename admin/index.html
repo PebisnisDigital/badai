@@ -1386,6 +1386,119 @@ main.shell{
   .payment-method-actions{justify-content:flex-start}
 }
 
+
+.buatqris-card{
+  border-color:#4b2840;
+  background:
+    radial-gradient(circle at 100% 0,rgba(255,79,163,.10),transparent 30%),
+    #0b0b0b;
+}
+.buatqris-enable-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px;
+  margin-bottom:9px;
+  border:1px solid #272727;
+  border-radius:12px;
+  background:#0a0a0a;
+}
+.buatqris-enable-row b{
+  display:block;
+  color:#fff;
+  font-size:10px;
+}
+.buatqris-enable-row span{
+  display:block;
+  margin-top:2px;
+  color:#777;
+  font-size:7px;
+  line-height:1.4;
+}
+.switch-control{
+  flex:0 0 auto;
+  position:relative;
+  width:42px;
+  height:24px;
+}
+.switch-control input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.switch-control>span{
+  position:absolute;
+  inset:0;
+  margin:0;
+  border-radius:999px;
+  background:#252525;
+  cursor:pointer;
+  transition:.18s ease;
+}
+.switch-control>span::after{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  left:3px;
+  top:3px;
+  border-radius:50%;
+  background:#777;
+  transition:.18s ease;
+}
+.switch-control input:checked+span{
+  background:#ff4fa3;
+}
+.switch-control input:checked+span::after{
+  transform:translateX(18px);
+  background:#111;
+}
+.buatqris-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.buatqris-callback{
+  display:grid;
+  gap:4px;
+  margin:9px 0;
+  padding:9px;
+  border:1px dashed #343434;
+  border-radius:10px;
+  background:#090909;
+}
+.buatqris-callback>span{
+  color:#ff91c5;
+  font-size:6px;
+  font-weight:950;
+}
+.buatqris-callback code{
+  color:#ddd;
+  font-size:7px;
+  word-break:break-all;
+}
+.buatqris-callback small{
+  color:#707070;
+  font-size:7px;
+  line-height:1.4;
+}
+.payment-managed-note{
+  display:inline-flex;
+  min-height:27px;
+  align-items:center;
+  padding:0 8px;
+  border:1px solid #4f2940;
+  border-radius:999px;
+  background:#1b1016;
+  color:#ff91c5;
+  font-size:6px;
+  font-weight:950;
+}
+@media(max-width:500px){
+  .buatqris-grid{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -1599,9 +1712,94 @@ main.shell{
         </div>
 
         <div class="marketing-category-panel" data-marketing-panel="payments">
-          <div class="marketing-card">
+          <div class="marketing-card buatqris-card">
             <div class="marketing-card-head">
               <span class="marketing-number">1</span>
+              <div>
+                <h3>BuatQris.site</h3>
+                <p>QRIS otomatis. Setelah user daftar, sistem membuat QR sesuai harga paket.</p>
+              </div>
+            </div>
+
+            <div class="buatqris-enable-row">
+              <div>
+                <b>Aktifkan BuatQris.site</b>
+                <span>Jika aktif, QRIS otomatis muncul sebagai pilihan pembayaran di Landing Page.</span>
+              </div>
+              <label class="switch-control">
+                <input id="buatQrisEnabled" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+
+            <div class="buatqris-grid">
+              <div class="manage-field">
+                <label>Account ID</label>
+                <input id="buatQrisAccountId" type="text" placeholder="Account ID dari BuatQris"/>
+              </div>
+
+              <div class="manage-field">
+                <label>Nama di Landing Page</label>
+                <input id="buatQrisDisplayName" type="text" placeholder="QRIS Otomatis"/>
+              </div>
+
+              <div class="manage-field">
+                <label>Secret Token</label>
+                <input id="buatQrisSecretToken" type="password" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti"/>
+                <div id="buatQrisSecretState" class="price-plan-note">Belum tersimpan</div>
+              </div>
+
+              <div class="manage-field">
+                <label>Signing Secret Webhook</label>
+                <input id="buatQrisSigningSecret" type="password" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti"/>
+                <div id="buatQrisSigningState" class="price-plan-note">Belum tersimpan</div>
+              </div>
+
+              <div class="manage-field">
+                <label>Mode</label>
+                <select id="buatQrisMode">
+                  <option value="sandbox">SANDBOX / TEST</option>
+                  <option value="real">REAL / PRODUKSI</option>
+                </select>
+              </div>
+
+              <div class="manage-field">
+                <label>Metode QRIS</label>
+                <select id="buatQrisMethod">
+                  <option value="qris_one">QRIS 1</option>
+                  <option value="qris_two">QRIS 2</option>
+                  <option value="qris_three">QRIS 3</option>
+                  <option value="qris_four">QRIS 4</option>
+                </select>
+              </div>
+
+              <div class="manage-field">
+                <label>Biaya QRIS</label>
+                <select id="buatQrisFeeBy">
+                  <option value="user">Dipotong dari saldo</option>
+                  <option value="buyer">Ditambahkan ke pembeli</option>
+                </select>
+              </div>
+
+              <div class="manage-field">
+                <label>Nama Toko di QR (opsional)</label>
+                <input id="buatQrisUmkmName" type="text" maxlength="15" placeholder="BADAI"/>
+              </div>
+            </div>
+
+            <div class="buatqris-callback">
+              <span>WEBHOOK BADAI</span>
+              <code>https://tlvxlekqrllkvcpgwmic.supabase.co/functions/v1/buatqris-webhook</code>
+              <small>Masukkan URL ini ke Callback URL BuatQris agar pembayaran bisa terdeteksi otomatis.</small>
+            </div>
+
+            <button id="saveBuatQrisBtn" class="payment-add-btn" type="button">SIMPAN PENGATURAN BUATQRIS</button>
+            <div id="buatQrisStatus" class="team-status-note"></div>
+          </div>
+
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">2</span>
               <div><h3>Tambah Metode Pembayaran</h3><p>Bisa QRIS, payment gateway, atau transfer manual sebanyak yang dibutuhkan.</p></div>
             </div>
 
@@ -1664,7 +1862,7 @@ main.shell{
 
           <div class="marketing-card">
             <div class="marketing-card-head">
-              <span class="marketing-number">2</span>
+              <span class="marketing-number">3</span>
               <div><h3>Metode Pembayaran Aktif</h3><p>Aktifkan semua metode atau pilih hanya beberapa yang ingin ditampilkan di Landing Page.</p></div>
             </div>
             <div id="paymentMethodList" class="payment-method-list"></div>
@@ -1998,6 +2196,17 @@ main.shell{
   let affiliateProfiles = [];
   let affiliateMaterials = [];
   let paymentMethods = [];
+  let buatQrisSettings = {
+    enabled:false,
+    account_id:'',
+    has_secret_token:false,
+    has_signing_secret:false,
+    test_mode:true,
+    qris_method:'qris_two',
+    fee_by:'user',
+    display_name:'QRIS Otomatis',
+    umkm_name:''
+  };
 
   const $ = (id) => document.getElementById(id);
   const authView = $('authView');
@@ -2191,7 +2400,11 @@ main.shell{
       api('/rest/v1/affiliate_sales?select=id,affiliate_user_id,registration_id,sale_amount,commission_amount,status,sale_at&order=sale_at.desc'),
       api('/rest/v1/profiles?select=id,full_name,email,membership_plan,member_status'),
       api('/rest/v1/affiliate_materials?select=id,material_type,title,content,media_url,active,sort_order,created_at&order=sort_order.asc,created_at.desc'),
-      api('/rest/v1/payment_methods?select=id,method_type,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc')
+      api('/rest/v1/payment_methods?select=id,method_type,provider,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc'),
+      api('/rest/v1/rpc/admin_get_buatqris_settings', {
+        method:'POST',
+        body:JSON.stringify({})
+      })
     ]);
 
     marketingCoupons = results[0] || [];
@@ -2201,6 +2414,7 @@ main.shell{
     affiliateProfiles = results[4] || [];
     affiliateMaterials = results[5] || [];
     paymentMethods = results[6] || [];
+    if(results[7]?.[0]) buatQrisSettings = results[7][0];
 
     $('marketingNewbiePrice').value = marketingSettings.newbie_price || marketingSettings.product_price || 123000;
     $('marketingProPrice').value = marketingSettings.pro_price || marketingSettings.product_price || 123000;
@@ -2220,6 +2434,7 @@ main.shell{
     toggleAffiliateMaterialFields();
     renderPaymentMethods();
     togglePaymentMethodFields();
+    populateBuatQrisSettings();
   }
 
   function canManageMarketing(){
@@ -2487,6 +2702,71 @@ main.shell{
     await loadMarketing();
   }
 
+  function populateBuatQrisSettings(){
+    if(!$('buatQrisEnabled')) return;
+
+    $('buatQrisEnabled').checked = Boolean(buatQrisSettings.enabled);
+    $('buatQrisAccountId').value = buatQrisSettings.account_id || '';
+    $('buatQrisDisplayName').value = buatQrisSettings.display_name || 'QRIS Otomatis';
+    $('buatQrisMode').value = buatQrisSettings.test_mode ? 'sandbox' : 'real';
+    $('buatQrisMethod').value = buatQrisSettings.qris_method || 'qris_two';
+    $('buatQrisFeeBy').value = buatQrisSettings.fee_by || 'user';
+    $('buatQrisUmkmName').value = buatQrisSettings.umkm_name || '';
+
+    $('buatQrisSecretToken').value = '';
+    $('buatQrisSigningSecret').value = '';
+
+    $('buatQrisSecretState').textContent = buatQrisSettings.has_secret_token
+      ? '✓ Secret Token sudah tersimpan'
+      : 'Belum ada Secret Token';
+
+    $('buatQrisSigningState').textContent = buatQrisSettings.has_signing_secret
+      ? '✓ Signing Secret sudah tersimpan'
+      : 'Belum ada Signing Secret';
+  }
+
+  async function saveBuatQrisSettings(){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mengatur BuatQris.');
+
+    const enabled = $('buatQrisEnabled').checked;
+    const accountId = $('buatQrisAccountId').value.trim();
+    const secretToken = $('buatQrisSecretToken').value.trim();
+    const signingSecret = $('buatQrisSigningSecret').value.trim();
+    const displayName = $('buatQrisDisplayName').value.trim() || 'QRIS Otomatis';
+    const testMode = $('buatQrisMode').value === 'sandbox';
+    const qrisMethod = $('buatQrisMethod').value;
+    const feeBy = $('buatQrisFeeBy').value;
+    const umkmName = $('buatQrisUmkmName').value.trim();
+
+    if(enabled && !accountId){
+      throw new Error('Account ID BuatQris wajib diisi.');
+    }
+    if(enabled && !secretToken && !buatQrisSettings.has_secret_token){
+      throw new Error('Secret Token BuatQris wajib diisi sebelum diaktifkan.');
+    }
+
+    await api('/rest/v1/rpc/admin_update_buatqris_settings', {
+      method:'POST',
+      body:JSON.stringify({
+        p_enabled:enabled,
+        p_account_id:accountId || null,
+        p_secret_token:secretToken || null,
+        p_signing_secret:signingSecret || null,
+        p_test_mode:testMode,
+        p_qris_method:qrisMethod,
+        p_fee_by:feeBy,
+        p_display_name:displayName,
+        p_umkm_name:umkmName || null
+      })
+    });
+
+    $('buatQrisStatus').textContent = enabled
+      ? 'BuatQris aktif dan tersinkron ke Landing Page.'
+      : 'BuatQris dinonaktifkan.';
+
+    await loadMarketing();
+  }
+
   function paymentTypeLabel(type){
     if(type === 'qris') return 'QRIS';
     if(type === 'payment_gateway') return 'PAYMENT GATEWAY';
@@ -2523,15 +2803,20 @@ main.shell{
     box.innerHTML = paymentMethods.map(item => `
       <div class="payment-method-row">
         <div class="payment-method-main">
-          <span class="payment-type-pill">${paymentTypeLabel(item.method_type)}</span>
+          <span class="payment-type-pill">${paymentTypeLabel(item.method_type)}${item.provider === 'buatqris' ? ' • OTOMATIS' : ''}</span>
           <b>${esc(item.display_name)}</b>
           <small>${esc(paymentMethodSummary(item))}</small>
         </div>
         <div class="payment-method-actions">
-          <button class="coupon-toggle ${item.active ? '' : 'off'}" data-payment-action="toggle" data-id="${item.id}" type="button">
-            ${item.active ? 'AKTIF' : 'NONAKTIF'}
-          </button>
-          <button class="coupon-delete" data-payment-action="delete" data-id="${item.id}" type="button">HAPUS</button>
+          ${item.provider === 'buatqris'
+            ? '<span class="payment-managed-note">' + (item.active ? 'AKTIF' : 'NONAKTIF') + '</span>'
+            : `
+              <button class="coupon-toggle ${item.active ? '' : 'off'}" data-payment-action="toggle" data-id="${item.id}" type="button">
+                ${item.active ? 'AKTIF' : 'NONAKTIF'}
+              </button>
+              <button class="coupon-delete" data-payment-action="delete" data-id="${item.id}" type="button">HAPUS</button>
+            `
+          }
         </div>
       </div>
     `).join('');
@@ -3444,6 +3729,18 @@ main.shell{
     e.preventDefault();
     try{ await saveMarketing(); }
     catch(err){ $('marketingStatus').textContent = err.message; }
+  });
+
+  $('saveBuatQrisBtn').addEventListener('click', async () => {
+    $('saveBuatQrisBtn').disabled = true;
+    const oldText = $('saveBuatQrisBtn').textContent;
+    $('saveBuatQrisBtn').textContent = 'MENYIMPAN...';
+    try{ await saveBuatQrisSettings(); }
+    catch(err){ $('buatQrisStatus').textContent = err.message; }
+    finally{
+      $('saveBuatQrisBtn').disabled = false;
+      $('saveBuatQrisBtn').textContent = oldText;
+    }
   });
 
   $('paymentMethodType').addEventListener('change', togglePaymentMethodFields);
