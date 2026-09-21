@@ -1236,6 +1236,136 @@ html.badai-auth-lock body > .app{
   .affiliate-actions{grid-template-columns:100px 1fr}
 }
 
+
+.affiliate-member-section{
+  margin-top:10px;
+  border:1px solid #242424;
+  border-radius:18px;
+  background:#111;
+  padding:13px;
+}
+.affiliate-member-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:10px;
+}
+.affiliate-member-heading span{
+  color:#ff8fc5;
+  font:900 7px "Raleway";
+  letter-spacing:.08em;
+}
+.affiliate-member-heading h2{
+  margin:3px 0 2px;
+  color:#fff;
+  font:900 16px "Raleway";
+}
+.affiliate-member-heading p{
+  margin:0;
+  color:#858585;
+  font-size:8px;
+  line-height:1.4;
+}
+.affiliate-rate{
+  flex:0 0 auto;
+  border:1px solid #5a2945;
+  background:#211018;
+  color:#ff91c5;
+  border-radius:999px;
+  padding:6px 8px;
+  font:900 7px "Raleway";
+}
+.affiliate-member-materials{
+  display:grid;
+  gap:8px;
+}
+.affiliate-material-card{
+  border:1px solid #252525;
+  background:#0b0b0b;
+  border-radius:13px;
+  padding:10px;
+}
+.affiliate-material-card .mat-type{
+  display:inline-flex;
+  padding:3px 6px;
+  border-radius:999px;
+  background:#211018;
+  color:#ff91c5;
+  font:900 6px "Raleway";
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.affiliate-material-card h3{
+  margin:0 0 6px;
+  color:#fff;
+  font:900 11px "Raleway";
+}
+.affiliate-material-text{
+  white-space:pre-wrap;
+  color:#bdbdbd;
+  font-size:9px;
+  line-height:1.5;
+  padding:9px;
+  border-radius:9px;
+  background:#101010;
+  border:1px solid #202020;
+  max-height:180px;
+  overflow:auto;
+}
+.affiliate-material-image{
+  width:100%;
+  display:block;
+  border-radius:10px;
+  border:1px solid #252525;
+  margin-bottom:7px;
+}
+.affiliate-material-link{
+  display:block;
+  color:#9a9a9a;
+  font-size:8px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-bottom:7px;
+}
+.affiliate-material-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-top:7px;
+}
+.affiliate-material-buttons.one{grid-template-columns:1fr}
+.affiliate-material-buttons button,
+.affiliate-material-buttons a{
+  min-height:34px;
+  border-radius:10px;
+  font:900 8px "Raleway";
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  cursor:pointer;
+}
+.affiliate-material-buttons button{
+  border:0;
+  background:#ff4fa3;
+  color:#111;
+}
+.affiliate-material-buttons a{
+  border:1px solid #353535;
+  background:#151515;
+  color:#fff;
+}
+.affiliate-empty{
+  border:1px dashed #2a2a2a;
+  border-radius:11px;
+  padding:16px;
+  text-align:center;
+  color:#777;
+  font-size:9px;
+}
+
 </style>
 <script src="/akses/auth.js?v=20260921-2" defer></script>
 </head>
@@ -1413,8 +1543,22 @@ html.badai-auth-lock body > .app{
       <div class="stats">
         <div class="stat">🔗<b>Kode Afiliasi</b><span id="affiliateCode">-</span></div>
         <div class="stat">✅<b>Status</b><span>Program Afiliasi Aktif</span></div>
-        <div class="stat">📊<b>Penjualan</b><span>Riwayat referral akan ditambahkan berikutnya</span></div>
-        <div class="stat">💸<b>Komisi</b><span>Pengaturan komisi akan mengikuti sistem BADAI</span></div>
+        <div class="stat">📊<b>Penjualan</b><span id="affiliateSalesCount">0 sales</span></div>
+        <div class="stat">💸<b>Komisi</b><span id="affiliateCommissionTotal">Rp0</span></div>
+      </div>
+
+      <div class="affiliate-member-section">
+        <div class="affiliate-member-heading">
+          <div>
+            <span>BAHAN PROMOSI</span>
+            <h2>Tinggal Ambil & Pakai</h2>
+            <p>Caption, gambar, dan video dari admin BADAI untuk bantu kamu promosi.</p>
+          </div>
+          <div id="affiliateCommissionRate" class="affiliate-rate">Komisi: -</div>
+        </div>
+        <div id="affiliateMaterialsMember" class="affiliate-member-materials">
+          <div class="affiliate-empty">Memuat bahan promosi...</div>
+        </div>
       </div>
     </section>
 
