@@ -3851,6 +3851,34 @@ Mohon dibantu proses pendaftarannya ya.`
   loadMarketingConfig();
   loadPaymentMethods();
 
+  let landingAutoSyncBusy = false;
+
+  async function autoSyncLanding(){
+    if(landingAutoSyncBusy || document.visibilityState !== 'visible') return;
+
+    const qrisStage = document.getElementById('qrisPaymentStage');
+    if(qrisStage && !qrisStage.classList.contains('hidden')) return;
+
+    landingAutoSyncBusy = true;
+    try{
+      await Promise.all([
+        loadMarketingConfig(),
+        loadPaymentMethods()
+      ]);
+    }catch(_){
+    }finally{
+      landingAutoSyncBusy = false;
+    }
+  }
+
+  setInterval(autoSyncLanding, 10000);
+  window.addEventListener('focus', autoSyncLanding);
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+      autoSyncLanding();
+    }
+  });
+
   function normalizeWhatsapp(value){
     let digits = String(value || '').replace(/\D/g, '');
     if(digits.startsWith('0')) digits = '62' + digits.slice(1);
