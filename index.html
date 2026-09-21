@@ -2390,7 +2390,7 @@ h2{font-weight:900}
 <div class="price-total">Rp962.000</div>
 <div class="price-now">
 <div class="price-now-label">Harga berlaku sekarang</div>
-<div class="price-now-value">Rp123.000</div>
+<div class="price-now-value" id="dynamicBadaiPrice">Rp123.000</div>
 </div>
 <div class="price-note">Selisih nilainya jauh, tapi aksesnya tetap dibuka dengan harga yang ramah buat pemula.</div>
 </div>
@@ -2571,6 +2571,61 @@ h2{font-weight:900}
   const SUPABASE_URL = 'https://tlvxlekqrllkvcpgwmic.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
 
+  let marketingConfig = {
+    product_price: 123000,
+    registration_notification:
+`Halo Admin BADAI 👋
+
+Saya mau daftar BADAI - Untung Lewat Video AI.
+
+DATA PENDAFTARAN
+Nama: [nama]
+Email: [email]
+WA: [wa]
+
+Harga: [harga]
+
+Rekening pembayaran:
+BCA 1480945529
+an PURKON N
+
+Mohon dibantu proses pendaftarannya ya.`
+  };
+
+  function formatRupiah(value){
+    return new Intl.NumberFormat('id-ID',{
+      style:'currency',
+      currency:'IDR',
+      maximumFractionDigits:0
+    }).format(Number(value || 0)).replace('Rp','Rp');
+  }
+
+  function fillTemplate(template, values){
+    let output = String(template || '');
+    Object.entries(values).forEach(([key,value]) => {
+      output = output.split('[' + key + ']').join(String(value ?? ''));
+    });
+    return output;
+  }
+
+  async function loadMarketingConfig(){
+    try{
+      const res = await fetch(
+        SUPABASE_URL + '/rest/v1/marketing_public_config?id=eq.1&select=product_price,registration_notification',
+        { headers:{ 'apikey':SUPABASE_PUBLISHABLE_KEY } }
+      );
+      if(!res.ok) return;
+      const rows = await res.json();
+      if(rows?.[0]){
+        marketingConfig = rows[0];
+        const priceEl = document.getElementById('dynamicBadaiPrice');
+        if(priceEl) priceEl.textContent = formatRupiah(marketingConfig.product_price);
+      }
+    }catch(_){}
+  }
+
+  loadMarketingConfig();
+
   function normalizeWhatsapp(value){
     let digits = String(value || '').replace(/\D/g, '');
     if(digits.startsWith('0')) digits = '62' + digits.slice(1);
@@ -2626,23 +2681,15 @@ h2{font-weight:900}
         throw new Error('Gagal menyimpan pendaftaran');
       }
 
-      const message =
-`Halo Admin BADAI 👋
-
-Saya mau daftar BADAI - Untung Lewat Video AI.
-
-DATA PENDAFTARAN
-Nama: ${nama}
-Email: ${email}
-WA: ${wa}
-
-Harga: Rp123.000
-
-Rekening pembayaran:
-BCA 1480945529
-an PURKON N
-
-Mohon dibantu proses pendaftarannya ya.`;
+      const message = fillTemplate(
+        marketingConfig.registration_notification,
+        {
+          nama,
+          email,
+          wa,
+          harga:formatRupiah(marketingConfig.product_price)
+        }
+      );
 
       const whatsappUrl = 'https://wa.me/628213752362?text=' + encodeURIComponent(message);
 
