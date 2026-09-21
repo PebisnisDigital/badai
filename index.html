@@ -1,15 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#070707">
-<title>ULVA — Untung Lewat Video AI</title>
-<meta name="description" content="Belajar bikin Video AI dari nol. Tutorial singkat, mudah dipahami, langsung praktek. Gabung ULVA Rp123.000.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
-
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="#070707" name="theme-color"/>
+<title>BADAI — Untung Lewat Video AI</title>
+<meta content="Belajar bikin Video AI dari nol. Tutorial singkat, mudah dipahami, langsung praktek. Gabung ULVA Rp123.000." name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&amp;family=Raleway:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
 <style>
 :root{--bg:#070707;--card:#101010;--pink:#ff4fa3;--pink2:#ff79ba;--text:#f7f7f7;--muted:#aaa;--line:#242424;--green:#70d49b;--max:680px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:"Nunito",Arial,sans-serif;line-height:1.55}
@@ -43,7 +43,7 @@ h2{font-size:clamp(29px,7vw,44px);line-height:1.04;letter-spacing:-.04em;margin-
 footer{border-top:1px solid var(--line);padding:24px 0 100px;color:#777;font-size:10px;text-align:center}
 @media(max-width:420px){.steps{grid-template-columns:1fr}.strip{grid-template-columns:1fr}.strip div+div{border-left:0;border-top:1px solid var(--line)}}
 
-/* ULVA TYPOGRAPHY — ONLY RALEWAY + NUNITO */
+/* BADAI TYPOGRAPHY — ONLY RALEWAY + NUNITO */
 body,
 p,
 .lead,
@@ -1647,303 +1647,361 @@ h2{font-weight:900}
   }
 }
 
+
+/* BADAI REGISTRATION FORM */
+.pricing-register{
+  margin-top:24px;
+  padding:22px;
+  border:1px solid #333;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 85% 10%,rgba(255,63,156,.12),transparent 25%),
+    linear-gradient(180deg,#111,#090909);
+}
+.register-head{
+  text-align:center;
+  margin-bottom:18px;
+}
+.register-head h3{
+  margin:0 0 7px;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:24px;
+  line-height:1.15;
+  font-weight:900;
+  color:#fff;
+}
+.register-head p{
+  margin:0 auto;
+  max-width:520px;
+  font-family:"Nunito",Arial,sans-serif;
+  color:#aaa;
+  font-size:13px;
+  line-height:1.6;
+}
+.register-form{
+  display:grid;
+  gap:14px;
+}
+.form-group{
+  display:grid;
+  gap:7px;
+}
+.form-group label{
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:13px;
+  font-weight:800;
+  color:#fff;
+}
+.form-group input{
+  width:100%;
+  box-sizing:border-box;
+  padding:15px 16px;
+  border-radius:14px;
+  border:1px solid #333;
+  background:#070707;
+  color:#fff;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:15px;
+  outline:none;
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+.form-group input::placeholder{
+  color:#666;
+}
+.form-group input:focus{
+  border-color:#ff3f9c;
+  box-shadow:0 0 0 3px rgba(255,63,156,.12);
+}
+.payment-box{
+  margin-top:2px;
+  padding:17px;
+  border-radius:16px;
+  border:1px solid rgba(255,63,156,.35);
+  background:rgba(255,63,156,.065);
+  text-align:center;
+}
+.payment-label{
+  display:block;
+  margin-bottom:9px;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:12px;
+  font-weight:700;
+  color:#aaa;
+}
+.bank-name{
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:16px;
+  font-weight:900;
+  color:#ff3f9c;
+}
+.bank-number{
+  margin-top:2px;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:26px;
+  line-height:1.15;
+  font-weight:900;
+  letter-spacing:.5px;
+  color:#fff;
+}
+.bank-owner{
+  margin-top:4px;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:13px;
+  font-weight:700;
+  color:#bbb;
+}
+.register-submit{
+  width:100%;
+  border:0;
+  cursor:pointer;
+  margin-top:2px;
+}
+.register-note{
+  text-align:center;
+  color:#7e7e7e;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:11px;
+  line-height:1.5;
+}
+@media(max-width:520px){
+  .pricing-register{
+    padding:17px;
+    border-radius:20px;
+  }
+  .register-head h3{
+    font-size:21px;
+  }
+  .bank-number{
+    font-size:23px;
+  }
+}
+
 </style>
-
-<link rel="icon" type="image/png" href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png">
-<link rel="shortcut icon" href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png">
-<link rel="apple-touch-icon" href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png">
-
+<link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="icon" type="image/png"/>
+<link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="shortcut icon"/>
+<link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="apple-touch-icon"/>
 </head>
 <body>
-<header class="nav"><div class="container nav-inner"><a class="brand brand-logo" href="#" aria-label="ULVA">
-  <img src="https://ulva.my.id/uploads/1789901602_245f037026612d7ed6a3.png" alt="ULVA">
-</a><a class="nav-btn" href="https://ulva.my.id/checkout/ulva">GABUNG ULVA</a></div></header>
+<header class="nav"><div class="container nav-inner"><a aria-label="BADAI" class="brand brand-logo" href="#">
+<img alt="BADAI" src="https://ulva.my.id/uploads/1789901602_245f037026612d7ed6a3.png"/>
+</a><a class="nav-btn" href="https://ulva.my.id/checkout/ulva">GABUNG BADAI</a></div></header>
 <main>
-
 <section class="hero">
 <div class="container">
-<h1>Untung Lewat<br>Video AI<br><span class="pink">yang Lagi Viral.</span></h1>
-<p class="hero-copy">ULVA bantu kamu belajar bikin Video AI yang <strong>seru, menarik, dan bisa dipakai untuk konten, promosi, jasa, sampai peluang cuan</strong>. Tinggal tonton, ikuti langkahnya, lalu bikin versimu sendiri.</p>
+<h1>Untung Lewat<br/>Video AI<br/><span class="pink">yang Lagi Viral.</span></h1>
+<p class="hero-copy">BADAI bantu kamu belajar bikin Video AI yang <strong>seru, menarik, dan bisa dipakai untuk konten, promosi, jasa, sampai peluang cuan</strong>. Tinggal tonton, ikuti langkahnya, lalu bikin versimu sendiri.</p>
 <div class="hero-video hero-image" id="video-ulva">
-  <img src="https://ulva.my.id/uploads/1789957681_a933acaec7d686701c22.png" alt="ULVA — Untung Lewat Video AI" loading="eager">
+<img alt="BADAI — Untung Lewat Video AI" loading="eager" src="https://ulva.my.id/uploads/1789957681_a933acaec7d686701c22.png"/>
 </div>
-<a class="cta" href="https://ulva.my.id/checkout/ulva">GABUNG ULVA SEKARANG →</a>
+<a class="cta" href="https://ulva.my.id/checkout/ulva">GABUNG BADAI SEKARANG →</a>
 <a class="cta secondary" href="#materi">LIHAT DULU MATERINYA</a>
 <div class="micro">Cocok untuk pemula. Nggak perlu ngerti istilah AI yang ribet.</div>
 </div>
 </section>
-
-
 <section class="problem-danger">
 <div class="container">
 <h2>Belum Bisa Cuan dari <span class="pink">VIDEO AI ?</span></h2>
 <p class="lead">Ini yang bahaya: orang lain sudah mulai pakai AI untuk bikin konten, promosi, dan peluang cuan. Sementara banyak orang masih berhenti di tahap bingung, takut, dan cuma jadi penonton.</p>
-
 <div class="problem-wrap">
-  <div class="problem-media">
-    <img src="https://img.wattpad.com/570c09d355eb9736b7800c80842fa730de0d63d7/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f45575532787736443945704346773d3d2d3938393938333138342e313634636566366234663638613062393136393434393036343338392e6a7067" alt="Ilustrasi suasana sedih" loading="lazy">
-  </div>
-
-  <div class="box problem-list">
-    <div class="item">
-      <div class="icon">✕</div>
-      <div><b>Bingung mulai dari mana</b><span>Buka tools AI, menunya banyak. Akhirnya cuma lihat-lihat dan nggak jadi mulai.</span></div>
-    </div>
-    <div class="item">
-      <div class="icon">✕</div>
-      <div><b>Tutorial terlalu teknis</b><span>Baru beberapa menit sudah ketemu istilah yang bikin pusing dan akhirnya menyerah duluan.</span></div>
-    </div>
-    <div class="item">
-      <div class="icon">✕</div>
-      <div><b>Takut buang kredit</b><span>Sudah coba generate berkali-kali, hasilnya masih aneh. Uang keluar, hasil belum jadi.</span></div>
-    </div>
-    <div class="item">
-      <div class="icon">✕</div>
-      <div><b>Akhirnya cuma jadi penonton</b><span>Lihat orang lain pakai Video AI untuk konten dan bisnis, sementara kita sendiri belum mulai apa-apa.</span></div>
-    </div>
-    <div class="danger-note">Kalau dibiarkan terus, kamu bukan cuma telat belajar. Kamu juga telat ambil peluangnya.</div>
-  </div>
+<div class="problem-media">
+<img alt="Ilustrasi suasana sedih" loading="lazy" src="https://img.wattpad.com/570c09d355eb9736b7800c80842fa730de0d63d7/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f45575532787736443945704346773d3d2d3938393938333138342e313634636566366234663638613062393136393434393036343338392e6a7067"/>
+</div>
+<div class="box problem-list">
+<div class="item">
+<div class="icon">✕</div>
+<div><b>Bingung mulai dari mana</b><span>Buka tools AI, menunya banyak. Akhirnya cuma lihat-lihat dan nggak jadi mulai.</span></div>
+</div>
+<div class="item">
+<div class="icon">✕</div>
+<div><b>Tutorial terlalu teknis</b><span>Baru beberapa menit sudah ketemu istilah yang bikin pusing dan akhirnya menyerah duluan.</span></div>
+</div>
+<div class="item">
+<div class="icon">✕</div>
+<div><b>Takut buang kredit</b><span>Sudah coba generate berkali-kali, hasilnya masih aneh. Uang keluar, hasil belum jadi.</span></div>
+</div>
+<div class="item">
+<div class="icon">✕</div>
+<div><b>Akhirnya cuma jadi penonton</b><span>Lihat orang lain pakai Video AI untuk konten dan bisnis, sementara kita sendiri belum mulai apa-apa.</span></div>
+</div>
+<div class="danger-note">Kalau dibiarkan terus, kamu bukan cuma telat belajar. Kamu juga telat ambil peluangnya.</div>
+</div>
 </div>
 </div>
 </section>
-<section>
-  <div class="container">
-        <h2>Belajar Bikin Video AI<br><span class="pink">bareng Mbak ULVALIA.</span></h2>
-    <p class="lead">
-      Materi ULVA dibawakan dengan gaya yang sederhana, santai, dan langsung praktek supaya pemula nggak merasa ribet saat mulai belajar Video AI.
-    </p>
-
-    <div class="mentor-card">
-      <div class="mentor-photo">
-        <img
-          src="https://ulva.my.id/uploads/1789894418_37f930e88da2354f67d0.png"
-          alt="Mbak Ulvalia — Mentor ULVA"
-          loading="lazy">
-      </div>
-
-      <div class="mentor-role">MENTOR ULVA</div>
-      <div class="mentor-name">Mbak Ulvalia</div>
-
-      <p class="mentor-copy">
-        Di ULVA, Mbak Ulvalia membimbing member memahami cara membuat Video AI dari langkah paling dasar,
-        lalu mengarahkannya supaya bisa dipakai untuk konten, promosi, dan membuka peluang cuan.
-      </p>
-
-      <div class="mentor-points">
-        <div class="mentor-point"><b>Bahasa Sederhana</b>Mudah diikuti pemula.</div>
-        <div class="mentor-point"><b>Langsung Praktek</b>Nggak kebanyakan teori.</div>
-        <div class="mentor-point"><b>Fokus Manfaat</b>Bikin video sekaligus paham peluangnya.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
 <section>
 <div class="container">
-<h2>Video unik begini biar viral<br><span class="pink">dan menghasilkan cuan.</span></h2>
-<p class="lead">Di bawah ini contoh jenis video yang bisa kamu pelajari. Masing-masing point sudah disiapkan slot video YouTube supaya pengunjung bisa langsung lihat contoh hasilnya.</p>
-
-<div class="use-grid">
-  <div class="use">
-    <div class="use-head">
-      <div class="emo">💃</div>
-      <div class="use-copy">
-        <b>Dance AI</b>
-        <span>Bikin karakter mengikuti gerakan.</span>
-      </div>
-    </div>
-    <div class="use-video">
-      <iframe
-        src="https://www.youtube.com/embed/VIDEO_ID_1"
-        title="Contoh Video Dance AI"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <div class="use">
-    <div class="use-head">
-      <div class="emo">🧑‍🎤</div>
-      <div class="use-copy">
-        <b>Bareng Idola</b>
-        <span>Bikin adegan dengan karakter pilihan.</span>
-      </div>
-    </div>
-    <div class="use-video">
-      <iframe
-        src="https://www.youtube.com/embed/VIDEO_ID_2"
-        title="Contoh Video Bareng Idola"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <div class="use">
-    <div class="use-head">
-      <div class="emo">🪄</div>
-      <div class="use-copy">
-        <b>Ganti Karakter</b>
-        <span>Ganti orang tapi gerakannya tetap.</span>
-      </div>
-    </div>
-    <div class="use-video">
-      <iframe
-        src="https://www.youtube.com/embed/VIDEO_ID_3"
-        title="Contoh Video Ganti Karakter"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <div class="use">
-    <div class="use-head">
-      <div class="emo">👗</div>
-      <div class="use-copy">
-        <b>Ganti Outfit</b>
-        <span>Ubah baju dan penampilan.</span>
-      </div>
-    </div>
-    <div class="use-video">
-      <iframe
-        src="https://www.youtube.com/embed/VIDEO_ID_4"
-        title="Contoh Video Ganti Outfit"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <div class="use">
-    <div class="use-head">
-      <div class="emo">🌍</div>
-      <div class="use-copy">
-        <b>Pindah Dunia</b>
-        <span>Ubah lokasi dan suasana video.</span>
-      </div>
-    </div>
-    <div class="use-video">
-      <iframe
-        src="https://www.youtube.com/embed/VIDEO_ID_5"
-        title="Contoh Video Pindah Dunia"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <div class="use">
-    <div class="use-head">
-      <div class="emo">📦</div>
-      <div class="use-copy">
-        <b>Video Produk</b>
-        <span>Bikin bahan promosi yang lebih menarik dan lebih mudah dilirik.</span>
-      </div>
-    </div>
-    <div class="use-video">
-      <iframe
-        src="https://www.youtube.com/embed/VIDEO_ID_6"
-        title="Contoh Video Produk"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>
-    </div>
-  </div>
+<h2>Belajar Bikin Video AI<br/><span class="pink">bareng Mbak BADAILIA.</span></h2>
+<p class="lead">
+      Materi BADAI dibawakan dengan gaya yang sederhana, santai, dan langsung praktek supaya pemula nggak merasa ribet saat mulai belajar Video AI.
+    </p>
+<div class="mentor-card">
+<div class="mentor-photo">
+<img alt="Mbak Ulvalia — Mentor BADAI" loading="lazy" src="https://ulva.my.id/uploads/1789894418_37f930e88da2354f67d0.png"/>
 </div>
-
+<div class="mentor-role">MENTOR BADAI</div>
+<div class="mentor-name">Mbak Ulvalia</div>
+<p class="mentor-copy">
+        Di BADAI, Mbak Ulvalia membimbing member memahami cara membuat Video AI dari langkah paling dasar,
+        lalu mengarahkannya supaya bisa dipakai untuk konten, promosi, dan membuka peluang cuan.
+      </p>
+<div class="mentor-points">
+<div class="mentor-point"><b>Bahasa Sederhana</b>Mudah diikuti pemula.</div>
+<div class="mentor-point"><b>Langsung Praktek</b>Nggak kebanyakan teori.</div>
+<div class="mentor-point"><b>Fokus Manfaat</b>Bikin video sekaligus paham peluangnya.</div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="container">
+<h2>Video unik begini biar viral<br/><span class="pink">dan menghasilkan cuan.</span></h2>
+<p class="lead">Di bawah ini contoh jenis video yang bisa kamu pelajari. Masing-masing point sudah disiapkan slot video YouTube supaya pengunjung bisa langsung lihat contoh hasilnya.</p>
+<div class="use-grid">
+<div class="use">
+<div class="use-head">
+<div class="emo">💃</div>
+<div class="use-copy">
+<b>Dance AI</b>
+<span>Bikin karakter mengikuti gerakan.</span>
+</div>
+</div>
+<div class="use-video">
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_1" title="Contoh Video Dance AI"></iframe>
+</div>
+</div>
+<div class="use">
+<div class="use-head">
+<div class="emo">🧑‍🎤</div>
+<div class="use-copy">
+<b>Bareng Idola</b>
+<span>Bikin adegan dengan karakter pilihan.</span>
+</div>
+</div>
+<div class="use-video">
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_2" title="Contoh Video Bareng Idola"></iframe>
+</div>
+</div>
+<div class="use">
+<div class="use-head">
+<div class="emo">🪄</div>
+<div class="use-copy">
+<b>Ganti Karakter</b>
+<span>Ganti orang tapi gerakannya tetap.</span>
+</div>
+</div>
+<div class="use-video">
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_3" title="Contoh Video Ganti Karakter"></iframe>
+</div>
+</div>
+<div class="use">
+<div class="use-head">
+<div class="emo">👗</div>
+<div class="use-copy">
+<b>Ganti Outfit</b>
+<span>Ubah baju dan penampilan.</span>
+</div>
+</div>
+<div class="use-video">
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_4" title="Contoh Video Ganti Outfit"></iframe>
+</div>
+</div>
+<div class="use">
+<div class="use-head">
+<div class="emo">🌍</div>
+<div class="use-copy">
+<b>Pindah Dunia</b>
+<span>Ubah lokasi dan suasana video.</span>
+</div>
+</div>
+<div class="use-video">
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_5" title="Contoh Video Pindah Dunia"></iframe>
+</div>
+</div>
+<div class="use">
+<div class="use-head">
+<div class="emo">📦</div>
+<div class="use-copy">
+<b>Video Produk</b>
+<span>Bikin bahan promosi yang lebih menarik dan lebih mudah dilirik.</span>
+</div>
+</div>
+<div class="use-video">
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_6" title="Contoh Video Produk"></iframe>
+</div>
+</div>
+</div>
 <div class="youtube-note">
   Tinggal ganti <b>VIDEO_ID_1</b> sampai <b>VIDEO_ID_6</b> dengan ID YouTube contoh video masing-masing.
 </div>
 </div>
 </section>
-
-
-
-
 <section id="materi">
 <div class="container">
 <h2>7 BAB. <span class="pink">Nggak muter-muter.</span></h2>
 <p class="lead">Mulai dari cara bikin sampai cara memakai hasil Video AI untuk konten, promosi, dan peluang cuan.</p>
-
 <div class="chapter-slider" id="chapterSlider">
-  <div class="chapter-stage">
-    <article class="chapter-card">
-      <div class="chapter-thumb">
-        <img src="https://ulva.my.id/uploads/1789954612_7271c36f98ebff9584dc.png" alt="ULVA BAB 01" loading="lazy">
-      </div>
-      <small>BAB 01</small>
-      <h3>Mulai Bikin Video AI</h3>
-      <p>Kenalan dengan workflow dasar, bahan yang disiapkan, dan cara generate video pertamamu tanpa bingung.</p>
-    </article>
-
-    <article class="chapter-card">
-      <div class="chapter-thumb">
-        <img src="https://ulva.my.id/uploads/1789954641_e11544c2597314087665.png" alt="ULVA BAB 02" loading="lazy">
-      </div>
-      <small>BAB 02</small>
-      <h3>Dance & Gerakan AI</h3>
-      <p>Bikin karakter mengikuti motion dari video sumber, supaya hasilnya terasa hidup dan enak ditonton.</p>
-    </article>
-
-    <article class="chapter-card">
-      <div class="chapter-thumb">
-        <img src="https://ulva.my.id/uploads/1789954757_057dd1ecf21af99d6a98.png" alt="ULVA BAB 03" loading="lazy">
-      </div>
-      <small>BAB 03</small>
-      <h3>Ganti Orang & Karakter</h3>
-      <p>Ubah pemeran, ganti wajah atau karakter, tapi tetap jaga gerakannya supaya hasil videonya tetap rapi.</p>
-    </article>
-
-    <article class="chapter-card">
-      <div class="chapter-thumb">
-        <img src="https://ulva.my.id/uploads/1789954773_9b57cc4d85f93a1b210d.png" alt="ULVA BAB 04" loading="lazy">
-      </div>
-      <small>BAB 04</small>
-      <h3>Ganti Baju, Benda & Produk</h3>
-      <p>Belajar mengubah elemen tertentu di video untuk kebutuhan konten, branding, maupun promosi produk.</p>
-    </article>
-
-    <article class="chapter-card">
-      <div class="chapter-thumb">
-        <img src="https://ulva.my.id/uploads/1789954783_66f281266331d4d93636.png" alt="ULVA BAB 05" loading="lazy">
-      </div>
-      <small>BAB 05</small>
-      <h3>Pindah Dunia</h3>
-      <p>Ubah lokasi, latar, dan suasana video supaya ide kontenmu terasa lebih unik, seru, dan nggak monoton.</p>
-    </article>
-
-    <article class="chapter-card">
-      <div class="chapter-thumb">
-        <img src="https://ulva.my.id/uploads/1789954794_4b72ebfd516a64dc8a9d.png" alt="ULVA BAB 06" loading="lazy">
-      </div>
-      <small>BAB 06</small>
-      <h3>Konten Viral & Iklan</h3>
-      <p>Gunakan Video AI untuk bikin konten perhatian, bahan promosi, dan ide video yang lebih menjual.</p>
-    </article>
-
-    <article class="chapter-card">
-      <div class="chapter-thumb">
-        <img src="https://ulva.my.id/uploads/1789954805_6e3fe7230e3499aa0ecb.png" alt="ULVA BAB 07" loading="lazy">
-      </div>
-      <small>BAB 07</small>
-      <h3>Anti Gagal</h3>
-      <p>Pilih bahan yang tepat, hindari kesalahan umum, dan kurangi buang kredit biar hasilmu lebih efisien.</p>
-    </article>
-  </div>
-
-  <div class="chapter-tip">Kartu BAB berputar otomatis.</div>
+<div class="chapter-stage">
+<article class="chapter-card">
+<div class="chapter-thumb">
+<img alt="BADAI BAB 01" loading="lazy" src="https://ulva.my.id/uploads/1789954612_7271c36f98ebff9584dc.png"/>
+</div>
+<small>BAB 01</small>
+<h3>Mulai Bikin Video AI</h3>
+<p>Kenalan dengan workflow dasar, bahan yang disiapkan, dan cara generate video pertamamu tanpa bingung.</p>
+</article>
+<article class="chapter-card">
+<div class="chapter-thumb">
+<img alt="BADAI BAB 02" loading="lazy" src="https://ulva.my.id/uploads/1789954641_e11544c2597314087665.png"/>
+</div>
+<small>BAB 02</small>
+<h3>Dance &amp; Gerakan AI</h3>
+<p>Bikin karakter mengikuti motion dari video sumber, supaya hasilnya terasa hidup dan enak ditonton.</p>
+</article>
+<article class="chapter-card">
+<div class="chapter-thumb">
+<img alt="BADAI BAB 03" loading="lazy" src="https://ulva.my.id/uploads/1789954757_057dd1ecf21af99d6a98.png"/>
+</div>
+<small>BAB 03</small>
+<h3>Ganti Orang &amp; Karakter</h3>
+<p>Ubah pemeran, ganti wajah atau karakter, tapi tetap jaga gerakannya supaya hasil videonya tetap rapi.</p>
+</article>
+<article class="chapter-card">
+<div class="chapter-thumb">
+<img alt="BADAI BAB 04" loading="lazy" src="https://ulva.my.id/uploads/1789954773_9b57cc4d85f93a1b210d.png"/>
+</div>
+<small>BAB 04</small>
+<h3>Ganti Baju, Benda &amp; Produk</h3>
+<p>Belajar mengubah elemen tertentu di video untuk kebutuhan konten, branding, maupun promosi produk.</p>
+</article>
+<article class="chapter-card">
+<div class="chapter-thumb">
+<img alt="BADAI BAB 05" loading="lazy" src="https://ulva.my.id/uploads/1789954783_66f281266331d4d93636.png"/>
+</div>
+<small>BAB 05</small>
+<h3>Pindah Dunia</h3>
+<p>Ubah lokasi, latar, dan suasana video supaya ide kontenmu terasa lebih unik, seru, dan nggak monoton.</p>
+</article>
+<article class="chapter-card">
+<div class="chapter-thumb">
+<img alt="BADAI BAB 06" loading="lazy" src="https://ulva.my.id/uploads/1789954794_4b72ebfd516a64dc8a9d.png"/>
+</div>
+<small>BAB 06</small>
+<h3>Konten Viral &amp; Iklan</h3>
+<p>Gunakan Video AI untuk bikin konten perhatian, bahan promosi, dan ide video yang lebih menjual.</p>
+</article>
+<article class="chapter-card">
+<div class="chapter-thumb">
+<img alt="BADAI BAB 07" loading="lazy" src="https://ulva.my.id/uploads/1789954805_6e3fe7230e3499aa0ecb.png"/>
+</div>
+<small>BAB 07</small>
+<h3>Anti Gagal</h3>
+<p>Pilih bahan yang tepat, hindari kesalahan umum, dan kurangi buang kredit biar hasilmu lebih efisien.</p>
+</article>
+</div>
+<div class="chapter-tip">Kartu BAB berputar otomatis.</div>
 </div>
 </div>
 </section>
-
-
-
-
-
 <section>
 <div class="container">
 <h2>Materinya Cocok Dipelajari Oleh :</h2>
@@ -1955,22 +2013,19 @@ h2{font-weight:900}
 </div>
 </div>
 </section>
-
-
 <section class="testi-section">
-  <div class="container">
-    <div class="testi-head">
-      <h2>Testimoni WA member yang <span class="pink">sudah ikut ULVA.</span></h2>
-      <p>
+<div class="container">
+<div class="testi-head">
+<h2>Testimoni WA member yang <span class="pink">sudah ikut BADAI.</span></h2>
+<p>
         Di bawah ini aku siapkan area khusus untuk kumpulan screenshot testimoni WhatsApp. Nanti tinggal ganti
         placeholder ini dengan gambar testimoni asli. Gerakannya dibuat halus, loop terus, dan enak dilihat.
       </p>
-    </div>
-
-    <div class="testi-marquee">
-      <div class="testi-row right">
-        <div class="testi-track">
-          <div class="wa-shot"><div class="placeholder">TESTIMONI 01<small>Ganti dengan screenshot WA asli</small></div></div>
+</div>
+<div class="testi-marquee">
+<div class="testi-row right">
+<div class="testi-track">
+<div class="wa-shot"><div class="placeholder">TESTIMONI 01<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 02<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 03<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 04<small>Ganti dengan screenshot WA asli</small></div></div>
@@ -1980,7 +2035,7 @@ h2{font-weight:900}
 <div class="wa-shot"><div class="placeholder">TESTIMONI 08<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 09<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 10<small>Ganti dengan screenshot WA asli</small></div></div>
-          <div class="wa-shot"><div class="placeholder">TESTIMONI 01<small>Ganti dengan screenshot WA asli</small></div></div>
+<div class="wa-shot"><div class="placeholder">TESTIMONI 01<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 02<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 03<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 04<small>Ganti dengan screenshot WA asli</small></div></div>
@@ -1990,12 +2045,11 @@ h2{font-weight:900}
 <div class="wa-shot"><div class="placeholder">TESTIMONI 08<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 09<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 10<small>Ganti dengan screenshot WA asli</small></div></div>
-        </div>
-      </div>
-
-      <div class="testi-row left">
-        <div class="testi-track">
-          <div class="wa-shot"><div class="placeholder">TESTIMONI 11<small>Ganti dengan screenshot WA asli</small></div></div>
+</div>
+</div>
+<div class="testi-row left">
+<div class="testi-track">
+<div class="wa-shot"><div class="placeholder">TESTIMONI 11<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 12<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 13<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 14<small>Ganti dengan screenshot WA asli</small></div></div>
@@ -2005,7 +2059,7 @@ h2{font-weight:900}
 <div class="wa-shot"><div class="placeholder">TESTIMONI 18<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 19<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 20<small>Ganti dengan screenshot WA asli</small></div></div>
-          <div class="wa-shot"><div class="placeholder">TESTIMONI 11<small>Ganti dengan screenshot WA asli</small></div></div>
+<div class="wa-shot"><div class="placeholder">TESTIMONI 11<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 12<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 13<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 14<small>Ganti dengan screenshot WA asli</small></div></div>
@@ -2015,12 +2069,11 @@ h2{font-weight:900}
 <div class="wa-shot"><div class="placeholder">TESTIMONI 18<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 19<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 20<small>Ganti dengan screenshot WA asli</small></div></div>
-        </div>
-      </div>
-
-      <div class="testi-row right">
-        <div class="testi-track">
-          <div class="wa-shot"><div class="placeholder">TESTIMONI 21<small>Ganti dengan screenshot WA asli</small></div></div>
+</div>
+</div>
+<div class="testi-row right">
+<div class="testi-track">
+<div class="wa-shot"><div class="placeholder">TESTIMONI 21<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 22<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 23<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 24<small>Ganti dengan screenshot WA asli</small></div></div>
@@ -2030,7 +2083,7 @@ h2{font-weight:900}
 <div class="wa-shot"><div class="placeholder">TESTIMONI 28<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 29<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 30<small>Ganti dengan screenshot WA asli</small></div></div>
-          <div class="wa-shot"><div class="placeholder">TESTIMONI 21<small>Ganti dengan screenshot WA asli</small></div></div>
+<div class="wa-shot"><div class="placeholder">TESTIMONI 21<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 22<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 23<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 24<small>Ganti dengan screenshot WA asli</small></div></div>
@@ -2040,373 +2093,359 @@ h2{font-weight:900}
 <div class="wa-shot"><div class="placeholder">TESTIMONI 28<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 29<small>Ganti dengan screenshot WA asli</small></div></div>
 <div class="wa-shot"><div class="placeholder">TESTIMONI 30<small>Ganti dengan screenshot WA asli</small></div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="testi-note">
+</div>
+</div>
+</div>
+<div class="testi-note">
       Tiap baris disiapkan 10 slot testimoni. Tinggal ganti placeholder dengan gambar testimoni WhatsApp asli.
     </div>
-  </div>
+</div>
 </section>
-
-
-
 <section class="member-testimonials">
-  <div class="container">
-    <div class="member-testi-head">
-      <h2>Cerita mereka yang sudah <span class="pink">belajar & berkembang.</span></h2>
-      <p>
+<div class="container">
+<div class="member-testi-head">
+<h2>Cerita mereka yang sudah <span class="pink">belajar &amp; berkembang.</span></h2>
+<p>
         Kartu ini disiapkan untuk foto member, nama, profesi, dan testimoni asli.
         Nanti tinggal ganti placeholder satu per satu tanpa mengubah animasinya.
       </p>
-    </div>
-
-    <div class="member-testi-stage" id="memberTestiStage">
-      
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956361_9678e82f3e1c83f2511d.png" alt="Rina Puspitasari" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Rina Puspitasari</span>
-          <span class="member-testi-job">Pemilik usaha frozen food, Yogyakarta</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</div>
+<div class="member-testi-stage" id="memberTestiStage">
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Rina Puspitasari" loading="lazy" src="https://ulva.my.id/uploads/1789956361_9678e82f3e1c83f2511d.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Rina Puspitasari</span>
+<span class="member-testi-job">Pemilik usaha frozen food, Yogyakarta</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Awalnya saya pikir bikin video pakai AI itu rumit dan hanya untuk orang yang jago editing. Setelah belajar di Untung Lewat Video AI, ternyata saya jadi paham cara membuat video promosi dengan lebih cepat. Sekarang saya bisa bikin konten produk sendiri tanpa harus bingung mulai dari mana.
       </div>
-    </article>
-
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956418_86c22f8d30cc51e9debd.png" alt="Dimas Prakoso" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Dimas Prakoso</span>
-          <span class="member-testi-job">Freelancer desain konten, Bandung</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</article>
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Dimas Prakoso" loading="lazy" src="https://ulva.my.id/uploads/1789956418_86c22f8d30cc51e9debd.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Dimas Prakoso</span>
+<span class="member-testi-job">Freelancer desain konten, Bandung</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Saya sudah sering pakai AI untuk bantu kerja, tapi baru di kelas ini saya merasa paham cara memanfaatkan AI khusus untuk video. Penjelasannya praktis dan tidak muter-muter. Yang paling saya suka, materinya langsung bikin saya kepikiran peluang jasa baru untuk klien.
       </div>
-    </article>
-
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956465_7edc0ca2a4d173138089.png" alt="Siti Aminah" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Siti Aminah</span>
-          <span class="member-testi-job">Ibu rumah tangga sekaligus reseller, Solo</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</article>
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Siti Aminah" loading="lazy" src="https://ulva.my.id/uploads/1789956465_7edc0ca2a4d173138089.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Siti Aminah</span>
+<span class="member-testi-job">Ibu rumah tangga sekaligus reseller, Solo</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Saya bukan orang yang terbiasa dengan teknologi, jadi awalnya sempat takut tidak bisa mengikuti. Ternyata materinya enak diikuti dan dijelaskan bertahap. Sekarang saya jadi lebih percaya diri untuk membuat video promosi sendiri buat jualan saya.
       </div>
-    </article>
-
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956499_220aa70bc6028caad188.png" alt="Andri Kurniawan" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Andri Kurniawan</span>
-          <span class="member-testi-job">Pemilik toko online aksesoris, Bekasi</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</article>
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Andri Kurniawan" loading="lazy" src="https://ulva.my.id/uploads/1789956499_220aa70bc6028caad188.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Andri Kurniawan</span>
+<span class="member-testi-job">Pemilik toko online aksesoris, Bekasi</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Selama ini saya sering kesulitan bikin konten video karena tidak punya cukup bahan dan ide. Setelah ikut Untung Lewat Video AI, saya jadi tahu bagaimana mengubah ide sederhana menjadi video promosi yang menarik. Ini sangat membantu untuk jualan online.
       </div>
-    </article>
-
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956533_cc96f7aab421d87added.png" alt="Maya Lestari" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Maya Lestari</span>
-          <span class="member-testi-job">Agen properti, Surabaya</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</article>
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Maya Lestari" loading="lazy" src="https://ulva.my.id/uploads/1789956533_cc96f7aab421d87added.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Maya Lestari</span>
+<span class="member-testi-job">Agen properti, Surabaya</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Yang saya suka dari kelas ini bukan cuma soal tools AI-nya, tapi cara berpikirnya juga dibuka. Saya jadi lebih mudah membayangkan konsep video untuk promosi properti maupun personal branding. Sangat berguna untuk pekerjaan saya sehari-hari.
       </div>
-    </article>
-
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956571_8cc840add2309af2b57b.png" alt="Fajar Maulana" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Fajar Maulana</span>
-          <span class="member-testi-job">Karyawan swasta, Tangerang</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</article>
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Fajar Maulana" loading="lazy" src="https://ulva.my.id/uploads/1789956571_8cc840add2309af2b57b.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Fajar Maulana</span>
+<span class="member-testi-job">Karyawan swasta, Tangerang</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Saya ikut kelas ini karena penasaran apakah AI video benar-benar bisa dipakai orang biasa. Ternyata bisa, asal tahu alurnya. Setelah belajar di sini, saya jadi punya gambaran jelas bagaimana mulai membuat video AI dan bahkan kepikiran menjadikannya sebagai skill tambahan.
       </div>
-    </article>
-
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956605_ede903245d32cc91df2f.png" alt="Nadia Safitri" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Nadia Safitri</span>
-          <span class="member-testi-job">Content creator pemula, Malang</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</article>
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Nadia Safitri" loading="lazy" src="https://ulva.my.id/uploads/1789956605_ede903245d32cc91df2f.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Nadia Safitri</span>
+<span class="member-testi-job">Content creator pemula, Malang</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Saya sering punya ide, tapi bingung bagaimana mewujudkannya jadi video yang menarik. Di kelas ini saya belajar bahwa AI bisa sangat membantu dari tahap ide sampai visual. Sekarang saya merasa proses bikin konten jadi lebih ringan dan lebih seru.
       </div>
-    </article>
-
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956638_4ce233a97c6d7fde3c23.png" alt="Arif Nugroho" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Arif Nugroho</span>
-          <span class="member-testi-job">Pemilik usaha laundry, Semarang</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</article>
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Arif Nugroho" loading="lazy" src="https://ulva.my.id/uploads/1789956638_4ce233a97c6d7fde3c23.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Arif Nugroho</span>
+<span class="member-testi-job">Pemilik usaha laundry, Semarang</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Jujur saya awalnya merasa usaha laundry tidak terlalu butuh teknologi seperti ini. Tapi setelah ikut kelasnya, saya sadar video AI bisa dipakai untuk promosi dengan cara yang lebih menarik dan hemat waktu. Saya jadi punya sudut pandang baru untuk mengembangkan usaha.
       </div>
-    </article>
-
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956672_39cac71f845fce61236d.png" alt="Putri Amelia" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Putri Amelia</span>
-          <span class="member-testi-job">Reseller produk kecantikan, Jakarta</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</article>
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Putri Amelia" loading="lazy" src="https://ulva.my.id/uploads/1789956672_39cac71f845fce61236d.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Putri Amelia</span>
+<span class="member-testi-job">Reseller produk kecantikan, Jakarta</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Biasanya saya fokus di foto dan caption produk. Setelah belajar di Untung Lewat Video AI, saya jadi paham bagaimana video bisa dibuat lebih cepat dengan bantuan AI. Yang paling saya suka, saya juga jadi belajar cara membuat prompt yang hasilnya lebih sesuai keinginan.
       </div>
-    </article>
-
-    <article class="member-testi-card">
-      <div class="member-testi-photo">
-        <img src="https://ulva.my.id/uploads/1789956699_7226dceab4709ec16b6a.png" alt="Yusuf Hidayat" loading="lazy">
-        <div class="member-testi-overlay">
-          <span class="member-testi-name">Yusuf Hidayat</span>
-          <span class="member-testi-job">Digital marketer, Bogor</span>
-        </div>
-      </div>
-      <div class="member-testi-quote">
+</article>
+<article class="member-testi-card">
+<div class="member-testi-photo">
+<img alt="Yusuf Hidayat" loading="lazy" src="https://ulva.my.id/uploads/1789956699_7226dceab4709ec16b6a.png"/>
+<div class="member-testi-overlay">
+<span class="member-testi-name">Yusuf Hidayat</span>
+<span class="member-testi-job">Digital marketer, Bogor</span>
+</div>
+</div>
+<div class="member-testi-quote">
         Saya sudah cukup akrab dengan dunia digital, tapi AI video punya ritme dan cara kerja yang berbeda. Kelas ini membantu saya memahami alur kerjanya dengan lebih jelas. Jadi bukan cuma tahu tools-nya, tapi tahu bagaimana memanfaatkannya untuk kebutuhan konten dan pemasaran.
       </div>
-    </article>
-    </div>
-
-    <div class="member-testi-tip">Kartu berputar otomatis dengan efek melingkar 3D.</div>
-  </div>
+</article>
+</div>
+<div class="member-testi-tip">Kartu berputar otomatis dengan efek melingkar 3D.</div>
+</div>
 </section>
-
-
-
 <section>
-  <div class="container">
-    <div class="decision-wrap">
-      <div class="decision-head">
-        <h2>Sebelum Membeli,<br>Pastikan kelas ini<br><span class="pink">cocok untuk kamu.</span></h2>
-        <p>
-          ULVA dibuat untuk orang yang mau belajar bikin Video AI dengan cara yang lebih sederhana,
+<div class="container">
+<div class="decision-wrap">
+<div class="decision-head">
+<h2>Sebelum Membeli,<br/>Pastikan kelas ini<br/><span class="pink">cocok untuk kamu.</span></h2>
+<p>
+          BADAI dibuat untuk orang yang mau belajar bikin Video AI dengan cara yang lebih sederhana,
           lalu memanfaatkannya untuk konten, promosi, dan peluang cuan. Jadi, biar lebih pas, cek dulu
           kamu masuk yang sebelah mana.
         </p>
-      </div>
-
-      <div class="decision-grid">
-        <div class="decision-card good">
-          <div class="decision-title">
-            <span class="decision-badge">✓</span>
-            <span>Beli Jika</span>
-          </div>
-
-          <div class="decision-list">
-            <div class="decision-item">
-              <span class="decision-icon">✓</span>
-              <div class="decision-text">Mau belajar bikin Video AI dari nol tanpa harus paham istilah teknis yang ribet.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">✓</span>
-              <div class="decision-text">Mau punya skill baru yang bisa dipakai untuk konten, promosi, atau bahan jualan.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">✓</span>
-              <div class="decision-text">Mau bikin video yang lebih menarik, unik, dan punya potensi lebih gampang dilirik.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">✓</span>
-              <div class="decision-text">Suka materi yang langsung praktek dan tidak muter-muter.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">✓</span>
-              <div class="decision-text">Mau memanfaatkan Video AI untuk membuka peluang cuan tambahan.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">✓</span>
-              <div class="decision-text">Pengen mulai dari kelas yang harganya masih ramah untuk pemula.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="decision-card bad">
-          <div class="decision-title">
-            <span class="decision-badge">×</span>
-            <span>Jangan Beli Jika</span>
-          </div>
-
-          <div class="decision-list">
-            <div class="decision-item">
-              <span class="decision-icon">×</span>
-              <div class="decision-text">Maunya langsung jago tanpa mau nonton tutorial dan tanpa mau praktek.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">×</span>
-              <div class="decision-text">Mencari jaminan kaya mendadak hanya dengan sekali beli kelas.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">×</span>
-              <div class="decision-text">Tidak tertarik bikin konten, promosi, atau mencoba skill baru sama sekali.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">×</span>
-              <div class="decision-text">Tidak mau menyentuh tools AI, tidak mau eksplor, dan ingin semua serba instan.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">×</span>
-              <div class="decision-text">Mudah bosan dengan proses belajar step by step.</div>
-            </div>
-            <div class="decision-item">
-              <span class="decision-icon">×</span>
-              <div class="decision-text">Mau hasil besar, tapi tidak mau meluangkan waktu sedikit pun untuk mencoba.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="decision-note">Kalau kamu merasa lebih banyak cocok dengan kolom kiri, berarti ULVA memang dibuat untuk kamu.</div>
-    </div>
-  </div>
+</div>
+<div class="decision-grid">
+<div class="decision-card good">
+<div class="decision-title">
+<span class="decision-badge">✓</span>
+<span>Beli Jika</span>
+</div>
+<div class="decision-list">
+<div class="decision-item">
+<span class="decision-icon">✓</span>
+<div class="decision-text">Mau belajar bikin Video AI dari nol tanpa harus paham istilah teknis yang ribet.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">✓</span>
+<div class="decision-text">Mau punya skill baru yang bisa dipakai untuk konten, promosi, atau bahan jualan.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">✓</span>
+<div class="decision-text">Mau bikin video yang lebih menarik, unik, dan punya potensi lebih gampang dilirik.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">✓</span>
+<div class="decision-text">Suka materi yang langsung praktek dan tidak muter-muter.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">✓</span>
+<div class="decision-text">Mau memanfaatkan Video AI untuk membuka peluang cuan tambahan.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">✓</span>
+<div class="decision-text">Pengen mulai dari kelas yang harganya masih ramah untuk pemula.</div>
+</div>
+</div>
+</div>
+<div class="decision-card bad">
+<div class="decision-title">
+<span class="decision-badge">×</span>
+<span>Jangan Beli Jika</span>
+</div>
+<div class="decision-list">
+<div class="decision-item">
+<span class="decision-icon">×</span>
+<div class="decision-text">Maunya langsung jago tanpa mau nonton tutorial dan tanpa mau praktek.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">×</span>
+<div class="decision-text">Mencari jaminan kaya mendadak hanya dengan sekali beli kelas.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">×</span>
+<div class="decision-text">Tidak tertarik bikin konten, promosi, atau mencoba skill baru sama sekali.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">×</span>
+<div class="decision-text">Tidak mau menyentuh tools AI, tidak mau eksplor, dan ingin semua serba instan.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">×</span>
+<div class="decision-text">Mudah bosan dengan proses belajar step by step.</div>
+</div>
+<div class="decision-item">
+<span class="decision-icon">×</span>
+<div class="decision-text">Mau hasil besar, tapi tidak mau meluangkan waktu sedikit pun untuk mencoba.</div>
+</div>
+</div>
+</div>
+</div>
+<div class="decision-note">Kalau kamu merasa lebih banyak cocok dengan kolom kiri, berarti BADAI memang dibuat untuk kamu.</div>
+</div>
+</div>
 </section>
-
 <section>
 <div class="container">
 <h2>Yang Kamu Dapatkan :</h2>
-
-
 <div class="pricing-lux">
-  <div class="pricing-topline">
-    <div class="pricing-pill">AKSES RESMI ULVA</div>
-
-
-  <div class="pricing-divider"></div>
-
-  <div class="value-stack">
-    <div class="value-row">
-      <div class="value-left">
-        <span class="value-check">✓</span>
-        <div>
-          <span class="value-title">7 BAB Video AI Praktis</span>
-          <span class="value-desc">Materi inti dari dasar sampai penerapan untuk konten dan peluang cuan.</span>
-        </div>
-      </div>
-      <div class="value-price">Rp297.000</div>
-    </div>
-
-    <div class="value-row">
-      <div class="value-left">
-        <span class="value-check">✓</span>
-        <div>
-          <span class="value-title">Video Tutorial + Langkah Sederhana</span>
-          <span class="value-desc">Belajar dengan penjelasan yang ringkas, runtut, dan enak diikuti pemula.</span>
-        </div>
-      </div>
-      <div class="value-price">Rp147.000</div>
-    </div>
-
-    <div class="value-row">
-      <div class="value-left">
-        <span class="value-check">✓</span>
-        <div>
-          <span class="value-title">Contoh Ide Video Viral</span>
-          <span class="value-desc">Referensi jenis video yang bisa kamu tiru, modifikasi, lalu pakai untuk konten.</span>
-        </div>
-      </div>
-      <div class="value-price">Rp123.000</div>
-    </div>
-
-    <div class="value-row">
-      <div class="value-left">
-        <span class="value-check">✓</span>
-        <div>
-          <span class="value-title">Update Materi / Penambahan Materi</span>
-          <span class="value-desc">Akses materi yang bisa terus ditambah agar pembelajaran tetap relevan.</span>
-        </div>
-      </div>
-      <div class="value-price">Rp95.000</div>
-    </div>
-
-    <div class="value-row">
-      <div class="value-left">
-        <span class="value-check">✓</span>
-        <div>
-          <span class="value-title">Akses Bonus di Member Area</span>
-          <span class="value-desc">Fasilitas tambahan yang membantu member lebih mudah memanfaatkan materi.</span>
-        </div>
-      </div>
-      <div class="value-price">Rp100.000</div>
-    </div>
-
-    <div class="value-row">
-      <div class="value-left">
-        <span class="value-check">✓</span>
-        <div>
-          <span class="value-title">Program Affiliate ULVA 50%</span>
-          <span class="value-desc">Kesempatan mendapatkan komisi dari penjualan valid sesuai sistem yang berlaku.</span>
-        </div>
-      </div>
-      <div class="value-price">Rp200.000</div>
-    </div>
+<div class="pricing-topline">
+<div class="pricing-pill">AKSES RESMI BADAI</div>
+<div class="pricing-divider"></div>
+<div class="value-stack">
+<div class="value-row">
+<div class="value-left">
+<span class="value-check">✓</span>
+<div>
+<span class="value-title">7 BAB Video AI Praktis</span>
+<span class="value-desc">Materi inti dari dasar sampai penerapan untuk konten dan peluang cuan.</span>
 </div>
-
-  
+</div>
+<div class="value-price">Rp297.000</div>
+</div>
+<div class="value-row">
+<div class="value-left">
+<span class="value-check">✓</span>
+<div>
+<span class="value-title">Video Tutorial + Langkah Sederhana</span>
+<span class="value-desc">Belajar dengan penjelasan yang ringkas, runtut, dan enak diikuti pemula.</span>
+</div>
+</div>
+<div class="value-price">Rp147.000</div>
+</div>
+<div class="value-row">
+<div class="value-left">
+<span class="value-check">✓</span>
+<div>
+<span class="value-title">Contoh Ide Video Viral</span>
+<span class="value-desc">Referensi jenis video yang bisa kamu tiru, modifikasi, lalu pakai untuk konten.</span>
+</div>
+</div>
+<div class="value-price">Rp123.000</div>
+</div>
+<div class="value-row">
+<div class="value-left">
+<span class="value-check">✓</span>
+<div>
+<span class="value-title">Update Materi / Penambahan Materi</span>
+<span class="value-desc">Akses materi yang bisa terus ditambah agar pembelajaran tetap relevan.</span>
+</div>
+</div>
+<div class="value-price">Rp95.000</div>
+</div>
+<div class="value-row">
+<div class="value-left">
+<span class="value-check">✓</span>
+<div>
+<span class="value-title">Akses Bonus di Member Area</span>
+<span class="value-desc">Fasilitas tambahan yang membantu member lebih mudah memanfaatkan materi.</span>
+</div>
+</div>
+<div class="value-price">Rp100.000</div>
+</div>
+<div class="value-row">
+<div class="value-left">
+<span class="value-check">✓</span>
+<div>
+<span class="value-title">Program Affiliate BADAI 50%</span>
+<span class="value-desc">Kesempatan mendapatkan komisi dari penjualan valid sesuai sistem yang berlaku.</span>
+</div>
+</div>
+<div class="value-price">Rp200.000</div>
+</div>
+</div>
 <div class="price-panel bottom-centered">
-  <div class="price-label">Total nilai fasilitas</div>
-  <div class="price-total">Rp962.000</div>
-
-  <div class="price-now">
-    <div class="price-now-label">Harga berlaku sekarang</div>
-    <div class="price-now-value">Rp123.000</div>
+<div class="price-label">Total nilai fasilitas</div>
+<div class="price-total">Rp962.000</div>
+<div class="price-now">
+<div class="price-now-label">Harga berlaku sekarang</div>
+<div class="price-now-value">Rp123.000</div>
+</div>
+<div class="price-note">Selisih nilainya jauh, tapi aksesnya tetap dibuka dengan harga yang ramah buat pemula.</div>
+</div>
+<div class="pricing-register">
+  <div class="register-head">
+    <h3>Daftar BADAI Sekarang</h3>
+    <p>Isi data di bawah ini. Setelah klik tombol daftar, data kamu akan langsung dikirim ke WhatsApp admin.</p>
   </div>
 
-  <div class="price-note">Selisih nilainya jauh, tapi aksesnya tetap dibuka dengan harga yang ramah buat pemula.</div>
-</div>
-<div class="pricing-cta">
-    <a class="cta" href="https://ulva.my.id/checkout/ulva">YA, SAYA MAU GABUNG ULVA →</a>
-  </div>
-</div>
-</div>
-</section>
+  <form id="badaiRegisterForm" class="register-form">
+    <div class="form-group">
+      <label for="regNama">Nama</label>
+      <input id="regNama" name="nama" type="text" placeholder="Tulis nama lengkap" autocomplete="name" required>
+    </div>
 
+    <div class="form-group">
+      <label for="regEmail">Email</label>
+      <input id="regEmail" name="email" type="email" placeholder="contoh@email.com" autocomplete="email" required>
+    </div>
 
+    <div class="form-group">
+      <label for="regWa">WA</label>
+      <input id="regWa" name="wa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
+    </div>
 
+    <div class="payment-box">
+      <span class="payment-label">Rekening Bayar ke :</span>
+      <div class="bank-name">BCA</div>
+      <div class="bank-number">1480945529</div>
+      <div class="bank-owner">an PURKON N</div>
+    </div>
+
+    <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
+    <div class="register-note">Setelah diklik, WhatsApp akan terbuka dengan data pendaftaran kamu secara otomatis.</div>
+  </form>
+</div>
+</div>
+</div>
+</div></section>
 <section>
 <div class="container">
 <h2>Masih kepikiran ini?</h2>
 <div class="faq">
-<details><summary>ULVA cocok untuk pemula?</summary><p>Iya. ULVA memang dibuat untuk orang yang pengen mulai bikin Video AI tanpa harus paham hal teknis dulu.</p></details>
+<details><summary>BADAI cocok untuk pemula?</summary><p>Iya. BADAI memang dibuat untuk orang yang pengen mulai bikin Video AI tanpa harus paham hal teknis dulu.</p></details>
 <details><summary>Harus punya laptop?</summary><p>Tergantung tool Video AI yang sedang digunakan. Sebagian proses dapat dilakukan lewat browser di HP, tetapi pengalaman penggunaan bisa berbeda tergantung perangkat dan tool.</p></details>
-<details><summary>Apakah biaya tool AI sudah termasuk Rp123.000?</summary><p>Tidak. Rp123.000 adalah harga akses ULVA. Jika tool pihak ketiga menggunakan kredit atau paket berbayar, biaya tersebut mengikuti kebijakan tool masing-masing.</p></details>
+<details><summary>Apakah biaya tool AI sudah termasuk Rp123.000?</summary><p>Tidak. Rp123.000 adalah harga akses BADAI. Jika tool pihak ketiga menggunakan kredit atau paket berbayar, biaya tersebut mengikuti kebijakan tool masing-masing.</p></details>
 <details><summary>Materinya berupa apa?</summary><p>Materi utama disajikan melalui Member Area berupa video tutorial, judul materi, dan langkah praktek.</p></details>
-<details><summary>ULVA benar-benar bisa menghasilkan cuan?</summary><p>ULVA membuka beberapa peluang: skill Video AI bisa dipakai untuk konten, promosi, atau jasa, dan member juga bisa ikut affiliate ULVA dengan komisi 50% per transaksi valid. Namun hasil tetap bergantung pada cara masing-masing orang memanfaatkan dan mempromosikannya.</p></details>
+<details><summary>BADAI benar-benar bisa menghasilkan cuan?</summary><p>BADAI membuka beberapa peluang: skill Video AI bisa dipakai untuk konten, promosi, atau jasa, dan member juga bisa ikut affiliate BADAI dengan komisi 50% per transaksi valid. Namun hasil tetap bergantung pada cara masing-masing orang memanfaatkan dan mempromosikannya.</p></details>
 <details><summary>Kalau belum pernah pakai AI sama sekali?</summary><p>Nggak masalah. Mulai saja dari BAB pertama dan ikuti langkahnya satu per satu.</p></details>
 </div>
 </div>
 </section>
 </main>
-<footer><div class="container">ULVA — Untung Lewat Video AI<br>Materi edukasi. Hasil setiap pengguna dapat berbeda.</div></footer>
-<a href="https://ulva.my.id/checkout/ulva">GABUNG SEKARANG</a></div>
-
-
+<footer><div class="container">BADAI — Untung Lewat Video AI<br/>Materi edukasi. Hasil setiap pengguna dapat berbeda.</div></footer>
+<a href="https://ulva.my.id/checkout/ulva">GABUNG SEKARANG</a>
 <script>
 (function(){
   const slider = document.getElementById('chapterSlider');
@@ -2456,9 +2495,6 @@ h2{font-weight:900}
   start();
 })();
 </script>
-
-
-
 <script>
 (function(){
   const stage = document.getElementById('memberTestiStage');
@@ -2521,6 +2557,47 @@ h2{font-weight:900}
 
   render();
   start();
+})();
+</script>
+
+<script>
+(function(){
+  const form = document.getElementById('badaiRegisterForm');
+  if(!form) return;
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const nama = document.getElementById('regNama').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const wa = document.getElementById('regWa').value.trim();
+
+    if(!nama || !email || !wa){
+      form.reportValidity();
+      return;
+    }
+
+    const message =
+`Halo Admin BADAI 👋
+
+Saya mau daftar BADAI - Untung Lewat Video AI.
+
+DATA PENDAFTARAN
+Nama: ${nama}
+Email: ${email}
+WA: ${wa}
+
+Harga: Rp123.000
+
+Rekening pembayaran:
+BCA 1480945529
+an PURKON N
+
+Mohon dibantu proses pendaftarannya ya.`;
+
+    const whatsappUrl = 'https://wa.me/628213752362?text=' + encodeURIComponent(message);
+    window.open(whatsappUrl, '_blank', 'noopener');
+  });
 })();
 </script>
 
