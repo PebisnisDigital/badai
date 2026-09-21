@@ -2106,54 +2106,35 @@ body.register-modal-open{
   font-size:10px;
 }
 .payment-method-options{
-  display:grid;
-  gap:4px;
-}
-.payment-option{
-  display:grid;
-  grid-template-columns:auto 1fr;
-  align-items:center;
-  gap:8px;
-  min-height:40px;
-  padding:6px 9px;
-  border:1px solid #242424;
-  border-radius:9px;
-  background:#0f0f0f;
-  cursor:pointer;
-  transition:border-color .15s ease,background .15s ease;
-}
-.payment-option.selected{
-  border-color:#773253;
-  background:#160d12;
-}
-.payment-option input{
-  width:14px;
-  height:14px;
-  margin:0;
-  accent-color:#ff4fa3;
-}
-.payment-option-copy{
-  min-width:0;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-}
-.payment-option-copy b{
   display:block;
+}
+.payment-method-select{
+  width:100%;
+  min-height:42px;
+  box-sizing:border-box;
+  padding:0 38px 0 12px;
+  border:1px solid #343434;
+  border-radius:10px;
+  background:#0d0d0d;
   color:#fff;
-  font-family:"Raleway",Arial,sans-serif;
-  font-size:8px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:11px;
+  font-weight:700;
+  outline:none;
+  cursor:pointer;
 }
-.payment-option-copy small{
-  display:block;
-  color:#686868;
-  font-size:6px;
-  font-weight:800;
-  white-space:nowrap;
+.payment-method-select:focus{
+  border-color:#ff4fa3;
+  box-shadow:0 0 0 3px rgba(255,79,163,.10);
+}
+.payment-method-select option{
+  background:#fff;
+  color:#111;
+}
+.payment-method-select optgroup{
+  background:#fff;
+  color:#111;
+  font-weight:900;
 }
 .selected-payment-detail:empty{display:none}
 .payment-compact-detail{
@@ -3117,6 +3098,15 @@ Mohon dibantu proses pendaftarannya ya.`
     ` : '';
   }
 
+  function paymentOptionLabel(item){
+    if(item.method_type === 'manual_transfer'){
+      const account = item.account_number ? ' — ' + item.account_number : '';
+      const holder = item.account_holder ? ' (' + item.account_holder + ')' : '';
+      return (item.display_name || item.bank_name || 'Transfer Bank') + account + holder;
+    }
+    return item.display_name || paymentTypeName(item.method_type);
+  }
+
   function renderPaymentMethods(){
     const box = document.getElementById('paymentMethodOptions');
     if(!box) return;
@@ -3131,28 +3121,52 @@ Mohon dibantu proses pendaftarannya ya.`
     }
 
     if(!paymentMethods.some(item => item.id === selectedPaymentMethodId)){
-      selectedPaymentMethodId = paymentMethods[0].id;
+      selectedPaymentMethodId = '';
     }
 
-    box.innerHTML = paymentMethods.map(item => `
-      <label class="payment-option ${item.id === selectedPaymentMethodId ? 'selected' : ''}">
-        <input type="radio" name="paymentMethod" value="${escapePaymentHtml(item.id)}" ${item.id === selectedPaymentMethodId ? 'checked' : ''}>
-        <span class="payment-option-copy">
-          <b>${escapePaymentHtml(item.display_name)}</b>
-          <small>${paymentTypeName(item.method_type)}</small>
-        </span>
-      </label>
-    `).join('');
+    const groups = [
+      {type:'manual_transfer', label:'Bank Transfer'},
+      {type:'qris', label:'QRIS'},
+      {type:'payment_gateway', label:'Payment Gateway'}
+    ];
 
-    box.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
-      input.addEventListener('change', () => {
-        selectedPaymentMethodId = input.value;
-        renderPaymentMethods();
+    const optionGroups = groups.map(group => {
+      const items = paymentMethods.filter(item => item.method_type === group.type);
+      if(!items.length) return '';
+
+      return `
+        <optgroup label="${escapePaymentHtml(group.label)}">
+          ${items.map(item => `
+            <option value="${escapePaymentHtml(item.id)}" ${item.id === selectedPaymentMethodId ? 'selected' : ''}>
+              ${escapePaymentHtml(paymentOptionLabel(item))}
+            </option>
+          `).join('')}
+        </optgroup>
+      `;
+    }).join('');
+
+    box.innerHTML = `
+      <select id="paymentMethodSelect" class="payment-method-select" aria-label="Pilih metode pembayaran">
+        <option value="">-- Pilih Metode Pembayaran --</option>
+        ${optionGroups}
+      </select>
+    `;
+
+    const select = document.getElementById('paymentMethodSelect');
+    if(select){
+      select.value = selectedPaymentMethodId || '';
+      select.addEventListener('change', () => {
+        selectedPaymentMethodId = select.value || '';
+        renderSelectedPaymentDetail();
+
+        const submit = document.querySelector('.register-submit');
+        if(submit) submit.disabled = !selectedPaymentMethodId;
       });
-    });
+    }
 
     const submit = document.querySelector('.register-submit');
-    if(submit) submit.disabled = false;
+    if(submit) submit.disabled = !selectedPaymentMethodId;
+
     renderSelectedPaymentDetail();
   }
 
