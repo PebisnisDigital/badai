@@ -47,6 +47,7 @@
   let session = null;
   let currentUser = null;
   let currentProfile = null;
+  let membershipRefreshBusy = false;
 
   function saveSession(data){
     session = data;
@@ -243,6 +244,17 @@
     if(plan !== 'pro'){
       if(affiliateNav) affiliateNav.style.display = 'none';
       if(footer) footer.style.setProperty('--member-nav-count','4');
+
+      const affiliateScreen = document.getElementById('afiliasi');
+      if(affiliateScreen?.classList.contains('active')){
+        const accountBtn = document.querySelector('[data-screen="akun"]');
+        if(accountBtn) accountBtn.click();
+      }
+
+      const linkEl = document.getElementById('affiliateLink');
+      const codeEl = document.getElementById('affiliateCode');
+      if(linkEl) linkEl.textContent = 'Khusus Paket PRO.';
+      if(codeEl) codeEl.textContent = '-';
       return;
     }
 
@@ -334,6 +346,39 @@
     });
   }
 
+  async function refreshMemberProfile(){
+    if(membershipRefreshBusy || !session?.access_token || !currentUser?.id) return;
+
+    membershipRefreshBusy = true;
+
+    try{
+      const rows = await api(
+        '/rest/v1/profiles?id=eq.' + encodeURIComponent(currentUser.id) +
+        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan'
+      );
+
+      const freshProfile = rows?.[0];
+
+      if(!freshProfile){
+        return;
+      }
+
+      if(freshProfile.member_status !== 'active'){
+        clearSession();
+        location.reload();
+        return;
+      }
+
+      currentProfile = freshProfile;
+      populateAccount(freshProfile, currentUser);
+      await configureMembership(freshProfile);
+    }catch(err){
+      console.warn('Gagal refresh paket member:', err?.message || err);
+    }finally{
+      membershipRefreshBusy = false;
+    }
+  }
+
   async function verifyAccess(){
     const status = document.getElementById('badaiMemberStatus');
 
@@ -362,7 +407,7 @@
 
       currentUser = user;
       currentProfile = profile;
-      unlock(profile, user);
+      await unlock(profile, user);
     }catch(err){
       clearSession();
 
@@ -373,7 +418,7 @@
     }
   }
 
-  function unlock(profile, user){
+  async function unlock(profile, user){
     document.documentElement.classList.remove('badai-auth-lock');
 
     const gate = document.getElementById('badaiAuthGate');
@@ -396,7 +441,7 @@
     }
 
     populateAccount(profile, user);
-    configureMembership(profile);
+    await configureMembership(profile);
     setAccountStatus('', '');
     console.log('BADAI member active:', profile?.email || '');
   }
@@ -414,6 +459,16 @@
       }
     }catch(_){
       clearSession();
+    }
+  });
+
+  window.addEventListener('focus', () => {
+    refreshMemberProfile();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+      refreshMemberProfile();
     }
   });
 })();
