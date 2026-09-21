@@ -278,7 +278,7 @@
       }
 
       const affiliateLink =
-        location.origin.replace(/\/$/,'') + '/?ref=' + encodeURIComponent(affiliate.affiliate_code);
+        location.origin.replace(/\/$/,'') + '/' + encodeURIComponent(affiliate.affiliate_code);
 
       window.BADAI_AFFILIATE_LINK = affiliateLink;
       if(linkEl) linkEl.textContent = affiliateLink;
@@ -288,6 +288,152 @@
       if(linkEl) linkEl.textContent = 'Gagal memuat link afiliasi.';
     }
   }
+
+  function setAffiliateEditStatus(message, type){
+    const el = document.getElementById('affiliateEditStatus');
+    if(!el) return;
+    el.textContent = message || '';
+    el.className = 'affiliate-edit-status' + (type ? ' ' + type : '');
+  }
+
+  window.openAffiliateEditor = function(){
+    if(currentProfile?.membership_plan !== 'pro'){
+      alert('Fitur ini khusus member Paket PRO.');
+      return;
+    }
+
+    const currentCode =
+      String(document.getElementById('affiliateCode')?.textContent || '').trim();
+
+    const input = document.getElementById('affiliateCodeInput');
+    if(input){
+      input.value = currentCode && currentCode !== '-' ? currentCode : '';
+    }
+
+    updateAffiliatePreview();
+    setAffiliateEditStatus('', '');
+
+    const modal = document.getElementById('affiliateEditModal');
+    if(modal){
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+    }
+
+    setTimeout(() => input?.focus(), 50);
+  };
+
+  window.closeAffiliateEditor = function(){
+    const modal = document.getElementById('affiliateEditModal');
+    if(modal){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    }
+  };
+
+  function normalizeAffiliateCode(value){
+    return String(value || '')
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9_-]/g,'')
+      .slice(0,24);
+  }
+
+  function updateAffiliatePreview(){
+    const input = document.getElementById('affiliateCodeInput');
+    const preview = document.getElementById('affiliatePreview');
+    if(!input || !preview) return;
+
+    const code = normalizeAffiliateCode(input.value) || 'AMBYAR';
+    if(input.value !== code && input.value){
+      input.value = code;
+    }
+
+    preview.textContent =
+      location.origin.replace(/\/$/,'') + '/' + code;
+  }
+
+  window.saveAffiliateCode = async function(){
+    if(!session?.access_token || !currentProfile?.id){
+      setAffiliateEditStatus('Session habis. Silakan login ulang.', 'error');
+      return;
+    }
+
+    if(currentProfile.membership_plan !== 'pro'){
+      setAffiliateEditStatus('Fitur ini khusus member Paket PRO.', 'error');
+      return;
+    }
+
+    const input = document.getElementById('affiliateCodeInput');
+    const button = document.getElementById('saveAffiliateCodeBtn');
+    const code = normalizeAffiliateCode(input?.value);
+
+    if(!/^[A-Z0-9][A-Z0-9_-]{2,23}$/.test(code)){
+      setAffiliateEditStatus('Kode harus 3–24 karakter dan hanya huruf, angka, - atau _.', 'error');
+      return;
+    }
+
+    if(['ADMIN','AKSES','API','LOGIN','LOGOUT'].includes(code)){
+      setAffiliateEditStatus('Kode ini dipakai sistem. Pilih kode lain.', 'error');
+      return;
+    }
+
+    const oldText = button?.textContent || 'SIMPAN';
+    if(button){
+      button.disabled = true;
+      button.textContent = 'MENYIMPAN...';
+    }
+    setAffiliateEditStatus('Menyimpan kode...', '');
+
+    try{
+      await api(
+        '/rest/v1/affiliate_accounts?user_id=eq.' + encodeURIComponent(currentProfile.id),
+        {
+          method:'PATCH',
+          headers:{'Prefer':'return=representation'},
+          body:JSON.stringify({affiliate_code:code})
+        }
+      );
+
+      const link = location.origin.replace(/\/$/,'') + '/' + code;
+      window.BADAI_AFFILIATE_LINK = link;
+
+      const linkEl = document.getElementById('affiliateLink');
+      const codeEl = document.getElementById('affiliateCode');
+      if(linkEl) linkEl.textContent = link;
+      if(codeEl) codeEl.textContent = code;
+
+      setAffiliateEditStatus('Berhasil. Link afiliasi sudah diperbarui.', 'ok');
+
+      setTimeout(() => {
+        window.closeAffiliateEditor();
+      }, 700);
+    }catch(err){
+      const msg = String(err?.message || 'Gagal mengubah kode.');
+      if(/duplicate|unique|affiliate_code_key/i.test(msg)){
+        setAffiliateEditStatus('Kode tersebut sudah dipakai member lain.', 'error');
+      }else{
+        setAffiliateEditStatus(msg, 'error');
+      }
+    }finally{
+      if(button){
+        button.disabled = false;
+        button.textContent = oldText;
+      }
+    }
+  };
+
+  document.addEventListener('input', (e) => {
+    if(e.target?.id === 'affiliateCodeInput'){
+      updateAffiliatePreview();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const modal = document.getElementById('affiliateEditModal');
+    if(modal && e.target === modal){
+      window.closeAffiliateEditor();
+    }
+  });
 
   function buildGate(){
     if(document.getElementById('badaiAuthGate')) return;
