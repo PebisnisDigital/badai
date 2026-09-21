@@ -2247,6 +2247,35 @@ body.register-modal-open{
   }
 }
 
+
+/* ALIGN PAYMENT FIELD WITH NAME / EMAIL / WA */
+.registration-modal-card .payment-choice-section{
+  display:grid !important;
+  gap:7px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+}
+.registration-modal-card .payment-choice-head{
+  margin:0 !important;
+  padding:0 !important;
+}
+.registration-modal-card .payment-choice-head b{
+  display:block !important;
+  color:#ffffff !important;
+  font-family:"Raleway",Arial,sans-serif !important;
+  font-size:14px !important;
+  line-height:1.2 !important;
+  font-weight:900 !important;
+  margin:0 !important;
+}
+@media(max-width:520px){
+  .registration-modal-card .payment-choice-head b{
+    font-size:13px !important;
+  }
+}
+
 </style>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="icon" type="image/png"/>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="shortcut icon"/>
@@ -3125,13 +3154,7 @@ Mohon dibantu proses pendaftarannya ya.`
     }
 
     if(item.method_type === 'manual_transfer'){
-      box.innerHTML = `
-        <div class="payment-compact-detail">
-          <span>${escapePaymentHtml(item.bank_name || '')}</span>
-          <b>${escapePaymentHtml(item.account_number || '')}</b>
-          <small>an ${escapePaymentHtml(item.account_holder || '')}</small>
-        </div>
-      `;
+      box.innerHTML = '';
       return;
     }
 
