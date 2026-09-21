@@ -543,7 +543,7 @@ main.shell{
 }
 
 .stats{
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(5,minmax(0,1fr));
   gap:5px;
   margin-bottom:8px;
 }
@@ -1313,6 +1313,79 @@ main.shell{
   .marketing-category-tab b{font-size:6.3px}
 }
 
+
+.payment-admin-form{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.payment-method-fields{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.payment-add-btn{
+  grid-column:1/-1;
+  min-height:39px;
+  border:0;
+  border-radius:10px;
+  background:#ff4fa3;
+  color:#111;
+  font-size:8px;
+  font-weight:950;
+  cursor:pointer;
+}
+.payment-method-list{
+  display:grid;
+  gap:6px;
+}
+.payment-method-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  align-items:center;
+  padding:9px;
+  border:1px solid #232323;
+  border-radius:11px;
+  background:#090909;
+}
+.payment-method-main{min-width:0}
+.payment-type-pill{
+  display:inline-flex;
+  padding:3px 6px;
+  margin-bottom:4px;
+  border-radius:999px;
+  background:#211018;
+  color:#ff91c5;
+  font-size:6px;
+  font-weight:950;
+}
+.payment-method-main b{
+  display:block;
+  color:#fff;
+  font-size:9px;
+}
+.payment-method-main small{
+  display:block;
+  margin-top:2px;
+  color:#777;
+  font-size:7px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.payment-method-actions{
+  display:flex;
+  gap:4px;
+}
+@media(max-width:500px){
+  .payment-admin-form{grid-template-columns:1fr}
+  .payment-method-fields{grid-template-columns:1fr}
+  .payment-method-row{grid-template-columns:1fr}
+  .payment-method-actions{justify-content:flex-start}
+}
+
 </style>
 </head>
 <body>
@@ -1462,6 +1535,9 @@ main.shell{
         <button class="marketing-category-tab active" data-marketing-tab="pricing" type="button">
           <span>💰</span><b>Harga & Kupon</b>
         </button>
+        <button class="marketing-category-tab" data-marketing-tab="payments" type="button">
+          <span>💳</span><b>Pembayaran</b>
+        </button>
         <button class="marketing-category-tab" data-marketing-tab="notifications" type="button">
           <span>💬</span><b>Notifikasi</b>
         </button>
@@ -1522,6 +1598,79 @@ main.shell{
           </div>
         </div>
 
+        <div class="marketing-category-panel" data-marketing-panel="payments">
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">1</span>
+              <div><h3>Tambah Metode Pembayaran</h3><p>Bisa QRIS, payment gateway, atau transfer manual sebanyak yang dibutuhkan.</p></div>
+            </div>
+
+            <div class="payment-admin-form">
+              <div class="manage-field">
+                <label>Jenis Metode</label>
+                <select id="paymentMethodType">
+                  <option value="manual_transfer">Transfer Manual</option>
+                  <option value="qris">QRIS — buatqris.site</option>
+                  <option value="payment_gateway">Payment Gateway</option>
+                </select>
+              </div>
+
+              <div class="manage-field">
+                <label>Nama yang Tampil</label>
+                <input id="paymentMethodName" type="text" placeholder="Contoh: Transfer BCA"/>
+              </div>
+
+              <div id="paymentManualFields" class="payment-method-fields">
+                <div class="manage-field">
+                  <label>Bank</label>
+                  <input id="paymentBankName" type="text" placeholder="BCA / BRI / Mandiri"/>
+                </div>
+                <div class="manage-field">
+                  <label>Nomor Rekening</label>
+                  <input id="paymentAccountNumber" type="text" inputmode="numeric" placeholder="Nomor rekening"/>
+                </div>
+                <div class="manage-field full">
+                  <label>Atas Nama</label>
+                  <input id="paymentAccountHolder" type="text" placeholder="Nama pemilik rekening"/>
+                </div>
+              </div>
+
+              <div id="paymentQrisFields" class="payment-method-fields hidden">
+                <div class="manage-field full">
+                  <label>Link Gambar QRIS</label>
+                  <input id="paymentQrisImageUrl" type="url" placeholder="https://... gambar QRIS dari buatqris.site"/>
+                </div>
+                <div class="manage-field full">
+                  <label>Link Bayar QRIS (opsional)</label>
+                  <input id="paymentQrisPaymentUrl" type="url" placeholder="https://..."/>
+                </div>
+              </div>
+
+              <div id="paymentGatewayFields" class="payment-method-fields hidden">
+                <div class="manage-field full">
+                  <label>URL Checkout / Payment Link</label>
+                  <input id="paymentGatewayUrl" type="url" placeholder="https://..."/>
+                </div>
+              </div>
+
+              <div class="manage-field full">
+                <label>Petunjuk Pembayaran</label>
+                <textarea id="paymentInstructions" rows="4" placeholder="Contoh: Transfer sesuai nominal lalu kirim bukti ke admin."></textarea>
+              </div>
+
+              <button id="addPaymentMethodBtn" class="payment-add-btn" type="button">+ TAMBAH METODE PEMBAYARAN</button>
+            </div>
+          </div>
+
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">2</span>
+              <div><h3>Metode Pembayaran Aktif</h3><p>Aktifkan semua metode atau pilih hanya beberapa yang ingin ditampilkan di Landing Page.</p></div>
+            </div>
+            <div id="paymentMethodList" class="payment-method-list"></div>
+          </div>
+        </div>
+
         <div class="marketing-category-panel" data-marketing-panel="notifications">
           <div class="marketing-card">
             <div class="marketing-card-head">
@@ -1533,7 +1682,7 @@ main.shell{
               <label>Pesan Pendaftaran</label>
               <textarea id="marketingRegisterMessage" rows="8"></textarea>
             </div>
-            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[harga]</b></div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b></div>
           </div>
 
           <div class="marketing-card">
@@ -1545,7 +1694,7 @@ main.shell{
             <div class="manage-field full"><label>Follow Up 1</label><textarea id="marketingFollow1" rows="6"></textarea></div>
             <div class="manage-field full"><label>Follow Up 2</label><textarea id="marketingFollow2" rows="6"></textarea></div>
             <div class="manage-field full"><label>Follow Up 3</label><textarea id="marketingFollow3" rows="6"></textarea></div>
-            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[harga]</b></div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b></div>
           </div>
 
           <div class="marketing-card">
@@ -1558,7 +1707,7 @@ main.shell{
               <label>Pesan Berhasil</label>
               <textarea id="marketingSuccessMessage" rows="8"></textarea>
             </div>
-            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[password]</b> <b>[link]</b> <b>[harga]</b></div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[password]</b> <b>[link]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b></div>
           </div>
         </div>
 
@@ -1848,6 +1997,7 @@ main.shell{
   let affiliateSales = [];
   let affiliateProfiles = [];
   let affiliateMaterials = [];
+  let paymentMethods = [];
 
   const $ = (id) => document.getElementById(id);
   const authView = $('authView');
@@ -2008,7 +2158,7 @@ main.shell{
 
   async function loadRegistrations(){
     registrations = await api(
-      '/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,admin_note,created_at,activated_at&order=created_at.desc'
+      '/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,payment_method_id,payment_method_type,payment_method_name,payment_method_details,admin_note,created_at,activated_at&order=created_at.desc'
     ) || [];
     renderSales();
     renderFinance();
@@ -2040,7 +2190,8 @@ main.shell{
       api('/rest/v1/affiliate_accounts?select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
       api('/rest/v1/affiliate_sales?select=id,affiliate_user_id,registration_id,sale_amount,commission_amount,status,sale_at&order=sale_at.desc'),
       api('/rest/v1/profiles?select=id,full_name,email,membership_plan,member_status'),
-      api('/rest/v1/affiliate_materials?select=id,material_type,title,content,media_url,active,sort_order,created_at&order=sort_order.asc,created_at.desc')
+      api('/rest/v1/affiliate_materials?select=id,material_type,title,content,media_url,active,sort_order,created_at&order=sort_order.asc,created_at.desc'),
+      api('/rest/v1/payment_methods?select=id,method_type,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc')
     ]);
 
     marketingCoupons = results[0] || [];
@@ -2049,6 +2200,7 @@ main.shell{
     affiliateSales = results[3] || [];
     affiliateProfiles = results[4] || [];
     affiliateMaterials = results[5] || [];
+    paymentMethods = results[6] || [];
 
     $('marketingNewbiePrice').value = marketingSettings.newbie_price || marketingSettings.product_price || 123000;
     $('marketingProPrice').value = marketingSettings.pro_price || marketingSettings.product_price || 123000;
@@ -2066,6 +2218,8 @@ main.shell{
     renderAffiliateOverview();
     renderAffiliateMaterials();
     toggleAffiliateMaterialFields();
+    renderPaymentMethods();
+    togglePaymentMethodFields();
   }
 
   function canManageMarketing(){
@@ -2333,6 +2487,138 @@ main.shell{
     await loadMarketing();
   }
 
+  function paymentTypeLabel(type){
+    if(type === 'qris') return 'QRIS';
+    if(type === 'payment_gateway') return 'PAYMENT GATEWAY';
+    return 'TRANSFER MANUAL';
+  }
+
+  function togglePaymentMethodFields(){
+    const type = $('paymentMethodType')?.value || 'manual_transfer';
+    $('paymentManualFields')?.classList.toggle('hidden', type !== 'manual_transfer');
+    $('paymentQrisFields')?.classList.toggle('hidden', type !== 'qris');
+    $('paymentGatewayFields')?.classList.toggle('hidden', type !== 'payment_gateway');
+  }
+
+  function paymentMethodSummary(item){
+    if(item.method_type === 'manual_transfer'){
+      return [item.bank_name, item.account_number, item.account_holder ? 'an ' + item.account_holder : '']
+        .filter(Boolean).join(' • ');
+    }
+    if(item.method_type === 'qris'){
+      return item.payment_url || item.qris_image_url || 'QRIS';
+    }
+    return item.payment_url || 'Payment Gateway';
+  }
+
+  function renderPaymentMethods(){
+    const box = $('paymentMethodList');
+    if(!box) return;
+
+    if(!paymentMethods.length){
+      box.innerHTML = '<div class="statement-note">Belum ada metode pembayaran.</div>';
+      return;
+    }
+
+    box.innerHTML = paymentMethods.map(item => `
+      <div class="payment-method-row">
+        <div class="payment-method-main">
+          <span class="payment-type-pill">${paymentTypeLabel(item.method_type)}</span>
+          <b>${esc(item.display_name)}</b>
+          <small>${esc(paymentMethodSummary(item))}</small>
+        </div>
+        <div class="payment-method-actions">
+          <button class="coupon-toggle ${item.active ? '' : 'off'}" data-payment-action="toggle" data-id="${item.id}" type="button">
+            ${item.active ? 'AKTIF' : 'NONAKTIF'}
+          </button>
+          <button class="coupon-delete" data-payment-action="delete" data-id="${item.id}" type="button">HAPUS</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function addPaymentMethod(){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mengatur pembayaran.');
+
+    const type = $('paymentMethodType').value;
+    const displayName = $('paymentMethodName').value.trim();
+    const instructions = $('paymentInstructions').value.trim();
+
+    if(!displayName) throw new Error('Nama metode pembayaran wajib diisi.');
+
+    const body = {
+      method_type:type,
+      display_name:displayName,
+      active:true,
+      instructions:instructions || null,
+      created_by:session.user.id
+    };
+
+    if(type === 'manual_transfer'){
+      body.bank_name = $('paymentBankName').value.trim();
+      body.account_number = $('paymentAccountNumber').value.trim();
+      body.account_holder = $('paymentAccountHolder').value.trim();
+
+      if(!body.bank_name || !body.account_number || !body.account_holder){
+        throw new Error('Bank, nomor rekening, dan atas nama wajib diisi.');
+      }
+    }
+
+    if(type === 'qris'){
+      body.qris_image_url = $('paymentQrisImageUrl').value.trim() || null;
+      body.payment_url = $('paymentQrisPaymentUrl').value.trim() || null;
+      if(!body.qris_image_url && !body.payment_url){
+        throw new Error('Isi link gambar QRIS atau link bayar QRIS.');
+      }
+    }
+
+    if(type === 'payment_gateway'){
+      body.payment_url = $('paymentGatewayUrl').value.trim();
+      if(!body.payment_url) throw new Error('URL checkout Payment Gateway wajib diisi.');
+    }
+
+    await api('/rest/v1/payment_methods', {
+      method:'POST',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify(body)
+    });
+
+    $('paymentMethodName').value = '';
+    $('paymentBankName').value = '';
+    $('paymentAccountNumber').value = '';
+    $('paymentAccountHolder').value = '';
+    $('paymentQrisImageUrl').value = '';
+    $('paymentQrisPaymentUrl').value = '';
+    $('paymentGatewayUrl').value = '';
+    $('paymentInstructions').value = '';
+
+    await loadMarketing();
+  }
+
+  async function paymentMethodAction(id, action){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mengatur pembayaran.');
+    const item = paymentMethods.find(x => x.id === id);
+    if(!item) return;
+
+    if(action === 'toggle'){
+      await api('/rest/v1/payment_methods?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({active:!item.active})
+      });
+    }
+
+    if(action === 'delete'){
+      if(!confirm('Hapus metode pembayaran "' + item.display_name + '"?')) return;
+      await api('/rest/v1/payment_methods?id=eq.' + encodeURIComponent(id), {
+        method:'DELETE',
+        headers:{'Prefer':'return=minimal'}
+      });
+    }
+
+    await loadMarketing();
+  }
+
   function fillMarketingTemplate(template, values){
     let out = String(template || '');
     Object.entries(values).forEach(([key,value]) => {
@@ -2404,7 +2690,10 @@ main.shell{
       nama:r.full_name || 'Kak',
       email:r.email || '',
       wa:r.whatsapp || '',
-      harga:rupiah(r.amount || marketingSettings.product_price || 123000)
+      paket:r.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula',
+      harga:rupiah(r.amount || marketingSettings.product_price || 123000),
+      metode_bayar:r.payment_method_name || '-',
+      detail_bayar:r.payment_method_details || '-'
     });
 
     return waMessageLink(r, message);
@@ -2744,7 +3033,10 @@ main.shell{
       email:row.email || '',
       password:password || '',
       link:accessUrl,
+      paket:row.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula',
       harga:rupiah(row.amount || marketingSettings.product_price || 123000),
+      metode_bayar:row.payment_method_name || '-',
+      detail_bayar:row.payment_method_details || '-',
       wa:row.whatsapp || ''
     });
 
@@ -3143,7 +3435,7 @@ main.shell{
 
   try{
     const savedMarketingTab = sessionStorage.getItem('badai_marketing_tab');
-    if(['pricing','notifications','affiliate','materials'].includes(savedMarketingTab)){
+    if(['pricing','payments','notifications','affiliate','materials'].includes(savedMarketingTab)){
       setMarketingCategoryTab(savedMarketingTab);
     }
   }catch(_){}
@@ -3152,6 +3444,15 @@ main.shell{
     e.preventDefault();
     try{ await saveMarketing(); }
     catch(err){ $('marketingStatus').textContent = err.message; }
+  });
+
+  $('paymentMethodType').addEventListener('change', togglePaymentMethodFields);
+
+  $('addPaymentMethodBtn').addEventListener('click', async () => {
+    $('addPaymentMethodBtn').disabled = true;
+    try{ await addPaymentMethod(); }
+    catch(err){ alert('Gagal menambah metode pembayaran: ' + err.message); }
+    finally{ $('addPaymentMethodBtn').disabled = false; }
   });
 
   $('addCouponBtn').addEventListener('click', async () => {
@@ -3220,6 +3521,15 @@ main.shell{
   });
 
   document.addEventListener('click', async (e) => {
+    const paymentBtn = e.target.closest('[data-payment-action]');
+    if(paymentBtn){
+      paymentBtn.disabled = true;
+      try{ await paymentMethodAction(paymentBtn.dataset.id, paymentBtn.dataset.paymentAction); }
+      catch(err){ alert('Aksi metode pembayaran gagal: ' + err.message); }
+      finally{ paymentBtn.disabled = false; }
+      return;
+    }
+
     const affiliateMaterialBtn = e.target.closest('[data-affiliate-material-action]');
     if(affiliateMaterialBtn){
       affiliateMaterialBtn.disabled = true;
