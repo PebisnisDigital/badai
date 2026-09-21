@@ -534,7 +534,9 @@ tr:last-child td{border-bottom:0}
             <a class="action" href="${waLink(r)}" target="_blank" rel="noopener">WA</a>
             <button class="action manage" data-action="manage" data-id="${r.id}">KELOLA</button>
             ${!r.user_id && r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
-            ${r.user_id && r.member_status === 'active' ? `<button class="action suspend" data-action="suspend" data-id="${r.id}">SUSPEND</button>` : ''}
+            ${r.user_id ? `<button class="action manage" data-action="reset-access" data-id="${r.id}">RESET AKSES</button>` : ''}
+            ${r.user_id ? `<button class="action manage" data-action="reset-access" data-id="${r.id}">RESET AKSES</button>` : ''}
+          ${r.user_id && r.member_status === 'active' ? `<button class="action suspend" data-action="suspend" data-id="${r.id}">SUSPEND</button>` : ''}
             ${r.user_id && r.member_status === 'suspended' ? `<button class="action approve" data-action="activate" data-id="${r.id}">AKTIFKAN</button>` : ''}
             ${!r.user_id && r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
             <button class="action delete" data-action="delete" data-id="${r.id}">HAPUS</button>
@@ -789,6 +791,31 @@ Silakan login dan simpan data akses ini ya.`;
     }
   }
 
+
+  async function approveOrResetAccess(row){
+    const res = await fetch(SUPABASE_URL + '/functions/v1/admin-approve-member', {
+      method:'POST',
+      headers:{
+        'apikey': SUPABASE_KEY,
+        'Authorization':'Bearer ' + session.access_token,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({registration_id:row.id})
+    });
+
+    let data = null;
+    const text = await res.text();
+    if(text){
+      try{ data = JSON.parse(text); }catch(_){}
+    }
+
+    if(!res.ok){
+      throw new Error(data?.error || 'Gagal membuat akses member.');
+    }
+
+    return data;
+  }
+
   async function updateRegistration(id, action){
     const row = registrations.find(r => r.id === id);
     if(!row) return;
@@ -800,28 +827,24 @@ Silakan login dan simpan data akses ini ya.`;
 
     if(action === 'approve'){
       if(session?.user?.email && row.email.toLowerCase() === session.user.email.toLowerCase()){
-        alert('Email pendaftar ini sama dengan email ADMIN. Untuk tes member, daftar lagi memakai email lain.');
+        alert('Email pendaftar ini sama dengan email ADMIN. Gunakan email member lain.');
         return;
       }
 
       if(!confirm('ACC pembayaran dan buat akses member untuk ' + row.full_name + '?')) return;
 
-      const password = makeMemberPassword();
-      const authResult = await createMemberAuthAccount(row, password);
-
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
-          payment_status:'paid',
-          member_status:'active',
-          activated_at:new Date().toISOString()
-        })
-      });
-
-      await recordPaidPayment(row);
+      const access = await approveOrResetAccess(row);
       await loadRegistrations();
-      openCredentialModal(row, password, !!authResult.alreadyExists);
+      openCredentialModal(row, access.password, false);
+      return;
+    }
+
+    if(action === 'reset-access'){
+      if(!confirm('Buat password baru untuk ' + row.full_name + '? Password lama akan berhenti berlaku.')) return;
+
+      const access = await approveOrResetAccess(row);
+      await loadRegistrations();
+      openCredentialModal(row, access.password, false);
       return;
     }
 
