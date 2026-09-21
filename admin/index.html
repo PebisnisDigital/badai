@@ -1125,6 +1125,29 @@ main.shell{
   .coupon-form button{grid-column:1/-1}
 }
 
+
+.plan-badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:18px;
+  padding:0 6px;
+  margin-left:4px;
+  border-radius:999px;
+  font-size:7px;
+  font-weight:950;
+  vertical-align:middle;
+}
+.plan-badge.newbie{
+  border:1px solid #3a3a3a;
+  background:#151515;
+  color:#b8b8b8;
+}
+.plan-badge.pro{
+  border:1px solid #6d2d50;
+  background:#23101a;
+  color:#ff8fc5;
+}
+
 </style>
 </head>
 <body>
@@ -1484,6 +1507,13 @@ main.shell{
         <input id="manageWhatsapp" type="text"/>
       </div>
       <div class="manage-field full">
+        <label>Paket Member</label>
+        <select id="managePlan">
+          <option value="newbie">NEWBIE — Belajar AI + Update</option>
+          <option value="pro">PRO — Belajar AI + Program Afiliasi</option>
+        </select>
+      </div>
+      <div class="manage-field full">
         <label>Password Baru</label>
         <input id="managePassword" type="password" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti"/>
       </div>
@@ -1693,7 +1723,7 @@ main.shell{
 
   async function loadRegistrations(){
     registrations = await api(
-      '/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,admin_note,created_at,activated_at&order=created_at.desc'
+      '/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,admin_note,created_at,activated_at&order=created_at.desc'
     ) || [];
     renderSales();
     renderFinance();
@@ -1929,6 +1959,11 @@ main.shell{
     return ['owner','admin','sales'].includes(currentTeam?.role);
   }
 
+  function planBadge(plan){
+    const value = plan === 'pro' ? 'PRO' : 'NEWBIE';
+    return '<span class="plan-badge ' + (plan === 'pro' ? 'pro' : 'newbie') + '">' + value + '</span>';
+  }
+
   function actionHtml(r, mobile){
     if(!canManageSales()) return '<span class="meta">READ ONLY</span>';
 
@@ -1974,7 +2009,7 @@ main.shell{
 
     $('tableBody').innerHTML = rows.map(r => `
       <tr>
-        <td><div class="name">${esc(r.full_name)}</div><div class="meta">${esc(r.email)}</div></td>
+        <td><div class="name">${esc(r.full_name)} ${planBadge(r.membership_plan)}</div><div class="meta">${esc(r.email)}</div></td>
         <td>${esc(r.whatsapp)}</td>
         <td>${rupiah(r.amount)}</td>
         <td>${pill(r.payment_status)}</td>
@@ -1987,7 +2022,7 @@ main.shell{
     $('mobileList').innerHTML = rows.map(r => `
       <div class="card">
         <div class="card-head">
-          <div><div class="name">${esc(r.full_name)}</div><div class="meta">${esc(r.email)}</div></div>
+          <div><div class="name">${esc(r.full_name)} ${planBadge(r.membership_plan)}</div><div class="meta">${esc(r.email)}</div></div>
           <div>${pill(r.member_status)}</div>
         </div>
         <div class="card-data">
@@ -2277,6 +2312,7 @@ main.shell{
     $('manageName').value = row.full_name || '';
     $('manageEmail').value = row.email || '';
     $('manageWhatsapp').value = row.whatsapp || '';
+    $('managePlan').value = row.membership_plan || 'newbie';
     $('managePassword').value = '';
     $('managePassword').disabled = !row.user_id;
     $('managePassword').placeholder = row.user_id
@@ -2293,6 +2329,7 @@ main.shell{
     const fullName = $('manageName').value.trim();
     const email = $('manageEmail').value.trim().toLowerCase();
     const whatsapp = $('manageWhatsapp').value.trim();
+    const membershipPlan = $('managePlan').value;
     const password = $('managePassword').value.trim();
 
     if(!fullName || !email || !whatsapp){
@@ -2347,6 +2384,12 @@ main.shell{
       if(!res.ok){
         throw new Error(data?.error || 'Gagal menyinkronkan data member.');
       }
+
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({membership_plan:membershipPlan})
+      });
 
       $('manageModal').classList.add('hidden');
       await loadRegistrations();
