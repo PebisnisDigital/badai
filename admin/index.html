@@ -180,6 +180,58 @@ tr:last-child td{border-bottom:0}
 .manage-note{color:#8e8e8e;font-size:11px;line-height:1.5;margin-top:10px}
 @media(max-width:520px){.manage-grid{grid-template-columns:1fr}.manage-field.full{grid-column:auto}}
 
+
+.admin-tabs{
+  display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px;padding:6px;
+  border:1px solid var(--line);border-radius:16px;background:#0c0c0c
+}
+.admin-tab{
+  border:0;background:transparent;color:#8f8f8f;border-radius:11px;
+  min-height:40px;padding:0 16px;font-weight:900;font-size:12px
+}
+.admin-tab.active{background:var(--pink);color:#080808}
+.page-title{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:6px 0 16px}
+.page-title h2{margin:0;font-size:27px;letter-spacing:-.035em}
+.page-title p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.finance-report-toolbar{
+  display:grid;grid-template-columns:240px auto;gap:9px;align-items:center;margin:14px 0 12px
+}
+.finance-report-toolbar select{
+  min-height:44px;border:1px solid var(--line);border-radius:12px;background:#0d0d0d;color:#fff;padding:0 13px
+}
+.report-label{font-size:12px;color:var(--muted)}
+.team-layout{display:grid;grid-template-columns:340px 1fr;gap:14px;align-items:start}
+.team-panel{border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:16px}
+.team-panel h3{margin:0 0 6px;font-size:17px}
+.team-panel > p{margin:0 0 14px;color:var(--muted);font-size:11px;line-height:1.55}
+.team-form{display:grid;gap:10px}
+.team-form input,.team-form select{
+  width:100%;min-height:44px;border:1px solid var(--line);border-radius:12px;background:#080808;color:#fff;padding:0 12px;outline:none
+}
+.team-form input:focus,.team-form select:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,79,163,.1)}
+.team-help{display:grid;gap:7px;margin-top:14px}
+.team-help div{border:1px solid #252525;border-radius:11px;padding:9px 10px;font-size:10px;color:#aaa}
+.team-help b{color:#fff}
+.team-table-wrap{overflow:auto}
+.role-pill{
+  display:inline-flex;min-height:24px;align-items:center;padding:0 8px;border-radius:999px;
+  background:#1b1118;border:1px solid #46243a;color:#ff9bca;font-size:9px;font-weight:900;text-transform:uppercase
+}
+.team-select{
+  min-height:32px;border:1px solid #303030;border-radius:9px;background:#0c0c0c;color:#fff;padding:0 8px;font-size:10px;font-weight:800
+}
+.team-status-note{min-height:18px;margin-top:9px;color:#8f8f8f;font-size:11px}
+.finance-table td:first-child{font-weight:800}
+@media(max-width:820px){
+  .team-layout{grid-template-columns:1fr}
+  .finance-report-toolbar{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .admin-tabs{display:grid;grid-template-columns:repeat(3,1fr)}
+  .admin-tab{padding:0 6px;font-size:10px}
+  .page-title{align-items:flex-start;flex-direction:column}
+}
+
 </style>
 </head>
 <body>
@@ -210,62 +262,165 @@ tr:last-child td{border-bottom:0}
         </div>
         <div class="login-actions">
           <button class="primary" type="submit">LOGIN ADMIN</button>
-          <button id="signupBtn" class="secondary" type="button">BUAT AKUN ADMIN PERTAMA</button>
+          <button id="signupBtn" class="secondary" type="button">BUAT AKUN TIM / ADMIN</button>
         </div>
       </form>
-      <div id="authStatus" class="status">Gunakan email admin yang sudah diizinkan.</div>
+      <div id="authStatus" class="status">Gunakan email Owner/Tim yang sudah diizinkan.</div>
     </div>
   </section>
 
   <section id="dashboardView" class="hidden">
     <div class="dashboard-head">
       <div>
-        <h1>Pendaftaran BADAI</h1>
-        <p id="adminIdentity">Memuat admin...</p>
+        <h1>Dashboard BADAI</h1>
+        <p id="adminIdentity">Memuat akun...</p>
       </div>
     </div>
 
-    <div class="stats">
-      <div class="stat"><span>TOTAL PENDAFTAR</span><strong id="statTotal">0</strong></div>
-      <div class="stat"><span>PENDING</span><strong id="statPending">0</strong></div>
-      <div class="stat"><span>AKTIF</span><strong id="statActive">0</strong></div>
-      <div class="stat"><span>DAFTAR HARI INI</span><strong id="statToday">0</strong></div>
-    </div>
+    <nav class="admin-tabs">
+      <button id="tabSales" class="admin-tab active" data-page="sales" type="button">PENJUALAN</button>
+      <button id="tabFinance" class="admin-tab" data-page="finance" type="button">KEUANGAN</button>
+      <button id="tabTeam" class="admin-tab" data-page="team" type="button">TIM</button>
+    </nav>
 
-    <div class="toolbar">
-      <input id="searchBox" type="search" placeholder="Cari nama, WA, atau email..."/>
-      <select id="statusFilter">
-        <option value="all">Semua status</option>
-        <option value="pending">Pending</option>
-        <option value="active">Active</option>
-        <option value="rejected">Rejected</option>
-        <option value="suspended">Suspended</option>
-      </select>
-      <button id="refreshBtn" class="small-btn refresh" type="button">REFRESH DATA</button>
-    </div>
+    <section id="pageSales" class="admin-page">
+      <div class="page-title">
+        <div>
+          <h2>Penjualan</h2>
+          <p>Kelola pendaftar, pembayaran, akses member, dan follow-up.</p>
+        </div>
+      </div>
 
-    <div class="table-wrap desktop-table">
-      <table>
-        <thead>
-          <tr>
-            <th>Pendaftar</th>
-            <th>WhatsApp</th>
-            <th>Harga</th>
-            <th>Pembayaran</th>
-            <th>Member</th>
-            <th>Tanggal</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-      <div id="emptyDesktop" class="empty hidden">Belum ada pendaftaran.</div>
-    </div>
+      <div class="stats">
+        <div class="stat"><span>TOTAL PENDAFTAR</span><strong id="statTotal">0</strong></div>
+        <div class="stat"><span>PENDING</span><strong id="statPending">0</strong></div>
+        <div class="stat"><span>AKTIF</span><strong id="statActive">0</strong></div>
+        <div class="stat"><span>DAFTAR HARI INI</span><strong id="statToday">0</strong></div>
+      </div>
 
-    <div id="mobileList" class="mobile-list"></div>
-    <div id="emptyMobile" class="empty hidden">Belum ada pendaftaran.</div>
+      <div class="toolbar">
+        <input id="searchBox" type="search" placeholder="Cari nama, WA, atau email..."/>
+        <select id="statusFilter">
+          <option value="all">Semua status</option>
+          <option value="pending">Pending</option>
+          <option value="active">Active</option>
+          <option value="rejected">Rejected</option>
+          <option value="suspended">Suspended</option>
+        </select>
+        <button id="refreshBtn" class="small-btn refresh" type="button">REFRESH DATA</button>
+      </div>
+
+      <div class="table-wrap desktop-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Pendaftar</th><th>WhatsApp</th><th>Harga</th><th>Pembayaran</th>
+              <th>Member</th><th>Tanggal</th><th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div id="emptyDesktop" class="empty hidden">Belum ada pendaftaran.</div>
+      </div>
+
+      <div id="mobileList" class="mobile-list"></div>
+      <div id="emptyMobile" class="empty hidden">Belum ada pendaftaran.</div>
+    </section>
+
+    <section id="pageFinance" class="admin-page hidden">
+      <div class="page-title">
+        <div>
+          <h2>Keuangan</h2>
+          <p>Ringkasan omzet dan laporan penjualan BADAI.</p>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span>OMZET KESELURUHAN</span><strong id="financeTotal">Rp0</strong></div>
+        <div class="stat"><span>OMZET BULAN INI</span><strong id="financeMonth">Rp0</strong></div>
+        <div class="stat"><span>TRANSAKSI LUNAS</span><strong id="financePaidCount">0</strong></div>
+        <div class="stat"><span>POTENSI PENDING</span><strong id="financePending">Rp0</strong></div>
+      </div>
+
+      <div class="finance-report-toolbar">
+        <select id="financeReportType">
+          <option value="daily">Laporan Harian</option>
+          <option value="monthly">Laporan Bulanan</option>
+          <option value="transactions">Semua Transaksi Lunas</option>
+        </select>
+        <div class="report-label" id="financeReportLabel">Ringkasan pemasukan harian.</div>
+      </div>
+
+      <div class="table-wrap team-table-wrap">
+        <table class="finance-table">
+          <thead id="financeTableHead"></thead>
+          <tbody id="financeTableBody"></tbody>
+        </table>
+        <div id="financeEmpty" class="empty hidden">Belum ada transaksi lunas.</div>
+      </div>
+    </section>
+
+    <section id="pageTeam" class="admin-page hidden">
+      <div class="page-title">
+        <div>
+          <h2>Tim</h2>
+          <p>Atur siapa yang boleh masuk dashboard BADAI dan tentukan perannya.</p>
+        </div>
+      </div>
+
+      <div class="team-layout">
+        <div class="team-panel">
+          <h3>Tambah Tim</h3>
+          <p>Saat ditambahkan, sistem langsung membuat akun login dan password awal.</p>
+          <form id="teamForm" class="team-form">
+            <input id="teamName" type="text" required placeholder="Nama tim"/>
+            <input id="teamEmail" type="email" required placeholder="Email tim"/>
+            <select id="teamRole" required>
+              <option value="admin">Admin</option>
+              <option value="sales">Sales</option>
+              <option value="finance">Finance</option>
+            </select>
+            <button id="addTeamBtn" class="primary" type="submit">TAMBAH TIM + BUAT AKSES</button>
+          </form>
+          <div id="teamStatus" class="team-status-note"></div>
+
+          <div class="team-help">
+            <div><b>ADMIN</b> — Penjualan + Keuangan, tanpa pengaturan Tim.</div>
+            <div><b>SALES</b> — Fokus Penjualan dan pengelolaan member.</div>
+            <div><b>FINANCE</b> — Hanya melihat Keuangan dan laporan.</div>
+          </div>
+        </div>
+
+        <div class="team-panel team-table-wrap">
+          <h3>Daftar Tim</h3>
+          <p>Owner punya kontrol penuh. Role lain dibatasi sesuai tugasnya.</p>
+          <table>
+            <thead>
+              <tr><th>Tim</th><th>Role</th><th>Status</th><th>Akun</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="teamTableBody"></tbody>
+          </table>
+          <div id="teamEmpty" class="empty hidden">Belum ada tim.</div>
+        </div>
+      </div>
+    </section>
   </section>
 
+
+<div id="teamCredentialModal" class="cred-modal hidden">
+  <div class="cred-box">
+    <h2>Akses Tim Dibuat</h2>
+    <p>Salin data ini lalu kirim ke anggota tim.</p>
+    <div class="cred-row"><span>NAMA</span><strong id="teamCredName">-</strong></div>
+    <div class="cred-row"><span>ROLE</span><strong id="teamCredRole">-</strong></div>
+    <div class="cred-row"><span>EMAIL LOGIN</span><strong id="teamCredEmail">-</strong></div>
+    <div class="cred-row"><span>PASSWORD AWAL</span><strong id="teamCredPassword">-</strong></div>
+    <div class="cred-actions">
+      <button id="copyTeamCredentialBtn" class="primary-act" type="button">SALIN AKSES TIM</button>
+      <button id="closeTeamCredentialBtn" type="button">TUTUP</button>
+    </div>
+  </div>
+</div>
 
 <div id="manageModal" class="cred-modal hidden">
   <div class="cred-box">
@@ -340,6 +495,8 @@ tr:last-child td{border-bottom:0}
 
   let session = null;
   let registrations = [];
+  let currentTeam = null;
+  let teamMembers = [];
 
   const $ = (id) => document.getElementById(id);
   const authView = $('authView');
@@ -365,9 +522,8 @@ tr:last-child td{border-bottom:0}
     const res = await fetch(SUPABASE_URL + path, Object.assign({}, options, {headers}));
     let data = null;
     const text = await res.text();
-    if(text){
-      try{ data = JSON.parse(text); }catch(_){ data = text; }
-    }
+    if(text){ try{ data = JSON.parse(text); }catch(_){ data = text; } }
+
     if(!res.ok){
       const msg = data?.msg || data?.message || data?.error_description || data?.error || 'Request gagal';
       throw new Error(msg);
@@ -378,13 +534,12 @@ tr:last-child td{border-bottom:0}
   async function signup(){
     const email = $('email').value.trim().toLowerCase();
     const password = $('password').value;
-
     if(!email || !password){
       setAuthStatus('Isi email dan password dulu.', 'error');
       return;
     }
 
-    setAuthStatus('Membuat akun admin...', '');
+    setAuthStatus('Membuat akun...', '');
     try{
       const data = await api('/auth/v1/signup', {
         method:'POST',
@@ -396,7 +551,7 @@ tr:last-child td{border-bottom:0}
         localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
         await enterDashboard();
       }else{
-        setAuthStatus('Akun dibuat. Cek email untuk konfirmasi, lalu LOGIN ADMIN.', 'ok');
+        setAuthStatus('Akun dibuat. Jika diminta, konfirmasi email lalu login.', 'ok');
       }
     }catch(err){
       setAuthStatus(err.message, 'error');
@@ -415,32 +570,71 @@ tr:last-child td{border-bottom:0}
     await enterDashboard();
   }
 
-  async function getMyProfile(){
+  async function getMyTeam(){
     const userId = session?.user?.id;
     if(!userId) throw new Error('Session user tidak ditemukan.');
 
-    const rows = await api('/rest/v1/profiles?id=eq.' + encodeURIComponent(userId) + '&select=id,email,role,member_status');
+    const rows = await api(
+      '/rest/v1/admin_team_members?auth_user_id=eq.' + encodeURIComponent(userId) +
+      '&select=id,auth_user_id,full_name,email,role,status'
+    );
     return rows?.[0] || null;
+  }
+
+  function allowedPages(){
+    const role = currentTeam?.role;
+    if(role === 'owner') return ['sales','finance','team'];
+    if(role === 'admin') return ['sales','finance'];
+    if(role === 'sales') return ['sales'];
+    if(role === 'finance') return ['finance'];
+    return [];
+  }
+
+  function configureTabs(){
+    const allowed = allowedPages();
+    $('tabSales').classList.toggle('hidden', !allowed.includes('sales'));
+    $('tabFinance').classList.toggle('hidden', !allowed.includes('finance'));
+    $('tabTeam').classList.toggle('hidden', !allowed.includes('team'));
+  }
+
+  function switchPage(page){
+    if(!allowedPages().includes(page)) return;
+
+    ['sales','finance','team'].forEach(name => {
+      $('page' + name.charAt(0).toUpperCase() + name.slice(1)).classList.toggle('hidden', name !== page);
+      const tab = name === 'sales' ? $('tabSales') : name === 'finance' ? $('tabFinance') : $('tabTeam');
+      tab.classList.toggle('active', name === page);
+    });
+
+    if(page === 'finance') renderFinance();
+    if(page === 'team') loadTeamMembers();
   }
 
   async function enterDashboard(){
     try{
-      const profile = await getMyProfile();
+      currentTeam = await getMyTeam();
 
-      if(!profile || profile.role !== 'admin'){
+      if(!currentTeam || currentTeam.status !== 'active'){
         logout();
-        setAuthStatus('Akun ini bukan admin BADAI.', 'error');
+        setAuthStatus('Akun ini tidak punya akses aktif ke dashboard BADAI.', 'error');
         return;
       }
 
       authView.classList.add('hidden');
       dashboardView.classList.remove('hidden');
       logoutBtn.classList.remove('hidden');
-      $('adminIdentity').textContent = profile.email + ' • ADMIN';
+      $('adminIdentity').textContent =
+        currentTeam.email + ' • ' + currentTeam.role.toUpperCase();
+
+      configureTabs();
       await loadRegistrations();
+
+      const first = allowedPages()[0];
+      if(first) switchPage(first);
     }catch(err){
       localStorage.removeItem(STORAGE_KEY);
       session = null;
+      currentTeam = null;
       authView.classList.remove('hidden');
       dashboardView.classList.add('hidden');
       logoutBtn.classList.add('hidden');
@@ -449,18 +643,17 @@ tr:last-child td{border-bottom:0}
   }
 
   async function loadRegistrations(){
-    try{
-      registrations = await api(
-        '/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,admin_note,created_at,activated_at&order=created_at.desc'
-      ) || [];
-      render();
-    }catch(err){
-      alert('Gagal mengambil pendaftaran: ' + err.message);
-    }
+    registrations = await api(
+      '/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,admin_note,created_at,activated_at&order=created_at.desc'
+    ) || [];
+    renderSales();
+    renderFinance();
   }
 
   function rupiah(n){
-    return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
+    return new Intl.NumberFormat('id-ID',{
+      style:'currency',currency:'IDR',maximumFractionDigits:0
+    }).format(Number(n||0));
   }
 
   function dateTime(value){
@@ -477,22 +670,21 @@ tr:last-child td{border-bottom:0}
   }
 
   function pill(value){
-    return '<span class="pill ' + esc(value) + '">' + esc(String(value).replaceAll('_',' ')) + '</span>';
+    return '<span class="pill ' + esc(value) + '">' +
+      esc(String(value).replaceAll('_',' ')) + '</span>';
   }
 
   function filtered(){
     const q = $('searchBox').value.trim().toLowerCase();
     const status = $('statusFilter').value;
-
     return registrations.filter(r => {
       const hay = [r.full_name,r.email,r.whatsapp].join(' ').toLowerCase();
-      const matchQ = !q || hay.includes(q);
-      const matchStatus = status === 'all' || r.member_status === status || r.payment_status === status;
-      return matchQ && matchStatus;
+      return (!q || hay.includes(q))
+        && (status === 'all' || r.member_status === status || r.payment_status === status);
     });
   }
 
-  function renderStats(){
+  function renderSalesStats(){
     $('statTotal').textContent = registrations.length;
     $('statPending').textContent = registrations.filter(r => r.member_status === 'pending').length;
     $('statActive').textContent = registrations.filter(r => r.member_status === 'active').length;
@@ -507,12 +699,42 @@ tr:last-child td{border-bottom:0}
   }
 
   function waLink(r){
-    const msg = `Halo Kak ${r.full_name}, saya admin BADAI. Saya lihat pendaftaran Kakak sudah masuk.`;
+    const msg = 'Halo Kak ' + r.full_name + ', saya admin BADAI. Saya lihat pendaftaran Kakak sudah masuk.';
     return 'https://wa.me/' + encodeURIComponent(r.whatsapp) + '?text=' + encodeURIComponent(msg);
   }
 
-  function render(){
-    renderStats();
+  function canManageSales(){
+    return ['owner','admin','sales'].includes(currentTeam?.role);
+  }
+
+  function actionHtml(r, mobile){
+    if(!canManageSales()) return '<span class="meta">READ ONLY</span>';
+
+    const parts = [];
+    parts.push('<a class="action" href="' + waLink(r) + '" target="_blank" rel="noopener">' + (mobile?'WHATSAPP':'WA') + '</a>');
+    parts.push('<button class="action manage" data-action="manage" data-id="' + r.id + '">KELOLA</button>');
+
+    if(!r.user_id && r.member_status !== 'active'){
+      parts.push('<button class="action approve" data-action="approve" data-id="' + r.id + '">ACC + BUAT AKSES</button>');
+    }
+    if(r.user_id){
+      parts.push('<button class="action manage" data-action="reset-access" data-id="' + r.id + '">RESET AKSES</button>');
+    }
+    if(r.user_id && r.member_status === 'active'){
+      parts.push('<button class="action suspend" data-action="suspend" data-id="' + r.id + '">SUSPEND</button>');
+    }
+    if(r.user_id && r.member_status === 'suspended'){
+      parts.push('<button class="action approve" data-action="activate" data-id="' + r.id + '">AKTIFKAN</button>');
+    }
+    if(!r.user_id && r.payment_status !== 'rejected'){
+      parts.push('<button class="action reject" data-action="reject" data-id="' + r.id + '">TOLAK</button>');
+    }
+    parts.push('<button class="action delete" data-action="delete" data-id="' + r.id + '">' + (mobile?'HAPUS TOTAL':'HAPUS') + '</button>');
+    return parts.join('');
+  }
+
+  function renderSales(){
+    renderSalesStats();
     const rows = filtered();
 
     $('emptyDesktop').classList.toggle('hidden', rows.length !== 0);
@@ -520,37 +742,20 @@ tr:last-child td{border-bottom:0}
 
     $('tableBody').innerHTML = rows.map(r => `
       <tr>
-        <td>
-          <div class="name">${esc(r.full_name)}</div>
-          <div class="meta">${esc(r.email)}</div>
-        </td>
+        <td><div class="name">${esc(r.full_name)}</div><div class="meta">${esc(r.email)}</div></td>
         <td>${esc(r.whatsapp)}</td>
         <td>${rupiah(r.amount)}</td>
         <td>${pill(r.payment_status)}</td>
         <td>${pill(r.member_status)}</td>
         <td>${dateTime(r.created_at)}</td>
-        <td>
-          <div class="actions">
-            <a class="action" href="${waLink(r)}" target="_blank" rel="noopener">WA</a>
-            <button class="action manage" data-action="manage" data-id="${r.id}">KELOLA</button>
-            ${!r.user_id && r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
-            ${r.user_id ? `<button class="action manage" data-action="reset-access" data-id="${r.id}">RESET AKSES</button>` : ''}
-            ${r.user_id && r.member_status === 'active' ? `<button class="action suspend" data-action="suspend" data-id="${r.id}">SUSPEND</button>` : ''}
-            ${r.user_id && r.member_status === 'suspended' ? `<button class="action approve" data-action="activate" data-id="${r.id}">AKTIFKAN</button>` : ''}
-            ${!r.user_id && r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
-            <button class="action delete" data-action="delete" data-id="${r.id}">HAPUS</button>
-          </div>
-        </td>
+        <td><div class="actions">${actionHtml(r,false)}</div></td>
       </tr>
     `).join('');
 
     $('mobileList').innerHTML = rows.map(r => `
       <div class="card">
         <div class="card-head">
-          <div>
-            <div class="name">${esc(r.full_name)}</div>
-            <div class="meta">${esc(r.email)}</div>
-          </div>
+          <div><div class="name">${esc(r.full_name)}</div><div class="meta">${esc(r.email)}</div></div>
           <div>${pill(r.member_status)}</div>
         </div>
         <div class="card-data">
@@ -559,119 +764,102 @@ tr:last-child td{border-bottom:0}
           <div><span>Bayar:</span> ${esc(r.payment_status)}</div>
           <div><span>Daftar:</span> ${dateTime(r.created_at)}</div>
         </div>
-        <div class="actions">
-          <a class="action" href="${waLink(r)}" target="_blank" rel="noopener">WHATSAPP</a>
-          <button class="action manage" data-action="manage" data-id="${r.id}">KELOLA</button>
-          ${!r.user_id && r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
-          ${r.user_id && r.member_status === 'active' ? `<button class="action suspend" data-action="suspend" data-id="${r.id}">SUSPEND</button>` : ''}
-          ${r.user_id && r.member_status === 'suspended' ? `<button class="action approve" data-action="activate" data-id="${r.id}">AKTIFKAN</button>` : ''}
-          ${!r.user_id && r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
-          <button class="action delete" data-action="delete" data-id="${r.id}">HAPUS TOTAL</button>
-        </div>
+        <div class="actions">${actionHtml(r,true)}</div>
       </div>
     `).join('');
   }
 
-
-  function makeMemberPassword(){
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
-    const bytes = new Uint8Array(12);
-    crypto.getRandomValues(bytes);
-    let raw = '';
-    for(const b of bytes) raw += chars[b % chars.length];
-    return 'Badai-' + raw.slice(0,4) + '-' + raw.slice(4,8) + '-' + raw.slice(8,12);
+  function paidRows(){
+    return registrations.filter(r => r.payment_status === 'paid');
   }
 
-  async function createMemberAuthAccount(row, password){
-    const res = await fetch(SUPABASE_URL + '/auth/v1/signup', {
-      method:'POST',
-      headers:{
-        'apikey': SUPABASE_KEY,
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify({
-        email:row.email,
-        password,
-        data:{
-          full_name:row.full_name,
-          whatsapp:row.whatsapp
-        }
-      })
-    });
-
-    let data = null;
-    try{ data = await res.json(); }catch(_){}
-
-    if(res.ok){
-      return {created:true, data};
-    }
-
-    const msg = String(
-      data?.msg || data?.message || data?.error_description || data?.error || ''
-    ).toLowerCase();
-
-    if(res.status === 422 || msg.includes('already') || msg.includes('registered')){
-      return {created:false, alreadyExists:true};
-    }
-
-    throw new Error(data?.msg || data?.message || data?.error_description || 'Gagal membuat akun member');
+  function localDayKey(value){
+    const d = new Date(value);
+    return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-');
   }
 
-  async function recordPaidPayment(row){
-    try{
-      await api('/rest/v1/payments?on_conflict=registration_id', {
-        method:'POST',
-        headers:{
-          'Prefer':'resolution=merge-duplicates,return=minimal'
-        },
-        body:JSON.stringify({
-          registration_id:row.id,
-          amount:row.amount || 123000,
-          method:'manual_transfer',
-          status:'paid',
-          verified_at:new Date().toISOString(),
-          verified_by:session?.user?.id
-        })
+  function localMonthKey(value){
+    const d = new Date(value);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  }
+
+  function renderFinance(){
+    const paid = paidRows();
+    const total = paid.reduce((a,r)=>a+Number(r.amount||0),0);
+    const now = new Date();
+    const monthKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+    const month = paid.filter(r => localMonthKey(r.activated_at || r.created_at) === monthKey)
+      .reduce((a,r)=>a+Number(r.amount||0),0);
+    const pending = registrations
+      .filter(r => ['pending','waiting_verification'].includes(r.payment_status))
+      .reduce((a,r)=>a+Number(r.amount||0),0);
+
+    $('financeTotal').textContent = rupiah(total);
+    $('financeMonth').textContent = rupiah(month);
+    $('financePaidCount').textContent = paid.length;
+    $('financePending').textContent = rupiah(pending);
+
+    renderFinanceReport();
+  }
+
+  function renderFinanceReport(){
+    const type = $('financeReportType').value;
+    const paid = paidRows();
+    const head = $('financeTableHead');
+    const body = $('financeTableBody');
+    $('financeEmpty').classList.toggle('hidden', paid.length !== 0);
+
+    if(type === 'daily'){
+      $('financeReportLabel').textContent = 'Omzet dikelompokkan per hari.';
+      head.innerHTML = '<tr><th>Tanggal</th><th>Transaksi</th><th>Omzet</th></tr>';
+      const map = new Map();
+      paid.forEach(r => {
+        const key = localDayKey(r.activated_at || r.created_at);
+        const v = map.get(key) || {count:0,total:0};
+        v.count++; v.total += Number(r.amount||0); map.set(key,v);
       });
-    }catch(err){
-      console.warn('Payment log gagal disimpan:', err);
+      body.innerHTML = [...map.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([k,v]) =>
+        '<tr><td>'+esc(k)+'</td><td>'+v.count+'</td><td>'+rupiah(v.total)+'</td></tr>'
+      ).join('');
+      return;
     }
+
+    if(type === 'monthly'){
+      $('financeReportLabel').textContent = 'Omzet dikelompokkan per bulan.';
+      head.innerHTML = '<tr><th>Bulan</th><th>Transaksi</th><th>Omzet</th></tr>';
+      const map = new Map();
+      paid.forEach(r => {
+        const key = localMonthKey(r.activated_at || r.created_at);
+        const v = map.get(key) || {count:0,total:0};
+        v.count++; v.total += Number(r.amount||0); map.set(key,v);
+      });
+      body.innerHTML = [...map.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([k,v]) =>
+        '<tr><td>'+esc(k)+'</td><td>'+v.count+'</td><td>'+rupiah(v.total)+'</td></tr>'
+      ).join('');
+      return;
+    }
+
+    $('financeReportLabel').textContent = 'Daftar seluruh transaksi yang sudah lunas.';
+    head.innerHTML = '<tr><th>Member</th><th>Tanggal Lunas</th><th>Nominal</th></tr>';
+    body.innerHTML = paid.map(r =>
+      '<tr><td><div class="name">'+esc(r.full_name)+'</div><div class="meta">'+esc(r.email)+'</div></td>' +
+      '<td>'+dateTime(r.activated_at || r.created_at)+'</td><td>'+rupiah(r.amount)+'</td></tr>'
+    ).join('');
   }
 
-  function openCredentialModal(row, password, existed){
+  function openCredentialModal(row, password){
     $('credName').textContent = row.full_name;
     $('credEmail').textContent = row.email;
-    $('credPassword').textContent = existed
-      ? 'AKUN SUDAH ADA — gunakan password sebelumnya'
-      : password;
+    $('credPassword').textContent = password;
 
     const accessUrl = location.origin.replace(/\/$/,'') + '/akses/';
-    const message = existed
-      ? `Halo Kak ${row.full_name} 👋
-
-Pembayaran BADAI sudah dikonfirmasi dan akses member sudah aktif.
-
-Link akses:
-${accessUrl}
-
-Email login:
-${row.email}
-
-Akun Kakak sudah pernah dibuat sebelumnya, jadi gunakan password yang sebelumnya ya.`
-      : `Halo Kak ${row.full_name} 👋
-
-Pembayaran BADAI sudah dikonfirmasi dan akses member sudah aktif.
-
-Link akses:
-${accessUrl}
-
-Email:
-${row.email}
-
-Password awal:
-${password}
-
-Silakan login dan simpan data akses ini ya.`;
+    const message =
+      'Halo Kak ' + row.full_name + ' 👋\n\n' +
+      'Pembayaran BADAI sudah dikonfirmasi dan akses member sudah aktif.\n\n' +
+      'Link akses:\n' + accessUrl + '\n\n' +
+      'Email:\n' + row.email + '\n\n' +
+      'Password awal:\n' + password + '\n\n' +
+      'Silakan login dan simpan data akses ini ya.';
 
     $('sendCredentialWa').href =
       'https://wa.me/' + encodeURIComponent(row.whatsapp) + '?text=' + encodeURIComponent(message);
@@ -681,14 +869,11 @@ Silakan login dan simpan data akses ini ya.`;
         await navigator.clipboard.writeText(message);
         $('copyCredentialBtn').textContent = 'TERSALIN ✓';
         setTimeout(() => $('copyCredentialBtn').textContent = 'SALIN AKSES', 1600);
-      }catch(_){
-        alert(message);
-      }
+      }catch(_){ alert(message); }
     };
 
     $('credentialModal').classList.remove('hidden');
   }
-
 
   function openManageModal(row){
     $('manageId').value = row.id;
@@ -713,60 +898,31 @@ Silakan login dan simpan data akses ini ya.`;
     const paymentStatus = $('managePaymentStatus').value;
     const adminNote = $('manageAdminNote').value.trim() || null;
 
-    if(!fullName || !email || !whatsapp){
-      alert('Nama, email, dan WhatsApp wajib diisi.');
-      return;
-    }
+    if(!fullName || !email || !whatsapp) throw new Error('Nama, email, dan WhatsApp wajib diisi.');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Format email belum valid.');
+    if(!row.user_id && memberStatus === 'active') throw new Error('Gunakan ACC + BUAT AKSES untuk mengaktifkan member baru.');
 
-    if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){
-      alert('Format email belum valid.');
-      $('manageEmail').focus();
-      return;
-    }
-
-    if(!row.user_id && memberStatus === 'active'){
-      alert('Pendaftar ini belum punya akun member. Gunakan ACC + BUAT AKSES.');
-      return;
-    }
-
-    const emailChanged = String(row.email || '').toLowerCase() !== email;
-    if(row.user_id && emailChanged){
-      const ok = confirm(
-        'Email login member akan diganti dari ' + row.email + ' menjadi ' + email +
-        '. Setelah ini member harus login memakai email baru. Lanjutkan?'
-      );
-      if(!ok) return;
-    }
+    const emailChanged = String(row.email||'').toLowerCase() !== email;
+    if(row.user_id && emailChanged && !confirm(
+      'Email login member akan diganti dari ' + row.email + ' menjadi ' + email + '. Lanjutkan?'
+    )) return;
 
     const oldText = $('saveManageBtn').textContent;
     $('saveManageBtn').disabled = true;
     $('saveManageBtn').textContent = 'MENYIMPAN...';
 
     try{
-      const identityResponse = await fetch(SUPABASE_URL + '/functions/v1/admin-update-member', {
+      const res = await fetch(SUPABASE_URL + '/functions/v1/admin-update-member', {
         method:'POST',
         headers:{
-          'apikey': SUPABASE_KEY,
+          'apikey':SUPABASE_KEY,
           'Authorization':'Bearer ' + session.access_token,
           'Content-Type':'application/json'
         },
-        body:JSON.stringify({
-          registration_id:id,
-          full_name:fullName,
-          email,
-          whatsapp
-        })
+        body:JSON.stringify({registration_id:id,full_name:fullName,email,whatsapp})
       });
-
-      let identityData = null;
-      const identityText = await identityResponse.text();
-      if(identityText){
-        try{ identityData = JSON.parse(identityText); }catch(_){ identityData = null; }
-      }
-
-      if(!identityResponse.ok){
-        throw new Error(identityData?.error || 'Gagal menyinkronkan data member.');
-      }
+      const data = await res.json().catch(()=>null);
+      if(!res.ok) throw new Error(data?.error || 'Gagal menyinkronkan data member.');
 
       await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
         method:'PATCH',
@@ -780,135 +936,225 @@ Silakan login dan simpan data akses ini ya.`;
 
       $('manageModal').classList.add('hidden');
       await loadRegistrations();
-
-      if(row.user_id && emailChanged){
-        alert('Berhasil. Email login member sekarang: ' + email);
-      }
     }finally{
       $('saveManageBtn').disabled = false;
       $('saveManageBtn').textContent = oldText;
     }
   }
 
-
   async function approveOrResetAccess(row){
     const res = await fetch(SUPABASE_URL + '/functions/v1/admin-approve-member', {
       method:'POST',
       headers:{
-        'apikey': SUPABASE_KEY,
+        'apikey':SUPABASE_KEY,
         'Authorization':'Bearer ' + session.access_token,
         'Content-Type':'application/json'
       },
       body:JSON.stringify({registration_id:row.id})
     });
-
-    let data = null;
-    const text = await res.text();
-    if(text){
-      try{ data = JSON.parse(text); }catch(_){}
-    }
-
-    if(!res.ok){
-      throw new Error(data?.error || 'Gagal membuat akses member.');
-    }
-
+    const data = await res.json().catch(()=>null);
+    if(!res.ok) throw new Error(data?.error || 'Gagal membuat akses member.');
     return data;
   }
 
   async function updateRegistration(id, action){
     const row = registrations.find(r => r.id === id);
     if(!row) return;
+    if(!canManageSales()) throw new Error('Role ini tidak punya izin mengubah penjualan.');
 
-    if(action === 'manage'){
-      openManageModal(row);
-      return;
-    }
+    if(action === 'manage'){ openManageModal(row); return; }
 
     if(action === 'approve'){
-      if(session?.user?.email && row.email.toLowerCase() === session.user.email.toLowerCase()){
-        alert('Email pendaftar ini sama dengan email ADMIN. Gunakan email member lain.');
-        return;
-      }
-
       if(!confirm('ACC pembayaran dan buat akses member untuk ' + row.full_name + '?')) return;
-
       const access = await approveOrResetAccess(row);
       await loadRegistrations();
-      openCredentialModal(row, access.password, false);
+      openCredentialModal(row, access.password);
       return;
     }
 
     if(action === 'reset-access'){
       if(!confirm('Buat password baru untuk ' + row.full_name + '? Password lama akan berhenti berlaku.')) return;
-
       const access = await approveOrResetAccess(row);
       await loadRegistrations();
-      openCredentialModal(row, access.password, false);
+      openCredentialModal(row, access.password);
       return;
     }
 
     if(action === 'reject'){
       if(!confirm('Tolak pendaftaran ' + row.full_name + '?')) return;
-
       await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
-          payment_status:'rejected',
-          member_status:'pending'
-        })
+        method:'PATCH', headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({payment_status:'rejected',member_status:'pending'})
       });
-
-      await loadRegistrations();
-      return;
+      await loadRegistrations(); return;
     }
 
     if(action === 'suspend'){
       if(!confirm('Suspend akses member ' + row.full_name + '?')) return;
-
       await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
+        method:'PATCH', headers:{'Prefer':'return=minimal'},
         body:JSON.stringify({member_status:'suspended'})
       });
-
-      await loadRegistrations();
-      return;
+      await loadRegistrations(); return;
     }
 
     if(action === 'activate'){
       if(!confirm('Aktifkan kembali akses ' + row.full_name + '?')) return;
-
       await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
+        method:'PATCH', headers:{'Prefer':'return=minimal'},
         body:JSON.stringify({member_status:'active'})
       });
+      await loadRegistrations(); return;
+    }
 
+    if(action === 'delete'){
+      if(row.user_id || ['active','suspended'].includes(row.member_status)){
+        const typed = prompt('HAPUS TOTAL akan menghapus pendaftaran, pembayaran, profile, dan akun login member. Ketik HAPUS.');
+        if(typed !== 'HAPUS') return;
+      }else if(!confirm('Hapus pendaftaran ' + row.full_name + ' secara permanen?')) return;
+
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'DELETE', headers:{'Prefer':'return=minimal'}
+      });
       await loadRegistrations();
+    }
+  }
+
+  async function loadTeamMembers(){
+    if(currentTeam?.role !== 'owner') return;
+    teamMembers = await api(
+      '/rest/v1/admin_team_members?select=id,auth_user_id,full_name,email,role,status,created_at&order=created_at.asc'
+    ) || [];
+    renderTeam();
+  }
+
+  function roleLabel(role){
+    return role === 'owner' ? 'OWNER' : role === 'admin' ? 'ADMIN' : role === 'sales' ? 'SALES' : 'FINANCE';
+  }
+
+  function renderTeam(){
+    $('teamEmpty').classList.toggle('hidden', teamMembers.length !== 0);
+    $('teamTableBody').innerHTML = teamMembers.map(t => {
+      const owner = t.role === 'owner';
+      const roleControl = owner
+        ? '<span class="role-pill">OWNER</span>'
+        : '<select class="team-select" data-team-role="' + t.id + '">' +
+            ['admin','sales','finance'].map(r =>
+              '<option value="'+r+'" '+(t.role===r?'selected':'')+'>'+roleLabel(r)+'</option>'
+            ).join('') +
+          '</select>';
+
+      const statusBtn = owner ? '' :
+        '<button class="action ' + (t.status==='active'?'suspend':'approve') + '" data-team-action="toggle" data-id="' + t.id + '">' +
+        (t.status==='active'?'NONAKTIFKAN':'AKTIFKAN') + '</button>';
+
+      const deleteBtn = owner ? '' :
+        '<button class="action delete" data-team-action="delete" data-id="' + t.id + '">HAPUS</button>';
+
+      return '<tr>' +
+        '<td><div class="name">'+esc(t.full_name)+'</div><div class="meta">'+esc(t.email)+'</div></td>' +
+        '<td>'+roleControl+'</td>' +
+        '<td>'+pill(t.status)+'</td>' +
+        '<td>'+(t.auth_user_id?'<span class="pill active">READY</span>':'<span class="pill pending">BELUM</span>')+'</td>' +
+        '<td><div class="actions">'+statusBtn+deleteBtn+'</div></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  function openTeamCredential(data){
+    $('teamCredName').textContent = data.full_name;
+    $('teamCredRole').textContent = roleLabel(data.role);
+    $('teamCredEmail').textContent = data.email;
+    $('teamCredPassword').textContent = data.password;
+
+    const url = location.origin.replace(/\/$/,'') + '/admin/';
+    const message =
+      'AKSES TIM BADAI\n\n' +
+      'Link: ' + url + '\n' +
+      'Role: ' + roleLabel(data.role) + '\n' +
+      'Email: ' + data.email + '\n' +
+      'Password: ' + data.password;
+
+    $('copyTeamCredentialBtn').onclick = async () => {
+      try{
+        await navigator.clipboard.writeText(message);
+        $('copyTeamCredentialBtn').textContent = 'TERSALIN ✓';
+        setTimeout(()=> $('copyTeamCredentialBtn').textContent='SALIN AKSES TIM',1600);
+      }catch(_){ alert(message); }
+    };
+
+    $('teamCredentialModal').classList.remove('hidden');
+  }
+
+  async function addTeamMember(){
+    if(currentTeam?.role !== 'owner') throw new Error('Hanya Owner yang dapat menambah tim.');
+
+    const fullName = $('teamName').value.trim();
+    const email = $('teamEmail').value.trim().toLowerCase();
+    const role = $('teamRole').value;
+    if(!fullName || !email || !role) throw new Error('Lengkapi data tim.');
+
+    $('addTeamBtn').disabled = true;
+    $('teamStatus').textContent = 'Membuat akun tim...';
+
+    try{
+      const res = await fetch(SUPABASE_URL + '/functions/v1/admin-create-team-member', {
+        method:'POST',
+        headers:{
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer ' + session.access_token,
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({full_name:fullName,email,role})
+      });
+      const data = await res.json().catch(()=>null);
+      if(!res.ok) throw new Error(data?.error || 'Gagal menambah tim.');
+
+      $('teamForm').reset();
+      $('teamStatus').textContent = 'Tim berhasil ditambahkan.';
+      await loadTeamMembers();
+      openTeamCredential(data);
+    }finally{
+      $('addTeamBtn').disabled = false;
+    }
+  }
+
+  async function changeTeamRole(id, role){
+    await api('/rest/v1/admin_team_members?id=eq.' + encodeURIComponent(id), {
+      method:'PATCH',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({role})
+    });
+    await loadTeamMembers();
+  }
+
+  async function teamAction(id, action){
+    const row = teamMembers.find(t=>t.id===id);
+    if(!row || row.role === 'owner') return;
+
+    if(action === 'toggle'){
+      const next = row.status === 'active' ? 'inactive' : 'active';
+      if(!confirm((next==='inactive'?'Nonaktifkan ':'Aktifkan ') + row.full_name + '?')) return;
+      await api('/rest/v1/admin_team_members?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH', headers:{'Prefer':'return=minimal'}, body:JSON.stringify({status:next})
+      });
+      await loadTeamMembers();
       return;
     }
 
     if(action === 'delete'){
-      if(row.user_id || row.member_status === 'active' || row.member_status === 'suspended'){
-        const typed = prompt('HAPUS TOTAL akan menghapus pendaftaran, pembayaran, profile, dan akun login member. Ketik HAPUS untuk melanjutkan.');
-        if(typed !== 'HAPUS') return;
-      }else{
-        if(!confirm('Hapus pendaftaran ' + row.full_name + ' secara permanen?')) return;
-      }
-
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'DELETE',
-        headers:{'Prefer':'return=minimal'}
+      if(!confirm('Hapus ' + row.full_name + ' dari tim BADAI? Akun tidak akan bisa masuk dashboard lagi.')) return;
+      await api('/rest/v1/admin_team_members?id=eq.' + encodeURIComponent(id), {
+        method:'DELETE', headers:{'Prefer':'return=minimal'}
       });
-
-      await loadRegistrations();
+      await loadTeamMembers();
     }
   }
 
   function logout(){
     localStorage.removeItem(STORAGE_KEY);
     session = null;
+    currentTeam = null;
     authView.classList.remove('hidden');
     dashboardView.classList.add('hidden');
     logoutBtn.classList.add('hidden');
@@ -916,22 +1162,31 @@ Silakan login dan simpan data akses ini ya.`;
 
   $('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = $('email').value.trim().toLowerCase();
-    const password = $('password').value;
     try{
-      await login(email,password);
-    }catch(err){
-      setAuthStatus(err.message, 'error');
-    }
+      await login($('email').value.trim().toLowerCase(), $('password').value);
+    }catch(err){ setAuthStatus(err.message,'error'); }
+  });
+
+  $('signupBtn').addEventListener('click', signup);
+  logoutBtn.addEventListener('click', logout);
+  $('refreshBtn').addEventListener('click', loadRegistrations);
+  $('searchBox').addEventListener('input', renderSales);
+  $('statusFilter').addEventListener('change', renderSales);
+  $('financeReportType').addEventListener('change', renderFinanceReport);
+
+  document.querySelectorAll('[data-page]').forEach(btn => {
+    btn.addEventListener('click', () => switchPage(btn.dataset.page));
+  });
+
+  $('teamForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    try{ await addTeamMember(); }
+    catch(err){ $('teamStatus').textContent = err.message; }
   });
 
   $('closeManageBtn').addEventListener('click', () => $('manageModal').classList.add('hidden'));
   $('saveManageBtn').addEventListener('click', async () => {
-    try{
-      await saveManage();
-    }catch(err){
-      alert('Gagal menyimpan: ' + err.message);
-    }
+    try{ await saveManage(); }catch(err){ alert('Gagal menyimpan: ' + err.message); }
   });
   $('manageModal').addEventListener('click', (e) => {
     if(e.target === $('manageModal')) $('manageModal').classList.add('hidden');
@@ -942,23 +1197,34 @@ Silakan login dan simpan data akses ini ya.`;
     if(e.target === $('credentialModal')) $('credentialModal').classList.add('hidden');
   });
 
-  $('signupBtn').addEventListener('click', signup);
-  logoutBtn.addEventListener('click', logout);
-  $('refreshBtn').addEventListener('click', loadRegistrations);
-  $('searchBox').addEventListener('input', render);
-  $('statusFilter').addEventListener('change', render);
+  $('closeTeamCredentialBtn').addEventListener('click', () => $('teamCredentialModal').classList.add('hidden'));
+  $('teamCredentialModal').addEventListener('click', (e) => {
+    if(e.target === $('teamCredentialModal')) $('teamCredentialModal').classList.add('hidden');
+  });
+
+  document.addEventListener('change', async (e) => {
+    const sel = e.target.closest('[data-team-role]');
+    if(!sel) return;
+    try{ await changeTeamRole(sel.dataset.teamRole, sel.value); }
+    catch(err){ alert('Gagal mengubah role: ' + err.message); }
+  });
 
   document.addEventListener('click', async (e) => {
+    const teamBtn = e.target.closest('[data-team-action]');
+    if(teamBtn){
+      teamBtn.disabled = true;
+      try{ await teamAction(teamBtn.dataset.id, teamBtn.dataset.teamAction); }
+      catch(err){ alert('Aksi tim gagal: ' + err.message); }
+      finally{ teamBtn.disabled = false; }
+      return;
+    }
+
     const btn = e.target.closest('[data-action]');
     if(!btn) return;
     btn.disabled = true;
-    try{
-      await updateRegistration(btn.dataset.id, btn.dataset.action);
-    }catch(err){
-      alert('Aksi gagal: ' + err.message);
-    }finally{
-      btn.disabled = false;
-    }
+    try{ await updateRegistration(btn.dataset.id, btn.dataset.action); }
+    catch(err){ alert('Aksi gagal: ' + err.message); }
+    finally{ btn.disabled = false; }
   });
 
   try{
