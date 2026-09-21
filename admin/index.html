@@ -2340,10 +2340,6 @@ main.shell{
       throw new Error('Format email belum valid.');
     }
 
-    if(password && password.length < 8){
-      throw new Error('Password baru minimal 8 karakter.');
-    }
-
     if(password && !row.user_id){
       throw new Error('Pendaftar ini belum punya akun member. ACC dulu untuk membuat akun.');
     }
