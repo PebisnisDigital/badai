@@ -2673,7 +2673,12 @@ Mohon dibantu proses pendaftarannya ya.`
         body: JSON.stringify({
           full_name: nama,
           email: email,
-          whatsapp: wa
+          whatsapp: wa,
+          referred_by_code: (
+            window.BADAI_AFFILIATE_REF ||
+            localStorage.getItem('badai_affiliate_ref') ||
+            null
+          )
         })
       });
 
