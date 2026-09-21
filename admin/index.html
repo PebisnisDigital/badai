@@ -535,8 +535,7 @@ tr:last-child td{border-bottom:0}
             <button class="action manage" data-action="manage" data-id="${r.id}">KELOLA</button>
             ${!r.user_id && r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
             ${r.user_id ? `<button class="action manage" data-action="reset-access" data-id="${r.id}">RESET AKSES</button>` : ''}
-            ${r.user_id ? `<button class="action manage" data-action="reset-access" data-id="${r.id}">RESET AKSES</button>` : ''}
-          ${r.user_id && r.member_status === 'active' ? `<button class="action suspend" data-action="suspend" data-id="${r.id}">SUSPEND</button>` : ''}
+            ${r.user_id && r.member_status === 'active' ? `<button class="action suspend" data-action="suspend" data-id="${r.id}">SUSPEND</button>` : ''}
             ${r.user_id && r.member_status === 'suspended' ? `<button class="action approve" data-action="activate" data-id="${r.id}">AKTIFKAN</button>` : ''}
             ${!r.user_id && r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
             <button class="action delete" data-action="delete" data-id="${r.id}">HAPUS</button>
