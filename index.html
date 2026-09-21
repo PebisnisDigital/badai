@@ -3503,15 +3503,23 @@ Mohon dibantu proses pendaftarannya ya.`
     }
   }
 
-  function stopQrisPolling(){
+  function stopQrisStatusPolling(){
     if(qrisPollTimer){
       clearTimeout(qrisPollTimer);
       qrisPollTimer = null;
     }
+  }
+
+  function stopQrisCountdown(){
     if(qrisCountdownTimer){
       clearInterval(qrisCountdownTimer);
       qrisCountdownTimer = null;
     }
+  }
+
+  function stopAllQrisTimers(){
+    stopQrisStatusPolling();
+    stopQrisCountdown();
   }
 
   function updateQrisCountdown(){
@@ -3567,7 +3575,7 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function showRegistrationForm(){
-    stopQrisPolling();
+    stopAllQrisTimers();
     qrisPublicToken = '';
     qrisExpiresAt = 0;
 
@@ -3646,7 +3654,7 @@ Mohon dibantu proses pendaftarannya ya.`
       const retry = document.getElementById('qrisRetryBtn');
 
       if(status === 'success'){
-        stopQrisPolling();
+        stopAllQrisTimers();
         if(statusEl){
           statusEl.className = 'qris-stage-status success';
           statusEl.innerHTML = '<span>✓</span><div><b>Pembayaran berhasil!</b><small>Akun member sedang diaktifkan. Kamu akan masuk otomatis...</small></div>';
@@ -3666,7 +3674,7 @@ Mohon dibantu proses pendaftarannya ya.`
       }
 
       if(status === 'expired' || status === 'failed'){
-        stopQrisPolling();
+        stopAllQrisTimers();
         if(statusEl){
           statusEl.className = 'qris-stage-status failed';
           statusEl.innerHTML = '<span>!</span><div><b>' + (status === 'expired' ? 'QRIS kedaluwarsa' : 'Pembayaran gagal') + '</b><small>Silakan buat QR baru dan coba lagi.</small></div>';
@@ -3682,7 +3690,7 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function scheduleQrisCheck(delay=22000){
-    stopQrisPolling();
+    stopQrisStatusPolling();
     qrisPollTimer = setTimeout(checkQrisPayment,delay);
   }
 
@@ -3770,7 +3778,7 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function closeRegistrationModal(){
-    stopQrisPolling();
+    stopAllQrisTimers();
     registrationModal?.classList.remove('open');
     registrationModal?.setAttribute('aria-hidden','true');
     document.body.classList.remove('register-modal-open');
