@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/akses",
+      "destination": "/akses/index.html"
+    },
+    {
+      "source": "/akses/",
+      "destination": "/akses/index.html"
+    },
+    {
+      "source": "/:affiliate",
+      "destination": "/index.html"
+    }
+  ]
+}
