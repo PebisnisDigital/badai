@@ -242,7 +242,7 @@ button{font:inherit}
 .footer{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);
   width:min(100%,700px);height:62px;background:rgba(255,255,255,.98);
-  border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(var(--member-nav-count,4),1fr);
   padding:max(4px,env(safe-area-inset-bottom)) 8px 4px;z-index:30;
   backdrop-filter:blur(16px);
 }
@@ -1072,6 +1072,42 @@ body{
 .account-status.ok{color:#7fdda5}
 .account-status.error{color:#ff8d8d}
 
+
+.affiliate-pro-pill{
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:0 8px;
+  border-radius:999px;
+  background:#23101a;
+  border:1px solid #6d2d50;
+  color:#ff8fc5;
+  font:900 8px "Raleway";
+  margin-bottom:8px;
+}
+.member-plan-card{
+  display:grid;
+  gap:3px;
+  padding:11px 13px;
+  margin-bottom:10px;
+  border-radius:15px;
+  border:1px solid #292929;
+  background:linear-gradient(180deg,#121212,#0c0c0c);
+}
+.member-plan-card span{
+  color:#777;
+  font:900 7px "Raleway";
+  letter-spacing:.08em;
+}
+.member-plan-card strong{
+  color:#fff;
+  font:900 16px "Raleway";
+}
+.member-plan-card small{
+  color:#999;
+  font-size:9px;
+}
+
 </style>
 <script src="./auth.js"></script>
 </head>
@@ -1231,20 +1267,23 @@ body{
 
     <section id="afiliasi" class="screen">
       <div class="center">
-        <h1 class="title">Afiliasi</h1>
-        <p class="subtitle">Bagikan Komunitas BADAI, dapat komisi 50% dari penjualan yang valid.</p>
+        <h1 class="title">Afiliasi BADAI</h1>
+        <p class="subtitle">Fitur khusus member Paket PRO.</p>
       </div>
+
       <div class="affbox">
+        <div class="affiliate-pro-pill">PAKET PRO • AKTIF</div>
         <h2>Link Afiliasi Kamu</h2>
-        <p>Bagikan link ini ke teman atau calon pembeli.</p>
-        <div class="linkbox">https://pebisnis.digital/badai?ref=USERNAME</div>
+        <p>Bagikan link ini untuk mengajak orang bergabung ke Komunitas BADAI.</p>
+        <div id="affiliateLink" class="linkbox">Memuat link afiliasi...</div>
         <button class="copy" onclick="copyLink()">SALIN LINK</button>
       </div>
+
       <div class="stats">
-        <div class="stat">💸<b>Komisi</b><span>50% per penjualan valid</span></div>
-        <div class="stat">📊<b>Penjualan</b><span>Lihat hasil penjualan kamu</span></div>
-        <div class="stat">📣<b>Bahan Promosi</b><span>Caption, gambar, dan video</span></div>
-        <div class="stat">🏦<b>Pencairan</b><span>Ajukan pencairan komisi</span></div>
+        <div class="stat">🔗<b>Kode Afiliasi</b><span id="affiliateCode">-</span></div>
+        <div class="stat">✅<b>Status</b><span>Program Afiliasi Aktif</span></div>
+        <div class="stat">📊<b>Penjualan</b><span>Riwayat referral akan ditambahkan berikutnya</span></div>
+        <div class="stat">💸<b>Komisi</b><span>Pengaturan komisi akan mengikuti sistem BADAI</span></div>
       </div>
     </section>
 
@@ -1253,6 +1292,12 @@ body{
         <div class="account-kicker">AKUN MEMBER BADAI</div>
         <h1>Pengaturan Akun</h1>
         <p>Ubah nama, email login, WhatsApp, dan password kamu sendiri.</p>
+      </div>
+
+      <div class="member-plan-card">
+        <span>PAKET AKTIF</span>
+        <strong id="memberPlanName">NEWBIE</strong>
+        <small id="memberPlanDesc">Belajar Ilmu AI + Update</small>
       </div>
 
       <form id="memberAccountForm" class="account-card">
@@ -1293,6 +1338,9 @@ body{
     </button>
     <button data-screen="jaluruntung" onclick="show('jaluruntung')">
       <span class="emoji">💰</span><span class="label">Jalur Untung</span>
+    </button>
+    <button id="affiliateNavButton" data-screen="afiliasi" onclick="show('afiliasi')" style="display:none">
+      <span class="emoji">🔗</span><span class="label">Afiliasi</span>
     </button>
     <button data-screen="akun" onclick="show('akun')">
       <span class="emoji">👤</span><span class="label">Akun</span>
@@ -1770,7 +1818,11 @@ function openChapter(i){
 }
 
 function copyLink(){
-  const link="https://pebisnis.digital/badai?ref=USERNAME";
+  const link = window.BADAI_AFFILIATE_LINK || '';
+  if(!link){
+    alert("Link afiliasi belum tersedia.");
+    return;
+  }
   navigator.clipboard?.writeText(link);
   alert("Link afiliasi sudah disalin.");
 }
