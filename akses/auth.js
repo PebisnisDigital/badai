@@ -48,6 +48,7 @@
   let currentUser = null;
   let currentProfile = null;
   let membershipRefreshBusy = false;
+  let currentAffiliateMaterials = [];
 
   function saveSession(data){
     session = data;
@@ -225,6 +226,92 @@
     });
   }
 
+  function formatAffiliateRupiah(value){
+    return new Intl.NumberFormat('id-ID',{
+      style:'currency',
+      currency:'IDR',
+      maximumFractionDigits:0
+    }).format(Number(value || 0));
+  }
+
+  function escapeAffiliateHtml(value){
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+  }
+
+  function renderAffiliateMaterials(materials){
+    currentAffiliateMaterials = materials || [];
+    const box = document.getElementById('affiliateMaterialsMember');
+    if(!box) return;
+
+    if(!currentAffiliateMaterials.length){
+      box.innerHTML = '<div class="affiliate-empty">Belum ada bahan promosi dari admin.</div>';
+      return;
+    }
+
+    box.innerHTML = currentAffiliateMaterials.map(item => {
+      const type = item.material_type;
+      let body = '';
+
+      if(type === 'text'){
+        body = `
+          <div class="affiliate-material-text">${escapeAffiliateHtml(item.content || '')}</div>
+          <div class="affiliate-material-buttons one">
+            <button type="button" onclick="copyAffiliateMaterialText('${item.id}')">SALIN TEKS</button>
+          </div>
+        `;
+      }else if(type === 'image'){
+        body = `
+          <img class="affiliate-material-image" src="${escapeAffiliateHtml(item.media_url || '')}" alt="${escapeAffiliateHtml(item.title || 'Bahan promosi')}"/>
+          <div class="affiliate-material-link">${escapeAffiliateHtml(item.media_url || '')}</div>
+          <div class="affiliate-material-buttons">
+            <a href="${escapeAffiliateHtml(item.media_url || '')}" target="_blank" rel="noopener">BUKA GAMBAR</a>
+            <button type="button" onclick="copyAffiliateMaterialLink('${item.id}')">SALIN LINK</button>
+          </div>
+        `;
+      }else{
+        body = `
+          <div class="affiliate-material-link">${escapeAffiliateHtml(item.media_url || '')}</div>
+          <div class="affiliate-material-buttons">
+            <a href="${escapeAffiliateHtml(item.media_url || '')}" target="_blank" rel="noopener">BUKA VIDEO</a>
+            <button type="button" onclick="copyAffiliateMaterialLink('${item.id}')">SALIN LINK</button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="affiliate-material-card">
+          <span class="mat-type">${escapeAffiliateHtml(type)}</span>
+          <h3>${escapeAffiliateHtml(item.title)}</h3>
+          ${body}
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.copyAffiliateMaterialText = async function(id){
+    const item = currentAffiliateMaterials.find(x => x.id === id);
+    if(!item?.content) return;
+    try{
+      await navigator.clipboard.writeText(item.content);
+      alert('Teks promosi sudah disalin.');
+    }catch(_){
+      alert(item.content);
+    }
+  };
+
+  window.copyAffiliateMaterialLink = async function(id){
+    const item = currentAffiliateMaterials.find(x => x.id === id);
+    if(!item?.media_url) return;
+    try{
+      await navigator.clipboard.writeText(item.media_url);
+      alert('Link bahan promosi sudah disalin.');
+    }catch(_){
+      alert(item.media_url);
+    }
+  };
+
   async function configureMembership(profile){
     const plan = profile?.membership_plan === 'pro' ? 'pro' : 'newbie';
     const planName = document.getElementById('memberPlanName');
@@ -253,8 +340,16 @@
 
       const linkEl = document.getElementById('affiliateLink');
       const codeEl = document.getElementById('affiliateCode');
+      const salesEl = document.getElementById('affiliateSalesCount');
+      const commissionEl = document.getElementById('affiliateCommissionTotal');
+      const rateEl = document.getElementById('affiliateCommissionRate');
+
       if(linkEl) linkEl.textContent = 'Khusus Paket Untung.';
       if(codeEl) codeEl.textContent = '-';
+      if(salesEl) salesEl.textContent = '0 sales';
+      if(commissionEl) commissionEl.textContent = 'Rp0';
+      if(rateEl) rateEl.textContent = 'Komisi: -';
+      renderAffiliateMaterials([]);
       return;
     }
 
@@ -262,30 +357,60 @@
     if(footer) footer.style.setProperty('--member-nav-count','5');
 
     try{
-      const rows = await api(
-        '/rest/v1/affiliate_accounts?user_id=eq.' + encodeURIComponent(profile.id) +
-        '&status=eq.active&select=affiliate_code,status'
-      );
+      const results = await Promise.all([
+        api(
+          '/rest/v1/affiliate_accounts?user_id=eq.' + encodeURIComponent(profile.id) +
+          '&status=eq.active&select=affiliate_code,status'
+        ),
+        api(
+          '/rest/v1/affiliate_sales?affiliate_user_id=eq.' + encodeURIComponent(profile.id) +
+          '&status=eq.valid&select=id,sale_amount,commission_amount,sale_at&order=sale_at.desc'
+        ),
+        api('/rest/v1/affiliate_settings?id=eq.1&select=commission_type,commission_value,inactivity_months'),
+        api('/rest/v1/affiliate_materials?active=eq.true&select=id,material_type,title,content,media_url,sort_order,created_at&order=sort_order.asc,created_at.desc')
+      ]);
 
-      const affiliate = rows?.[0];
+      const affiliate = results[0]?.[0];
+      const sales = results[1] || [];
+      const settings = results[2]?.[0] || null;
+      const materials = results[3] || [];
+
       const linkEl = document.getElementById('affiliateLink');
       const codeEl = document.getElementById('affiliateCode');
+      const salesEl = document.getElementById('affiliateSalesCount');
+      const commissionEl = document.getElementById('affiliateCommissionTotal');
+      const rateEl = document.getElementById('affiliateCommissionRate');
 
       if(!affiliate){
         if(linkEl) linkEl.textContent = 'Akun afiliasi belum aktif. Hubungi admin BADAI.';
         if(codeEl) codeEl.textContent = '-';
+        renderAffiliateMaterials(materials);
         return;
       }
 
       const affiliateLink =
         location.origin.replace(/\/$/,'') + '/' + encodeURIComponent(affiliate.affiliate_code);
 
+      const commissionTotal = sales.reduce((sum,s)=>sum+Number(s.commission_amount||0),0);
+
       window.BADAI_AFFILIATE_LINK = affiliateLink;
       if(linkEl) linkEl.textContent = affiliateLink;
       if(codeEl) codeEl.textContent = affiliate.affiliate_code;
-    }catch(_){
+      if(salesEl) salesEl.textContent = sales.length + ' sales';
+      if(commissionEl) commissionEl.textContent = formatAffiliateRupiah(commissionTotal);
+
+      if(rateEl && settings){
+        rateEl.textContent = settings.commission_type === 'percent'
+          ? 'Komisi: ' + settings.commission_value + '%'
+          : 'Komisi: ' + formatAffiliateRupiah(settings.commission_value);
+      }
+
+      renderAffiliateMaterials(materials);
+    }catch(err){
       const linkEl = document.getElementById('affiliateLink');
-      if(linkEl) linkEl.textContent = 'Gagal memuat link afiliasi.';
+      if(linkEl) linkEl.textContent = 'Gagal memuat data afiliasi.';
+      renderAffiliateMaterials([]);
+      console.warn('Gagal memuat affiliate:', err?.message || err);
     }
   }
 
