@@ -1244,6 +1244,75 @@ main.shell{
   .affiliate-overview-metrics{grid-template-columns:1fr 1fr}
 }
 
+
+.marketing-category-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:5px;
+  margin:0 0 9px;
+  position:sticky;
+  top:58px;
+  z-index:25;
+  padding:5px;
+  border:1px solid #242424;
+  border-radius:14px;
+  background:rgba(10,10,10,.96);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.marketing-category-tab{
+  min-width:0;
+  min-height:47px;
+  border:1px solid transparent;
+  border-radius:10px;
+  background:transparent;
+  color:#777;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  padding:4px 3px;
+  cursor:pointer;
+}
+.marketing-category-tab span{
+  font-size:15px;
+  line-height:1;
+}
+.marketing-category-tab b{
+  font-size:7px;
+  line-height:1.15;
+  text-align:center;
+}
+.marketing-category-tab.active{
+  color:#fff;
+  background:#211018;
+  border-color:#5b2945;
+}
+.marketing-category-tab.active b{color:#ff91c5}
+.marketing-category-panel{display:none}
+.marketing-category-panel.active{
+  display:grid;
+  gap:8px;
+}
+.marketing-save-wrap{
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px solid #202020;
+}
+@media(max-width:410px){
+  .marketing-category-tabs{
+    top:54px;
+    gap:3px;
+    padding:4px;
+  }
+  .marketing-category-tab{
+    min-height:44px;
+  }
+  .marketing-category-tab span{font-size:13px}
+  .marketing-category-tab b{font-size:6.3px}
+}
+
 </style>
 </head>
 <body>
@@ -1385,123 +1454,167 @@ main.shell{
       <div class="page-title">
         <div>
           <h2>Marketing</h2>
-          <p>Atur harga, promo, dan pesan WhatsApp BADAI dari satu tempat.</p>
+          <p>Atur harga, notifikasi, afiliasi, dan bahan promosi BADAI.</p>
         </div>
       </div>
 
+      <div class="marketing-category-tabs">
+        <button class="marketing-category-tab active" data-marketing-tab="pricing" type="button">
+          <span>💰</span><b>Harga & Kupon</b>
+        </button>
+        <button class="marketing-category-tab" data-marketing-tab="notifications" type="button">
+          <span>💬</span><b>Notifikasi</b>
+        </button>
+        <button class="marketing-category-tab" data-marketing-tab="affiliate" type="button">
+          <span>🔗</span><b>Afiliasi</b>
+        </button>
+        <button class="marketing-category-tab" data-marketing-tab="materials" type="button">
+          <span>🧰</span><b>Bahan Promosi</b>
+        </button>
+      </div>
+
       <form id="marketingForm" class="marketing-stack">
-        <div class="marketing-card">
-          <div class="marketing-card-head">
-            <span class="marketing-number">1</span>
-            <div><h3>Atur Harga</h3><p>Harga ini dipakai untuk pendaftaran baru.</p></div>
-          </div>
-          <div class="marketing-price-grid">
-            <div class="manage-field">
-              <label>Harga Paket Pemula</label>
-              <input id="marketingNewbiePrice" type="number" min="1" step="1" inputmode="numeric" required/>
-              <div class="price-plan-note">Belajar Ilmu AI + Update</div>
+
+        <div class="marketing-category-panel active" data-marketing-panel="pricing">
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">1</span>
+              <div><h3>Atur Harga</h3><p>Atur harga Paket Pemula dan Paket Untung.</p></div>
             </div>
-            <div class="manage-field">
-              <label>Harga Paket Untung</label>
-              <input id="marketingProPrice" type="number" min="1" step="1" inputmode="numeric" required/>
-              <div class="price-plan-note">Semua Paket Pemula + Program Afiliasi</div>
+
+            <div class="marketing-price-grid">
+              <div class="manage-field">
+                <label>Harga Paket Pemula</label>
+                <input id="marketingNewbiePrice" type="number" min="1" step="1" inputmode="numeric" required/>
+                <div class="price-plan-note">Belajar Ilmu AI + Update</div>
+              </div>
+
+              <div class="manage-field">
+                <label>Harga Paket Untung</label>
+                <input id="marketingProPrice" type="number" min="1" step="1" inputmode="numeric" required/>
+                <div class="price-plan-note">Semua Paket Pemula + Program Afiliasi</div>
+              </div>
+            </div>
+
+            <div class="template-help">
+              Untuk sementara pendaftaran dari landing page yang lama tetap menggunakan harga
+              <b>Paket Pemula</b> sampai pilihan paket dipasang di landing page.
             </div>
           </div>
-          <div class="template-help">Untuk sementara pendaftaran dari landing page yang lama tetap menggunakan harga <b>Paket Pemula</b> sampai pilihan paket dipasang di landing page.</div>
-        </div>
 
-        <div class="marketing-card">
-          <div class="marketing-card-head">
-            <span class="marketing-number">2</span>
-            <div><h3>Kupon Diskon</h3><p>Buat beberapa kode promo dan aktifkan sesuai kebutuhan.</p></div>
-          </div>
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">2</span>
+              <div><h3>Kupon Diskon</h3><p>Buat kode promo dan aktifkan sesuai kebutuhan.</p></div>
+            </div>
 
-          <div class="coupon-form">
-            <input id="couponCode" type="text" placeholder="Kode, contoh: BADAI20"/>
-            <select id="couponType">
-              <option value="percent">Persen (%)</option>
-              <option value="fixed">Nominal (Rp)</option>
-            </select>
-            <input id="couponValue" type="number" min="1" inputmode="numeric" placeholder="Nilai"/>
-            <button id="addCouponBtn" type="button">+ TAMBAH</button>
-          </div>
-          <div id="couponList" class="coupon-list"></div>
-        </div>
-
-        <div class="marketing-card">
-          <div class="marketing-card-head">
-            <span class="marketing-number">3</span>
-            <div><h3>Notifikasi Daftar</h3><p>Pesan yang terbuka saat calon member selesai mengisi formulir.</p></div>
-          </div>
-          <div class="manage-field full">
-            <label>Pesan Pendaftaran</label>
-            <textarea id="marketingRegisterMessage" rows="8"></textarea>
-          </div>
-          <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[harga]</b></div>
-        </div>
-
-        <div class="marketing-card">
-          <div class="marketing-card-head">
-            <span class="marketing-number">4</span>
-            <div><h3>Notifikasi Follow Up</h3><p>Isi pesan untuk tombol FU 1, FU 2, dan FU 3 di Penjualan.</p></div>
-          </div>
-          <div class="manage-field full"><label>Follow Up 1</label><textarea id="marketingFollow1" rows="6"></textarea></div>
-          <div class="manage-field full"><label>Follow Up 2</label><textarea id="marketingFollow2" rows="6"></textarea></div>
-          <div class="manage-field full"><label>Follow Up 3</label><textarea id="marketingFollow3" rows="6"></textarea></div>
-          <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[harga]</b></div>
-        </div>
-
-        <div class="marketing-card">
-          <div class="marketing-card-head">
-            <span class="marketing-number">5</span>
-            <div><h3>Notifikasi Pendaftaran Berhasil</h3><p>Pesan akses yang dikirim setelah admin ACC member.</p></div>
-          </div>
-          <div class="manage-field full">
-            <label>Pesan Berhasil</label>
-            <textarea id="marketingSuccessMessage" rows="8"></textarea>
-          </div>
-          <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[password]</b> <b>[link]</b> <b>[harga]</b></div>
-        </div>
-
-        <div class="marketing-card">
-          <div class="marketing-card-head">
-            <span class="marketing-number">6</span>
-            <div><h3>Sistem Afiliasi</h3><p>Atur komisi, masa aktif, data affiliate, dan bahan promosi.</p></div>
-          </div>
-
-          <div class="affiliate-setting-grid">
-            <div class="manage-field">
-              <label>Tipe Komisi</label>
-              <select id="affiliateCommissionType">
-                <option value="percent">Persenan (%)</option>
+            <div class="coupon-form">
+              <input id="couponCode" type="text" placeholder="Kode, contoh: BADAI20"/>
+              <select id="couponType">
+                <option value="percent">Persen (%)</option>
                 <option value="fixed">Nominal (Rp)</option>
               </select>
+              <input id="couponValue" type="number" min="1" inputmode="numeric" placeholder="Nilai"/>
+              <button id="addCouponBtn" type="button">+ TAMBAH</button>
             </div>
-            <div class="manage-field">
-              <label>Nilai Komisi</label>
-              <input id="affiliateCommissionValue" type="number" min="1" step="1" inputmode="numeric"/>
+
+            <div id="couponList" class="coupon-list"></div>
+          </div>
+        </div>
+
+        <div class="marketing-category-panel" data-marketing-panel="notifications">
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">1</span>
+              <div><h3>Notifikasi Daftar</h3><p>Pesan yang terbuka setelah calon member mengisi formulir.</p></div>
             </div>
+
             <div class="manage-field full">
-              <label>Downgrade Otomatis Setelah</label>
-              <div class="affiliate-month-input">
-                <input id="affiliateInactivityMonths" type="number" min="1" max="60" step="1" inputmode="numeric"/>
-                <span>BULAN TANPA 1 SALES</span>
+              <label>Pesan Pendaftaran</label>
+              <textarea id="marketingRegisterMessage" rows="8"></textarea>
+            </div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[harga]</b></div>
+          </div>
+
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">2</span>
+              <div><h3>Notifikasi Follow Up</h3><p>Isi pesan untuk FU 1, FU 2, dan FU 3 di Penjualan.</p></div>
+            </div>
+
+            <div class="manage-field full"><label>Follow Up 1</label><textarea id="marketingFollow1" rows="6"></textarea></div>
+            <div class="manage-field full"><label>Follow Up 2</label><textarea id="marketingFollow2" rows="6"></textarea></div>
+            <div class="manage-field full"><label>Follow Up 3</label><textarea id="marketingFollow3" rows="6"></textarea></div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[harga]</b></div>
+          </div>
+
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">3</span>
+              <div><h3>Notifikasi Pendaftaran Berhasil</h3><p>Pesan akses setelah admin ACC member.</p></div>
+            </div>
+
+            <div class="manage-field full">
+              <label>Pesan Berhasil</label>
+              <textarea id="marketingSuccessMessage" rows="8"></textarea>
+            </div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[password]</b> <b>[link]</b> <b>[harga]</b></div>
+          </div>
+        </div>
+
+        <div class="marketing-category-panel" data-marketing-panel="affiliate">
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">1</span>
+              <div><h3>Pengaturan Afiliasi</h3><p>Atur komisi dan aturan downgrade otomatis.</p></div>
+            </div>
+
+            <div class="affiliate-setting-grid">
+              <div class="manage-field">
+                <label>Tipe Komisi</label>
+                <select id="affiliateCommissionType">
+                  <option value="percent">Persenan (%)</option>
+                  <option value="fixed">Nominal (Rp)</option>
+                </select>
               </div>
-              <div class="price-plan-note">Jika Paket Untung tidak menghasilkan sales selama masa ini, sistem otomatis memindahkannya ke Paket Pemula.</div>
+
+              <div class="manage-field">
+                <label>Nilai Komisi</label>
+                <input id="affiliateCommissionValue" type="number" min="1" step="1" inputmode="numeric"/>
+              </div>
+
+              <div class="manage-field full">
+                <label>Downgrade Otomatis Setelah</label>
+                <div class="affiliate-month-input">
+                  <input id="affiliateInactivityMonths" type="number" min="1" max="60" step="1" inputmode="numeric"/>
+                  <span>BULAN TANPA 1 SALES</span>
+                </div>
+                <div class="price-plan-note">
+                  Jika Paket Untung tidak menghasilkan sales selama masa ini,
+                  sistem otomatis memindahkannya ke Paket Pemula.
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="affiliate-admin-section">
+          <div class="marketing-card">
             <div class="affiliate-admin-title">
-              <div><b>Data Afiliasi</b><span>Ringkasan member Paket Untung dan hasil referral.</span></div>
+              <div>
+                <b>Data Afiliasi</b>
+                <span>Ringkasan member Paket Untung dan hasil referral.</span>
+              </div>
               <button id="refreshAffiliateBtn" type="button">REFRESH</button>
             </div>
+
             <div id="affiliateOverview" class="affiliate-overview"></div>
           </div>
+        </div>
 
-          <div class="affiliate-admin-section">
-            <div class="affiliate-admin-title">
-              <div><b>Bahan Promosi</b><span>Materi ini otomatis tampil di menu Afiliasi member.</span></div>
+        <div class="marketing-category-panel" data-marketing-panel="materials">
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">1</span>
+              <div><h3>Bahan Promosi</h3><p>Materi ini otomatis tampil di menu Afiliasi member Paket Untung.</p></div>
             </div>
 
             <div class="affiliate-material-form">
@@ -1510,6 +1623,7 @@ main.shell{
                 <option value="image">Gambar</option>
                 <option value="video">Video</option>
               </select>
+
               <input id="affiliateMaterialTitle" type="text" placeholder="Judul bahan promosi"/>
               <textarea id="affiliateMaterialContent" rows="5" placeholder="Tulis caption / teks promosi..."></textarea>
               <input id="affiliateMaterialUrl" class="hidden" type="url" placeholder="https://... link gambar atau video"/>
@@ -1520,8 +1634,10 @@ main.shell{
           </div>
         </div>
 
-        <button id="saveMarketingBtn" class="primary marketing-save" type="submit">SIMPAN PENGATURAN MARKETING</button>
-        <div id="marketingStatus" class="team-status-note"></div>
+        <div class="marketing-save-wrap">
+          <button id="saveMarketingBtn" class="primary marketing-save" type="submit">SIMPAN PENGATURAN</button>
+          <div id="marketingStatus" class="team-status-note"></div>
+        </div>
       </form>
     </section>
 
@@ -3008,6 +3124,29 @@ main.shell{
   document.querySelectorAll('[data-page]').forEach(btn => {
     btn.addEventListener('click', () => switchPage(btn.dataset.page));
   });
+
+  function setMarketingCategoryTab(tab){
+    document.querySelectorAll('[data-marketing-tab]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.marketingTab === tab);
+    });
+
+    document.querySelectorAll('[data-marketing-panel]').forEach(panel => {
+      panel.classList.toggle('active', panel.dataset.marketingPanel === tab);
+    });
+
+    try{ sessionStorage.setItem('badai_marketing_tab', tab); }catch(_){}
+  }
+
+  document.querySelectorAll('[data-marketing-tab]').forEach(btn => {
+    btn.addEventListener('click', () => setMarketingCategoryTab(btn.dataset.marketingTab));
+  });
+
+  try{
+    const savedMarketingTab = sessionStorage.getItem('badai_marketing_tab');
+    if(['pricing','notifications','affiliate','materials'].includes(savedMarketingTab)){
+      setMarketingCategoryTab(savedMarketingTab);
+    }
+  }catch(_){}
 
   $('marketingForm').addEventListener('submit', async (e) => {
     e.preventDefault();
