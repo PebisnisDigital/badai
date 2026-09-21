@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#070707"/>
+<title>BADAI Admin</title>
+<style>
+:root{
+  --bg:#070707;--panel:#101010;--panel2:#151515;--line:#262626;
+  --text:#f7f7f7;--muted:#9b9b9b;--pink:#ff4fa3;--pink2:#ff86c0;
+  --green:#70d49b;--yellow:#f2c94c;--red:#ff6b6b;--max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;line-height:1.45;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.shell{width:min(var(--max),calc(100% - 28px));margin:auto}
+.topbar{
+  position:sticky;top:0;z-index:20;background:rgba(7,7,7,.96);
+  border-bottom:1px solid var(--line);backdrop-filter:blur(14px)
+}
+.topbar-inner{height:64px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{font-size:21px;font-weight:900;letter-spacing:-.04em}
+.brand span{color:var(--pink)}
+.top-actions{display:flex;gap:8px;align-items:center}
+.small-btn{
+  border:1px solid var(--line);background:#111;color:#fff;border-radius:11px;
+  min-height:38px;padding:0 12px;font-weight:800;font-size:12px
+}
+.small-btn.danger{border-color:#482020;color:#ff9a9a}
+main{padding:28px 0 70px}
+.login-wrap{min-height:calc(100vh - 120px);display:grid;place-items:center}
+.login-card{
+  width:min(100%,460px);border:1px solid var(--line);border-radius:24px;
+  padding:24px;background:linear-gradient(180deg,#111,#0b0b0b);
+  box-shadow:0 24px 70px rgba(0,0,0,.38)
+}
+.badge{
+  display:inline-flex;min-height:28px;padding:0 10px;align-items:center;
+  border-radius:999px;border:1px solid #54233b;background:#170d13;
+  color:var(--pink2);font-size:10px;font-weight:900;letter-spacing:.08em
+}
+h1{font-size:34px;line-height:1.02;letter-spacing:-.045em;margin:14px 0 8px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 20px}
+.form{display:grid;gap:13px}
+.field{display:grid;gap:7px}
+.field label{font-size:12px;font-weight:800;color:#ddd}
+.field input{
+  width:100%;padding:14px 15px;border-radius:13px;border:1px solid #303030;
+  background:#070707;color:#fff;outline:none
+}
+.field input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,79,163,.12)}
+.primary{
+  border:0;background:var(--pink);color:#080808;border-radius:14px;
+  min-height:52px;font-weight:900;padding:0 18px
+}
+.secondary{
+  border:1px solid #333;background:#111;color:#fff;border-radius:14px;
+  min-height:48px;font-weight:800;padding:0 18px
+}
+.login-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:4px}
+.status{min-height:18px;font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+.status.error{color:#ff9a9a}
+.status.ok{color:#8ee0ae}
+.dashboard-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px
+}
+.dashboard-head h1{margin:0;font-size:34px}
+.dashboard-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px
+}
+.stat{
+  border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:16px
+}
+.stat span{display:block;color:var(--muted);font-size:11px;font-weight:700}
+.stat strong{display:block;font-size:28px;letter-spacing:-.04em;margin-top:5px}
+.toolbar{
+  display:grid;grid-template-columns:1fr 190px auto;gap:9px;
+  margin:14px 0 12px
+}
+.toolbar input,.toolbar select{
+  width:100%;min-height:44px;border:1px solid var(--line);border-radius:12px;
+  background:#0d0d0d;color:#fff;padding:0 13px;outline:none
+}
+.table-wrap{
+  border:1px solid var(--line);border-radius:19px;overflow:hidden;background:#0c0c0c
+}
+table{width:100%;border-collapse:collapse}
+thead{background:#111}
+th,td{padding:13px 12px;border-bottom:1px solid #1e1e1e;text-align:left;vertical-align:top}
+th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#858585}
+td{font-size:12px}
+tr:last-child td{border-bottom:0}
+.name{font-weight:900;font-size:13px}
+.meta{color:var(--muted);font-size:11px;margin-top:3px}
+.pill{
+  display:inline-flex;align-items:center;min-height:25px;padding:0 9px;border-radius:999px;
+  font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.05em
+}
+.pill.pending{background:#2c2611;color:#f2d46d}
+.pill.paid,.pill.active{background:#10271a;color:#7edf9f}
+.pill.rejected,.pill.suspended{background:#311616;color:#ff9090}
+.pill.waiting_verification{background:#17253a;color:#8ab9ff}
+.actions{display:flex;flex-wrap:wrap;gap:6px}
+.action{
+  border:1px solid #303030;background:#111;color:#fff;border-radius:9px;
+  min-height:32px;padding:0 9px;font-size:10px;font-weight:900
+}
+.action.approve{background:var(--pink);border-color:var(--pink);color:#090909}
+.action.reject{border-color:#4a2020;color:#ff9292}
+.empty{padding:40px 18px;text-align:center;color:#777;font-size:13px}
+.mobile-list{display:none}
+.card{
+  border:1px solid var(--line);border-radius:16px;background:#0e0e0e;padding:14px
+}
+.card + .card{margin-top:9px}
+.card-head{display:flex;justify-content:space-between;gap:10px}
+.card-data{display:grid;gap:3px;margin:10px 0}
+.card-data div{font-size:12px;color:#cfcfcf}
+.card-data span{color:#777}
+@media(max-width:820px){
+  .stats{grid-template-columns:1fr 1fr}
+  .toolbar{grid-template-columns:1fr 1fr}
+  .toolbar .refresh{grid-column:1/-1}
+  .desktop-table{display:none}
+  .mobile-list{display:block}
+}
+@media(max-width:480px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat strong{font-size:24px}
+  .dashboard-head{align-items:flex-start;flex-direction:column}
+  .toolbar{grid-template-columns:1fr}
+  .toolbar .refresh{grid-column:auto}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="shell topbar-inner">
+    <div class="brand">BAD<span>AI</span> / ADMIN</div>
+    <div class="top-actions">
+      <button id="logoutBtn" class="small-btn danger hidden" type="button">LOGOUT</button>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+  <section id="authView" class="login-wrap">
+    <div class="login-card">
+      <span class="badge">ADMIN BADAI</span>
+      <h1>Masuk ke Dashboard</h1>
+      <p class="sub">Kelola pendaftaran, verifikasi pembayaran, lalu aktifkan member.</p>
+
+      <form id="loginForm" class="form">
+        <div class="field">
+          <label>Email Admin</label>
+          <input id="email" type="email" autocomplete="email" required placeholder="email admin"/>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="minimal 6 karakter"/>
+        </div>
+        <div class="login-actions">
+          <button class="primary" type="submit">LOGIN ADMIN</button>
+          <button id="signupBtn" class="secondary" type="button">BUAT AKUN ADMIN PERTAMA</button>
+        </div>
+      </form>
+      <div id="authStatus" class="status">Gunakan email admin yang sudah diizinkan.</div>
+    </div>
+  </section>
+
+  <section id="dashboardView" class="hidden">
+    <div class="dashboard-head">
+      <div>
+        <h1>Pendaftaran BADAI</h1>
+        <p id="adminIdentity">Memuat admin...</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span>TOTAL PENDAFTAR</span><strong id="statTotal">0</strong></div>
+      <div class="stat"><span>PENDING</span><strong id="statPending">0</strong></div>
+      <div class="stat"><span>AKTIF</span><strong id="statActive">0</strong></div>
+      <div class="stat"><span>DAFTAR HARI INI</span><strong id="statToday">0</strong></div>
+    </div>
+
+    <div class="toolbar">
+      <input id="searchBox" type="search" placeholder="Cari nama, WA, atau email..."/>
+      <select id="statusFilter">
+        <option value="all">Semua status</option>
+        <option value="pending">Pending</option>
+        <option value="active">Active</option>
+        <option value="rejected">Rejected</option>
+        <option value="suspended">Suspended</option>
+      </select>
+      <button id="refreshBtn" class="small-btn refresh" type="button">REFRESH DATA</button>
+    </div>
+
+    <div class="table-wrap desktop-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Pendaftar</th>
+            <th>WhatsApp</th>
+            <th>Harga</th>
+            <th>Pembayaran</th>
+            <th>Member</th>
+            <th>Tanggal</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="emptyDesktop" class="empty hidden">Belum ada pendaftaran.</div>
+    </div>
+
+    <div id="mobileList" class="mobile-list"></div>
+    <div id="emptyMobile" class="empty hidden">Belum ada pendaftaran.</div>
+  </section>
+</main>
+
+<script>
+(function(){
+  const SUPABASE_URL = 'https://tlvxlekqrllkvcpgwmic.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
+  const STORAGE_KEY = 'badai_admin_session';
+
+  let session = null;
+  let registrations = [];
+
+  const $ = (id) => document.getElementById(id);
+  const authView = $('authView');
+  const dashboardView = $('dashboardView');
+  const authStatus = $('authStatus');
+  const logoutBtn = $('logoutBtn');
+
+  function setAuthStatus(msg, type){
+    authStatus.textContent = msg;
+    authStatus.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  async function api(path, options = {}, useAuth = true){
+    const headers = Object.assign({
+      'apikey': SUPABASE_KEY,
+      'Content-Type':'application/json'
+    }, options.headers || {});
+
+    if(useAuth && session?.access_token){
+      headers['Authorization'] = 'Bearer ' + session.access_token;
+    }
+
+    const res = await fetch(SUPABASE_URL + path, Object.assign({}, options, {headers}));
+    let data = null;
+    const text = await res.text();
+    if(text){
+      try{ data = JSON.parse(text); }catch(_){ data = text; }
+    }
+    if(!res.ok){
+      const msg = data?.msg || data?.message || data?.error_description || data?.error || 'Request gagal';
+      throw new Error(msg);
+    }
+    return data;
+  }
+
+  async function signup(){
+    const email = $('email').value.trim().toLowerCase();
+    const password = $('password').value;
+
+    if(!email || !password){
+      setAuthStatus('Isi email dan password dulu.', 'error');
+      return;
+    }
+
+    setAuthStatus('Membuat akun admin...', '');
+    try{
+      const data = await api('/auth/v1/signup', {
+        method:'POST',
+        body:JSON.stringify({email,password})
+      }, false);
+
+      if(data?.access_token){
+        session = data;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+        await enterDashboard();
+      }else{
+        setAuthStatus('Akun dibuat. Cek email untuk konfirmasi, lalu LOGIN ADMIN.', 'ok');
+      }
+    }catch(err){
+      setAuthStatus(err.message, 'error');
+    }
+  }
+
+  async function login(email, password){
+    setAuthStatus('Memeriksa akun...', '');
+    const data = await api('/auth/v1/token?grant_type=password', {
+      method:'POST',
+      body:JSON.stringify({email,password})
+    }, false);
+
+    session = data;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    await enterDashboard();
+  }
+
+  async function getMyProfile(){
+    const userId = session?.user?.id;
+    if(!userId) throw new Error('Session user tidak ditemukan.');
+
+    const rows = await api('/rest/v1/profiles?id=eq.' + encodeURIComponent(userId) + '&select=id,email,role,member_status');
+    return rows?.[0] || null;
+  }
+
+  async function enterDashboard(){
+    try{
+      const profile = await getMyProfile();
+
+      if(!profile || profile.role !== 'admin'){
+        logout();
+        setAuthStatus('Akun ini bukan admin BADAI.', 'error');
+        return;
+      }
+
+      authView.classList.add('hidden');
+      dashboardView.classList.remove('hidden');
+      logoutBtn.classList.remove('hidden');
+      $('adminIdentity').textContent = profile.email + ' • ADMIN';
+      await loadRegistrations();
+    }catch(err){
+      localStorage.removeItem(STORAGE_KEY);
+      session = null;
+      authView.classList.remove('hidden');
+      dashboardView.classList.add('hidden');
+      logoutBtn.classList.add('hidden');
+      setAuthStatus(err.message || 'Gagal membuka dashboard.', 'error');
+    }
+  }
+
+  async function loadRegistrations(){
+    try{
+      registrations = await api(
+        '/rest/v1/registrations?select=id,full_name,email,whatsapp,product,amount,payment_status,member_status,created_at,activated_at&order=created_at.desc'
+      ) || [];
+      render();
+    }catch(err){
+      alert('Gagal mengambil pendaftaran: ' + err.message);
+    }
+  }
+
+  function rupiah(n){
+    return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
+  }
+
+  function dateTime(value){
+    if(!value) return '-';
+    return new Intl.DateTimeFormat('id-ID',{
+      dateStyle:'medium',timeStyle:'short'
+    }).format(new Date(value));
+  }
+
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function pill(value){
+    return '<span class="pill ' + esc(value) + '">' + esc(String(value).replaceAll('_',' ')) + '</span>';
+  }
+
+  function filtered(){
+    const q = $('searchBox').value.trim().toLowerCase();
+    const status = $('statusFilter').value;
+
+    return registrations.filter(r => {
+      const hay = [r.full_name,r.email,r.whatsapp].join(' ').toLowerCase();
+      const matchQ = !q || hay.includes(q);
+      const matchStatus = status === 'all' || r.member_status === status || r.payment_status === status;
+      return matchQ && matchStatus;
+    });
+  }
+
+  function renderStats(){
+    $('statTotal').textContent = registrations.length;
+    $('statPending').textContent = registrations.filter(r => r.member_status === 'pending').length;
+    $('statActive').textContent = registrations.filter(r => r.member_status === 'active').length;
+
+    const today = new Date();
+    $('statToday').textContent = registrations.filter(r => {
+      const d = new Date(r.created_at);
+      return d.getFullYear()===today.getFullYear()
+        && d.getMonth()===today.getMonth()
+        && d.getDate()===today.getDate();
+    }).length;
+  }
+
+  function waLink(r){
+    const msg = `Halo Kak ${r.full_name}, saya admin BADAI. Saya lihat pendaftaran Kakak sudah masuk.`;
+    return 'https://wa.me/' + encodeURIComponent(r.whatsapp) + '?text=' + encodeURIComponent(msg);
+  }
+
+  function render(){
+    renderStats();
+    const rows = filtered();
+
+    $('emptyDesktop').classList.toggle('hidden', rows.length !== 0);
+    $('emptyMobile').classList.toggle('hidden', rows.length !== 0);
+
+    $('tableBody').innerHTML = rows.map(r => `
+      <tr>
+        <td>
+          <div class="name">${esc(r.full_name)}</div>
+          <div class="meta">${esc(r.email)}</div>
+        </td>
+        <td>${esc(r.whatsapp)}</td>
+        <td>${rupiah(r.amount)}</td>
+        <td>${pill(r.payment_status)}</td>
+        <td>${pill(r.member_status)}</td>
+        <td>${dateTime(r.created_at)}</td>
+        <td>
+          <div class="actions">
+            <a class="action" href="${waLink(r)}" target="_blank" rel="noopener">WA</a>
+            ${r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC</button>` : ''}
+            ${r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    $('mobileList').innerHTML = rows.map(r => `
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="name">${esc(r.full_name)}</div>
+            <div class="meta">${esc(r.email)}</div>
+          </div>
+          <div>${pill(r.member_status)}</div>
+        </div>
+        <div class="card-data">
+          <div><span>WA:</span> ${esc(r.whatsapp)}</div>
+          <div><span>Harga:</span> ${rupiah(r.amount)}</div>
+          <div><span>Bayar:</span> ${esc(r.payment_status)}</div>
+          <div><span>Daftar:</span> ${dateTime(r.created_at)}</div>
+        </div>
+        <div class="actions">
+          <a class="action" href="${waLink(r)}" target="_blank" rel="noopener">WHATSAPP</a>
+          ${r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC</button>` : ''}
+          ${r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function updateRegistration(id, action){
+    const row = registrations.find(r => r.id === id);
+    if(!row) return;
+
+    if(action === 'approve'){
+      if(!confirm('ACC pembayaran dan aktifkan ' + row.full_name + '?')) return;
+
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({
+          payment_status:'paid',
+          member_status:'active',
+          activated_at:new Date().toISOString()
+        })
+      });
+    }
+
+    if(action === 'reject'){
+      if(!confirm('Tolak pendaftaran ' + row.full_name + '?')) return;
+
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({
+          payment_status:'rejected',
+          member_status:'pending'
+        })
+      });
+    }
+
+    await loadRegistrations();
+  }
+
+  function logout(){
+    localStorage.removeItem(STORAGE_KEY);
+    session = null;
+    authView.classList.remove('hidden');
+    dashboardView.classList.add('hidden');
+    logoutBtn.classList.add('hidden');
+  }
+
+  $('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = $('email').value.trim().toLowerCase();
+    const password = $('password').value;
+    try{
+      await login(email,password);
+    }catch(err){
+      setAuthStatus(err.message, 'error');
+    }
+  });
+
+  $('signupBtn').addEventListener('click', signup);
+  logoutBtn.addEventListener('click', logout);
+  $('refreshBtn').addEventListener('click', loadRegistrations);
+  $('searchBox').addEventListener('input', render);
+  $('statusFilter').addEventListener('change', render);
+
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action]');
+    if(!btn) return;
+    btn.disabled = true;
+    try{
+      await updateRegistration(btn.dataset.id, btn.dataset.action);
+    }catch(err){
+      alert('Aksi gagal: ' + err.message);
+    }finally{
+      btn.disabled = false;
+    }
+  });
+
+  try{
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if(stored){
+      session = JSON.parse(stored);
+      enterDashboard();
+    }
+  }catch(_){
+    localStorage.removeItem(STORAGE_KEY);
+  }
+})();
+</script>
+</body>
+</html>
