@@ -3517,11 +3517,11 @@ Mohon dibantu proses pendaftarannya ya.`
 
       scheduleQrisCheck();
     }catch(_){
-      scheduleQrisCheck(7000);
+      scheduleQrisCheck(22000);
     }
   }
 
-  function scheduleQrisCheck(delay=5000){
+  function scheduleQrisCheck(delay=22000){
     stopQrisPolling();
     qrisPollTimer = setTimeout(checkQrisPayment,delay);
   }
@@ -3779,7 +3779,12 @@ Mohon dibantu proses pendaftarannya ya.`
       setStatus('Data sudah tercatat. Membuka WhatsApp...', false);
       window.location.href = whatsappUrl;
     } catch (err) {
-      setStatus('Data belum berhasil tercatat. Coba klik daftar sekali lagi.', true);
+      const message = String(err?.message || 'Terjadi kesalahan.');
+      if(selectedPaymentMethod()?.provider === 'buatqris'){
+        setStatus('Data pendaftaran sudah dicatat, tetapi QRIS belum berhasil dibuat. ' + message, true);
+      }else{
+        setStatus('Data belum berhasil tercatat. ' + message, true);
+      }
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
     }
