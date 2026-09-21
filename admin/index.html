@@ -1043,8 +1043,8 @@ main.shell{
 
 <div id="manageModal" class="cred-modal hidden">
   <div class="cred-box">
-    <h2>Kelola Pendaftar</h2>
-    <p>Admin bisa mengubah nama, email login, WhatsApp, status pembayaran, status member, dan catatan internal.</p>
+    <h2>Kelola Member</h2>
+    <p>Ubah data akun dan akses login member.</p>
     <input id="manageId" type="hidden"/>
     <div class="manage-grid">
       <div class="manage-field full">
@@ -1059,29 +1059,11 @@ main.shell{
         <label>WhatsApp</label>
         <input id="manageWhatsapp" type="text"/>
       </div>
-      <div class="manage-field">
-        <label>Status Pembayaran</label>
-        <select id="managePaymentStatus">
-          <option value="pending">Pending</option>
-          <option value="waiting_verification">Menunggu Verifikasi</option>
-          <option value="paid">Lunas / Paid</option>
-          <option value="rejected">Ditolak</option>
-        </select>
-      </div>
-      <div class="manage-field">
-        <label>Status Member</label>
-        <select id="manageMemberStatus">
-          <option value="pending">Pending</option>
-          <option value="active">Active</option>
-          <option value="suspended">Suspended</option>
-        </select>
-      </div>
       <div class="manage-field full">
-        <label>Catatan Admin</label>
-        <textarea id="manageAdminNote" placeholder="Catatan internal admin..."></textarea>
+        <label>Password Baru</label>
+        <input id="managePassword" type="password" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti"/>
       </div>
     </div>
-    <div class="manage-note">Perubahan nama dan WA langsung disinkronkan. Jika member sudah punya akun, perubahan email juga akan mengganti <b>email login</b>. Untuk pendaftar yang belum punya akun, gunakan <b>ACC + BUAT AKSES</b>.</div>
     <div class="cred-actions">
       <button id="saveManageBtn" class="primary-act" type="button">SIMPAN PERUBAHAN</button>
       <button id="closeManageBtn" type="button">TUTUP</button>
@@ -1530,9 +1512,11 @@ main.shell{
     $('manageName').value = row.full_name || '';
     $('manageEmail').value = row.email || '';
     $('manageWhatsapp').value = row.whatsapp || '';
-    $('managePaymentStatus').value = row.payment_status || 'pending';
-    $('manageMemberStatus').value = row.member_status || 'pending';
-    $('manageAdminNote').value = row.admin_note || '';
+    $('managePassword').value = '';
+    $('managePassword').disabled = !row.user_id;
+    $('managePassword').placeholder = row.user_id
+      ? 'Kosongkan jika tidak diganti'
+      : 'Belum ada akun member';
     $('manageModal').classList.remove('hidden');
   }
 
@@ -1544,17 +1528,33 @@ main.shell{
     const fullName = $('manageName').value.trim();
     const email = $('manageEmail').value.trim().toLowerCase();
     const whatsapp = $('manageWhatsapp').value.trim();
-    const memberStatus = $('manageMemberStatus').value;
-    const paymentStatus = $('managePaymentStatus').value;
-    const adminNote = $('manageAdminNote').value.trim() || null;
+    const password = $('managePassword').value.trim();
 
-    if(!fullName || !email || !whatsapp) throw new Error('Nama, email, dan WhatsApp wajib diisi.');
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Format email belum valid.');
-    if(!row.user_id && memberStatus === 'active') throw new Error('Gunakan ACC + BUAT AKSES untuk mengaktifkan member baru.');
+    if(!fullName || !email || !whatsapp){
+      throw new Error('Nama, email, dan WhatsApp wajib diisi.');
+    }
 
-    const emailChanged = String(row.email||'').toLowerCase() !== email;
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      throw new Error('Format email belum valid.');
+    }
+
+    if(password && password.length < 8){
+      throw new Error('Password baru minimal 8 karakter.');
+    }
+
+    if(password && !row.user_id){
+      throw new Error('Pendaftar ini belum punya akun member. ACC dulu untuk membuat akun.');
+    }
+
+    const emailChanged = String(row.email || '').toLowerCase() !== email;
+    const passwordChanged = Boolean(password);
+
     if(row.user_id && emailChanged && !confirm(
       'Email login member akan diganti dari ' + row.email + ' menjadi ' + email + '. Lanjutkan?'
+    )) return;
+
+    if(passwordChanged && !confirm(
+      'Password login member akan diganti. Password lama tidak bisa dipakai lagi. Lanjutkan?'
     )) return;
 
     const oldText = $('saveManageBtn').textContent;
@@ -1569,23 +1569,26 @@ main.shell{
           'Authorization':'Bearer ' + session.access_token,
           'Content-Type':'application/json'
         },
-        body:JSON.stringify({registration_id:id,full_name:fullName,email,whatsapp})
-      });
-      const data = await res.json().catch(()=>null);
-      if(!res.ok) throw new Error(data?.error || 'Gagal menyinkronkan data member.');
-
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
         body:JSON.stringify({
-          payment_status:paymentStatus,
-          member_status:memberStatus,
-          admin_note:adminNote
+          registration_id:id,
+          full_name:fullName,
+          email,
+          whatsapp,
+          password:password || null
         })
       });
 
+      const data = await res.json().catch(()=>null);
+      if(!res.ok){
+        throw new Error(data?.error || 'Gagal menyinkronkan data member.');
+      }
+
       $('manageModal').classList.add('hidden');
       await loadRegistrations();
+
+      if(data?.password_updated){
+        alert('Data member berhasil disimpan dan password login sudah diganti.');
+      }
     }finally{
       $('saveManageBtn').disabled = false;
       $('saveManageBtn').textContent = oldText;
