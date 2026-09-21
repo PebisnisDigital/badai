@@ -270,7 +270,7 @@ tr:last-child td{border-bottom:0}
 <div id="manageModal" class="cred-modal hidden">
   <div class="cred-box">
     <h2>Kelola Pendaftar</h2>
-    <p>Admin bisa mengubah data, status pembayaran, status member, dan catatan internal.</p>
+    <p>Admin bisa mengubah nama, email login, WhatsApp, status pembayaran, status member, dan catatan internal.</p>
     <input id="manageId" type="hidden"/>
     <div class="manage-grid">
       <div class="manage-field full">
@@ -279,7 +279,7 @@ tr:last-child td{border-bottom:0}
       </div>
       <div class="manage-field full">
         <label>Email Login</label>
-        <input id="manageEmail" type="email" readonly/>
+        <input id="manageEmail" type="email" autocomplete="email"/>
       </div>
       <div class="manage-field full">
         <label>WhatsApp</label>
@@ -307,7 +307,7 @@ tr:last-child td{border-bottom:0}
         <textarea id="manageAdminNote" placeholder="Catatan internal admin..."></textarea>
       </div>
     </div>
-    <div class="manage-note">Untuk pendaftar yang belum punya akun member, gunakan tombol <b>ACC + BUAT AKSES</b> agar akun login dibuat dengan benar.</div>
+    <div class="manage-note">Perubahan nama dan WA langsung disinkronkan. Jika member sudah punya akun, perubahan email juga akan mengganti <b>email login</b>. Untuk pendaftar yang belum punya akun, gunakan <b>ACC + BUAT AKSES</b>.</div>
     <div class="cred-actions">
       <button id="saveManageBtn" class="primary-act" type="button">SIMPAN PERUBAHAN</button>
       <button id="closeManageBtn" type="button">TUTUP</button>
@@ -705,32 +705,87 @@ Silakan login dan simpan data akses ini ya.`;
     const row = registrations.find(r => r.id === id);
     if(!row) return;
 
+    const fullName = $('manageName').value.trim();
+    const email = $('manageEmail').value.trim().toLowerCase();
+    const whatsapp = $('manageWhatsapp').value.trim();
     const memberStatus = $('manageMemberStatus').value;
+    const paymentStatus = $('managePaymentStatus').value;
+    const adminNote = $('manageAdminNote').value.trim() || null;
+
+    if(!fullName || !email || !whatsapp){
+      alert('Nama, email, dan WhatsApp wajib diisi.');
+      return;
+    }
+
+    if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){
+      alert('Format email belum valid.');
+      $('manageEmail').focus();
+      return;
+    }
 
     if(!row.user_id && memberStatus === 'active'){
       alert('Pendaftar ini belum punya akun member. Gunakan ACC + BUAT AKSES.');
       return;
     }
 
+    const emailChanged = String(row.email || '').toLowerCase() !== email;
+    if(row.user_id && emailChanged){
+      const ok = confirm(
+        'Email login member akan diganti dari ' + row.email + ' menjadi ' + email +
+        '. Setelah ini member harus login memakai email baru. Lanjutkan?'
+      );
+      if(!ok) return;
+    }
+
+    const oldText = $('saveManageBtn').textContent;
     $('saveManageBtn').disabled = true;
+    $('saveManageBtn').textContent = 'MENYIMPAN...';
 
     try{
+      const identityResponse = await fetch(SUPABASE_URL + '/functions/v1/admin-update-member', {
+        method:'POST',
+        headers:{
+          'apikey': SUPABASE_KEY,
+          'Authorization':'Bearer ' + session.access_token,
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          registration_id:id,
+          full_name:fullName,
+          email,
+          whatsapp
+        })
+      });
+
+      let identityData = null;
+      const identityText = await identityResponse.text();
+      if(identityText){
+        try{ identityData = JSON.parse(identityText); }catch(_){ identityData = null; }
+      }
+
+      if(!identityResponse.ok){
+        throw new Error(identityData?.error || 'Gagal menyinkronkan data member.');
+      }
+
       await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
         method:'PATCH',
         headers:{'Prefer':'return=minimal'},
         body:JSON.stringify({
-          full_name:$('manageName').value.trim(),
-          whatsapp:$('manageWhatsapp').value.trim(),
-          payment_status:$('managePaymentStatus').value,
+          payment_status:paymentStatus,
           member_status:memberStatus,
-          admin_note:$('manageAdminNote').value.trim() || null
+          admin_note:adminNote
         })
       });
 
       $('manageModal').classList.add('hidden');
       await loadRegistrations();
+
+      if(row.user_id && emailChanged){
+        alert('Berhasil. Email login member sekarang: ' + email);
+      }
     }finally{
       $('saveManageBtn').disabled = false;
+      $('saveManageBtn').textContent = oldText;
     }
   }
 
