@@ -1164,6 +1164,86 @@ main.shell{
   .marketing-price-grid{grid-template-columns:1fr}
 }
 
+
+.affiliate-setting-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.affiliate-month-input{
+  display:grid;
+  grid-template-columns:100px 1fr;
+  gap:7px;
+  align-items:center;
+}
+.affiliate-month-input span{
+  color:#8b8b8b;
+  font-size:8px;
+  font-weight:900;
+}
+.affiliate-admin-section{
+  margin-top:12px;
+  padding-top:11px;
+  border-top:1px solid #222;
+}
+.affiliate-admin-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.affiliate-admin-title b{display:block;font-size:11px}
+.affiliate-admin-title span{display:block;color:#777;font-size:7px;margin-top:2px}
+.affiliate-admin-title button{
+  min-height:29px;border:1px solid #333;background:#101010;color:#fff;
+  border-radius:999px;padding:0 9px;font-size:7px;font-weight:900
+}
+.affiliate-overview{display:grid;gap:6px}
+.affiliate-overview-row{
+  border:1px solid #242424;background:#090909;border-radius:11px;padding:9px
+}
+.affiliate-overview-main{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.affiliate-overview-main b{font-size:9px}
+.affiliate-overview-main span{font-size:7px;color:#ff91c5}
+.affiliate-overview-metrics{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px
+}
+.affiliate-overview-metrics div{
+  border:1px solid #1f1f1f;border-radius:8px;padding:6px;background:#0d0d0d
+}
+.affiliate-overview-metrics span{display:block;color:#666;font-size:6px;margin-bottom:2px}
+.affiliate-overview-metrics b{display:block;font-size:8px;word-break:break-word}
+.affiliate-material-form{display:grid;gap:6px}
+.affiliate-material-form select,.affiliate-material-form input,.affiliate-material-form textarea{
+  width:100%;box-sizing:border-box;border:1px solid #303030;background:#080808;color:#fff;
+  border-radius:10px;padding:9px;font-size:9px;outline:none
+}
+.affiliate-material-form select,.affiliate-material-form input{min-height:38px}
+.affiliate-material-form button{
+  min-height:38px;border:0;border-radius:10px;background:#ff4fa3;color:#111;
+  font-size:8px;font-weight:950
+}
+.affiliate-material-list{display:grid;gap:6px;margin-top:8px}
+.affiliate-material-row{
+  display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
+  border:1px solid #222;border-radius:10px;background:#090909;padding:8px
+}
+.affiliate-material-info{min-width:0}
+.affiliate-material-type{
+  display:inline-flex;padding:2px 6px;border-radius:999px;background:#211018;color:#ff8fc5;
+  font-size:6px;font-weight:900;text-transform:uppercase;margin-bottom:4px
+}
+.affiliate-material-info b{display:block;font-size:9px}
+.affiliate-material-info small{
+  display:block;color:#747474;font-size:7px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.affiliate-material-actions{display:flex;gap:4px}
+@media(max-width:450px){
+  .affiliate-setting-grid{grid-template-columns:1fr}
+  .affiliate-overview-metrics{grid-template-columns:1fr 1fr}
+}
+
 </style>
 </head>
 <body>
@@ -1383,6 +1463,63 @@ main.shell{
           <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[password]</b> <b>[link]</b> <b>[harga]</b></div>
         </div>
 
+        <div class="marketing-card">
+          <div class="marketing-card-head">
+            <span class="marketing-number">6</span>
+            <div><h3>Sistem Afiliasi</h3><p>Atur komisi, masa aktif, data affiliate, dan bahan promosi.</p></div>
+          </div>
+
+          <div class="affiliate-setting-grid">
+            <div class="manage-field">
+              <label>Tipe Komisi</label>
+              <select id="affiliateCommissionType">
+                <option value="percent">Persenan (%)</option>
+                <option value="fixed">Nominal (Rp)</option>
+              </select>
+            </div>
+            <div class="manage-field">
+              <label>Nilai Komisi</label>
+              <input id="affiliateCommissionValue" type="number" min="1" step="1" inputmode="numeric"/>
+            </div>
+            <div class="manage-field full">
+              <label>Downgrade Otomatis Setelah</label>
+              <div class="affiliate-month-input">
+                <input id="affiliateInactivityMonths" type="number" min="1" max="60" step="1" inputmode="numeric"/>
+                <span>BULAN TANPA 1 SALES</span>
+              </div>
+              <div class="price-plan-note">Jika Paket Untung tidak menghasilkan sales selama masa ini, sistem otomatis memindahkannya ke Paket Pemula.</div>
+            </div>
+          </div>
+
+          <div class="affiliate-admin-section">
+            <div class="affiliate-admin-title">
+              <div><b>Data Afiliasi</b><span>Ringkasan member Paket Untung dan hasil referral.</span></div>
+              <button id="refreshAffiliateBtn" type="button">REFRESH</button>
+            </div>
+            <div id="affiliateOverview" class="affiliate-overview"></div>
+          </div>
+
+          <div class="affiliate-admin-section">
+            <div class="affiliate-admin-title">
+              <div><b>Bahan Promosi</b><span>Materi ini otomatis tampil di menu Afiliasi member.</span></div>
+            </div>
+
+            <div class="affiliate-material-form">
+              <select id="affiliateMaterialType">
+                <option value="text">Teks / Caption</option>
+                <option value="image">Gambar</option>
+                <option value="video">Video</option>
+              </select>
+              <input id="affiliateMaterialTitle" type="text" placeholder="Judul bahan promosi"/>
+              <textarea id="affiliateMaterialContent" rows="5" placeholder="Tulis caption / teks promosi..."></textarea>
+              <input id="affiliateMaterialUrl" class="hidden" type="url" placeholder="https://... link gambar atau video"/>
+              <button id="addAffiliateMaterialBtn" type="button">+ TAMBAH BAHAN PROMOSI</button>
+            </div>
+
+            <div id="affiliateMaterialList" class="affiliate-material-list"></div>
+          </div>
+        </div>
+
         <button id="saveMarketingBtn" class="primary marketing-save" type="submit">SIMPAN PENGATURAN MARKETING</button>
         <div id="marketingStatus" class="team-status-note"></div>
       </form>
@@ -1590,6 +1727,11 @@ main.shell{
     success_notification:''
   };
   let marketingCoupons = [];
+  let affiliateSettings = {commission_type:'percent', commission_value:30, inactivity_months:3};
+  let affiliateAccounts = [];
+  let affiliateSales = [];
+  let affiliateProfiles = [];
+  let affiliateMaterials = [];
 
   const $ = (id) => document.getElementById(id);
   const authView = $('authView');
@@ -1776,9 +1918,21 @@ main.shell{
   async function loadMarketing(){
     await loadMarketingSettings();
 
-    marketingCoupons = await api(
-      '/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,active,created_at&order=created_at.desc'
-    ) || [];
+    const results = await Promise.all([
+      api('/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,active,created_at&order=created_at.desc'),
+      api('/rest/v1/affiliate_settings?id=eq.1&select=id,commission_type,commission_value,inactivity_months'),
+      api('/rest/v1/affiliate_accounts?select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
+      api('/rest/v1/affiliate_sales?select=id,affiliate_user_id,registration_id,sale_amount,commission_amount,status,sale_at&order=sale_at.desc'),
+      api('/rest/v1/profiles?select=id,full_name,email,membership_plan,member_status'),
+      api('/rest/v1/affiliate_materials?select=id,material_type,title,content,media_url,active,sort_order,created_at&order=sort_order.asc,created_at.desc')
+    ]);
+
+    marketingCoupons = results[0] || [];
+    if(results[1]?.[0]) affiliateSettings = results[1][0];
+    affiliateAccounts = results[2] || [];
+    affiliateSales = results[3] || [];
+    affiliateProfiles = results[4] || [];
+    affiliateMaterials = results[5] || [];
 
     $('marketingNewbiePrice').value = marketingSettings.newbie_price || marketingSettings.product_price || 123000;
     $('marketingProPrice').value = marketingSettings.pro_price || marketingSettings.product_price || 123000;
@@ -1787,7 +1941,15 @@ main.shell{
     $('marketingFollow2').value = marketingSettings.followup_2 || '';
     $('marketingFollow3').value = marketingSettings.followup_3 || '';
     $('marketingSuccessMessage').value = marketingSettings.success_notification || '';
+
+    $('affiliateCommissionType').value = affiliateSettings.commission_type || 'percent';
+    $('affiliateCommissionValue').value = affiliateSettings.commission_value || 30;
+    $('affiliateInactivityMonths').value = affiliateSettings.inactivity_months || 3;
+
     renderCoupons();
+    renderAffiliateOverview();
+    renderAffiliateMaterials();
+    toggleAffiliateMaterialFields();
   }
 
   function canManageMarketing(){
@@ -1827,6 +1989,26 @@ main.shell{
         method:'PATCH',
         headers:{'Prefer':'return=minimal'},
         body:JSON.stringify(body)
+      });
+
+      const commissionType = $('affiliateCommissionType').value;
+      const commissionValue = Number($('affiliateCommissionValue').value);
+      const inactivityMonths = Number($('affiliateInactivityMonths').value);
+
+      if(!['percent','fixed'].includes(commissionType)) throw new Error('Tipe komisi belum valid.');
+      if(!commissionValue || commissionValue < 1) throw new Error('Nilai komisi belum valid.');
+      if(commissionType === 'percent' && commissionValue > 100) throw new Error('Komisi persen maksimal 100%.');
+      if(!inactivityMonths || inactivityMonths < 1 || inactivityMonths > 60) throw new Error('Masa aktif affiliate harus 1–60 bulan.');
+
+      await api('/rest/v1/affiliate_settings?id=eq.1', {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({
+          commission_type:commissionType,
+          commission_value:Math.round(commissionValue),
+          inactivity_months:Math.round(inactivityMonths),
+          updated_by:session.user.id
+        })
       });
       $('marketingStatus').textContent = 'Pengaturan marketing berhasil disimpan.';
       await loadMarketingSettings();
@@ -1902,6 +2084,131 @@ main.shell{
     if(action === 'delete'){
       if(!confirm('Hapus kupon ' + coupon.code + '?')) return;
       await api('/rest/v1/marketing_coupons?id=eq.' + encodeURIComponent(id), {
+        method:'DELETE',
+        headers:{'Prefer':'return=minimal'}
+      });
+    }
+
+    await loadMarketing();
+  }
+
+  function renderAffiliateOverview(){
+    const box = $('affiliateOverview');
+    if(!box) return;
+
+    if(!affiliateAccounts.length){
+      box.innerHTML = '<div class="statement-note">Belum ada member Paket Untung yang aktif di sistem afiliasi.</div>';
+      return;
+    }
+
+    box.innerHTML = affiliateAccounts.map(account => {
+      const profile = affiliateProfiles.find(p => p.id === account.user_id) || {};
+      const sales = affiliateSales.filter(s => s.affiliate_user_id === account.user_id && s.status === 'valid');
+      const salesCount = sales.length;
+      const omzet = sales.reduce((sum,s)=>sum+Number(s.sale_amount||0),0);
+      const commission = sales.reduce((sum,s)=>sum+Number(s.commission_amount||0),0);
+      const lastSale = sales.length
+        ? sales.reduce((latest,s)=> !latest || new Date(s.sale_at) > new Date(latest) ? s.sale_at : latest, null)
+        : null;
+
+      return `
+        <div class="affiliate-overview-row">
+          <div class="affiliate-overview-main">
+            <b>${esc(profile.full_name || profile.email || 'Member')}</b>
+            <span>${esc(account.affiliate_code)} • ${account.status === 'active' ? 'AKTIF' : 'NONAKTIF'}</span>
+          </div>
+          <div class="affiliate-overview-metrics">
+            <div><span>SALES</span><b>${salesCount}</b></div>
+            <div><span>OMZET</span><b>${rupiah(omzet)}</b></div>
+            <div><span>KOMISI</span><b>${rupiah(commission)}</b></div>
+            <div><span>LAST SALES</span><b>${lastSale ? dateTime(lastSale) : 'Belum ada'}</b></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function toggleAffiliateMaterialFields(){
+    const type = $('affiliateMaterialType')?.value || 'text';
+    $('affiliateMaterialContent')?.classList.toggle('hidden', type !== 'text');
+    $('affiliateMaterialUrl')?.classList.toggle('hidden', type === 'text');
+  }
+
+  function renderAffiliateMaterials(){
+    const box = $('affiliateMaterialList');
+    if(!box) return;
+
+    if(!affiliateMaterials.length){
+      box.innerHTML = '<div class="statement-note">Belum ada bahan promosi.</div>';
+      return;
+    }
+
+    box.innerHTML = affiliateMaterials.map(item => `
+      <div class="affiliate-material-row">
+        <div class="affiliate-material-info">
+          <span class="affiliate-material-type">${esc(item.material_type)}</span>
+          <b>${esc(item.title)}</b>
+          <small>${item.material_type === 'text'
+            ? esc((item.content || '').slice(0,100))
+            : esc(item.media_url || '')}</small>
+        </div>
+        <div class="affiliate-material-actions">
+          <button class="coupon-toggle ${item.active ? '' : 'off'}" data-affiliate-material-action="toggle" data-id="${item.id}" type="button">
+            ${item.active ? 'NONAKTIFKAN' : 'AKTIFKAN'}
+          </button>
+          <button class="coupon-delete" data-affiliate-material-action="delete" data-id="${item.id}" type="button">HAPUS</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function addAffiliateMaterial(){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mengatur bahan promosi.');
+
+    const type = $('affiliateMaterialType').value;
+    const title = $('affiliateMaterialTitle').value.trim();
+    const content = $('affiliateMaterialContent').value.trim();
+    const mediaUrl = $('affiliateMaterialUrl').value.trim();
+
+    if(!title) throw new Error('Judul bahan promosi wajib diisi.');
+    if(type === 'text' && !content) throw new Error('Isi teks promosi belum diisi.');
+    if(type !== 'text' && !mediaUrl) throw new Error('Link gambar/video belum diisi.');
+
+    await api('/rest/v1/affiliate_materials', {
+      method:'POST',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        material_type:type,
+        title,
+        content:type === 'text' ? content : null,
+        media_url:type === 'text' ? null : mediaUrl,
+        active:true,
+        created_by:session.user.id
+      })
+    });
+
+    $('affiliateMaterialTitle').value = '';
+    $('affiliateMaterialContent').value = '';
+    $('affiliateMaterialUrl').value = '';
+    await loadMarketing();
+  }
+
+  async function affiliateMaterialAction(id, action){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mengatur bahan promosi.');
+    const item = affiliateMaterials.find(x => x.id === id);
+    if(!item) return;
+
+    if(action === 'toggle'){
+      await api('/rest/v1/affiliate_materials?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({active:!item.active})
+      });
+    }
+
+    if(action === 'delete'){
+      if(!confirm('Hapus bahan promosi "' + item.title + '"?')) return;
+      await api('/rest/v1/affiliate_materials?id=eq.' + encodeURIComponent(id), {
         method:'DELETE',
         headers:{'Prefer':'return=minimal'}
       });
@@ -2715,6 +3022,21 @@ main.shell{
     finally{ $('addCouponBtn').disabled = false; }
   });
 
+  $('affiliateMaterialType').addEventListener('change', toggleAffiliateMaterialFields);
+
+  $('addAffiliateMaterialBtn').addEventListener('click', async () => {
+    $('addAffiliateMaterialBtn').disabled = true;
+    try{ await addAffiliateMaterial(); }
+    catch(err){ alert('Gagal menambah bahan promosi: ' + err.message); }
+    finally{ $('addAffiliateMaterialBtn').disabled = false; }
+  });
+
+  $('refreshAffiliateBtn').addEventListener('click', async () => {
+    $('refreshAffiliateBtn').disabled = true;
+    try{ await loadMarketing(); }
+    finally{ $('refreshAffiliateBtn').disabled = false; }
+  });
+
   $('teamForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     try{ await addTeamMember(); }
@@ -2759,6 +3081,15 @@ main.shell{
   });
 
   document.addEventListener('click', async (e) => {
+    const affiliateMaterialBtn = e.target.closest('[data-affiliate-material-action]');
+    if(affiliateMaterialBtn){
+      affiliateMaterialBtn.disabled = true;
+      try{ await affiliateMaterialAction(affiliateMaterialBtn.dataset.id, affiliateMaterialBtn.dataset.affiliateMaterialAction); }
+      catch(err){ alert('Aksi bahan promosi gagal: ' + err.message); }
+      finally{ affiliateMaterialBtn.disabled = false; }
+      return;
+    }
+
     const couponBtn = e.target.closest('[data-coupon-action]');
     if(couponBtn){
       couponBtn.disabled = true;
