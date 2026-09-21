@@ -2084,145 +2084,129 @@ body.register-modal-open{
 
 .payment-choice-section{
   display:grid;
-  gap:9px;
-  padding:12px;
-  border:1px solid #2f2f2f;
-  border-radius:15px;
+  gap:7px;
+  padding:10px;
+  border:1px solid #2b2b2b;
+  border-radius:13px;
   background:#0b0b0b;
 }
 .payment-choice-head span{
   display:block;
   color:#ff8fc5;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:7px;
+  font-size:6px;
   font-weight:950;
   letter-spacing:.08em;
-  margin-bottom:2px;
+  margin-bottom:1px;
 }
 .payment-choice-head b{
   display:block;
   color:#fff;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:12px;
+  font-size:10px;
 }
 .payment-method-options{
   display:grid;
-  gap:6px;
+  gap:4px;
 }
 .payment-option{
   display:grid;
-  grid-template-columns:auto auto 1fr;
+  grid-template-columns:auto 1fr;
   align-items:center;
   gap:8px;
-  min-height:52px;
-  padding:8px 10px;
-  border:1px solid #292929;
-  border-radius:12px;
-  background:#101010;
+  min-height:40px;
+  padding:6px 9px;
+  border:1px solid #242424;
+  border-radius:9px;
+  background:#0f0f0f;
   cursor:pointer;
+  transition:border-color .15s ease,background .15s ease;
 }
 .payment-option.selected{
-  border-color:#6b2c50;
-  background:#170e13;
-  box-shadow:0 0 0 1px rgba(255,79,163,.08) inset;
+  border-color:#773253;
+  background:#160d12;
 }
 .payment-option input{
-  width:15px;
-  height:15px;
+  width:14px;
+  height:14px;
+  margin:0;
   accent-color:#ff4fa3;
 }
-.payment-option-icon{
-  width:28px;
-  height:28px;
-  display:grid;
-  place-items:center;
-  border-radius:9px;
-  background:#1b1b1b;
-  color:#ff91c5;
-  font-size:13px;
-  font-weight:900;
+.payment-option-copy{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
 }
 .payment-option-copy b{
   display:block;
   color:#fff;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:9px;
+  font-size:8px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 .payment-option-copy small{
   display:block;
-  margin-top:2px;
-  color:#707070;
-  font-size:7px;
+  color:#686868;
+  font-size:6px;
+  font-weight:800;
+  white-space:nowrap;
 }
 .selected-payment-detail:empty{display:none}
-.payment-detail-card{
-  padding:11px;
-  border:1px solid #3b2433;
-  border-radius:12px;
-  background:#120d10;
-  text-align:center;
-}
-.payment-detail-card>span{
-  display:block;
-  color:#8d7180;
-  font-size:7px;
-  font-weight:900;
-  margin-bottom:4px;
-}
-.payment-detail-card>strong{
-  display:block;
-  color:#ff8fc5;
-  font-family:"Raleway",Arial,sans-serif;
-  font-size:12px;
-}
-.payment-detail-card>b{
-  display:block;
-  margin-top:2px;
-  color:#fff;
-  font-family:"Raleway",Arial,sans-serif;
-  font-size:20px;
-}
-.payment-detail-card>small{
-  display:block;
-  color:#aaa;
-  font-size:9px;
-  margin-top:2px;
-}
-.payment-detail-card p{
-  margin:7px 0 0;
-  color:#8e8e8e;
-  font-size:8px;
-  line-height:1.45;
-  white-space:pre-wrap;
-}
-.payment-qris-image{
-  display:block;
-  width:min(100%,240px);
-  margin:8px auto;
-  border-radius:10px;
-  background:#fff;
-}
-.payment-open-link{
+.payment-compact-detail{
+  min-height:34px;
   display:flex;
   align-items:center;
+  gap:6px;
+  padding:6px 9px;
+  border-radius:9px;
+  background:#120d10;
+  border:1px solid #382332;
+  color:#8f8f8f;
+  font-size:7px;
+}
+.payment-compact-detail span{
+  color:#ff8fc5;
+  font-weight:900;
+}
+.payment-compact-detail b{
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:9px;
+}
+.payment-compact-detail small{
+  color:#888;
+  font-size:7px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.payment-compact-detail a{
+  margin-left:auto;
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
   justify-content:center;
-  min-height:36px;
-  margin-top:7px;
-  border-radius:10px;
+  min-height:25px;
+  padding:0 8px;
+  border-radius:7px;
   background:#ff4fa3;
   color:#111;
   text-decoration:none;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:8px;
+  font-size:6px;
   font-weight:950;
 }
 .payment-method-loading{
-  padding:12px;
-  border:1px dashed #303030;
-  border-radius:10px;
+  padding:9px;
+  border:1px dashed #2c2c2c;
+  border-radius:8px;
   color:#777;
   text-align:center;
-  font-size:8px;
+  font-size:7px;
 }
 
 </style>
@@ -3105,37 +3089,32 @@ Mohon dibantu proses pendaftarannya ya.`
 
     if(item.method_type === 'manual_transfer'){
       box.innerHTML = `
-        <div class="payment-detail-card">
-          <span>TRANSFER KE</span>
-          <strong>${escapePaymentHtml(item.bank_name || '')}</strong>
+        <div class="payment-compact-detail">
+          <span>${escapePaymentHtml(item.bank_name || '')}</span>
           <b>${escapePaymentHtml(item.account_number || '')}</b>
           <small>an ${escapePaymentHtml(item.account_holder || '')}</small>
-          ${item.instructions ? '<p>' + escapePaymentHtml(item.instructions) + '</p>' : ''}
         </div>
       `;
       return;
     }
 
     if(item.method_type === 'qris'){
-      box.innerHTML = `
-        <div class="payment-detail-card">
-          <span>QRIS</span>
-          ${item.qris_image_url ? '<img class="payment-qris-image" src="' + escapePaymentHtml(item.qris_image_url) + '" alt="QRIS pembayaran BADAI"/>' : ''}
-          ${item.payment_url ? '<a class="payment-open-link" href="' + escapePaymentHtml(item.payment_url) + '" target="_blank" rel="noopener">BUKA LINK BAYAR QRIS</a>' : ''}
-          ${item.instructions ? '<p>' + escapePaymentHtml(item.instructions) + '</p>' : ''}
+      const qrisUrl = item.payment_url || item.qris_image_url || '';
+      box.innerHTML = qrisUrl ? `
+        <div class="payment-compact-detail">
+          <span>QRIS siap digunakan</span>
+          <a href="${escapePaymentHtml(qrisUrl)}" target="_blank" rel="noopener">BUKA QRIS</a>
         </div>
-      `;
+      ` : '';
       return;
     }
 
-    box.innerHTML = `
-      <div class="payment-detail-card">
-        <span>PAYMENT GATEWAY</span>
-        <strong>${escapePaymentHtml(item.display_name || '')}</strong>
-        ${item.payment_url ? '<a class="payment-open-link" href="' + escapePaymentHtml(item.payment_url) + '" target="_blank" rel="noopener">BUKA HALAMAN PEMBAYARAN</a>' : ''}
-        ${item.instructions ? '<p>' + escapePaymentHtml(item.instructions) + '</p>' : ''}
+    box.innerHTML = item.payment_url ? `
+      <div class="payment-compact-detail">
+        <span>${escapePaymentHtml(item.display_name || 'Payment Gateway')}</span>
+        <a href="${escapePaymentHtml(item.payment_url)}" target="_blank" rel="noopener">BAYAR</a>
       </div>
-    `;
+    ` : '';
   }
 
   function renderPaymentMethods(){
@@ -3158,7 +3137,6 @@ Mohon dibantu proses pendaftarannya ya.`
     box.innerHTML = paymentMethods.map(item => `
       <label class="payment-option ${item.id === selectedPaymentMethodId ? 'selected' : ''}">
         <input type="radio" name="paymentMethod" value="${escapePaymentHtml(item.id)}" ${item.id === selectedPaymentMethodId ? 'checked' : ''}>
-        <span class="payment-option-icon">${item.method_type === 'qris' ? '▦' : item.method_type === 'payment_gateway' ? '↗' : '▤'}</span>
         <span class="payment-option-copy">
           <b>${escapePaymentHtml(item.display_name)}</b>
           <small>${paymentTypeName(item.method_type)}</small>
