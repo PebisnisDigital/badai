@@ -2545,7 +2545,11 @@ main.shell{
     $('teamStatus').textContent = 'Membuat akun tim...';
 
     try{
-      const res = await fetch(SUPABASE_URL + '/functions/v1/admin-create-team-member', {
+      const teamEndpoint = role === 'marketing'
+        ? '/functions/v1/admin-create-marketing-team-member'
+        : '/functions/v1/admin-create-team-member';
+
+      const res = await fetch(SUPABASE_URL + teamEndpoint, {
         method:'POST',
         headers:{
           'apikey':SUPABASE_KEY,
