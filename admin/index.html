@@ -115,6 +115,7 @@ tr:last-child td{border-bottom:0}
 }
 .action.approve{background:var(--pink);border-color:var(--pink);color:#090909}
 .action.reject{border-color:#4a2020;color:#ff9292}
+.action.delete{border-color:#5a2525;background:#1b0d0d;color:#ff8f8f}
 .empty{padding:40px 18px;text-align:center;color:#777;font-size:13px}
 .mobile-list{display:none}
 .card{
@@ -468,6 +469,7 @@ tr:last-child td{border-bottom:0}
             <a class="action" href="${waLink(r)}" target="_blank" rel="noopener">WA</a>
             ${r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
             ${r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
+            ${!r.user_id && r.member_status !== 'active' ? `<button class="action delete" data-action="delete" data-id="${r.id}">HAPUS</button>` : ''}
           </div>
         </td>
       </tr>
@@ -492,6 +494,7 @@ tr:last-child td{border-bottom:0}
           <a class="action" href="${waLink(r)}" target="_blank" rel="noopener">WHATSAPP</a>
           ${r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
           ${r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
+          ${!r.user_id && r.member_status !== 'active' ? `<button class="action delete" data-action="delete" data-id="${r.id}">HAPUS PENDAFTARAN</button>` : ''}
         </div>
       </div>
     `).join('');
@@ -655,6 +658,23 @@ Silakan login dan simpan data akses ini ya.`;
           payment_status:'rejected',
           member_status:'pending'
         })
+      });
+
+      await loadRegistrations();
+      return;
+    }
+
+    if(action === 'delete'){
+      if(row.user_id || row.member_status === 'active'){
+        alert('Member aktif tidak bisa dihapus dari tombol ini.');
+        return;
+      }
+
+      if(!confirm('Hapus pendaftaran ' + row.full_name + ' secara permanen? Data pembayaran terkait juga akan ikut terhapus.')) return;
+
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'DELETE',
+        headers:{'Prefer':'return=minimal'}
       });
 
       await loadRegistrations();
