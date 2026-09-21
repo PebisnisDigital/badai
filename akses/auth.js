@@ -224,6 +224,59 @@
     });
   }
 
+  async function configureMembership(profile){
+    const plan = profile?.membership_plan === 'pro' ? 'pro' : 'newbie';
+    const planName = document.getElementById('memberPlanName');
+    const planDesc = document.getElementById('memberPlanDesc');
+    const affiliateNav = document.getElementById('affiliateNavButton');
+    const footer = document.querySelector('.footer');
+
+    if(planName) planName.textContent = plan === 'pro' ? 'PRO' : 'NEWBIE';
+    if(planDesc){
+      planDesc.textContent = plan === 'pro'
+        ? 'Belajar Ilmu AI + Update + Program Afiliasi'
+        : 'Belajar Ilmu AI + Update';
+    }
+
+    window.BADAI_AFFILIATE_LINK = '';
+
+    if(plan !== 'pro'){
+      if(affiliateNav) affiliateNav.style.display = 'none';
+      if(footer) footer.style.setProperty('--member-nav-count','4');
+      return;
+    }
+
+    if(affiliateNav) affiliateNav.style.display = '';
+    if(footer) footer.style.setProperty('--member-nav-count','5');
+
+    try{
+      const rows = await api(
+        '/rest/v1/affiliate_accounts?user_id=eq.' + encodeURIComponent(profile.id) +
+        '&status=eq.active&select=affiliate_code,status'
+      );
+
+      const affiliate = rows?.[0];
+      const linkEl = document.getElementById('affiliateLink');
+      const codeEl = document.getElementById('affiliateCode');
+
+      if(!affiliate){
+        if(linkEl) linkEl.textContent = 'Akun afiliasi belum aktif. Hubungi admin BADAI.';
+        if(codeEl) codeEl.textContent = '-';
+        return;
+      }
+
+      const affiliateLink =
+        location.origin.replace(/\/$/,'') + '/?ref=' + encodeURIComponent(affiliate.affiliate_code);
+
+      window.BADAI_AFFILIATE_LINK = affiliateLink;
+      if(linkEl) linkEl.textContent = affiliateLink;
+      if(codeEl) codeEl.textContent = affiliate.affiliate_code;
+    }catch(_){
+      const linkEl = document.getElementById('affiliateLink');
+      if(linkEl) linkEl.textContent = 'Gagal memuat link afiliasi.';
+    }
+  }
+
   function buildGate(){
     if(document.getElementById('badaiAuthGate')) return;
 
@@ -292,7 +345,7 @@
 
       const rows = await api(
         '/rest/v1/profiles?id=eq.' + encodeURIComponent(userId) +
-        '&select=id,email,full_name,whatsapp,role,member_status'
+        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan'
       );
 
       const profile = rows?.[0];
@@ -343,6 +396,7 @@
     }
 
     populateAccount(profile, user);
+    configureMembership(profile);
     setAccountStatus('', '');
     console.log('BADAI member active:', profile?.email || '');
   }
