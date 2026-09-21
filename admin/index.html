@@ -116,6 +116,8 @@ tr:last-child td{border-bottom:0}
 .action.approve{background:var(--pink);border-color:var(--pink);color:#090909}
 .action.reject{border-color:#4a2020;color:#ff9292}
 .action.delete{border-color:#5a2525;background:#1b0d0d;color:#ff8f8f}
+.action.manage{border-color:#3d2b3a;color:#ff9aca}
+.action.suspend{border-color:#55471c;color:#f4d36d}
 .empty{padding:40px 18px;text-align:center;color:#777;font-size:13px}
 .mobile-list{display:none}
 .card{
@@ -163,6 +165,20 @@ tr:last-child td{border-bottom:0}
 }
 .cred-actions .primary-act{background:var(--pink);border-color:var(--pink);color:#080808}
 @media(max-width:480px){.cred-actions{grid-template-columns:1fr}}
+.manage-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.manage-field{display:grid;gap:6px;margin-top:10px}
+.manage-field.full{grid-column:1/-1}
+.manage-field label{font-size:10px;font-weight:900;color:#8d8d8d;letter-spacing:.06em;text-transform:uppercase}
+.manage-field input,.manage-field select,.manage-field textarea{
+  width:100%;box-sizing:border-box;border:1px solid #303030;background:#080808;color:#fff;
+  border-radius:12px;padding:12px;outline:none
+}
+.manage-field textarea{min-height:90px;resize:vertical}
+.manage-field input:focus,.manage-field select:focus,.manage-field textarea:focus{
+  border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,79,163,.1)
+}
+.manage-note{color:#8e8e8e;font-size:11px;line-height:1.5;margin-top:10px}
+@media(max-width:520px){.manage-grid{grid-template-columns:1fr}.manage-field.full{grid-column:auto}}
 
 </style>
 </head>
@@ -249,6 +265,55 @@ tr:last-child td{border-bottom:0}
     <div id="mobileList" class="mobile-list"></div>
     <div id="emptyMobile" class="empty hidden">Belum ada pendaftaran.</div>
   </section>
+
+
+<div id="manageModal" class="cred-modal hidden">
+  <div class="cred-box">
+    <h2>Kelola Pendaftar</h2>
+    <p>Admin bisa mengubah data, status pembayaran, status member, dan catatan internal.</p>
+    <input id="manageId" type="hidden"/>
+    <div class="manage-grid">
+      <div class="manage-field full">
+        <label>Nama</label>
+        <input id="manageName" type="text"/>
+      </div>
+      <div class="manage-field full">
+        <label>Email Login</label>
+        <input id="manageEmail" type="email" readonly/>
+      </div>
+      <div class="manage-field full">
+        <label>WhatsApp</label>
+        <input id="manageWhatsapp" type="text"/>
+      </div>
+      <div class="manage-field">
+        <label>Status Pembayaran</label>
+        <select id="managePaymentStatus">
+          <option value="pending">Pending</option>
+          <option value="waiting_verification">Menunggu Verifikasi</option>
+          <option value="paid">Lunas / Paid</option>
+          <option value="rejected">Ditolak</option>
+        </select>
+      </div>
+      <div class="manage-field">
+        <label>Status Member</label>
+        <select id="manageMemberStatus">
+          <option value="pending">Pending</option>
+          <option value="active">Active</option>
+          <option value="suspended">Suspended</option>
+        </select>
+      </div>
+      <div class="manage-field full">
+        <label>Catatan Admin</label>
+        <textarea id="manageAdminNote" placeholder="Catatan internal admin..."></textarea>
+      </div>
+    </div>
+    <div class="manage-note">Untuk pendaftar yang belum punya akun member, gunakan tombol <b>ACC + BUAT AKSES</b> agar akun login dibuat dengan benar.</div>
+    <div class="cred-actions">
+      <button id="saveManageBtn" class="primary-act" type="button">SIMPAN PERUBAHAN</button>
+      <button id="closeManageBtn" type="button">TUTUP</button>
+    </div>
+  </div>
+</div>
 
 <div id="credentialModal" class="cred-modal hidden">
   <div class="cred-box">
@@ -386,7 +451,7 @@ tr:last-child td{border-bottom:0}
   async function loadRegistrations(){
     try{
       registrations = await api(
-        '/rest/v1/registrations?select=id,full_name,email,whatsapp,product,amount,payment_status,member_status,created_at,activated_at&order=created_at.desc'
+        '/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,admin_note,created_at,activated_at&order=created_at.desc'
       ) || [];
       render();
     }catch(err){
@@ -467,9 +532,12 @@ tr:last-child td{border-bottom:0}
         <td>
           <div class="actions">
             <a class="action" href="${waLink(r)}" target="_blank" rel="noopener">WA</a>
-            ${r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
-            ${r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
-            ${!r.user_id && r.member_status !== 'active' ? `<button class="action delete" data-action="delete" data-id="${r.id}">HAPUS</button>` : ''}
+            <button class="action manage" data-action="manage" data-id="${r.id}">KELOLA</button>
+            ${!r.user_id && r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
+            ${r.user_id && r.member_status === 'active' ? `<button class="action suspend" data-action="suspend" data-id="${r.id}">SUSPEND</button>` : ''}
+            ${r.user_id && r.member_status === 'suspended' ? `<button class="action approve" data-action="activate" data-id="${r.id}">AKTIFKAN</button>` : ''}
+            ${!r.user_id && r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
+            <button class="action delete" data-action="delete" data-id="${r.id}">HAPUS</button>
           </div>
         </td>
       </tr>
@@ -492,9 +560,12 @@ tr:last-child td{border-bottom:0}
         </div>
         <div class="actions">
           <a class="action" href="${waLink(r)}" target="_blank" rel="noopener">WHATSAPP</a>
-          ${r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
-          ${r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
-          ${!r.user_id && r.member_status !== 'active' ? `<button class="action delete" data-action="delete" data-id="${r.id}">HAPUS PENDAFTARAN</button>` : ''}
+          <button class="action manage" data-action="manage" data-id="${r.id}">KELOLA</button>
+          ${!r.user_id && r.member_status !== 'active' ? `<button class="action approve" data-action="approve" data-id="${r.id}">ACC + BUAT AKSES</button>` : ''}
+          ${r.user_id && r.member_status === 'active' ? `<button class="action suspend" data-action="suspend" data-id="${r.id}">SUSPEND</button>` : ''}
+          ${r.user_id && r.member_status === 'suspended' ? `<button class="action approve" data-action="activate" data-id="${r.id}">AKTIFKAN</button>` : ''}
+          ${!r.user_id && r.payment_status !== 'rejected' ? `<button class="action reject" data-action="reject" data-id="${r.id}">TOLAK</button>` : ''}
+          <button class="action delete" data-action="delete" data-id="${r.id}">HAPUS TOTAL</button>
         </div>
       </div>
     `).join('');
@@ -617,9 +688,60 @@ Silakan login dan simpan data akses ini ya.`;
     $('credentialModal').classList.remove('hidden');
   }
 
+
+  function openManageModal(row){
+    $('manageId').value = row.id;
+    $('manageName').value = row.full_name || '';
+    $('manageEmail').value = row.email || '';
+    $('manageWhatsapp').value = row.whatsapp || '';
+    $('managePaymentStatus').value = row.payment_status || 'pending';
+    $('manageMemberStatus').value = row.member_status || 'pending';
+    $('manageAdminNote').value = row.admin_note || '';
+    $('manageModal').classList.remove('hidden');
+  }
+
+  async function saveManage(){
+    const id = $('manageId').value;
+    const row = registrations.find(r => r.id === id);
+    if(!row) return;
+
+    const memberStatus = $('manageMemberStatus').value;
+
+    if(!row.user_id && memberStatus === 'active'){
+      alert('Pendaftar ini belum punya akun member. Gunakan ACC + BUAT AKSES.');
+      return;
+    }
+
+    $('saveManageBtn').disabled = true;
+
+    try{
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({
+          full_name:$('manageName').value.trim(),
+          whatsapp:$('manageWhatsapp').value.trim(),
+          payment_status:$('managePaymentStatus').value,
+          member_status:memberStatus,
+          admin_note:$('manageAdminNote').value.trim() || null
+        })
+      });
+
+      $('manageModal').classList.add('hidden');
+      await loadRegistrations();
+    }finally{
+      $('saveManageBtn').disabled = false;
+    }
+  }
+
   async function updateRegistration(id, action){
     const row = registrations.find(r => r.id === id);
     if(!row) return;
+
+    if(action === 'manage'){
+      openManageModal(row);
+      return;
+    }
 
     if(action === 'approve'){
       if(session?.user?.email && row.email.toLowerCase() === session.user.email.toLowerCase()){
@@ -664,13 +786,39 @@ Silakan login dan simpan data akses ini ya.`;
       return;
     }
 
-    if(action === 'delete'){
-      if(row.user_id || row.member_status === 'active'){
-        alert('Member aktif tidak bisa dihapus dari tombol ini.');
-        return;
-      }
+    if(action === 'suspend'){
+      if(!confirm('Suspend akses member ' + row.full_name + '?')) return;
 
-      if(!confirm('Hapus pendaftaran ' + row.full_name + ' secara permanen? Data pembayaran terkait juga akan ikut terhapus.')) return;
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({member_status:'suspended'})
+      });
+
+      await loadRegistrations();
+      return;
+    }
+
+    if(action === 'activate'){
+      if(!confirm('Aktifkan kembali akses ' + row.full_name + '?')) return;
+
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({member_status:'active'})
+      });
+
+      await loadRegistrations();
+      return;
+    }
+
+    if(action === 'delete'){
+      if(row.user_id || row.member_status === 'active' || row.member_status === 'suspended'){
+        const typed = prompt('HAPUS TOTAL akan menghapus pendaftaran, pembayaran, profile, dan akun login member. Ketik HAPUS untuk melanjutkan.');
+        if(typed !== 'HAPUS') return;
+      }else{
+        if(!confirm('Hapus pendaftaran ' + row.full_name + ' secara permanen?')) return;
+      }
 
       await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
         method:'DELETE',
@@ -698,6 +846,18 @@ Silakan login dan simpan data akses ini ya.`;
     }catch(err){
       setAuthStatus(err.message, 'error');
     }
+  });
+
+  $('closeManageBtn').addEventListener('click', () => $('manageModal').classList.add('hidden'));
+  $('saveManageBtn').addEventListener('click', async () => {
+    try{
+      await saveManage();
+    }catch(err){
+      alert('Gagal menyimpan: ' + err.message);
+    }
+  });
+  $('manageModal').addEventListener('click', (e) => {
+    if(e.target === $('manageModal')) $('manageModal').classList.add('hidden');
   });
 
   $('closeCredentialBtn').addEventListener('click', () => $('credentialModal').classList.add('hidden'));
