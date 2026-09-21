@@ -842,6 +842,149 @@ main.shell{
 
 
 
+
+.finance-types{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+  margin:8px 0 10px;
+}
+.finance-type-btn{
+  min-width:0;
+  border:1px solid #242424;
+  background:#0d0d0d;
+  color:#ddd;
+  border-radius:13px;
+  min-height:74px;
+  padding:9px 7px;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+}
+.finance-type-btn.active{
+  border-color:#713052;
+  background:#1d1017;
+  box-shadow:inset 0 0 0 1px rgba(255,79,163,.08);
+}
+.finance-type-icon{
+  color:var(--pink);
+  font-size:15px;
+  line-height:1;
+  margin-bottom:3px;
+}
+.finance-type-btn strong{
+  font-size:10px;
+  color:#fff;
+  line-height:1.15;
+}
+.finance-type-btn small{
+  font-size:7px;
+  color:#777;
+  line-height:1.25;
+}
+.statement-card{
+  border:1px solid #242424;
+  border-radius:15px;
+  background:linear-gradient(180deg,#111,#0b0b0b);
+  overflow:hidden;
+}
+.statement-head{
+  padding:12px;
+  border-bottom:1px solid #202020;
+}
+.statement-head h3{
+  margin:0;
+  font-size:14px;
+}
+.statement-head p{
+  margin:3px 0 0;
+  font-size:8px;
+  color:#858585;
+}
+.statement-section{
+  padding:10px 12px;
+  border-bottom:1px solid #1c1c1c;
+}
+.statement-section:last-child{border-bottom:0}
+.statement-title{
+  font-size:8px;
+  color:#777;
+  font-weight:900;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.statement-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:5px 0;
+  font-size:10px;
+}
+.statement-row span:first-child{color:#bbb}
+.statement-row strong{
+  color:#fff;
+  white-space:nowrap;
+  font-size:10px;
+}
+.statement-row.total{
+  margin-top:4px;
+  padding-top:9px;
+  border-top:1px dashed #2d2d2d;
+}
+.statement-row.total span,
+.statement-row.total strong{
+  color:var(--pink2);
+  font-weight:900;
+}
+.statement-note{
+  margin-top:7px;
+  padding:7px 8px;
+  border-radius:9px;
+  background:#0b0b0b;
+  border:1px solid #202020;
+  color:#777;
+  font-size:7px;
+  line-height:1.45;
+}
+.cash-list{
+  display:grid;
+  gap:5px;
+  margin-top:6px;
+}
+.cash-item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px;
+  padding:7px 8px;
+  border-radius:9px;
+  background:#0a0a0a;
+  border:1px solid #1d1d1d;
+}
+.cash-item strong{
+  font-size:9px;
+}
+.cash-item small{
+  display:block;
+  margin-top:1px;
+  font-size:7px;
+  color:#777;
+}
+.cash-amount{
+  color:#7edf9f;
+  font-size:9px;
+  font-weight:900;
+  white-space:nowrap;
+}
+@media(max-width:400px){
+  .finance-type-btn{min-height:68px;padding:8px 6px}
+  .finance-type-btn strong{font-size:9px}
+  .finance-type-btn small{font-size:6.5px}
+}
+
 </style>
 </head>
 <body>
@@ -950,33 +1093,29 @@ main.shell{
       <div class="page-title">
         <div>
           <h2>Keuangan</h2>
-          <p>Ringkasan omzet dan laporan penjualan BADAI.</p>
+          <p>Laporan keuangan BADAI berdasarkan transaksi yang tercatat di sistem.</p>
         </div>
       </div>
 
-      <div class="stats">
-        <div class="stat"><span>OMZET KESELURUHAN</span><strong id="financeTotal">Rp0</strong></div>
-        <div class="stat"><span>OMZET BULAN INI</span><strong id="financeMonth">Rp0</strong></div>
-        <div class="stat"><span>TRANSAKSI LUNAS</span><strong id="financePaidCount">0</strong></div>
-        <div class="stat"><span>POTENSI PENDING</span><strong id="financePending">Rp0</strong></div>
+      <div class="finance-types">
+        <button class="finance-type-btn active" data-finance-type="profitloss" type="button">
+          <span class="finance-type-icon">↗</span>
+          <strong>Laba Rugi</strong>
+          <small>Pendapatan & laba</small>
+        </button>
+        <button class="finance-type-btn" data-finance-type="balance" type="button">
+          <span class="finance-type-icon">▦</span>
+          <strong>Neraca</strong>
+          <small>Aset & posisi keuangan</small>
+        </button>
+        <button class="finance-type-btn" data-finance-type="cashflow" type="button">
+          <span class="finance-type-icon">⇄</span>
+          <strong>Arus Kas</strong>
+          <small>Uang masuk & keluar</small>
+        </button>
       </div>
 
-      <div class="finance-report-toolbar">
-        <select id="financeReportType">
-          <option value="daily">Laporan Harian</option>
-          <option value="monthly">Laporan Bulanan</option>
-          <option value="transactions">Semua Transaksi Lunas</option>
-        </select>
-        <div class="report-label" id="financeReportLabel">Ringkasan pemasukan harian.</div>
-      </div>
-
-      <div class="table-wrap team-table-wrap">
-        <table class="finance-table">
-          <thead id="financeTableHead"></thead>
-          <tbody id="financeTableBody"></tbody>
-        </table>
-        <div id="financeEmpty" class="empty hidden">Belum ada transaksi lunas.</div>
-      </div>
+      <div id="financeStatement"></div>
     </section>
 
     <section id="pageTeam" class="admin-page hidden">
@@ -1098,6 +1237,7 @@ main.shell{
   let registrations = [];
   let currentTeam = null;
   let teamMembers = [];
+  let currentFinanceType = 'profitloss';
 
   const $ = (id) => document.getElementById(id);
   const authView = $('authView');
@@ -1415,68 +1555,113 @@ main.shell{
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
   }
 
-  function renderFinance(){
-    const paid = paidRows();
-    const total = paid.reduce((a,r)=>a+Number(r.amount||0),0);
-    const now = new Date();
-    const monthKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
-    const month = paid.filter(r => localMonthKey(r.activated_at || r.created_at) === monthKey)
-      .reduce((a,r)=>a+Number(r.amount||0),0);
-    const pending = registrations
-      .filter(r => ['pending','waiting_verification'].includes(r.payment_status))
-      .reduce((a,r)=>a+Number(r.amount||0),0);
-
-    $('financeTotal').textContent = rupiah(total);
-    $('financeMonth').textContent = rupiah(month);
-    $('financePaidCount').textContent = paid.length;
-    $('financePending').textContent = rupiah(pending);
-
-    renderFinanceReport();
+  function financePeriodLabel(){
+    return new Intl.DateTimeFormat('id-ID',{
+      day:'2-digit',month:'long',year:'numeric'
+    }).format(new Date());
   }
 
-  function renderFinanceReport(){
-    const type = $('financeReportType').value;
+  function renderFinance(){
     const paid = paidRows();
-    const head = $('financeTableHead');
-    const body = $('financeTableBody');
-    $('financeEmpty').classList.toggle('hidden', paid.length !== 0);
+    const revenue = paid.reduce((sum,r)=>sum+Number(r.amount||0),0);
+    const expenses = 0;
+    const liabilities = 0;
+    const cashOut = 0;
+    const netProfit = revenue - expenses;
+    const cash = revenue - cashOut;
 
-    if(type === 'daily'){
-      $('financeReportLabel').textContent = 'Omzet dikelompokkan per hari.';
-      head.innerHTML = '<tr><th>Tanggal</th><th>Transaksi</th><th>Omzet</th></tr>';
-      const map = new Map();
-      paid.forEach(r => {
-        const key = localDayKey(r.activated_at || r.created_at);
-        const v = map.get(key) || {count:0,total:0};
-        v.count++; v.total += Number(r.amount||0); map.set(key,v);
-      });
-      body.innerHTML = [...map.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([k,v]) =>
-        '<tr><td>'+esc(k)+'</td><td>'+v.count+'</td><td>'+rupiah(v.total)+'</td></tr>'
-      ).join('');
-      return;
+    let html = '';
+
+    if(currentFinanceType === 'profitloss'){
+      html = `
+        <div class="statement-card">
+          <div class="statement-head">
+            <h3>Laporan Laba Rugi</h3>
+            <p>Per ${financePeriodLabel()}</p>
+          </div>
+          <div class="statement-section">
+            <div class="statement-title">Pendapatan</div>
+            <div class="statement-row"><span>Penjualan BADAI</span><strong>${rupiah(revenue)}</strong></div>
+            <div class="statement-row"><span>Transaksi Lunas</span><strong>${paid.length}</strong></div>
+          </div>
+          <div class="statement-section">
+            <div class="statement-title">Beban</div>
+            <div class="statement-row"><span>Beban Operasional Tercatat</span><strong>${rupiah(expenses)}</strong></div>
+            <div class="statement-row total"><span>Laba Bersih</span><strong>${rupiah(netProfit)}</strong></div>
+            <div class="statement-note">Saat ini sistem baru mencatat pendapatan dari transaksi PAID. Pencatatan biaya/beban akan kita tambahkan saat modul pengeluaran dibuat.</div>
+          </div>
+        </div>
+      `;
     }
 
-    if(type === 'monthly'){
-      $('financeReportLabel').textContent = 'Omzet dikelompokkan per bulan.';
-      head.innerHTML = '<tr><th>Bulan</th><th>Transaksi</th><th>Omzet</th></tr>';
-      const map = new Map();
-      paid.forEach(r => {
-        const key = localMonthKey(r.activated_at || r.created_at);
-        const v = map.get(key) || {count:0,total:0};
-        v.count++; v.total += Number(r.amount||0); map.set(key,v);
-      });
-      body.innerHTML = [...map.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([k,v]) =>
-        '<tr><td>'+esc(k)+'</td><td>'+v.count+'</td><td>'+rupiah(v.total)+'</td></tr>'
-      ).join('');
-      return;
+    if(currentFinanceType === 'balance'){
+      const equity = cash - liabilities;
+      html = `
+        <div class="statement-card">
+          <div class="statement-head">
+            <h3>Laporan Neraca</h3>
+            <p>Posisi keuangan per ${financePeriodLabel()}</p>
+          </div>
+          <div class="statement-section">
+            <div class="statement-title">Aset</div>
+            <div class="statement-row"><span>Kas dari Penjualan</span><strong>${rupiah(cash)}</strong></div>
+            <div class="statement-row total"><span>Total Aset</span><strong>${rupiah(cash)}</strong></div>
+          </div>
+          <div class="statement-section">
+            <div class="statement-title">Liabilitas</div>
+            <div class="statement-row"><span>Utang Tercatat</span><strong>${rupiah(liabilities)}</strong></div>
+          </div>
+          <div class="statement-section">
+            <div class="statement-title">Ekuitas</div>
+            <div class="statement-row"><span>Ekuitas / Saldo Bersih</span><strong>${rupiah(equity)}</strong></div>
+            <div class="statement-row total"><span>Liabilitas + Ekuitas</span><strong>${rupiah(liabilities + equity)}</strong></div>
+            <div class="statement-note">Neraca saat ini menggunakan data yang tersedia di BADAI. Aset lain, modal, dan utang belum memiliki pencatatan terpisah.</div>
+          </div>
+        </div>
+      `;
     }
 
-    $('financeReportLabel').textContent = 'Daftar seluruh transaksi yang sudah lunas.';
-    head.innerHTML = '<tr><th>Member</th><th>Tanggal Lunas</th><th>Nominal</th></tr>';
-    body.innerHTML = paid.map(r =>
-      '<tr><td><div class="name">'+esc(r.full_name)+'</div><div class="meta">'+esc(r.email)+'</div></td>' +
-      '<td>'+dateTime(r.activated_at || r.created_at)+'</td><td>'+rupiah(r.amount)+'</td></tr>'
-    ).join('');
+    if(currentFinanceType === 'cashflow'){
+      html = `
+        <div class="statement-card">
+          <div class="statement-head">
+            <h3>Laporan Arus Kas</h3>
+            <p>Arus kas berdasarkan pembayaran member</p>
+          </div>
+          <div class="statement-section">
+            <div class="statement-title">Aktivitas Operasional</div>
+            <div class="statement-row"><span>Kas Masuk dari Penjualan</span><strong>${rupiah(revenue)}</strong></div>
+            <div class="statement-row"><span>Kas Keluar Tercatat</span><strong>${rupiah(cashOut)}</strong></div>
+            <div class="statement-row total"><span>Arus Kas Bersih</span><strong>${rupiah(cash)}</strong></div>
+          </div>
+          <div class="statement-section">
+            <div class="statement-title">Rincian Kas Masuk</div>
+            <div class="cash-list">
+              ${paid.length ? paid.map(r => `
+                <div class="cash-item">
+                  <div>
+                    <strong>${esc(r.full_name)}</strong>
+                    <small>${dateTime(r.activated_at || r.created_at)}</small>
+                  </div>
+                  <div class="cash-amount">+${rupiah(r.amount)}</div>
+                </div>
+              `).join('') : '<div class="statement-note">Belum ada transaksi PAID.</div>'}
+            </div>
+            <div class="statement-note">Kas keluar belum dicatat karena modul pengeluaran belum tersedia.</div>
+          </div>
+        </div>
+      `;
+    }
+
+    $('financeStatement').innerHTML = html;
+  }
+
+  function setFinanceType(type){
+    currentFinanceType = type;
+    document.querySelectorAll('[data-finance-type]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.financeType === type);
+    });
+    renderFinance();
   }
 
   function openCredentialModal(row, password){
@@ -1849,7 +2034,9 @@ main.shell{
   $('refreshBtn').addEventListener('click', loadRegistrations);
   $('searchBox').addEventListener('input', renderSales);
   $('statusFilter').addEventListener('change', renderSales);
-  $('financeReportType').addEventListener('change', renderFinanceReport);
+  document.querySelectorAll('[data-finance-type]').forEach(btn => {
+    btn.addEventListener('click', () => setFinanceType(btn.dataset.financeType));
+  });
 
   document.querySelectorAll('[data-page]').forEach(btn => {
     btn.addEventListener('click', () => switchPage(btn.dataset.page));
