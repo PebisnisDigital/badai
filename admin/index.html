@@ -489,6 +489,354 @@ main.shell{
   .admin-tab{min-height:54px}
 }
 
+
+/* ===== BADAI ADMIN — COMPACT MODE ===== */
+.shell{
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.topbar-inner{
+  height:52px;
+  padding-left:10px;
+  padding-right:10px;
+}
+.brand{font-size:16px}
+.small-btn{
+  min-height:32px;
+  padding:0 10px;
+  font-size:9px;
+}
+
+main.shell{
+  min-height:calc(100vh - 52px);
+  padding-top:12px;
+  padding-bottom:94px;
+}
+
+.dashboard-head{
+  margin-bottom:8px;
+}
+.dashboard-head h1{
+  font-size:19px;
+  line-height:1.05;
+}
+.dashboard-head p{
+  font-size:9px;
+  margin-top:2px;
+}
+
+.page-title{
+  margin:0 0 8px;
+}
+.page-title h2{
+  font-size:16px;
+  line-height:1.1;
+}
+.page-title p{
+  font-size:9px;
+  line-height:1.3;
+  margin-top:2px;
+}
+
+.stats{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:5px;
+  margin-bottom:8px;
+}
+.stat{
+  min-height:68px;
+  padding:8px 9px;
+  border-radius:14px;
+  justify-content:space-between;
+}
+.stat span{
+  font-size:7px;
+  line-height:1.15;
+  letter-spacing:.02em;
+}
+.stat strong{
+  font-size:17px;
+  line-height:1;
+  margin-top:6px;
+}
+
+.toolbar{
+  grid-template-columns:1fr 118px 92px;
+  gap:5px;
+  margin:7px 0 8px;
+}
+#searchBox{
+  grid-column:auto;
+}
+.toolbar input,
+.toolbar select,
+.toolbar .refresh{
+  min-height:38px;
+  border-radius:11px;
+  font-size:10px;
+}
+.toolbar input,
+.toolbar select{
+  padding-left:10px;
+  padding-right:10px;
+}
+.toolbar .refresh{
+  grid-column:auto!important;
+  padding:0 7px;
+  font-size:8px;
+  line-height:1.1;
+}
+
+.card{
+  border-radius:14px;
+  padding:9px 10px;
+}
+.card + .card{
+  margin-top:6px;
+}
+.card-head{
+  gap:6px;
+}
+.name{
+  font-size:12px;
+}
+.meta{
+  font-size:8px;
+  margin-top:1px;
+}
+.pill{
+  min-height:21px;
+  padding:0 7px;
+  font-size:7px;
+}
+
+.card-data{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:4px;
+  margin:7px 0;
+  padding:7px 8px;
+  border-radius:10px;
+}
+.card-data div{
+  font-size:8px;
+  line-height:1.25;
+  min-width:0;
+}
+.card-data span{
+  display:block;
+  font-size:7px;
+  margin-bottom:1px;
+}
+
+.actions{
+  gap:4px;
+}
+.action{
+  min-height:27px;
+  padding:0 8px;
+  border-radius:999px;
+  font-size:7px;
+}
+
+.finance-report-toolbar{
+  margin:7px 0 8px;
+  gap:5px;
+}
+.finance-report-toolbar select{
+  min-height:38px;
+  border-radius:11px;
+  font-size:10px;
+}
+.report-label{
+  font-size:8px;
+}
+
+.table-wrap{
+  border-radius:14px;
+}
+.finance-table th,
+.finance-table td{
+  padding:8px 7px;
+}
+.finance-table th{
+  font-size:7px;
+}
+.finance-table td{
+  font-size:9px;
+}
+
+.team-layout{
+  gap:7px;
+}
+.team-panel{
+  border-radius:14px;
+  padding:10px;
+}
+.team-panel h3{
+  font-size:13px;
+  margin-bottom:3px;
+}
+.team-panel > p{
+  font-size:8px;
+  line-height:1.35;
+  margin-bottom:8px;
+}
+.team-form{
+  gap:6px;
+}
+.team-form input,
+.team-form select{
+  min-height:38px;
+  border-radius:10px;
+  font-size:10px;
+}
+.team-help{
+  gap:4px;
+  margin-top:8px;
+}
+.team-help div{
+  border-radius:9px;
+  padding:6px 7px;
+  font-size:7px;
+}
+
+.admin-tabs{
+  padding:5px 8px calc(5px + env(safe-area-inset-bottom));
+  gap:5px;
+}
+.admin-tab{
+  min-height:46px;
+  border-radius:12px;
+  gap:1px;
+  font-size:7px;
+}
+.admin-tab svg{
+  width:17px;
+  height:17px;
+}
+
+.cred-modal{
+  padding:10px;
+}
+.cred-box{
+  border-radius:18px;
+  padding:14px;
+}
+.cred-box h2{
+  font-size:19px;
+}
+.cred-box p{
+  font-size:9px;
+  margin-bottom:9px;
+}
+.cred-row{
+  border-radius:10px;
+  padding:9px 10px;
+  margin-top:6px;
+}
+.cred-row span{
+  font-size:7px;
+}
+.cred-row strong{
+  font-size:12px;
+}
+.cred-actions{
+  gap:5px;
+  margin-top:9px;
+}
+.cred-actions button,
+.cred-actions a{
+  min-height:38px;
+  border-radius:10px;
+  font-size:9px;
+}
+
+.manage-field{
+  gap:4px;
+  margin-top:7px;
+}
+.manage-field label{
+  font-size:7px;
+}
+.manage-field input,
+.manage-field select,
+.manage-field textarea{
+  border-radius:10px;
+  padding:9px 10px;
+  font-size:10px;
+}
+.manage-field textarea{
+  min-height:68px;
+}
+.manage-note{
+  font-size:8px;
+  margin-top:7px;
+}
+
+@media(max-width:520px){
+  .stats{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+  .stat{
+    min-height:64px;
+    padding:7px 8px;
+  }
+  .stat strong{
+    font-size:16px;
+  }
+  .toolbar{
+    grid-template-columns:1fr 108px 86px;
+  }
+  .card-data{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+}
+
+@media(max-width:410px){
+  .shell{
+    padding-left:8px;
+    padding-right:8px;
+  }
+  .stats{
+    gap:4px;
+  }
+  .stat{
+    padding:7px 6px;
+    min-height:62px;
+  }
+  .stat span{
+    font-size:6.5px;
+  }
+  .stat strong{
+    font-size:15px;
+  }
+  .toolbar{
+    grid-template-columns:1fr 100px 80px;
+  }
+  .toolbar input,
+  .toolbar select,
+  .toolbar .refresh{
+    min-height:36px;
+    font-size:9px;
+  }
+  .card{
+    padding:8px;
+  }
+  .card-data{
+    gap:3px;
+    padding:6px;
+  }
+  .action{
+    min-height:26px;
+    padding:0 7px;
+    font-size:6.5px;
+  }
+  .admin-tab{
+    min-height:44px;
+  }
+}
+
 </style>
 </head>
 <body>
