@@ -1499,6 +1499,43 @@ main.shell{
   .buatqris-grid{grid-template-columns:1fr}
 }
 
+
+.buatqris-reference-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.buatqris-security-note{
+  margin:8px 0;
+  padding:8px 10px;
+  border:1px solid #2d4435;
+  border-radius:10px;
+  background:#0d1710;
+  color:#8ecda1;
+  font-size:7px;
+  line-height:1.45;
+}
+.buatqris-action-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.payment-test-btn{
+  min-height:39px;
+  border:1px solid #454545;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+  font-size:8px;
+  font-weight:950;
+  cursor:pointer;
+}
+.payment-test-btn:hover{border-color:#ff4fa3}
+@media(max-width:500px){
+  .buatqris-reference-grid,
+  .buatqris-action-grid{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -1766,11 +1803,13 @@ main.shell{
               <div class="manage-field">
                 <label>Metode QRIS</label>
                 <select id="buatQrisMethod">
+                  <option value="default">IKUTI DEFAULT BUATQRIS</option>
                   <option value="qris_one">QRIS 1</option>
                   <option value="qris_two">QRIS 2</option>
                   <option value="qris_three">QRIS 3</option>
                   <option value="qris_four">QRIS 4</option>
                 </select>
+                <div class="price-plan-note">Jika metode tertentu sedang nonaktif di BuatQris, sistem mereka bisa otomatis memakai metode aktif lain.</div>
               </div>
 
               <div class="manage-field">
@@ -1782,18 +1821,34 @@ main.shell{
               </div>
 
               <div class="manage-field">
-                <label>Nama Toko di QR (opsional)</label>
-                <input id="buatQrisUmkmName" type="text" maxlength="15" placeholder="BADAI"/>
+                <label>Nama QRIS (khusus akun PRO, opsional)</label>
+                <input id="buatQrisUmkmName" type="text" placeholder="BADAI"/>
+                <div class="price-plan-note">Mengirim parameter <b>qris_name</b>. Pada akun biasa field ini akan diabaikan BuatQris.</div>
               </div>
             </div>
 
-            <div class="buatqris-callback">
-              <span>WEBHOOK BADAI</span>
-              <code>https://tlvxlekqrllkvcpgwmic.supabase.co/functions/v1/buatqris-webhook</code>
-              <small>Masukkan URL ini ke Callback URL BuatQris agar pembayaran bisa terdeteksi otomatis.</small>
+            <div class="buatqris-reference-grid">
+              <div class="buatqris-callback">
+                <span>BASE URL OPEN API</span>
+                <code>https://api.buatqris.site</code>
+                <small>Semua action BuatQris memakai URL yang sama. Request dijalankan dari backend BADAI.</small>
+              </div>
+
+              <div class="buatqris-callback">
+                <span>WEBHOOK BADAI</span>
+                <code>https://tlvxlekqrllkvcpgwmic.supabase.co/functions/v1/buatqris-webhook</code>
+                <small>Masukkan URL ini ke Callback URL BuatQris. Webhook diverifikasi memakai Signing Secret.</small>
+              </div>
             </div>
 
-            <button id="saveBuatQrisBtn" class="payment-add-btn" type="button">SIMPAN PENGATURAN BUATQRIS</button>
+            <div class="buatqris-security-note">
+              🔐 Secret Token dan Signing Secret disimpan terenkripsi di Supabase Vault dan tidak pernah dikirim ke Landing Page.
+            </div>
+
+            <div class="buatqris-action-grid">
+              <button id="saveBuatQrisBtn" class="payment-add-btn" type="button">SIMPAN PENGATURAN</button>
+              <button id="testBuatQrisBtn" class="payment-test-btn" type="button">TES KONEKSI SANDBOX</button>
+            </div>
             <div id="buatQrisStatus" class="team-status-note"></div>
           </div>
 
@@ -2202,7 +2257,7 @@ main.shell{
     has_secret_token:false,
     has_signing_secret:false,
     test_mode:true,
-    qris_method:'qris_two',
+    qris_method:'default',
     fee_by:'user',
     display_name:'QRIS Otomatis',
     umkm_name:''
@@ -2709,7 +2764,9 @@ main.shell{
     $('buatQrisAccountId').value = buatQrisSettings.account_id || '';
     $('buatQrisDisplayName').value = buatQrisSettings.display_name || 'QRIS Otomatis';
     $('buatQrisMode').value = buatQrisSettings.test_mode ? 'sandbox' : 'real';
-    $('buatQrisMethod').value = buatQrisSettings.qris_method || 'qris_two';
+    $('buatQrisMethod').value = ['default','qris_one','qris_two','qris_three','qris_four'].includes(buatQrisSettings.qris_method)
+      ? buatQrisSettings.qris_method
+      : 'default';
     $('buatQrisFeeBy').value = buatQrisSettings.fee_by || 'user';
     $('buatQrisUmkmName').value = buatQrisSettings.umkm_name || '';
 
@@ -2765,6 +2822,26 @@ main.shell{
       : 'BuatQris dinonaktifkan.';
 
     await loadMarketing();
+  }
+
+  async function testBuatQrisConnection(){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin menguji BuatQris.');
+
+    const result = await api('/functions/v1/test-buatqris-connection', {
+      method:'POST',
+      body:JSON.stringify({})
+    });
+
+    if(!result?.success){
+      throw new Error(result?.error || 'Koneksi BuatQris gagal.');
+    }
+
+    const total = result.total_amount ? rupiah(result.total_amount) : 'Rp1.000';
+    const method = result.qris_method ? ' • ' + result.qris_method : '';
+    const expired = result.expired_at ? ' • QR berlaku sampai ' + dateTime(result.expired_at) : '';
+
+    $('buatQrisStatus').textContent =
+      '✓ Koneksi API berhasil. Sandbox ' + total + method + expired;
   }
 
   function paymentTypeLabel(type){
@@ -3743,6 +3820,19 @@ main.shell{
     finally{
       $('saveBuatQrisBtn').disabled = false;
       $('saveBuatQrisBtn').textContent = oldText;
+    }
+  });
+
+  $('testBuatQrisBtn').addEventListener('click', async () => {
+    $('testBuatQrisBtn').disabled = true;
+    const oldText = $('testBuatQrisBtn').textContent;
+    $('testBuatQrisBtn').textContent = 'MENGUJI...';
+    $('buatQrisStatus').textContent = 'Menghubungkan ke Open API BuatQris...';
+    try{ await testBuatQrisConnection(); }
+    catch(err){ $('buatQrisStatus').textContent = '✕ ' + (err.message || 'Tes koneksi gagal.'); }
+    finally{
+      $('testBuatQrisBtn').disabled = false;
+      $('testBuatQrisBtn').textContent = oldText;
     }
   });
 
