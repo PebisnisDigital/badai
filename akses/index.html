@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" class="badai-auth-lock">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1108,8 +1108,14 @@ body{
   font-size:9px;
 }
 
+
+/* Fail-closed member protection: content stays hidden until auth.js verifies access */
+html.badai-auth-lock body > .app{
+  display:none!important;
+}
+
 </style>
-<script src="./auth.js"></script>
+<script src="/akses/auth.js?v=20260921-2" defer></script>
 </head>
 <body>
 <div class="app">
