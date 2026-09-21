@@ -2081,6 +2081,150 @@ body.register-modal-open{
   }
 }
 
+
+.payment-choice-section{
+  display:grid;
+  gap:9px;
+  padding:12px;
+  border:1px solid #2f2f2f;
+  border-radius:15px;
+  background:#0b0b0b;
+}
+.payment-choice-head span{
+  display:block;
+  color:#ff8fc5;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.08em;
+  margin-bottom:2px;
+}
+.payment-choice-head b{
+  display:block;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:12px;
+}
+.payment-method-options{
+  display:grid;
+  gap:6px;
+}
+.payment-option{
+  display:grid;
+  grid-template-columns:auto auto 1fr;
+  align-items:center;
+  gap:8px;
+  min-height:52px;
+  padding:8px 10px;
+  border:1px solid #292929;
+  border-radius:12px;
+  background:#101010;
+  cursor:pointer;
+}
+.payment-option.selected{
+  border-color:#6b2c50;
+  background:#170e13;
+  box-shadow:0 0 0 1px rgba(255,79,163,.08) inset;
+}
+.payment-option input{
+  width:15px;
+  height:15px;
+  accent-color:#ff4fa3;
+}
+.payment-option-icon{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:#1b1b1b;
+  color:#ff91c5;
+  font-size:13px;
+  font-weight:900;
+}
+.payment-option-copy b{
+  display:block;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:9px;
+}
+.payment-option-copy small{
+  display:block;
+  margin-top:2px;
+  color:#707070;
+  font-size:7px;
+}
+.selected-payment-detail:empty{display:none}
+.payment-detail-card{
+  padding:11px;
+  border:1px solid #3b2433;
+  border-radius:12px;
+  background:#120d10;
+  text-align:center;
+}
+.payment-detail-card>span{
+  display:block;
+  color:#8d7180;
+  font-size:7px;
+  font-weight:900;
+  margin-bottom:4px;
+}
+.payment-detail-card>strong{
+  display:block;
+  color:#ff8fc5;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:12px;
+}
+.payment-detail-card>b{
+  display:block;
+  margin-top:2px;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:20px;
+}
+.payment-detail-card>small{
+  display:block;
+  color:#aaa;
+  font-size:9px;
+  margin-top:2px;
+}
+.payment-detail-card p{
+  margin:7px 0 0;
+  color:#8e8e8e;
+  font-size:8px;
+  line-height:1.45;
+  white-space:pre-wrap;
+}
+.payment-qris-image{
+  display:block;
+  width:min(100%,240px);
+  margin:8px auto;
+  border-radius:10px;
+  background:#fff;
+}
+.payment-open-link{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:36px;
+  margin-top:7px;
+  border-radius:10px;
+  background:#ff4fa3;
+  color:#111;
+  text-decoration:none;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:8px;
+  font-weight:950;
+}
+.payment-method-loading{
+  padding:12px;
+  border:1px dashed #303030;
+  border-radius:10px;
+  color:#777;
+  text-align:center;
+  font-size:8px;
+}
+
 </style>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="icon" type="image/png"/>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="shortcut icon"/>
@@ -2738,11 +2882,15 @@ body.register-modal-open{
           <input id="regWa" name="wa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
         </div>
 
-        <div class="payment-box">
-          <span class="payment-label">Rekening Bayar ke :</span>
-          <div class="bank-name">BCA</div>
-          <div class="bank-number">1480945529</div>
-          <div class="bank-owner">an PURKON N</div>
+        <div class="payment-choice-section">
+          <div class="payment-choice-head">
+            <span>METODE PEMBAYARAN</span>
+            <b>Pilih cara bayarnya</b>
+          </div>
+          <div id="paymentMethodOptions" class="payment-method-options">
+            <div class="payment-method-loading">Memuat metode pembayaran...</div>
+          </div>
+          <div id="selectedPaymentDetail" class="selected-payment-detail"></div>
         </div>
 
         <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
@@ -2891,16 +3039,159 @@ Nama: [nama]
 Email: [email]
 WA: [wa]
 
+Paket: [paket]
 Harga: [harga]
 
-Rekening pembayaran:
-BCA 1480945529
-an PURKON N
+Metode Pembayaran: [metode_bayar]
+[detail_bayar]
 
 Mohon dibantu proses pendaftarannya ya.`
   };
 
   let selectedPackage = 'newbie';
+  let paymentMethods = [];
+  let selectedPaymentMethodId = '';
+
+  function escapePaymentHtml(value){
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+  }
+
+  function selectedPaymentMethod(){
+    return paymentMethods.find(item => item.id === selectedPaymentMethodId) || null;
+  }
+
+  function paymentTypeName(type){
+    if(type === 'qris') return 'QRIS';
+    if(type === 'payment_gateway') return 'PAYMENT GATEWAY';
+    return 'TRANSFER MANUAL';
+  }
+
+  function paymentMethodPlainDetail(item){
+    if(!item) return '-';
+
+    if(item.method_type === 'manual_transfer'){
+      return [
+        [item.bank_name, item.account_number].filter(Boolean).join(' '),
+        item.account_holder ? 'an ' + item.account_holder : '',
+        item.instructions || ''
+      ].filter(Boolean).join('\n');
+    }
+
+    if(item.method_type === 'qris'){
+      return [
+        item.payment_url ? 'Link Bayar: ' + item.payment_url : '',
+        item.qris_image_url ? 'QRIS: ' + item.qris_image_url : '',
+        item.instructions || ''
+      ].filter(Boolean).join('\n');
+    }
+
+    return [
+      item.payment_url ? 'Link Bayar: ' + item.payment_url : '',
+      item.instructions || ''
+    ].filter(Boolean).join('\n');
+  }
+
+  function renderSelectedPaymentDetail(){
+    const box = document.getElementById('selectedPaymentDetail');
+    if(!box) return;
+
+    const item = selectedPaymentMethod();
+    if(!item){
+      box.innerHTML = '';
+      return;
+    }
+
+    if(item.method_type === 'manual_transfer'){
+      box.innerHTML = `
+        <div class="payment-detail-card">
+          <span>TRANSFER KE</span>
+          <strong>${escapePaymentHtml(item.bank_name || '')}</strong>
+          <b>${escapePaymentHtml(item.account_number || '')}</b>
+          <small>an ${escapePaymentHtml(item.account_holder || '')}</small>
+          ${item.instructions ? '<p>' + escapePaymentHtml(item.instructions) + '</p>' : ''}
+        </div>
+      `;
+      return;
+    }
+
+    if(item.method_type === 'qris'){
+      box.innerHTML = `
+        <div class="payment-detail-card">
+          <span>QRIS</span>
+          ${item.qris_image_url ? '<img class="payment-qris-image" src="' + escapePaymentHtml(item.qris_image_url) + '" alt="QRIS pembayaran BADAI"/>' : ''}
+          ${item.payment_url ? '<a class="payment-open-link" href="' + escapePaymentHtml(item.payment_url) + '" target="_blank" rel="noopener">BUKA LINK BAYAR QRIS</a>' : ''}
+          ${item.instructions ? '<p>' + escapePaymentHtml(item.instructions) + '</p>' : ''}
+        </div>
+      `;
+      return;
+    }
+
+    box.innerHTML = `
+      <div class="payment-detail-card">
+        <span>PAYMENT GATEWAY</span>
+        <strong>${escapePaymentHtml(item.display_name || '')}</strong>
+        ${item.payment_url ? '<a class="payment-open-link" href="' + escapePaymentHtml(item.payment_url) + '" target="_blank" rel="noopener">BUKA HALAMAN PEMBAYARAN</a>' : ''}
+        ${item.instructions ? '<p>' + escapePaymentHtml(item.instructions) + '</p>' : ''}
+      </div>
+    `;
+  }
+
+  function renderPaymentMethods(){
+    const box = document.getElementById('paymentMethodOptions');
+    if(!box) return;
+
+    if(!paymentMethods.length){
+      selectedPaymentMethodId = '';
+      box.innerHTML = '<div class="payment-method-loading">Belum ada metode pembayaran yang aktif.</div>';
+      renderSelectedPaymentDetail();
+      const submit = document.querySelector('.register-submit');
+      if(submit) submit.disabled = true;
+      return;
+    }
+
+    if(!paymentMethods.some(item => item.id === selectedPaymentMethodId)){
+      selectedPaymentMethodId = paymentMethods[0].id;
+    }
+
+    box.innerHTML = paymentMethods.map(item => `
+      <label class="payment-option ${item.id === selectedPaymentMethodId ? 'selected' : ''}">
+        <input type="radio" name="paymentMethod" value="${escapePaymentHtml(item.id)}" ${item.id === selectedPaymentMethodId ? 'checked' : ''}>
+        <span class="payment-option-icon">${item.method_type === 'qris' ? '▦' : item.method_type === 'payment_gateway' ? '↗' : '▤'}</span>
+        <span class="payment-option-copy">
+          <b>${escapePaymentHtml(item.display_name)}</b>
+          <small>${paymentTypeName(item.method_type)}</small>
+        </span>
+      </label>
+    `).join('');
+
+    box.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
+      input.addEventListener('change', () => {
+        selectedPaymentMethodId = input.value;
+        renderPaymentMethods();
+      });
+    });
+
+    const submit = document.querySelector('.register-submit');
+    if(submit) submit.disabled = false;
+    renderSelectedPaymentDetail();
+  }
+
+  async function loadPaymentMethods(){
+    try{
+      const res = await fetch(
+        SUPABASE_URL + '/rest/v1/payment_methods?active=eq.true&select=id,method_type,display_name,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order&order=sort_order.asc,created_at.asc',
+        {headers:{'apikey':SUPABASE_PUBLISHABLE_KEY}}
+      );
+      if(!res.ok) throw new Error('Gagal memuat metode pembayaran');
+      paymentMethods = await res.json() || [];
+      renderPaymentMethods();
+    }catch(_){
+      paymentMethods = [];
+      renderPaymentMethods();
+    }
+  }
 
   function selectedPackagePrice(){
     return selectedPackage === 'pro'
@@ -3019,6 +3310,7 @@ Mohon dibantu proses pendaftarannya ya.`
 
   syncSelectedPackageUI();
   loadMarketingConfig();
+  loadPaymentMethods();
 
   function normalizeWhatsapp(value){
     let digits = String(value || '').replace(/\D/g, '');
@@ -3035,6 +3327,11 @@ Mohon dibantu proses pendaftarannya ya.`
 
   form.addEventListener('submit', async function(e){
     e.preventDefault();
+
+    if(!selectedPaymentMethodId || !selectedPaymentMethod()){
+      setStatus('Pilih metode pembayaran dulu.', true);
+      return;
+    }
 
     const nama = document.getElementById('regNama').value.trim();
     const email = document.getElementById('regEmail').value.trim().toLowerCase();
@@ -3069,6 +3366,7 @@ Mohon dibantu proses pendaftarannya ya.`
           email: email,
           whatsapp: wa,
           membership_plan: selectedPackage,
+          payment_method_id: selectedPaymentMethodId || null,
           referred_by_code: (
             window.BADAI_AFFILIATE_REF ||
             localStorage.getItem('badai_affiliate_ref') ||
@@ -3088,7 +3386,9 @@ Mohon dibantu proses pendaftarannya ya.`
           email,
           wa,
           paket:selectedPackageName(),
-          harga:formatRupiah(selectedPackagePrice())
+          harga:formatRupiah(selectedPackagePrice()),
+          metode_bayar:selectedPaymentMethod()?.display_name || '-',
+          detail_bayar:paymentMethodPlainDetail(selectedPaymentMethod())
         }
       );
 
