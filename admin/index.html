@@ -118,6 +118,9 @@ tr:last-child td{border-bottom:0}
 .action.delete{border-color:#5a2525;background:#1b0d0d;color:#ff8f8f}
 .action.manage{border-color:#3d2b3a;color:#ff9aca}
 .action.suspend{border-color:#55471c;color:#f4d36d}
+.action.followup{border-color:#24455b;background:#0c1820;color:#8fd3ff}
+.action.followup.fu2{border-color:#4a3e20;background:#1a160b;color:#f4d36d}
+.action.followup.fu3{border-color:#4a2238;background:#1d0f17;color:#ff93c8}
 .empty{padding:40px 18px;text-align:center;color:#777;font-size:13px}
 .mobile-list{display:none}
 .card{
@@ -1314,9 +1317,30 @@ main.shell{
     }).length;
   }
 
-  function waLink(r){
-    const msg = 'Halo Kak ' + r.full_name + ', saya admin BADAI. Saya lihat pendaftaran Kakak sudah masuk.';
+  function waMessageLink(r, msg){
     return 'https://wa.me/' + encodeURIComponent(r.whatsapp) + '?text=' + encodeURIComponent(msg);
+  }
+
+  function followUpLink(r, step){
+    const name = r.full_name || 'Kak';
+    const amount = rupiah(r.amount || 123000);
+
+    const messages = {
+      1:
+        'Halo Kak ' + name + ' 👋\n\n' +
+        'Aku lihat pendaftaran BADAI Kakak sudah masuk, tapi pembayarannya masih belum selesai ya.\n\n' +
+        'Totalnya ' + amount + '. Kalau tadi sempat kepotong atau bingung di bagian pembayaran, kabari aku aja ya 😊',
+      2:
+        'Hai Kak ' + name + ' 👋\n\n' +
+        'Aku follow up lagi pendaftaran BADAI Kakak. Akses kelasnya masih aku tahan dulu karena statusnya masih pending.\n\n' +
+        'Kalau memang mau dilanjutkan, tinggal selesaikan pembayarannya ya. Kalau ada yang mau ditanyakan, chat aku aja.',
+      3:
+        'Kak ' + name + ' 👋\n\n' +
+        'Aku cek terakhir ya untuk pendaftaran BADAI Kakak. Statusnya masih pending dan aksesnya belum aktif.\n\n' +
+        'Kalau mau lanjut, bisa diselesaikan sekarang. Kalau batal juga nggak apa-apa, biar datanya nanti aku rapikan.'
+    };
+
+    return waMessageLink(r, messages[step] || messages[1]);
   }
 
   function canManageSales(){
@@ -1327,24 +1351,34 @@ main.shell{
     if(!canManageSales()) return '<span class="meta">READ ONLY</span>';
 
     const parts = [];
-    parts.push('<a class="action" href="' + waLink(r) + '" target="_blank" rel="noopener">' + (mobile?'WHATSAPP':'WA') + '</a>');
-    parts.push('<button class="action manage" data-action="manage" data-id="' + r.id + '">KELOLA</button>');
+    const isPaid = r.payment_status === 'paid';
+    const isPending = r.payment_status === 'pending' || r.payment_status === 'waiting_verification';
 
-    if(!r.user_id && r.member_status !== 'active'){
-      parts.push('<button class="action approve" data-action="approve" data-id="' + r.id + '">ACC + BUAT AKSES</button>');
+    if(isPending){
+      parts.push('<a class="action followup" href="' + followUpLink(r,1) + '" target="_blank" rel="noopener">FU 1</a>');
+      parts.push('<a class="action followup fu2" href="' + followUpLink(r,2) + '" target="_blank" rel="noopener">FU 2</a>');
+      parts.push('<a class="action followup fu3" href="' + followUpLink(r,3) + '" target="_blank" rel="noopener">FU 3</a>');
+
+      if(r.user_id){
+        parts.push('<button class="action approve" data-action="approve-existing" data-id="' + r.id + '">ACC + AKTIFKAN</button>');
+      }else{
+        parts.push('<button class="action approve" data-action="approve" data-id="' + r.id + '">ACC + BUAT AKUN</button>');
+      }
+
+      parts.push('<button class="action delete" data-action="delete" data-id="' + r.id + '">' + (mobile?'HAPUS TOTAL':'HAPUS') + '</button>');
+      return parts.join('');
     }
-    if(r.user_id){
+
+    if(isPaid){
+      parts.push('<button class="action manage" data-action="manage" data-id="' + r.id + '">KELOLA</button>');
       parts.push('<button class="action manage" data-action="reset-access" data-id="' + r.id + '">RESET AKSES</button>');
-    }
-    if(r.user_id && r.member_status === 'active'){
       parts.push('<button class="action suspend" data-action="suspend" data-id="' + r.id + '">SUSPEND</button>');
+      parts.push('<button class="action delete" data-action="delete" data-id="' + r.id + '">' + (mobile?'HAPUS TOTAL':'HAPUS') + '</button>');
+      return parts.join('');
     }
-    if(r.user_id && r.member_status === 'suspended'){
-      parts.push('<button class="action approve" data-action="activate" data-id="' + r.id + '">AKTIFKAN</button>');
-    }
-    if(!r.user_id && r.payment_status !== 'rejected'){
-      parts.push('<button class="action reject" data-action="reject" data-id="' + r.id + '">TOLAK</button>');
-    }
+
+    // Fallback untuk status lain seperti rejected.
+    parts.push('<button class="action approve" data-action="' + (r.user_id ? 'approve-existing' : 'approve') + '" data-id="' + r.id + '">ACC</button>');
     parts.push('<button class="action delete" data-action="delete" data-id="' + r.id + '">' + (mobile?'HAPUS TOTAL':'HAPUS') + '</button>');
     return parts.join('');
   }
@@ -1596,6 +1630,23 @@ main.shell{
       return;
     }
 
+    if(action === 'approve-existing'){
+      if(!confirm('Aktifkan kembali member ' + row.full_name + ' dan ubah status menjadi PAID?')) return;
+
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({
+          payment_status:'paid',
+          member_status:'active',
+          activated_at:row.activated_at || new Date().toISOString()
+        })
+      });
+
+      await loadRegistrations();
+      return;
+    }
+
     if(action === 'reject'){
       if(!confirm('Tolak pendaftaran ' + row.full_name + '?')) return;
       await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
@@ -1606,12 +1657,19 @@ main.shell{
     }
 
     if(action === 'suspend'){
-      if(!confirm('Suspend akses member ' + row.full_name + '?')) return;
+      if(!confirm('Suspend akses member ' + row.full_name + '? Status pembayaran akan kembali menjadi PENDING.')) return;
+
       await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH', headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({member_status:'suspended'})
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({
+          payment_status:'pending',
+          member_status:'suspended'
+        })
       });
-      await loadRegistrations(); return;
+
+      await loadRegistrations();
+      return;
     }
 
     if(action === 'activate'){
