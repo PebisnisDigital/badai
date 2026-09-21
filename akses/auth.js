@@ -232,7 +232,7 @@
     const affiliateNav = document.getElementById('affiliateNavButton');
     const footer = document.querySelector('.footer');
 
-    if(planName) planName.textContent = plan === 'pro' ? 'PRO' : 'NEWBIE';
+    if(planName) planName.textContent = plan === 'pro' ? 'PAKET UNTUNG' : 'PAKET PEMULA';
     if(planDesc){
       planDesc.textContent = plan === 'pro'
         ? 'Belajar Ilmu AI + Update + Program Afiliasi'
@@ -253,7 +253,7 @@
 
       const linkEl = document.getElementById('affiliateLink');
       const codeEl = document.getElementById('affiliateCode');
-      if(linkEl) linkEl.textContent = 'Khusus Paket PRO.';
+      if(linkEl) linkEl.textContent = 'Khusus Paket Untung.';
       if(codeEl) codeEl.textContent = '-';
       return;
     }
@@ -298,7 +298,7 @@
 
   window.openAffiliateEditor = function(){
     if(currentProfile?.membership_plan !== 'pro'){
-      alert('Fitur ini khusus member Paket PRO.');
+      alert('Fitur ini khusus member Paket Untung.');
       return;
     }
 
@@ -359,7 +359,7 @@
     }
 
     if(currentProfile.membership_plan !== 'pro'){
-      setAffiliateEditStatus('Fitur ini khusus member Paket PRO.', 'error');
+      setAffiliateEditStatus('Fitur ini khusus member Paket Untung.', 'error');
       return;
     }
 
