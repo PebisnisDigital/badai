@@ -230,7 +230,7 @@ tr:last-child td{border-bottom:0}
   .finance-report-toolbar{grid-template-columns:1fr}
 }
 @media(max-width:520px){
-  .admin-tabs{display:grid;grid-template-columns:repeat(3,1fr)}
+  .admin-tabs{display:grid;grid-template-columns:repeat(4,1fr)}
   .admin-tab{padding:0 6px;font-size:10px}
   .page-title{align-items:flex-start;flex-direction:column}
 }
@@ -431,7 +431,7 @@ main.shell{
   margin:0;
   padding:8px 14px calc(8px + env(safe-area-inset-bottom));
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:7px;
   border:0;
   border-top:1px solid #252525;
@@ -1051,6 +1051,80 @@ main.shell{
   color:var(--pink2);
 }
 
+
+.marketing-stack{display:grid;gap:8px}
+.marketing-card{
+  border:1px solid #242424;
+  background:linear-gradient(180deg,#111,#0b0b0b);
+  border-radius:15px;
+  padding:11px;
+}
+.marketing-card-head{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  margin-bottom:8px;
+}
+.marketing-number{
+  flex:0 0 auto;
+  width:24px;height:24px;
+  display:grid;place-items:center;
+  border-radius:8px;
+  background:#211018;
+  border:1px solid #51243e;
+  color:var(--pink2);
+  font-size:9px;font-weight:950;
+}
+.marketing-card h3{margin:0;font-size:12px}
+.marketing-card-head p{margin:2px 0 0;color:#777;font-size:8px;line-height:1.35}
+.marketing-card textarea{
+  width:100%;box-sizing:border-box;
+  border:1px solid #303030;background:#080808;color:#fff;
+  border-radius:10px;padding:9px 10px;outline:none;
+  font:inherit;font-size:9px;line-height:1.45;resize:vertical;
+}
+.marketing-card textarea:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,79,163,.1)}
+.template-help{
+  margin-top:6px;color:#727272;font-size:7px;line-height:1.5
+}
+.template-help b{color:#bdbdbd}
+.coupon-form{
+  display:grid;
+  grid-template-columns:1.2fr .9fr .8fr auto;
+  gap:5px;
+}
+.coupon-form input,.coupon-form select{
+  min-width:0;min-height:36px;
+  border:1px solid #303030;border-radius:9px;
+  background:#080808;color:#fff;padding:0 8px;font-size:8px
+}
+.coupon-form button{
+  min-height:36px;border:0;border-radius:9px;
+  background:var(--pink);color:#070707;
+  padding:0 9px;font-size:8px;font-weight:950
+}
+.coupon-list{display:grid;gap:5px;margin-top:8px}
+.coupon-row{
+  display:grid;grid-template-columns:1fr auto auto;
+  align-items:center;gap:6px;
+  border:1px solid #202020;background:#090909;
+  border-radius:10px;padding:7px 8px
+}
+.coupon-code{font-size:9px;font-weight:900;color:#fff}
+.coupon-meta{display:block;color:#747474;font-size:7px;margin-top:1px}
+.coupon-toggle,.coupon-delete{
+  min-height:27px;border-radius:999px;padding:0 8px;
+  font-size:7px;font-weight:900;background:#111
+}
+.coupon-toggle{border:1px solid #2d5138;color:#7ee09f}
+.coupon-toggle.off{border-color:#4a3b22;color:#ddc16e}
+.coupon-delete{border:1px solid #542222;color:#ff8787}
+.marketing-save{min-height:42px;border-radius:12px;font-size:9px}
+@media(max-width:450px){
+  .coupon-form{grid-template-columns:1fr 1fr}
+  .coupon-form button{grid-column:1/-1}
+}
+
 </style>
 </head>
 <body>
@@ -1104,6 +1178,10 @@ main.shell{
       <button id="tabFinance" class="admin-tab" data-page="finance" type="button" aria-label="Keuangan">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M16 11h5v4h-5a2 2 0 0 1 0-4Z"/><path d="M5 7V5h13v2"/></svg>
         <span class="nav-label">Keuangan</span>
+      </button>
+      <button id="tabMarketing" class="admin-tab" data-page="marketing" type="button" aria-label="Marketing">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11v2"/><path d="M6 9v6"/><path d="M9 8l9-4v16l-9-4z"/><path d="M9 16l2 5H7l-1-6"/></svg>
+        <span class="nav-label">Marketing</span>
       </button>
       <button id="tabTeam" class="admin-tab" data-page="team" type="button" aria-label="Tim">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -1184,6 +1262,84 @@ main.shell{
       <div id="financeStatement"></div>
     </section>
 
+    <section id="pageMarketing" class="admin-page hidden">
+      <div class="page-title">
+        <div>
+          <h2>Marketing</h2>
+          <p>Atur harga, promo, dan pesan WhatsApp BADAI dari satu tempat.</p>
+        </div>
+      </div>
+
+      <form id="marketingForm" class="marketing-stack">
+        <div class="marketing-card">
+          <div class="marketing-card-head">
+            <span class="marketing-number">1</span>
+            <div><h3>Atur Harga</h3><p>Harga ini dipakai untuk pendaftaran baru.</p></div>
+          </div>
+          <div class="manage-field full">
+            <label>Harga BADAI</label>
+            <input id="marketingPrice" type="number" min="1" step="1000" inputmode="numeric" required/>
+          </div>
+        </div>
+
+        <div class="marketing-card">
+          <div class="marketing-card-head">
+            <span class="marketing-number">2</span>
+            <div><h3>Kupon Diskon</h3><p>Buat beberapa kode promo dan aktifkan sesuai kebutuhan.</p></div>
+          </div>
+
+          <div class="coupon-form">
+            <input id="couponCode" type="text" placeholder="Kode, contoh: BADAI20"/>
+            <select id="couponType">
+              <option value="percent">Persen (%)</option>
+              <option value="fixed">Nominal (Rp)</option>
+            </select>
+            <input id="couponValue" type="number" min="1" inputmode="numeric" placeholder="Nilai"/>
+            <button id="addCouponBtn" type="button">+ TAMBAH</button>
+          </div>
+          <div id="couponList" class="coupon-list"></div>
+        </div>
+
+        <div class="marketing-card">
+          <div class="marketing-card-head">
+            <span class="marketing-number">3</span>
+            <div><h3>Notifikasi Daftar</h3><p>Pesan yang terbuka saat calon member selesai mengisi formulir.</p></div>
+          </div>
+          <div class="manage-field full">
+            <label>Pesan Pendaftaran</label>
+            <textarea id="marketingRegisterMessage" rows="8"></textarea>
+          </div>
+          <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[harga]</b></div>
+        </div>
+
+        <div class="marketing-card">
+          <div class="marketing-card-head">
+            <span class="marketing-number">4</span>
+            <div><h3>Notifikasi Follow Up</h3><p>Isi pesan untuk tombol FU 1, FU 2, dan FU 3 di Penjualan.</p></div>
+          </div>
+          <div class="manage-field full"><label>Follow Up 1</label><textarea id="marketingFollow1" rows="6"></textarea></div>
+          <div class="manage-field full"><label>Follow Up 2</label><textarea id="marketingFollow2" rows="6"></textarea></div>
+          <div class="manage-field full"><label>Follow Up 3</label><textarea id="marketingFollow3" rows="6"></textarea></div>
+          <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[harga]</b></div>
+        </div>
+
+        <div class="marketing-card">
+          <div class="marketing-card-head">
+            <span class="marketing-number">5</span>
+            <div><h3>Notifikasi Pendaftaran Berhasil</h3><p>Pesan akses yang dikirim setelah admin ACC member.</p></div>
+          </div>
+          <div class="manage-field full">
+            <label>Pesan Berhasil</label>
+            <textarea id="marketingSuccessMessage" rows="8"></textarea>
+          </div>
+          <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[password]</b> <b>[link]</b> <b>[harga]</b></div>
+        </div>
+
+        <button id="saveMarketingBtn" class="primary marketing-save" type="submit">SIMPAN PENGATURAN MARKETING</button>
+        <div id="marketingStatus" class="team-status-note"></div>
+      </form>
+    </section>
+
     <section id="pageTeam" class="admin-page hidden">
       <div class="page-title">
         <div>
@@ -1203,15 +1359,17 @@ main.shell{
               <option value="admin">Admin</option>
               <option value="sales">Sales</option>
               <option value="finance">Finance</option>
+              <option value="marketing">Marketing</option>
             </select>
             <button id="addTeamBtn" class="primary" type="submit">TAMBAH TIM + BUAT AKSES</button>
           </form>
           <div id="teamStatus" class="team-status-note"></div>
 
           <div class="team-help">
-            <div><b>ADMIN</b> — Penjualan + Keuangan, tanpa pengaturan Tim.</div>
+            <div><b>ADMIN</b> — Penjualan + Keuangan + Marketing, tanpa pengaturan Tim.</div>
             <div><b>SALES</b> — Fokus Penjualan dan pengelolaan member.</div>
             <div><b>FINANCE</b> — Hanya melihat Keuangan dan laporan.</div>
+            <div><b>MARKETING</b> — Hanya mengatur harga, kupon, dan notifikasi marketing.</div>
           </div>
         </div>
 
@@ -1366,6 +1524,15 @@ main.shell{
   let teamMembers = [];
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
+  let marketingSettings = {
+    product_price:123000,
+    registration_notification:'',
+    followup_1:'',
+    followup_2:'',
+    followup_3:'',
+    success_notification:''
+  };
+  let marketingCoupons = [];
 
   const $ = (id) => document.getElementById(id);
   const authView = $('authView');
@@ -1452,10 +1619,11 @@ main.shell{
 
   function allowedPages(){
     const role = currentTeam?.role;
-    if(role === 'owner') return ['sales','finance','team'];
-    if(role === 'admin') return ['sales','finance'];
+    if(role === 'owner') return ['sales','finance','marketing','team'];
+    if(role === 'admin') return ['sales','finance','marketing'];
     if(role === 'sales') return ['sales'];
     if(role === 'finance') return ['finance'];
+    if(role === 'marketing') return ['marketing'];
     return [];
   }
 
@@ -1463,19 +1631,24 @@ main.shell{
     const allowed = allowedPages();
     $('tabSales').classList.toggle('hidden', !allowed.includes('sales'));
     $('tabFinance').classList.toggle('hidden', !allowed.includes('finance'));
+    $('tabMarketing').classList.toggle('hidden', !allowed.includes('marketing'));
     $('tabTeam').classList.toggle('hidden', !allowed.includes('team'));
   }
 
   function switchPage(page){
     if(!allowedPages().includes(page)) return;
 
-    ['sales','finance','team'].forEach(name => {
+    ['sales','finance','marketing','team'].forEach(name => {
       $('page' + name.charAt(0).toUpperCase() + name.slice(1)).classList.toggle('hidden', name !== page);
-      const tab = name === 'sales' ? $('tabSales') : name === 'finance' ? $('tabFinance') : $('tabTeam');
+      const tab =
+        name === 'sales' ? $('tabSales') :
+        name === 'finance' ? $('tabFinance') :
+        name === 'marketing' ? $('tabMarketing') : $('tabTeam');
       tab.classList.toggle('active', name === page);
     });
 
     if(page === 'finance') loadFinanceTransactions();
+    if(page === 'marketing') loadMarketing();
     if(page === 'team') loadTeamMembers();
   }
 
@@ -1496,9 +1669,16 @@ main.shell{
         currentTeam.email + ' • ' + currentTeam.role.toUpperCase();
 
       configureTabs();
-      await loadRegistrations();
 
-      const first = allowedPages()[0];
+      const allowed = allowedPages();
+      if(allowed.includes('sales') || allowed.includes('finance')){
+        await loadMarketingSettings();
+        await loadRegistrations();
+      }else if(allowed.includes('marketing')){
+        await loadMarketing();
+      }
+
+      const first = allowed[0];
       if(first) switchPage(first);
     }catch(err){
       localStorage.removeItem(STORAGE_KEY);
@@ -1526,6 +1706,155 @@ main.shell{
     renderFinance();
   }
 
+
+  async function loadMarketingSettings(){
+    try{
+      const rows = await api(
+        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,registration_notification,followup_1,followup_2,followup_3,success_notification'
+      );
+      if(rows?.[0]) marketingSettings = rows[0];
+    }catch(_){}
+  }
+
+  async function loadMarketing(){
+    await loadMarketingSettings();
+
+    marketingCoupons = await api(
+      '/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,active,created_at&order=created_at.desc'
+    ) || [];
+
+    $('marketingPrice').value = marketingSettings.product_price || 123000;
+    $('marketingRegisterMessage').value = marketingSettings.registration_notification || '';
+    $('marketingFollow1').value = marketingSettings.followup_1 || '';
+    $('marketingFollow2').value = marketingSettings.followup_2 || '';
+    $('marketingFollow3').value = marketingSettings.followup_3 || '';
+    $('marketingSuccessMessage').value = marketingSettings.success_notification || '';
+    renderCoupons();
+  }
+
+  function canManageMarketing(){
+    return ['owner','admin','marketing'].includes(currentTeam?.role);
+  }
+
+  async function saveMarketing(){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mengubah Marketing.');
+
+    const price = Number($('marketingPrice').value);
+    if(!price || price < 1) throw new Error('Harga belum valid.');
+
+    const body = {
+      product_price:Math.round(price),
+      registration_notification:$('marketingRegisterMessage').value.trim(),
+      followup_1:$('marketingFollow1').value.trim(),
+      followup_2:$('marketingFollow2').value.trim(),
+      followup_3:$('marketingFollow3').value.trim(),
+      success_notification:$('marketingSuccessMessage').value.trim(),
+      updated_by:session.user.id
+    };
+
+    if(!body.registration_notification || !body.followup_1 || !body.followup_2 || !body.followup_3 || !body.success_notification){
+      throw new Error('Semua template notifikasi wajib diisi.');
+    }
+
+    $('saveMarketingBtn').disabled = true;
+    const oldText = $('saveMarketingBtn').textContent;
+    $('saveMarketingBtn').textContent = 'MENYIMPAN...';
+
+    try{
+      await api('/rest/v1/marketing_settings?id=eq.1', {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify(body)
+      });
+      $('marketingStatus').textContent = 'Pengaturan marketing berhasil disimpan.';
+      await loadMarketingSettings();
+    }finally{
+      $('saveMarketingBtn').disabled = false;
+      $('saveMarketingBtn').textContent = oldText;
+    }
+  }
+
+  function couponValueText(coupon){
+    return coupon.discount_type === 'percent'
+      ? coupon.discount_value + '%'
+      : rupiah(coupon.discount_value);
+  }
+
+  function renderCoupons(){
+    $('couponList').innerHTML = marketingCoupons.length
+      ? marketingCoupons.map(coupon => `
+          <div class="coupon-row">
+            <div>
+              <span class="coupon-code">${esc(coupon.code)}</span>
+              <span class="coupon-meta">${couponValueText(coupon)} • ${coupon.active ? 'AKTIF' : 'NONAKTIF'}</span>
+            </div>
+            <button class="coupon-toggle ${coupon.active ? '' : 'off'}" data-coupon-action="toggle" data-id="${coupon.id}" type="button">
+              ${coupon.active ? 'NONAKTIFKAN' : 'AKTIFKAN'}
+            </button>
+            <button class="coupon-delete" data-coupon-action="delete" data-id="${coupon.id}" type="button">HAPUS</button>
+          </div>
+        `).join('')
+      : '<div class="statement-note">Belum ada kupon diskon.</div>';
+  }
+
+  async function addCoupon(){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin membuat kupon.');
+
+    const code = $('couponCode').value.trim().toUpperCase();
+    const discountType = $('couponType').value;
+    const discountValue = Number($('couponValue').value);
+
+    if(!code || !discountValue || discountValue <= 0) throw new Error('Isi kode dan nilai diskon.');
+    if(discountType === 'percent' && discountValue > 100) throw new Error('Diskon persen maksimal 100%.');
+
+    await api('/rest/v1/marketing_coupons', {
+      method:'POST',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        code,
+        discount_type:discountType,
+        discount_value:Math.round(discountValue),
+        active:true,
+        created_by:session.user.id
+      })
+    });
+
+    $('couponCode').value = '';
+    $('couponValue').value = '';
+    await loadMarketing();
+  }
+
+  async function couponAction(id, action){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mengubah kupon.');
+    const coupon = marketingCoupons.find(c => c.id === id);
+    if(!coupon) return;
+
+    if(action === 'toggle'){
+      await api('/rest/v1/marketing_coupons?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({active:!coupon.active})
+      });
+    }
+
+    if(action === 'delete'){
+      if(!confirm('Hapus kupon ' + coupon.code + '?')) return;
+      await api('/rest/v1/marketing_coupons?id=eq.' + encodeURIComponent(id), {
+        method:'DELETE',
+        headers:{'Prefer':'return=minimal'}
+      });
+    }
+
+    await loadMarketing();
+  }
+
+  function fillMarketingTemplate(template, values){
+    let out = String(template || '');
+    Object.entries(values).forEach(([key,value]) => {
+      out = out.split('[' + key + ']').join(String(value ?? ''));
+    });
+    return out;
+  }
 
   function rupiah(n){
     return new Intl.NumberFormat('id-ID',{
@@ -1580,25 +1909,20 @@ main.shell{
   }
 
   function followUpLink(r, step){
-    const name = r.full_name || 'Kak';
-    const amount = rupiah(r.amount || 123000);
-
-    const messages = {
-      1:
-        'Halo Kak ' + name + ' 👋\n\n' +
-        'Aku lihat pendaftaran BADAI Kakak sudah masuk, tapi pembayarannya masih belum selesai ya.\n\n' +
-        'Totalnya ' + amount + '. Kalau tadi sempat kepotong atau bingung di bagian pembayaran, kabari aku aja ya 😊',
-      2:
-        'Hai Kak ' + name + ' 👋\n\n' +
-        'Aku follow up lagi pendaftaran BADAI Kakak. Akses kelasnya masih aku tahan dulu karena statusnya masih pending.\n\n' +
-        'Kalau memang mau dilanjutkan, tinggal selesaikan pembayarannya ya. Kalau ada yang mau ditanyakan, chat aku aja.',
-      3:
-        'Kak ' + name + ' 👋\n\n' +
-        'Aku cek terakhir ya untuk pendaftaran BADAI Kakak. Statusnya masih pending dan aksesnya belum aktif.\n\n' +
-        'Kalau mau lanjut, bisa diselesaikan sekarang. Kalau batal juga nggak apa-apa, biar datanya nanti aku rapikan.'
+    const templates = {
+      1:marketingSettings.followup_1,
+      2:marketingSettings.followup_2,
+      3:marketingSettings.followup_3
     };
 
-    return waMessageLink(r, messages[step] || messages[1]);
+    const message = fillMarketingTemplate(templates[step] || templates[1], {
+      nama:r.full_name || 'Kak',
+      email:r.email || '',
+      wa:r.whatsapp || '',
+      harga:rupiah(r.amount || marketingSettings.product_price || 123000)
+    });
+
+    return waMessageLink(r, message);
   }
 
   function canManageSales(){
@@ -1925,13 +2249,14 @@ main.shell{
     $('credPassword').textContent = password;
 
     const accessUrl = location.origin.replace(/\/$/,'') + '/akses/';
-    const message =
-      'Halo Kak ' + row.full_name + ' 👋\n\n' +
-      'Pembayaran BADAI sudah dikonfirmasi dan akses member sudah aktif.\n\n' +
-      'Link akses:\n' + accessUrl + '\n\n' +
-      'Email:\n' + row.email + '\n\n' +
-      'Password awal:\n' + password + '\n\n' +
-      'Silakan login dan simpan data akses ini ya.';
+    const message = fillMarketingTemplate(marketingSettings.success_notification, {
+      nama:row.full_name || '',
+      email:row.email || '',
+      password:password || '',
+      link:accessUrl,
+      harga:rupiah(row.amount || marketingSettings.product_price || 123000),
+      wa:row.whatsapp || ''
+    });
 
     $('sendCredentialWa').href =
       'https://wa.me/' + encodeURIComponent(row.whatsapp) + '?text=' + encodeURIComponent(message);
@@ -2146,7 +2471,12 @@ main.shell{
   }
 
   function roleLabel(role){
-    return role === 'owner' ? 'OWNER' : role === 'admin' ? 'ADMIN' : role === 'sales' ? 'SALES' : 'FINANCE';
+    return role === 'owner' ? 'OWNER'
+      : role === 'admin' ? 'ADMIN'
+      : role === 'sales' ? 'SALES'
+      : role === 'finance' ? 'FINANCE'
+      : role === 'marketing' ? 'MARKETING'
+      : String(role || '').toUpperCase();
   }
 
   function renderTeam(){
@@ -2156,7 +2486,7 @@ main.shell{
       const roleControl = owner
         ? '<span class="role-pill">OWNER</span>'
         : '<select class="team-select" data-team-role="' + t.id + '">' +
-            ['admin','sales','finance'].map(r =>
+            ['admin','sales','finance','marketing'].map(r =>
               '<option value="'+r+'" '+(t.role===r?'selected':'')+'>'+roleLabel(r)+'</option>'
             ).join('') +
           '</select>';
@@ -2297,6 +2627,19 @@ main.shell{
     btn.addEventListener('click', () => switchPage(btn.dataset.page));
   });
 
+  $('marketingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try{ await saveMarketing(); }
+    catch(err){ $('marketingStatus').textContent = err.message; }
+  });
+
+  $('addCouponBtn').addEventListener('click', async () => {
+    $('addCouponBtn').disabled = true;
+    try{ await addCoupon(); }
+    catch(err){ alert('Gagal menambah kupon: ' + err.message); }
+    finally{ $('addCouponBtn').disabled = false; }
+  });
+
   $('teamForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     try{ await addTeamMember(); }
@@ -2341,6 +2684,15 @@ main.shell{
   });
 
   document.addEventListener('click', async (e) => {
+    const couponBtn = e.target.closest('[data-coupon-action]');
+    if(couponBtn){
+      couponBtn.disabled = true;
+      try{ await couponAction(couponBtn.dataset.id, couponBtn.dataset.couponAction); }
+      catch(err){ alert('Aksi kupon gagal: ' + err.message); }
+      finally{ couponBtn.disabled = false; }
+      return;
+    }
+
     const financeBtn = e.target.closest('[data-finance-action]');
     if(financeBtn){
       const action = financeBtn.dataset.financeAction;
