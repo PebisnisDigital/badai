@@ -1,0 +1,1669 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ULVA — Untung Lewat Video AI</title>
+<link rel="icon" type="image/png" href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f5f7; --card:#fff; --ink:#111; --muted:#747982;
+  --yellow:#ff4fa3; --line:#e8e8e8; --shadow:0 8px 24px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:#eceef1;color:var(--ink);
+  font-family:"Nunito",Arial,sans-serif;
+}
+button{font:inherit}
+.app{
+  width:min(100%,700px); min-height:100vh; margin:auto; background:var(--bg);
+  padding-bottom:76px; position:relative; box-shadow:0 0 45px rgba(0,0,0,.05);
+}
+.hero{
+  margin:0 18px; padding:18px; text-align:center; color:#fff; background:#111;
+  border-radius:0 0 28px 28px; position:relative; overflow:hidden;
+}
+.hero:before{
+  content:""; position:absolute; width:120px;height:120px;border-radius:50%;
+  right:-48px;top:-68px;background:var(--yellow);
+}
+.badge{
+  position:relative;display:inline-block;padding:5px 9px;border-radius:99px;
+  border:1px solid #666;color:#eee;font:800 8px "Raleway";letter-spacing:.12em;
+}
+.logo{
+  position:relative;margin-top:7px;font:900 clamp(30px,8vw,46px) "Raleway";
+  line-height:1;letter-spacing:-.04em;
+}
+.tagline{
+  position:relative;margin-top:7px;font:800 11px "Raleway";letter-spacing:.03em;
+}
+.main{padding:14px 12px 16px}
+.screen{display:none}
+.screen.active{display:block}
+.center{text-align:center}
+.title{
+  margin:0;font:900 clamp(25px,6vw,34px) "Raleway";letter-spacing:-.055em;line-height:1;
+}
+.subtitle{margin:5px 0 12px;color:var(--muted);font-size:12px}
+.grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;
+}
+.card{
+  border:0;background:var(--card);border-radius:20px;padding:9px;text-align:left;
+  box-shadow:var(--shadow);cursor:pointer;min-width:0;
+}
+.cover{
+  aspect-ratio:1/1;border-radius:15px;background:
+    radial-gradient(circle at 77% 23%,rgba(255,214,10,.95),rgba(255,214,10,.10) 25%,transparent 27%),
+    linear-gradient(145deg,#161616,#343434);
+  display:grid;place-items:center;position:relative;font-size:34px;overflow:hidden;
+}
+.bab{
+  position:absolute;left:6px;top:6px;background:#fff;color:#111;border-radius:99px;
+  padding:4px 6px;font:900 7px "Raleway";letter-spacing:.05em;
+}
+.meta{
+  margin-top:7px;color:#777;font:800 7px "Raleway";letter-spacing:.04em;
+}
+.card h3{
+  margin:3px 0 0;font:900 clamp(11px,2.4vw,15px) "Raleway";
+  line-height:1.12;letter-spacing:-.025em;
+}
+.card p{
+  margin:6px 0 0;color:#71757c;font-size:clamp(9px,1.9vw,11px);
+  line-height:1.28;
+}
+.card .arrow{
+  margin:7px 0 0 auto;width:22px;height:22px;border-radius:50%;background:#f2f2f2;
+  display:grid;place-items:center;font:900 11px "Raleway";
+}
+.back{
+  border:0;background:#fff;border-radius:12px;width:38px;height:38px;
+  box-shadow:var(--shadow);font-size:18px;cursor:pointer;
+}
+.detailhead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.detailpill{
+  border-radius:99px;background:#fff;padding:7px 10px;font:900 9px "Raleway";
+}
+.video{
+  aspect-ratio:16/9;background:#111;border-radius:20px;overflow:hidden;
+  display:grid;place-items:center;box-shadow:var(--shadow);
+}
+.video iframe{width:100%;height:100%;border:0}
+.video-empty{color:#fff;text-align:center;padding:20px}
+.video-empty b{display:block;font:900 18px "Raleway";margin-bottom:5px}
+.video-empty span{font-size:11px;color:#aaa}
+.info{
+  margin-top:11px;background:#fff;border-radius:21px;padding:16px;box-shadow:var(--shadow);
+}
+.info h2{margin:0;font:900 23px "Raleway";letter-spacing:-.04em;line-height:1.05}
+.info .lead{margin:6px 0 12px;color:#696d74;font-size:13px;line-height:1.45}
+.info h4{margin:13px 0 6px;font:900 13px "Raleway"}
+.step{
+  display:grid;grid-template-columns:30px 1fr;gap:9px;padding:9px 0;
+  border-bottom:1px solid #eee;align-items:start;
+}
+.step:last-child{border-bottom:0}
+.num{
+  width:28px;height:28px;border-radius:9px;background:var(--yellow);
+  display:grid;place-items:center;font:900 11px "Raleway";
+}
+.step div:last-child{padding-top:3px;font-size:12px;line-height:1.42;color:#3f4247}
+.bonusgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bonus{
+  padding:16px;background:#fff;border-radius:20px;box-shadow:var(--shadow);
+}
+.bonus .ico{font-size:26px}.bonus h3{font:900 14px "Raleway";margin:7px 0 4px}
+.bonus p{font-size:11px;color:var(--muted);line-height:1.4;margin:0}
+
+.profit-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:10px;
+}
+.profit-card{
+  border:0;
+  background:#fff;
+  border-radius:20px;
+  padding:14px;
+  text-align:left;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  color:var(--ink);
+}
+.profit-card:last-child{
+  grid-column:1/-1;
+}
+.profit-icon{
+  font-size:25px;
+  margin-bottom:7px;
+}
+.profit-no{
+  display:inline-block;
+  background:#ffd2e7;
+  border-radius:999px;
+  padding:4px 7px;
+  font:900 7px "Raleway";
+  letter-spacing:.08em;
+  margin-bottom:7px;
+}
+.profit-card h3{
+  margin:0;
+  font:900 14px "Raleway";
+  line-height:1.15;
+  letter-spacing:-.02em;
+}
+.profit-card p{
+  margin:6px 0 10px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.4;
+}
+.profit-cta{
+  font:900 8px "Raleway";
+  color:#111;
+}
+.profit-detail-emoji{
+  font-size:38px;
+  margin-bottom:8px;
+}
+@media(max-width:390px){
+  .profit-grid{gap:7px}
+  .profit-card{padding:11px;border-radius:17px}
+  .profit-card h3{font-size:12px}
+  .profit-card p{font-size:9px}
+}
+
+
+.affiliate-how-card{
+  background:#111;color:#fff;border-radius:24px;padding:20px;text-align:center;
+  box-shadow:var(--shadow);margin-top:10px;
+}
+.affiliate-big-emoji{font-size:42px;margin-bottom:8px}
+.affiliate-kicker{
+  font:900 8px "Raleway";letter-spacing:.12em;color:#cfcfcf;
+}
+.affiliate-how-card h2{
+  margin:6px 0 8px;color:var(--yellow);font:900 30px "Raleway";letter-spacing:-.04em;
+}
+.affiliate-lead{
+  margin:0;color:#dedede;font-size:12px;line-height:1.5;
+}
+.affiliate-flow{
+  margin-top:12px;background:#fff;border-radius:22px;padding:8px 14px;box-shadow:var(--shadow);
+}
+.flow-step{
+  display:grid;grid-template-columns:34px 1fr;gap:10px;padding:12px 0;
+  border-bottom:1px solid #eee;align-items:start;
+}
+.flow-step:last-child{border-bottom:0}
+.flow-num{
+  width:32px;height:32px;border-radius:11px;display:grid;place-items:center;
+  background:var(--yellow);font:900 12px "Raleway";
+}
+.flow-step h3{margin:1px 0 4px;font:900 13px "Raleway"}
+.flow-step p{margin:0;font-size:11px;line-height:1.45;color:var(--muted)}
+.example-box{
+  margin-top:12px;background:#ffd2e7;border-radius:22px;padding:17px;text-align:center;
+}
+.example-label{font:900 8px "Raleway";letter-spacing:.1em;margin-bottom:5px}
+.example-box h3{margin:0 0 5px;font:900 19px "Raleway"}
+.example-box p{margin:0;font-size:14px}
+.example-box span{
+  display:block;margin-top:6px;color:#5c5c5c;font-size:10px;line-height:1.4;
+}
+.affiliate-main-cta{
+  width:100%;margin-top:12px;border:0;background:#111;color:#fff;border-radius:14px;
+  padding:13px;font:900 11px "Raleway";cursor:pointer;
+}
+
+.affbox{
+  background:#fff;border-radius:22px;padding:16px;box-shadow:var(--shadow);margin-top:10px;
+}
+.affbox h2{font:900 21px "Raleway";margin:0 0 5px}
+.affbox p{font-size:12px;color:var(--muted);line-height:1.45}
+.linkbox{
+  background:#111;color:#fff;border-radius:13px;padding:12px;font-size:10px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.copy{
+  width:100%;border:0;background:var(--yellow);padding:11px;border-radius:12px;
+  margin-top:8px;font:900 11px "Raleway";cursor:pointer;
+}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.stat{background:#fff;border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.stat b{font:900 13px "Raleway";display:block}.stat span{font-size:10px;color:var(--muted)}
+.footer{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:min(100%,700px);height:62px;background:rgba(255,255,255,.98);
+  border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);
+  padding:max(4px,env(safe-area-inset-bottom)) 8px 4px;z-index:30;
+  backdrop-filter:blur(16px);
+}
+.footer button{
+  border:0;background:transparent;border-radius:13px;color:#81858c;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;cursor:pointer;transition:.2s;padding:4px;
+}
+.footer button:hover{background:#ffd8ea;color:#111}
+.footer button.active{background:var(--yellow);color:#111}
+.footer .emoji{font-size:16px;line-height:1}
+.footer .label{font:900 8px "Raleway";line-height:1}
+.footer button.active .emoji{animation:bounce 1.8s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@media(max-width:390px){
+  .app{padding-bottom:70px}
+  .hero{margin:0 10px}
+  .main{padding:12px 8px}
+  .grid{gap:7px}
+  .card{padding:7px;border-radius:16px}
+  .cover{border-radius:12px;font-size:28px}
+  .card h3{font-size:10px}
+  .card p{font-size:8px}
+}
+
+/* === ULVA DARK THEME: LANDING PAGE MATCH === */
+:root{
+  --bg:#050505;
+  --card:#151515;
+  --ink:#ffffff;
+  --muted:#b7b7b7;
+  --yellow:#ff4fa3;
+  --line:#2a2a2a;
+  --shadow:0 10px 30px rgba(0,0,0,.38);
+}
+
+body{
+  background:#000;
+  color:#fff;
+}
+
+.app{
+  background:#050505;
+  box-shadow:0 0 55px rgba(0,0,0,.65);
+}
+
+.hero{
+  background:#0b0b0b;
+  border:1px solid #1e1e1e;
+  border-top:0;
+}
+
+.badge{
+  border-color:#474747;
+  color:#e7e7e7;
+}
+
+.title,
+.card h3,
+.info h2,
+.info h4,
+.flow-step h3,
+.affbox h2,
+.stat b{
+  color:#fff;
+}
+
+.subtitle,
+.meta,
+.card p,
+.info .lead,
+.flow-step p,
+.affbox p,
+.stat span,
+.bonus p{
+  color:var(--muted);
+}
+
+.card,
+.info,
+.bonus,
+.affiliate-flow,
+.affbox,
+.stat{
+  background:#151515;
+  border:1px solid #242424;
+  color:#fff;
+}
+
+.cover{
+  background:
+    radial-gradient(circle at 77% 23%,rgba(255,79,163,.98),rgba(255,79,163,.12) 25%,transparent 27%),
+    linear-gradient(145deg,#0b0b0b,#282828);
+}
+
+.bab{
+  background:#ff4fa3;
+  color:#111;
+}
+
+.card .arrow{
+  background:#262626;
+  color:#fff;
+}
+
+.back,
+.detailpill{
+  background:#171717;
+  color:#fff;
+  border:1px solid #2a2a2a;
+}
+
+.video{
+  background:#0a0a0a;
+  border:1px solid #252525;
+}
+
+.step,
+.flow-step{
+  border-bottom-color:#2a2a2a;
+}
+
+.step div:last-child{
+  color:#e2e2e2;
+}
+
+.num,
+.flow-num{
+  background:#ff4fa3;
+  color:#111;
+}
+
+.affiliate-how-card{
+  background:#0d0d0d;
+  border:1px solid #242424;
+}
+
+.affiliate-lead{
+  color:#d7d7d7;
+}
+
+.example-box{
+  background:#24101a;
+  border:1px solid rgba(255,79,163,.32);
+  color:#fff;
+}
+
+.example-box span{
+  color:#d5b8c5;
+}
+
+.affiliate-main-cta{
+  background:#ff4fa3;
+  color:#111;
+}
+
+.linkbox{
+  background:#090909;
+  border:1px solid #2a2a2a;
+}
+
+.copy{
+  background:#ff4fa3;
+  color:#111;
+}
+
+.footer{
+  background:rgba(8,8,8,.96);
+  border-top:1px solid #252525;
+}
+
+.footer button{
+  color:#9a9a9a;
+}
+
+.footer button:hover{
+  background:#26101b;
+  color:#fff;
+}
+
+.footer button.active{
+  background:#ff4fa3;
+  color:#111;
+}
+
+.profit-card{
+  background:#151515;
+  border:1px solid #242424;
+  color:#fff;
+}
+
+.profit-no{
+  background:#31111f;
+  color:#ff89c2;
+}
+
+.profit-card p{
+  color:#b7b7b7;
+}
+
+.profit-cta{
+  color:#ff89c2;
+}
+
+
+/* === JALUR UNTUNG 30 HARI === */
+.journey-intro{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:52px 1fr;
+  gap:12px;
+  align-items:center;
+  padding:16px;
+  border-radius:22px;
+  background:#111;
+  border:1px solid #242424;
+  box-shadow:var(--shadow);
+}
+.journey-emoji{
+  width:50px;height:50px;border-radius:16px;
+  display:grid;place-items:center;
+  background:#24101a;
+  font-size:28px;
+}
+.journey-kicker{
+  color:#ff8cc2;
+  font:900 8px "Raleway";
+  letter-spacing:.12em;
+}
+.journey-intro h2{
+  margin:3px 0 5px;
+  font:900 18px "Raleway";
+  color:#fff;
+}
+.journey-intro p{
+  margin:0;
+  color:#bbb;
+  font-size:10px;
+  line-height:1.45;
+}
+
+.profit-route-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.profit-route{
+  border:1px solid #242424;
+  background:#151515;
+  color:#fff;
+  border-radius:20px;
+  padding:14px;
+  text-align:left;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+}
+.profit-route:hover{
+  border-color:#ff4fa3;
+  transform:translateY(-1px);
+}
+.profit-route .route-emoji{
+  font-size:25px;
+  margin-bottom:7px;
+}
+.profit-route .route-no{
+  display:inline-block;
+  padding:4px 7px;
+  margin-bottom:7px;
+  border-radius:999px;
+  background:#2b101d;
+  color:#ff8cc2;
+  font:900 7px "Raleway";
+  letter-spacing:.08em;
+}
+.profit-route h3{
+  margin:0;
+  font:900 13px "Raleway";
+  line-height:1.14;
+  color:#fff;
+}
+.profit-route p{
+  margin:6px 0 10px;
+  color:#aaa;
+  font-size:9px;
+  line-height:1.42;
+}
+.profit-route .route-cta{
+  color:#ff8cc2;
+  font:900 8px "Raleway";
+}
+
+.route-detail-hero{
+  padding:20px 17px;
+  border-radius:23px;
+  background:#111;
+  border:1px solid #242424;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+.route-detail-emoji{
+  font-size:40px;
+  margin-bottom:6px;
+}
+.route-detail-kicker{
+  color:#ff8cc2;
+  font:900 8px "Raleway";
+  letter-spacing:.11em;
+}
+.route-detail-hero h2{
+  margin:6px 0 7px;
+  color:#fff;
+  font:900 25px "Raleway";
+  letter-spacing:-.04em;
+}
+.route-detail-hero p{
+  margin:0;
+  color:#bbb;
+  font-size:11px;
+  line-height:1.5;
+}
+
+.route-how,
+.plan30{
+  margin-top:12px;
+  padding:14px;
+  border-radius:21px;
+  background:#151515;
+  border:1px solid #242424;
+  box-shadow:var(--shadow);
+}
+.route-how h3{
+  margin:0 0 7px;
+  font:900 15px "Raleway";
+  color:#fff;
+}
+.route-step{
+  display:grid;
+  grid-template-columns:30px 1fr;
+  gap:9px;
+  padding:9px 0;
+  border-bottom:1px solid #292929;
+}
+.route-step:last-child{border-bottom:0}
+.route-step-no{
+  width:28px;height:28px;
+  border-radius:9px;
+  display:grid;place-items:center;
+  background:#ff4fa3;
+  color:#111;
+  font:900 11px "Raleway";
+}
+.route-step-text{
+  padding-top:3px;
+  color:#ddd;
+  font-size:11px;
+  line-height:1.45;
+}
+
+.plan30-head{
+  display:flex;
+  gap:9px;
+  align-items:center;
+  margin-bottom:6px;
+}
+.plan30-head > span{font-size:23px}
+.plan30-head b{
+  display:block;
+  font:900 15px "Raleway";
+  color:#fff;
+}
+.plan30-head small{
+  display:block;
+  color:#999;
+  font-size:9px;
+  margin-top:2px;
+}
+.plan-phase{
+  margin-top:9px;
+  padding:12px;
+  border-radius:15px;
+  background:#0d0d0d;
+  border:1px solid #242424;
+}
+.plan-phase .phase-day{
+  display:inline-block;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#2b101d;
+  color:#ff8cc2;
+  font:900 7px "Raleway";
+  letter-spacing:.06em;
+}
+.plan-phase h4{
+  margin:6px 0 5px;
+  font:900 12px "Raleway";
+  color:#fff;
+}
+.plan-phase p{
+  margin:0;
+  color:#b8b8b8;
+  font-size:10px;
+  line-height:1.48;
+}
+
+@media(max-width:390px){
+  .profit-route-grid{gap:7px}
+  .profit-route{padding:11px;border-radius:17px}
+  .profit-route h3{font-size:11px}
+  .profit-route p{font-size:8px}
+  .journey-intro{grid-template-columns:44px 1fr;padding:13px}
+  .journey-emoji{width:42px;height:42px;font-size:23px}
+}
+
+
+.route-money-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:12px;
+}
+.route-money-card{
+  padding:13px;
+  border-radius:17px;
+  background:#151515;
+  border:1px solid #242424;
+  box-shadow:var(--shadow);
+}
+.route-money-card.full{
+  grid-column:1/-1;
+}
+.route-money-icon{
+  font-size:20px;
+  margin-bottom:5px;
+}
+.route-money-label{
+  color:#ff8cc2;
+  font:900 7px "Raleway";
+  letter-spacing:.08em;
+  margin-bottom:5px;
+}
+.route-money-card p{
+  margin:0;
+  color:#c2c2c2;
+  font-size:10px;
+  line-height:1.5;
+}
+@media(max-width:390px){
+  .route-money-grid{grid-template-columns:1fr}
+  .route-money-card.full{grid-column:auto}
+}
+
+
+/* === CARA PAKAI === */
+.guide-hero{
+  padding:18px 16px;
+  border-radius:22px;
+  background:#111;
+  border:1px solid #242424;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+.guide-icon{font-size:34px;margin-bottom:5px}
+.guide-kicker{
+  color:#ff8cc2;
+  font:900 8px "Raleway";
+  letter-spacing:.12em;
+}
+.guide-hero h1{
+  margin:5px 0 6px;
+  color:#fff;
+  font:900 25px "Raleway";
+  letter-spacing:-.04em;
+}
+.guide-hero p{
+  margin:0;
+  color:#bbb;
+  font-size:11px;
+  line-height:1.45;
+}
+.guide-video{
+  margin-top:12px;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  border-radius:20px;
+  background:#0b0b0b;
+  border:1px solid #242424;
+  box-shadow:var(--shadow);
+}
+.guide-video iframe{width:100%;height:100%;border:0;display:block}
+.guide-steps{
+  margin-top:12px;
+  padding:14px;
+  border-radius:21px;
+  background:#151515;
+  border:1px solid #242424;
+  box-shadow:var(--shadow);
+}
+.guide-steps h3{
+  margin:0 0 7px;
+  color:#fff;
+  font:900 15px "Raleway";
+}
+.guide-step{
+  display:grid;
+  grid-template-columns:31px 1fr;
+  gap:9px;
+  padding:10px 0;
+  border-bottom:1px solid #292929;
+}
+.guide-step:last-child{border-bottom:0}
+.guide-no{
+  width:29px;height:29px;
+  border-radius:9px;
+  display:grid;place-items:center;
+  background:#ff4fa3;color:#111;
+  font:900 11px "Raleway";
+}
+.guide-step b{
+  display:block;
+  color:#fff;
+  font:900 12px "Raleway";
+  margin-bottom:2px;
+}
+.guide-step span{
+  display:block;
+  color:#aaa;
+  font-size:10px;
+  line-height:1.4;
+}
+
+/* === KISAH SUKSES / KOMIK === */
+.comic-header{
+  display:grid;
+  grid-template-columns:48px 1fr;
+  gap:11px;
+  align-items:center;
+  padding:15px;
+  border-radius:22px;
+  background:#111;
+  border:1px solid #242424;
+  box-shadow:var(--shadow);
+}
+.comic-header-emoji{
+  width:46px;height:46px;
+  border-radius:15px;
+  display:grid;place-items:center;
+  background:#24101a;
+  font-size:25px;
+}
+.comic-kicker{
+  color:#ff8cc2;
+  font:900 7px "Raleway";
+  letter-spacing:.11em;
+}
+.comic-header h1{
+  margin:2px 0 4px;
+  color:#fff;
+  font:900 23px "Raleway";
+  letter-spacing:-.04em;
+}
+.comic-header p{
+  margin:0;color:#aaa;font-size:10px;line-height:1.4;
+}
+.comic-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.comic-card{
+  border:1px solid #242424;
+  background:#151515;
+  color:#fff;
+  border-radius:19px;
+  padding:10px;
+  text-align:left;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+}
+.comic-cover{
+  aspect-ratio:1/1;
+  border-radius:15px;
+  display:grid;place-items:center;
+  position:relative;
+  overflow:hidden;
+  font-size:40px;
+  background:
+    radial-gradient(circle at 72% 20%,rgba(255,79,163,.9),rgba(255,79,163,.12) 27%,transparent 29%),
+    linear-gradient(145deg,#0d0d0d,#282828);
+}
+.comic-ep{
+  position:absolute;
+  left:7px;top:7px;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#ff4fa3;
+  color:#111;
+  font:900 7px "Raleway";
+}
+.comic-card h3{
+  margin:8px 0 4px;
+  color:#fff;
+  font:900 12px "Raleway";
+  line-height:1.15;
+}
+.comic-card p{
+  margin:0;
+  color:#aaa;
+  font-size:9px;
+  line-height:1.4;
+}
+.comic-card .read{
+  display:block;
+  margin-top:8px;
+  color:#ff8cc2;
+  font:900 8px "Raleway";
+}
+.comic-note{
+  margin-top:12px;
+  padding:13px;
+  border-radius:17px;
+  background:#120d10;
+  border:1px solid #2d2027;
+}
+.comic-note b{
+  color:#ff8cc2;
+  font:900 10px "Raleway";
+}
+.comic-note p{
+  margin:4px 0 0;
+  color:#999;
+  font-size:9px;
+  line-height:1.45;
+}
+.comic-detail-head{
+  padding:18px 15px;
+  text-align:center;
+  border-radius:22px;
+  background:#111;
+  border:1px solid #242424;
+  box-shadow:var(--shadow);
+}
+.comic-detail-emoji{font-size:40px}
+.comic-detail-kicker{
+  margin-top:5px;
+  color:#ff8cc2;
+  font:900 8px "Raleway";
+  letter-spacing:.1em;
+}
+.comic-detail-head h2{
+  margin:5px 0 6px;
+  color:#fff;
+  font:900 23px "Raleway";
+  letter-spacing:-.04em;
+}
+.comic-detail-head p{
+  margin:0;
+  color:#aaa;
+  font-size:10px;
+  line-height:1.45;
+}
+.comic-panels{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
+.comic-panel{
+  display:grid;
+  grid-template-columns:74px 1fr;
+  gap:11px;
+  padding:12px;
+  border-radius:18px;
+  background:#151515;
+  border:1px solid #242424;
+  box-shadow:var(--shadow);
+}
+.comic-panel-art{
+  min-height:80px;
+  border-radius:14px;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,#24101a,#0c0c0c);
+  font-size:34px;
+}
+.comic-panel small{
+  display:block;
+  color:#ff8cc2;
+  font:900 7px "Raleway";
+  letter-spacing:.08em;
+  margin-bottom:3px;
+}
+.comic-panel b{
+  display:block;
+  color:#fff;
+  font:900 12px "Raleway";
+  line-height:1.2;
+  margin-bottom:4px;
+}
+.comic-panel p{
+  margin:0;
+  color:#b2b2b2;
+  font-size:10px;
+  line-height:1.45;
+}
+.comic-dialogue{
+  margin-top:7px;
+  padding:8px 10px;
+  border-radius:12px;
+  background:#0d0d0d;
+  color:#ddd;
+  font-size:9px;
+  line-height:1.4;
+  font-style:italic;
+}
+.comic-next{
+  width:100%;
+  margin-top:12px;
+  padding:12px;
+  border:0;
+  border-radius:13px;
+  background:#ff4fa3;
+  color:#111;
+  font:900 10px "Raleway";
+  cursor:pointer;
+}
+
+/* Footer 4 menu: keep it compact */
+.footer .label{font-size:7px}
+.footer .emoji{font-size:14px}
+@media(max-width:390px){
+  .footer .label{font-size:6px}
+  .footer .emoji{font-size:13px}
+  .comic-grid{gap:7px}
+  .comic-card{padding:8px;border-radius:16px}
+  .comic-card h3{font-size:11px}
+  .comic-card p{font-size:8px}
+  .comic-panel{grid-template-columns:58px 1fr;padding:10px}
+  .comic-panel-art{min-height:68px;font-size:28px}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="badge">MEMBER AREA</div>
+    <div class="logo">ULVA</div>
+    <div class="tagline">UNTUNG LEWAT VIDEO AI</div>
+  </header>
+
+  <main class="main">
+    <section id="kelas" class="screen">
+      <div id="chapterGrid" class="grid"></div>
+    </section>
+
+    <section id="detail" class="screen">
+      <div class="detailhead">
+        <button class="back" onclick="show('kelas')">←</button>
+        <span id="detailPill" class="detailpill">BAB 1</span>
+      </div>
+      <div id="videoBox" class="video"></div>
+      <div class="info">
+        <h2 id="detailTitle"></h2>
+        <p id="detailDesc" class="lead"></p>
+        <h4>Ikuti langkah ini:</h4>
+        <div id="steps"></div>
+      </div>
+    </section>
+
+
+    <section id="carapakai" class="screen active">
+      <div class="guide-hero">
+        <div class="guide-icon">▶️</div>
+        <div class="guide-kicker">MULAI BELAJAR DARI SINI</div>
+        <h1>Cara Belajar</h1>
+        <p>Tonton video singkat ini dulu supaya tahu urutan belajar di member area ULVA.</p>
+      </div>
+
+      <div class="guide-video">
+        <iframe
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+          title="Cara Belajar ULVA"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>
+
+      <div class="guide-steps">
+        <h3>Cara Belajarnya Gampang</h3>
+        <div class="guide-step">
+          <div class="guide-no">1</div>
+          <div><b>Buka Menu Kelas</b><span>Pilih BAB yang mau dipelajari. Mulai dari BAB pertama kalau masih baru.</span></div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-no">2</div>
+          <div><b>Tonton Videonya</b><span>Nggak perlu buru-buru. Tonton, pause, lalu ikuti langkahnya.</span></div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-no">3</div>
+          <div><b>Langsung Praktek</b><span>Jangan cuma nonton. Coba bikin satu video dari materi yang baru dipelajari.</span></div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-no">4</div>
+          <div><b>Buka Jalur Untung</b><span>Pilih cara menghasilkan uang dari Video AI yang paling cocok, lalu jalankan langkah 30 harinya.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="kisahsukses" class="screen">
+      <div class="comic-header">
+        <div class="comic-header-emoji">📖</div>
+        <div>
+          <div class="comic-kicker">CERITA CONTOH PERJALANAN MEMBER</div>
+          <h1>Kisah Sukses</h1>
+          <p>Baca kisah Bu Rina per episode: dari beli ULVA, belajar, mulai menawarkan, sampai dapat order.</p>
+        </div>
+      </div>
+
+      <div id="comicGrid" class="comic-grid"></div>
+
+      <div class="comic-note">
+        <b>Catatan</b>
+        <p>Cerita ini adalah ilustrasi supaya gampang kebayang langkahnya. Hasil tiap orang bisa berbeda tergantung usaha, pasar, dan konsistensi.</p>
+      </div>
+    </section>
+
+    <section id="comicdetail" class="screen">
+      <div class="detailhead">
+        <button class="back" onclick="show('kisahsukses')">←</button>
+        <span id="comicPill" class="detailpill">EPISODE 1</span>
+      </div>
+
+      <div class="comic-detail-head">
+        <div id="comicDetailEmoji" class="comic-detail-emoji">📦</div>
+        <div class="comic-detail-kicker">KISAH SUKSES ULVA</div>
+        <h2 id="comicTitle"></h2>
+        <p id="comicIntro"></p>
+      </div>
+
+      <div id="comicPanels" class="comic-panels"></div>
+
+      <button id="nextComicBtn" class="comic-next">LANJUT EPISODE BERIKUTNYA →</button>
+    </section>
+
+    <section id="jaluruntung" class="screen">
+      <div class="center">
+        <h1 class="title">Pilih Jalur Untungmu</h1>
+        <p class="subtitle">Nggak harus dikerjakan semua. Pilih satu jalur yang paling cocok, lalu jalankan 30 hari.</p>
+      </div>
+
+      <div class="journey-intro">
+        <div class="journey-emoji">💰</div>
+        <div>
+          <div class="journey-kicker">30 HARI CARI PELUANG</div>
+          <h2>Video AI Bisa Jadi Jalan Cuan</h2>
+          <p>Kuncinya bukan bikin video sebanyak-banyaknya. Pilih satu cara menghasilkan uang, lalu kerjakan terus selama 30 hari.</p>
+        </div>
+      </div>
+
+      <div id="profitRouteGrid" class="profit-route-grid"></div>
+    </section>
+
+    <section id="profit30detail" class="screen">
+      <div class="detailhead">
+        <button class="back" onclick="show('jaluruntung')">←</button>
+        <span id="routePill" class="detailpill">JALUR UNTUNG</span>
+      </div>
+
+      <div class="route-detail-hero">
+        <div id="routeEmoji" class="route-detail-emoji">💰</div>
+        <div class="route-detail-kicker">JALUR UNTUNG ULVA</div>
+        <h2 id="routeTitle"></h2>
+        <p id="routeDesc"></p>
+      </div>
+
+      <div class="route-money-grid">
+        <div class="route-money-card">
+          <div class="route-money-icon">💵</div>
+          <div class="route-money-label">UANGNYA DARI MANA?</div>
+          <p id="routeMoney"></p>
+        </div>
+        <div class="route-money-card">
+          <div class="route-money-icon">🎯</div>
+          <div class="route-money-label">SIAPA YANG DITARGET?</div>
+          <p id="routeTarget"></p>
+        </div>
+        <div class="route-money-card full">
+          <div class="route-money-icon">📣</div>
+          <div class="route-money-label">APA YANG DITAWARKAN?</div>
+          <p id="routeOffer"></p>
+        </div>
+      </div>
+
+      <div class="route-how">
+        <h3>Begini Cara Mainnya</h3>
+        <div id="routeSteps"></div>
+      </div>
+
+      <div class="plan30">
+        <div class="plan30-head">
+          <span>📅</span>
+          <div>
+            <b>Rencana 30 Hari</b>
+            <small>Kerjakan satu tahap demi satu tahap.</small>
+          </div>
+        </div>
+        <div id="plan30List"></div>
+      </div>
+    </section>
+
+    <section id="afiliasi" class="screen">
+      <div class="center">
+        <h1 class="title">Afiliasi</h1>
+        <p class="subtitle">Bagikan ULVA, dapat komisi 50% dari penjualan yang valid.</p>
+      </div>
+      <div class="affbox">
+        <h2>Link Afiliasi Kamu</h2>
+        <p>Bagikan link ini ke teman atau calon pembeli.</p>
+        <div class="linkbox">https://pebisnis.digital/ulva?ref=USERNAME</div>
+        <button class="copy" onclick="copyLink()">SALIN LINK</button>
+      </div>
+      <div class="stats">
+        <div class="stat">💸<b>Komisi</b><span>50% per penjualan valid</span></div>
+        <div class="stat">📊<b>Penjualan</b><span>Lihat hasil penjualan kamu</span></div>
+        <div class="stat">📣<b>Bahan Promosi</b><span>Caption, gambar, dan video</span></div>
+        <div class="stat">🏦<b>Pencairan</b><span>Ajukan pencairan komisi</span></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="footer">
+    <button data-screen="carapakai" class="active" onclick="show('carapakai')">
+      <span class="emoji">▶️</span><span class="label">Cara Belajar</span>
+    </button>
+    <button data-screen="kelas" onclick="show('kelas')">
+      <span class="emoji">🎓</span><span class="label">Kelas</span>
+    </button>
+    <button data-screen="jaluruntung" onclick="show('jaluruntung')">
+      <span class="emoji">💰</span><span class="label">Jalur Untung</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+const chapters = [
+  {
+    icon:"🚀",
+    title:"Mulai dari Sini Dulu",
+    desc:"Kenalan dulu cara bikin video AI, apa yang perlu disiapkan, dan mulai pelan-pelan biar nggak bingung.",
+    video:"",
+    steps:[
+      "Buka Higgsfield lalu masuk ke bagian Genjutsu.",
+      "Siapkan video pendek sekitar 5–10 detik.",
+      "Pilih video yang gerakannya jelas dan tidak terlalu cepat.",
+      "Siapkan foto orang atau karakter yang ingin dipakai.",
+      "Masukkan video dan fotonya.",
+      "Buat versi pendek dulu untuk melihat hasilnya.",
+      "Kalau sudah cocok, baru bikin versi final."
+    ]
+  },
+  {
+    icon:"💃",
+    title:"Bikin Video Joget",
+    desc:"Belajar bikin diri sendiri, karakter lain, atau idola ikut joget dengan gerakan dari video yang sudah ada.",
+    video:"",
+    steps:[
+      "Pilih video orang sedang joget. Usahakan badan terlihat jelas.",
+      "Kalau videonya dua orang, pilih yang tidak sering saling menutupi.",
+      "Masukkan video joget ke Higgsfield.",
+      "Masukkan foto diri sendiri atau karakter yang ingin dipakai.",
+      "Kalau mau joget berdua, masukkan foto orang kedua.",
+      "Tentukan siapa yang menggantikan orang sebelah kiri dan kanan.",
+      "Buat video pendek dulu lalu cek wajah dan gerakannya.",
+      "Kalau sudah pas, lanjut bikin versi final."
+    ]
+  },
+  {
+    icon:"🎭",
+    title:"Ganti Orang di Video",
+    desc:"Video sudah ada, tapi orangnya mau diganti? Di sini belajar caranya tanpa harus rekam ulang.",
+    video:"",
+    steps:[
+      "Pilih video yang orangnya ingin diganti.",
+      "Siapkan foto orang atau karakter pengganti.",
+      "Masukkan video dan foto ke Higgsfield.",
+      "Pilih orang yang ingin diganti.",
+      "Usahakan gerakan dan arah kamera tetap seperti video asli.",
+      "Buat versi pendek untuk mengecek hasilnya.",
+      "Kalau wajah belum pas, coba foto yang lebih jelas.",
+      "Kalau ada dua orang, pastikan posisi kiri dan kanan tidak tertukar."
+    ]
+  },
+  {
+    icon:"👗",
+    title:"Ganti Baju, Barang & Produk",
+    desc:"Belajar mengganti pakaian, benda yang dipegang, sampai memasukkan produk ke dalam video.",
+    video:"",
+    steps:[
+      "Pilih video yang sudah punya gerakan bagus.",
+      "Tentukan apa yang mau diganti: baju, barang, atau produk.",
+      "Siapkan foto barang atau pakaian yang jelas.",
+      "Masukkan video dan foto tersebut.",
+      "Pilih bagian yang mau diganti saja.",
+      "Usahakan posisi tangan dan badan tetap sama.",
+      "Coba versi pendek lebih dulu.",
+      "Kalau produknya terlihat aneh, pakai foto produk yang lebih jelas."
+    ]
+  },
+  {
+    icon:"🌍",
+    title:"Ganti Tempat Sesuka Hati",
+    desc:"Video direkam di rumah, tapi hasilnya bisa dibuat seolah-olah di pantai, panggung, luar negeri, atau tempat lain.",
+    video:"",
+    steps:[
+      "Pilih video yang ingin dipindahkan tempatnya.",
+      "Tentukan mau terlihat berada di mana.",
+      "Masukkan video ke Higgsfield.",
+      "Pertahankan orang dan gerakannya.",
+      "Ganti tempatnya sesuai yang diinginkan.",
+      "Perhatikan cahaya supaya orang dan tempat terlihat menyatu.",
+      "Buat versi pendek dulu.",
+      "Kalau sudah terasa menyatu, lanjut bikin versi final."
+    ]
+  },
+  {
+    icon:"🔥",
+    title:"Bikin Video yang Menarik Buat Jualan",
+    desc:"Belajar bikin video yang bikin orang berhenti scroll, penasaran, lalu cocok dipakai buat promosi.",
+    video:"",
+    steps:[
+      "Tentukan dulu apa yang mau dipromosikan.",
+      "Pilih video pendek dengan gerakan yang langsung menarik perhatian.",
+      "Tentukan bagian yang mau dibuat lebih unik: orang, tempat, barang, atau suasananya.",
+      "Bikin perubahan menarik muncul sejak awal video.",
+      "Kalau menjual produk, tampilkan produknya dengan jelas.",
+      "Usahakan durasinya pendek supaya tidak membosankan.",
+      "Buat 2–3 versi yang berbeda.",
+      "Pilih versi yang paling gampang dipahami dan paling menarik dilihat."
+    ]
+  },
+  {
+    icon:"🧯",
+    title:"Kalau Hasilnya Aneh, Perbaiki Begini",
+    desc:"Wajah berubah, tangan aneh, orang ketukar, atau hasilnya nggak sesuai? Di sini belajar cara membetulkannya.",
+    video:"",
+    steps:[
+      "Kalau wajah berubah, ganti dengan foto yang lebih terang dan jelas.",
+      "Kalau tangan atau badan aneh, pilih video dengan gerakan yang lebih sederhana.",
+      "Kalau dua orang tertukar, tentukan posisi kiri dan kanan dengan lebih jelas.",
+      "Kalau hasil terlalu berubah, jangan mengganti banyak hal sekaligus.",
+      "Coba potong videonya jadi lebih pendek.",
+      "Buat percobaan singkat dulu sebelum bikin versi final.",
+      "Kalau satu cara gagal, ubah satu hal saja lalu coba lagi.",
+      "Simpan cara yang berhasil supaya nanti tinggal dipakai ulang."
+    ]
+  }
+];
+
+
+
+const profitRoutes30 = [
+  {
+    emoji:"🎬",
+    title:"Buka Jasa Bikin Video AI",
+    short:"Bikin video untuk orang lain, lalu dibayar per pesanan.",
+    desc:"Jalur ini cocok kalau kamu mau mulai dari kemampuan yang sudah dipelajari di ULVA. Kamu tidak perlu punya banyak follower. Yang dijual adalah hasil videonya.",
+    money:"Kamu dapat uang dari biaya jasa pembuatan video. Misalnya 1 video Rp25.000–Rp75.000, paket 3 video Rp75.000–Rp200.000, atau paket bulanan sesuai kesepakatan.",
+    target:"Calon pembelinya bisa teman, pemilik usaha kecil, reseller, seller online, afiliator, orang yang aktif di WhatsApp, atau siapa pun yang butuh video tapi tidak bisa bikin sendiri.",
+    offer:"Mulai dari jasa yang gampang: video joget AI, ganti karakter, video ucapan, video ulang tahun, video produk, atau video promosi singkat.",
+    steps:[
+      "Pilih satu jenis jasa dulu. Jangan buka semua jenis jasa sekaligus.",
+      "Buat 3–5 contoh hasil yang paling menarik sebagai portofolio.",
+      "Tulis penawaran sederhana: 'Aku lagi buka jasa bikin video AI seperti ini. Kalau mau dibikinin, japri ya.'",
+      "Posting contoh hasil di Status WhatsApp, Facebook, Threads, Instagram, atau grup yang relevan.",
+      "Kalau ada yang tanya, jangan langsung kasih daftar harga panjang. Tanya dulu mereka mau bikin video apa.",
+      "Minta bahan dari pelanggan: foto, video, nama produk, atau konsep yang diinginkan.",
+      "Kerjakan satu contoh pendek dulu kalau pesanan cukup rumit.",
+      "Setelah selesai, kirim hasil dan minta testimoni.",
+      "Gunakan testimoni itu untuk mencari pelanggan berikutnya."
+    ],
+    plan:[
+      ["HARI 1–7","Siapkan Jasa","Tentukan 1 jenis jasa. Buat 3–5 contoh hasil. Buat daftar harga sederhana dan satu kalimat penawaran."],
+      ["HARI 8–14","Cari Pelanggan Pertama","Posting contoh setiap hari. Tawarkan ke kontak WhatsApp, teman, dan orang yang sering bikin konten. Targetkan minimal 10 percakapan."],
+      ["HARI 15–21","Kerjakan & Kumpulkan Testimoni","Ambil 1–3 pesanan. Fokus hasil yang rapi dan cepat. Minta izin untuk menjadikan hasil sebagai contoh."],
+      ["HARI 22–30","Naikkan Paket","Buat paket 3 video dan 5 video. Tawarkan ulang ke pelanggan lama dan orang yang pernah bertanya."]
+    ]
+  },
+  {
+    emoji:"🏪",
+    title:"Bikin Video Promosi UMKM",
+    short:"Bantu warung, kuliner, toko, salon, atau usaha kecil bikin video promosi.",
+    desc:"Jalur ini fokus ke bisnis kecil yang sebenarnya punya produk bagus, tapi kontennya biasa atau bahkan jarang posting. Kamu datang sebagai pembuat konten, bukan sebagai orang yang ngajarin AI.",
+    money:"Kamu dapat uang dari paket konten. Contoh: 3 video Rp100.000–Rp250.000, 10 video Rp300.000–Rp750.000, atau paket bulanan sesuai jumlah konten dan tingkat kesulitan.",
+    target:"Cari warung makan, kafe, toko hijab, salon, laundry, travel, katering, skincare lokal, toko oleh-oleh, reseller, atau bisnis rumahan yang sudah punya foto/video produk.",
+    offer:"Jangan jual 'AI'. Jual hasilnya: video promosi yang lebih menarik, lebih cepat dibuat, dan bisa dipakai untuk Status WA, Reels, TikTok, atau iklan.",
+    steps:[
+      "Pilih 10 usaha kecil yang produknya mudah dibuatkan video.",
+      "Amati media sosial atau Status WhatsApp mereka. Cari yang kontennya masih sederhana.",
+      "Pilih 2–3 usaha dan buat satu contoh video pendek memakai bahan yang sudah tersedia secara publik atau dengan izin.",
+      "Kirim contoh dengan kalimat sederhana: 'Aku coba bikinin contoh video produk Kakak. Kalau cocok, aku bisa bantu bikin beberapa video lagi.'",
+      "Kalau mereka tertarik, tawarkan paket kecil dulu.",
+      "Minta mereka kirim foto produk, harga, logo, dan poin utama yang mau ditonjolkan.",
+      "Buat video yang fokus ke satu pesan per video.",
+      "Kirim hasil dalam format siap upload.",
+      "Setelah selesai, tawarkan paket bulanan supaya order tidak berhenti sekali saja."
+    ],
+    plan:[
+      ["HARI 1–7","Cari Calon Klien","Kumpulkan daftar 20 UMKM. Pilih 5 yang paling mudah dibuatkan contoh."],
+      ["HARI 8–14","Buat Contoh & Kirim","Bikin 3–5 contoh video pendek. Kirim ke pemilik usaha dan lihat siapa yang merespons."],
+      ["HARI 15–21","Jual Paket Pertama","Tawarkan paket kecil, misalnya 3 video. Targetkan minimal 1 klien berbayar."],
+      ["HARI 22–30","Kejar Langganan","Tawarkan paket mingguan atau bulanan ke klien yang puas. Tujuannya bikin pemasukan berulang."]
+    ]
+  },
+  {
+    emoji:"🛒",
+    title:"Bikin Konten Affiliate Produk",
+    short:"Bikin video produk, pasang link affiliate, dapat komisi kalau ada yang beli.",
+    desc:"Jalur ini cocok kalau kamu sudah ikut program affiliate marketplace atau platform tertentu. Kamu tidak menjual jasa; kamu membuat konten yang membantu orang tertarik ke produk yang kamu promosikan.",
+    money:"Uangnya datang dari komisi affiliate. Besarnya tergantung platform dan produk. Karena komisinya kecil per transaksi, permainan utamanya adalah volume konten dan memilih produk yang memang dicari orang.",
+    target:"Pilih produk yang mudah dipahami dan punya manfaat jelas, misalnya alat rumah tangga, kebutuhan emak-emak, fashion, beauty, perlengkapan dapur, atau produk yang sering dicari.",
+    offer:"Konten jangan terasa seperti iklan keras. Tunjukkan masalah, manfaat, hasil, atau situasi pemakaian. Video AI dipakai untuk membuat visualnya lebih menarik.",
+    steps:[
+      "Pilih maksimal 3 produk dulu supaya fokus.",
+      "Cari tahu masalah apa yang diselesaikan produk itu.",
+      "Buat 3 gaya video untuk satu produk: masalah, manfaat, dan hasil.",
+      "Gunakan hook sederhana di 2 detik pertama.",
+      "Masukkan CTA yang jelas: cek link, lihat produk, atau beli lewat link.",
+      "Posting rutin dan catat video mana yang paling banyak klik atau menghasilkan penjualan.",
+      "Kalau satu produk sepi setelah beberapa percobaan, jangan dipaksa. Ganti produk.",
+      "Kalau satu video mulai menghasilkan, bikin 3–5 versi turunannya.",
+      "Ulangi pola yang sudah terbukti, bukan terus bikin konsep baru dari nol."
+    ],
+    plan:[
+      ["HARI 1–7","Pilih Produk","Pilih 3 produk. Tulis 3 masalah atau manfaat untuk masing-masing produk."],
+      ["HARI 8–14","Bikin Banyak Versi","Bikin minimal 7–10 video pendek. Ubah hook dan gaya visualnya."],
+      ["HARI 15–21","Posting & Catat","Posting setiap hari. Catat view, klik, pertanyaan, dan penjualan."],
+      ["HARI 22–30","Fokus yang Menghasilkan","Stop produk yang sepi. Gandakan konten untuk produk yang mulai menghasilkan klik atau order."]
+    ]
+  },
+  {
+    emoji:"📦",
+    title:"Promosikan Produk Sendiri",
+    short:"Kalau sudah punya produk atau jasa, pakai Video AI untuk bantu jualan.",
+    desc:"Jalur ini cocok kalau kamu sudah punya produk digital, jasa, makanan, kelas, toko online, atau bisnis lain. Kamu tidak perlu menjual Video AI. Video AI hanya jadi alat bantu supaya promosi lebih menarik.",
+    money:"Uangnya datang dari penjualan produkmu sendiri. Jadi Video AI dipakai untuk menaikkan perhatian, membuat promosi lebih sering, dan mengurangi biaya produksi konten.",
+    target:"Targetnya adalah calon pembeli produkmu sendiri. Fokus ke orang yang sudah punya masalah yang diselesaikan oleh produkmu.",
+    offer:"Satu video cukup satu pesan. Bisa fokus ke masalah, manfaat, cara pakai, hasil, testimoni, atau penawaran.",
+    steps:[
+      "Pilih satu produk dulu. Jangan promosikan banyak produk dalam satu waktu.",
+      "Tulis 10 masalah atau keinginan calon pembeli.",
+      "Ubah setiap masalah menjadi satu ide video.",
+      "Bikin video pendek dengan visual yang menarik, tapi pesannya tetap jelas.",
+      "Arahkan penonton ke WhatsApp, checkout, atau link pembelian.",
+      "Catat video mana yang paling banyak menghasilkan balasan atau order.",
+      "Buat ulang video yang berhasil dengan visual atau kalimat pembuka yang berbeda.",
+      "Follow-up orang yang sudah pernah bertanya.",
+      "Gunakan Video AI sebagai mesin konten, bukan sekadar hiasan."
+    ],
+    plan:[
+      ["HARI 1–7","Siapkan Pesan Jualan","Pilih 1 produk dan tulis 10 masalah calon pembeli. Buat 7 ide video."],
+      ["HARI 8–14","Produksi & Posting","Bikin satu video per hari. Arahkan semuanya ke satu CTA yang sama."],
+      ["HARI 15–21","Lihat yang Menjual","Catat video yang menghasilkan chat atau order. Buat versi baru dari pola itu."],
+      ["HARI 22–30","Follow-up & Closing","Hubungi kembali calon pembeli yang pernah bertanya. Gunakan video terbaik sebagai bahan follow-up."]
+    ]
+  },
+  {
+    emoji:"💾",
+    title:"Jual Paket Video & Bahan Konten",
+    short:"Bikin satu paket konten, lalu jual ke banyak pembeli.",
+    desc:"Jalur ini cocok kalau kamu lebih suka membuat produk sekali lalu menjualnya berkali-kali. Kamu bisa menjual kumpulan video, template ide, background, opening, atau bahan promosi siap pakai.",
+    money:"Uangnya datang dari penjualan produk digital. Misalnya paket 20 video Rp25.000–Rp99.000. Karena file yang sama bisa dijual berkali-kali, margin bisa lebih besar setelah produknya selesai dibuat.",
+    target:"Targetnya bisa seller, reseller, pemilik UMKM, affiliate, admin media sosial, atau orang yang butuh stok konten siap pakai.",
+    offer:"Jangan jual 'file banyak'. Jual manfaat: stok konten 30 hari, video siap upload, template promosi, atau bahan yang bisa langsung dipakai.",
+    steps:[
+      "Pilih satu niche dulu, misalnya kuliner, fashion, beauty, properti, atau ucapan.",
+      "Tentukan isi paket dengan jelas.",
+      "Bikin 10–30 aset yang gayanya konsisten.",
+      "Susun file dengan nama yang rapi.",
+      "Buat preview isi paket.",
+      "Tulis siapa yang cocok membeli paket itu.",
+      "Jual lewat landing page, WhatsApp, marketplace digital, atau jaringan sendiri.",
+      "Minta feedback pembeli pertama.",
+      "Buat versi lanjutan atau paket niche lain setelah produk pertama mulai terjual."
+    ],
+    plan:[
+      ["HARI 1–7","Pilih Niche & Isi Paket","Tentukan satu niche. Tulis isi produk dan siapa pembelinya."],
+      ["HARI 8–14","Produksi Aset","Bikin 10–30 video atau bahan konten. Rapikan semua file."],
+      ["HARI 15–21","Bungkus Produk","Buat cover, preview, deskripsi, harga, dan halaman jualan sederhana."],
+      ["HARI 22–30","Mulai Jual","Bagikan contoh gratis. Tawarkan paket ke target yang relevan. Catat pertanyaan untuk memperbaiki produk berikutnya."]
+    ]
+  }
+]
+
+function renderProfitRoutes(){
+  const el=document.getElementById("profitRouteGrid");
+  if(!el) return;
+  el.innerHTML=profitRoutes30.map((r,i)=>`
+    <button class="profit-route" onclick="openProfitRoute(${i})">
+      <div class="route-emoji">${r.emoji}</div>
+      <div class="route-no">JALUR ${i+1}</div>
+      <h3>${r.title}</h3>
+      <p>${r.short}</p>
+      <span class="route-cta">LIHAT RENCANA 30 HARI ›</span>
+    </button>
+  `).join("");
+}
+
+function openProfitRoute(i){
+  const r=profitRoutes30[i];
+  document.getElementById("routePill").textContent=`JALUR ${i+1}`;
+  document.getElementById("routeEmoji").textContent=r.emoji;
+  document.getElementById("routeTitle").textContent=r.title;
+  document.getElementById("routeDesc").textContent=r.desc;
+  document.getElementById("routeMoney").textContent=r.money;
+  document.getElementById("routeTarget").textContent=r.target;
+  document.getElementById("routeOffer").textContent=r.offer;
+
+  document.getElementById("routeSteps").innerHTML=r.steps.map((s,n)=>`
+    <div class="route-step">
+      <div class="route-step-no">${n+1}</div>
+      <div class="route-step-text">${s}</div>
+    </div>
+  `).join("");
+
+  document.getElementById("plan30List").innerHTML=r.plan.map(p=>`
+    <div class="plan-phase">
+      <span class="phase-day">${p[0]}</span>
+      <h4>${p[1]}</h4>
+      <p>${p[2]}</p>
+    </div>
+  `).join("");
+
+  show("profit30detail");
+}
+
+
+const comicEpisodes = [
+  {
+    emoji:"🛒",
+    title:"Iseng Lihat, Jadi Penasaran",
+    intro:"Bu Rina awalnya cuma lihat-lihat. Dia belum kepikiran sama sekali kalau Video AI bisa jadi jalan cari uang.",
+    panels:[
+      ["📱","PANEL 1","Lihat Status Teman","Bu Rina lagi santai lihat Status WhatsApp. Tiba-tiba muncul video unik buatan temannya.","“Lho, kok sekarang video begini bisa dibikin sendiri?”"],
+      ["🤔","PANEL 2","Langsung Minder","Dia penasaran, tapi langsung mikir kalau teknologi begini pasti susah.","“Ah, palingan ribet. Aku mah gaptek.”"],
+      ["💗","PANEL 3","Ketemu ULVA","Bu Rina lihat ULVA dan baca penjelasannya. Bahasanya nggak bikin pusing.","“Kalau dijelasin pelan-pelan begini, mungkin aku bisa.”"],
+      ["✅","PANEL 4","Akhirnya Beli","Dia memutuskan beli ULVA dan berjanji kali ini nggak cuma disimpan.","“Bismillah. Habis beli, harus langsung dicoba.”"]
+    ]
+  },
+  {
+    emoji:"▶️",
+    title:"Belajar Pelan-Pelan, Ternyata Bisa",
+    intro:"Bu Rina mulai dari menu Cara Belajar. Dia nggak langsung loncat ke materi yang susah.",
+    panels:[
+      ["▶️","PANEL 1","Mulai dari Cara Belajar","Bu Rina tonton video panduan member area dulu.","“Nah, enak. Jadi aku tahu harus mulai dari mana.”"],
+      ["🎓","PANEL 2","Masuk ke BAB Pertama","Dia mulai belajar satu materi, lalu langsung mencoba.","“Nggak usah semua dipahami hari ini.”"],
+      ["😵‍💫","PANEL 3","Hasil Pertama Aneh","Percobaan pertama belum bagus. Wajah berubah dan gerakan agak aneh.","“Lho, kok mukaku jadi begini?”"],
+      ["💡","PANEL 4","Coba Lagi","Dia buka materi perbaikan dan mencoba lagi dengan bahan yang lebih jelas.","“Oalah... ternyata harus diperbaiki pelan-pelan.”"]
+    ]
+  },
+  {
+    emoji:"💃",
+    title:"Video Pertamaku Jadi",
+    intro:"Target Bu Rina sederhana: berhasil bikin satu video sampai selesai. Belum mikir jualan dulu.",
+    panels:[
+      ["🎬","PANEL 1","Pilih Video Gampang","Dia memilih video pendek dengan gerakan yang jelas.","“Yang gampang dulu deh. Jangan sok jago.”"],
+      ["🖼️","PANEL 2","Pilih Foto yang Jelas","Bu Rina pakai foto terang, wajah kelihatan, dan nggak blur.","“Pantes tadi aneh, fotonya kurang jelas.”"],
+      ["⏳","PANEL 3","Nunggu Hasil","Dia deg-degan nunggu video selesai dibuat.","“Semoga kali ini nggak jadi manusia tiga tangan.”"],
+      ["🎉","PANEL 4","Berhasil!","Hasilnya jauh lebih bagus. Bu Rina ketawa sendiri lihat videonya.","“HAHAHA... ternyata aku bisa juga!”"]
+    ]
+  },
+  {
+    emoji:"👀",
+    title:"Kok Malah Ada yang Tanya?",
+    intro:"Bu Rina cuma pamer hasil ke Status WhatsApp. Dia belum niat jualan apa pun.",
+    panels:[
+      ["📲","PANEL 1","Upload ke Status","Dia upload video hasil belajarnya dengan caption santai.","“Iseng bikin beginian pakai AI 😂”"],
+      ["💬","PANEL 2","Balasan Mulai Masuk","Teman-temannya mulai membalas status.","“Ini bikin di mana?” — “Lucu banget!” — “Bisa bikinin aku?”"],
+      ["😳","PANEL 3","Baru Ngeh","Bu Rina baru sadar bahwa orang tertarik sama hasilnya.","“Lho... mereka malah minta dibikinin?”"],
+      ["📝","PANEL 4","Mulai Mencatat","Dia catat jenis video yang paling sering ditanyakan.","“Berarti ini bisa jadi jasa ya?”"]
+    ]
+  },
+  {
+    emoji:"💵",
+    title:"Order Pertama Rp50 Ribu",
+    intro:"Satu teman akhirnya benar-benar minta dibuatkan video. Bu Rina harus berani menyebut harga.",
+    panels:[
+      ["🤝","PANEL 1","Ada yang Serius Pesan","Temannya minta dibuatkan video untuk promosi.","“Bu, bikinin aku satu dong. Buat jualan.”"],
+      ["😬","PANEL 2","Deg-Degan Kasih Harga","Bu Rina bingung mau kasih harga berapa.","“Kalau aku bilang lima puluh ribu, kemahalan nggak ya?”"],
+      ["💬","PANEL 3","Berani Sebut Harga","Akhirnya dia kirim harga dengan hati berdebar.","“Kalau satu video, Rp50.000 ya.”"],
+      ["💸","PANEL 4","Transfer Masuk","Temannya setuju dan langsung bayar.","“Ya Allah... ternyata skill ini benar-benar bisa dibayar.”"]
+    ]
+  },
+  {
+    emoji:"📦",
+    title:"Mulai Naik Level",
+    intro:"Setelah order pertama, Bu Rina mulai merapikan caranya menawarkan jasa.",
+    panels:[
+      ["🗂️","PANEL 1","Kumpulkan Contoh","Dia simpan semua hasil terbaik sebagai contoh.","“Kalau ada yang tanya lagi, aku nggak perlu jelasin panjang.”"],
+      ["💰","PANEL 2","Bikin Paket","Bu Rina mulai bikin harga paket sederhana.","“1 video sekian. 3 video lebih hemat.”"],
+      ["📣","PANEL 3","Mulai Berani Posting","Dia posting penawaran jasa dengan bahasa sederhana.","“Lagi buka jasa bikin Video AI. Kalau mau dibikinin, japri ya.”"],
+      ["💬","PANEL 4","Pertanyaan Mulai Serius","Orang mulai tanya untuk kebutuhan jualan.","“Kalau buat makanan bisa?” — “Kalau skincare?”"]
+    ]
+  },
+  {
+    emoji:"🏪",
+    title:"Ketemu Jalur Cuan yang Cocok",
+    intro:"Bu Rina sadar dia nggak harus mencoba semua cara. Dia cukup pilih satu jalur yang paling cocok.",
+    panels:[
+      ["💰","PANEL 1","Buka Jalur Untung","Dia baca beberapa cara menghasilkan uang dari Video AI.","“Ternyata bukan cuma jasa biasa ya.”"],
+      ["🏪","PANEL 2","Pilih UMKM","Bu Rina merasa paling cocok membantu usaha kecil bikin video promosi.","“Aku banyak kenal orang jualan. Coba dari situ dulu.”"],
+      ["✨","PANEL 3","Bikin Contoh","Dia bikin satu contoh video untuk usaha makanan temannya.","“Kalau cocok, nanti aku bisa bantu bikin beberapa video lagi.”"],
+      ["🤝","PANEL 4","Dapat Klien Pertama","Pemilik usaha suka dan minta lanjut beberapa video.","“Boleh, Bu. Sekalian bikin tiga ya.”"]
+    ]
+  },
+  {
+    emoji:"🚀",
+    title:"30 Hari Kemudian",
+    intro:"Bu Rina belum jadi orang kaya. Tapi dia sudah berubah dari pembeli kelas menjadi orang yang punya skill dan bisa menjual hasilnya.",
+    panels:[
+      ["✅","PANEL 1","Sudah Punya Skill","Dia sudah bisa bikin beberapa jenis Video AI tanpa panik.","“Kalau gagal, sekarang aku tahu harus benerin apa.”"],
+      ["🧰","PANEL 2","Sudah Punya Penawaran","Bu Rina sudah punya contoh, harga, dan paket jasa.","“Kalau ada yang tanya, tinggal kirim contoh.”"],
+      ["🤝","PANEL 3","Sudah Punya Pelanggan","Beberapa orang sudah pernah pesan dan ada yang repeat order.","“Ternyata pelanggan lama lebih gampang diajak lanjut.”"],
+      ["🌱","PANEL 4","Ini Baru Awal","Bu Rina sadar ULVA bukan mesin uang otomatis. Yang menghasilkan adalah skill yang dipakai.","“Dulu aku cuma beli kelas. Sekarang aku benar-benar memakainya.”"]
+    ]
+  }
+]
+
+function renderComics(){
+  const el=document.getElementById("comicGrid");
+  if(!el) return;
+  el.innerHTML=comicEpisodes.map((ep,i)=>`
+    <button class="comic-card" onclick="openComic(${i})">
+      <div class="comic-cover">
+        <span class="comic-ep">EPS ${i+1}</span>
+        ${ep.emoji}
+      </div>
+      <h3>${ep.title}</h3>
+      <p>${ep.intro}</p>
+      <span class="read">BACA CERITA →</span>
+    </button>
+  `).join("");
+}
+
+function openComic(i){
+  const ep=comicEpisodes[i];
+  document.getElementById("comicPill").textContent=`EPISODE ${i+1}`;
+  document.getElementById("comicDetailEmoji").textContent=ep.emoji;
+  document.getElementById("comicTitle").textContent=ep.title;
+  document.getElementById("comicIntro").textContent=ep.intro;
+
+  document.getElementById("comicPanels").innerHTML=ep.panels.map(p=>`
+    <div class="comic-panel">
+      <div class="comic-panel-art">${p[0]}</div>
+      <div>
+        <small>${p[1]}</small>
+        <b>${p[2]}</b>
+        <p>${p[3]}</p>
+        <div class="comic-dialogue">${p[4]}</div>
+      </div>
+    </div>
+  `).join("");
+
+  const btn=document.getElementById("nextComicBtn");
+  if(i < comicEpisodes.length-1){
+    btn.style.display="block";
+    btn.textContent=`LANJUT EPISODE ${i+2} →`;
+    btn.onclick=()=>openComic(i+1);
+  }else{
+    btn.style.display="block";
+    btn.textContent="LANJUT KE JALUR UNTUNG →";
+    btn.onclick=()=>show("jaluruntung");
+  }
+
+  show("comicdetail");
+}
+
+function renderGrid(){
+  const el=document.getElementById("chapterGrid");
+  el.innerHTML=chapters.map((c,i)=>`
+    <button class="card" onclick="openChapter(${i})">
+      <div class="cover"><span class="bab">BAB ${i+1}</span>${c.icon}</div>
+      <div class="meta">VIDEO TUTORIAL</div>
+      <h3>${c.title}</h3>
+      <p>${c.desc}</p>
+      <div class="arrow">›</div>
+    </button>
+  `).join("");
+}
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".footer button").forEach(b=>{
+    b.classList.toggle("active",b.dataset.screen===id);
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function openChapter(i){
+  const c=chapters[i];
+  document.getElementById("detailPill").textContent=`BAB ${i+1}`;
+  document.getElementById("detailTitle").textContent=c.title;
+  document.getElementById("detailDesc").textContent=c.desc;
+  document.getElementById("steps").innerHTML=c.steps.map((s,n)=>`
+    <div class="step"><div class="num">${n+1}</div><div>${s}</div></div>
+  `).join("");
+  document.getElementById("videoBox").innerHTML=c.video
+    ? `<iframe src="${c.video}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>`
+    : `<div class="video-empty"><b>VIDEO TUTORIAL</b><span>Link YouTube BAB ${i+1} tinggal dipasang di sini.</span></div>`;
+  show("detail");
+}
+
+function copyLink(){
+  const link="https://pebisnis.digital/ulva?ref=USERNAME";
+  navigator.clipboard?.writeText(link);
+  alert("Link afiliasi sudah disalin.");
+}
+
+renderGrid();
+renderProfitRoutes();
+renderComics();
+</script>
+</body>
+</html>
