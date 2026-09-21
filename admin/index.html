@@ -1536,6 +1536,24 @@ main.shell{
   .buatqris-action-grid{grid-template-columns:1fr}
 }
 
+
+.live-sync-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  margin-top:5px;
+  color:#76d99a;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.05em;
+}
+.live-sync-badge span{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#76d99a;
+  box-shadow:0 0 0 4px rgba(118,217,154,.08);
+}
 </style>
 </head>
 <body>
@@ -1578,6 +1596,7 @@ main.shell{
       <div>
         <h1>Dashboard BADAI</h1>
         <p id="adminIdentity">Memuat akun...</p>
+        <div class="live-sync-badge"><span></span> AUTO SYNC</div>
       </div>
     </div>
 
@@ -2231,6 +2250,9 @@ main.shell{
   let session = null;
   let registrations = [];
   let currentTeam = null;
+  let adminAutoSyncBusy = false;
+  let adminAutoSyncLastMarketing = 0;
+  let adminAutoSyncLastTeam = 0;
   let teamMembers = [];
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
@@ -3971,6 +3993,65 @@ main.shell{
     try{ await updateRegistration(btn.dataset.id, btn.dataset.action); }
     catch(err){ alert('Aksi gagal: ' + err.message); }
     finally{ btn.disabled = false; }
+  });
+
+  function adminHasFocusedEditor(){
+    const el = document.activeElement;
+    if(!el) return false;
+    return ['INPUT','TEXTAREA','SELECT'].includes(el.tagName) || el.isContentEditable;
+  }
+
+  function currentAdminPage(){
+    return document.querySelector('.admin-tab.active')?.dataset?.page || 'sales';
+  }
+
+  async function autoSyncAdmin(force=false){
+    if(
+      adminAutoSyncBusy ||
+      !session?.access_token ||
+      !currentTeam ||
+      document.visibilityState !== 'visible'
+    ) return;
+
+    adminAutoSyncBusy = true;
+
+    try{
+      const page = currentAdminPage();
+      const now = Date.now();
+
+      if(page === 'sales'){
+        await loadRegistrations();
+      }else if(page === 'finance'){
+        await Promise.all([
+          loadRegistrations(),
+          loadFinanceTransactions()
+        ]);
+      }else if(page === 'marketing'){
+        if(!adminHasFocusedEditor() && (force || now - adminAutoSyncLastMarketing >= 10000)){
+          adminAutoSyncLastMarketing = now;
+          await loadMarketing();
+        }
+      }else if(page === 'team'){
+        if(!adminHasFocusedEditor() && (force || now - adminAutoSyncLastTeam >= 10000)){
+          adminAutoSyncLastTeam = now;
+          await loadTeamMembers();
+        }
+      }
+    }catch(err){
+      console.warn('BADAI auto-sync admin:', err?.message || err);
+    }finally{
+      adminAutoSyncBusy = false;
+    }
+  }
+
+  setInterval(() => autoSyncAdmin(false), 3000);
+
+  window.addEventListener('focus', () => autoSyncAdmin(true));
+
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+      autoSyncAdmin(true);
+    }
   });
 
   try{
