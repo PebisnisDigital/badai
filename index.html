@@ -2427,6 +2427,23 @@ body.register-modal-open{
   letter-spacing:.04em;
 }
 
+
+/* QRIS PAYMENT MODE — show only payment stage, never the registration form */
+.registration-modal-card.qris-mode .register-head,
+.registration-modal-card.qris-mode .selected-package-box,
+.registration-modal-card.qris-mode #badaiRegisterForm{
+  display:none !important;
+}
+#badaiRegisterForm.hidden{
+  display:none !important;
+}
+.registration-modal-card.qris-mode{
+  padding-top:26px !important;
+}
+.registration-modal-card.qris-mode #qrisPaymentStage{
+  display:grid !important;
+}
+
 </style>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="icon" type="image/png"/>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="shortcut icon"/>
@@ -3504,16 +3521,27 @@ Mohon dibantu proses pendaftarannya ya.`
     stopQrisPolling();
     qrisPublicToken = '';
     qrisExpiresAt = 0;
+
+    const modalCard = document.querySelector('.registration-modal-card');
+    modalCard?.classList.remove('qris-mode');
+
     const countdown = document.getElementById('qrisCountdown');
     if(countdown) countdown.textContent = '15:00';
+
     form.classList.remove('hidden');
+    form.style.display = '';
     document.getElementById('qrisPaymentStage')?.classList.add('hidden');
+
     submitBtn.disabled = !selectedPaymentMethodId;
     submitBtn.textContent = 'KLIK DAFTAR SEKARANG →';
   }
 
   function showQrisStage(data){
+    const modalCard = document.querySelector('.registration-modal-card');
+    modalCard?.classList.add('qris-mode');
+
     form.classList.add('hidden');
+    form.style.display = 'none';
 
     const stage = document.getElementById('qrisPaymentStage');
     const image = document.getElementById('qrisStageImage');
