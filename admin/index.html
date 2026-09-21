@@ -1554,12 +1554,69 @@ main.shell{
   background:#76d99a;
   box-shadow:0 0 0 4px rgba(118,217,154,.08);
 }
+
+/* BADAI PRIMARY LOGO */
+.admin-brand-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.admin-brand-logo{
+  position:relative;
+  width:154px;
+  height:58px;
+  overflow:hidden;
+  flex:0 0 auto;
+}
+.admin-brand-logo img{
+  position:absolute;
+  width:154px;
+  height:auto;
+  max-width:none;
+  left:0;
+  top:-43px;
+}
+.admin-brand-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:24px;
+  padding:0 8px;
+  border:1px solid #55243d;
+  border-radius:999px;
+  background:#180d13;
+  color:#ff8fc5;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+@media(max-width:480px){
+  .admin-brand-logo{
+    width:132px;
+    height:50px;
+  }
+  .admin-brand-logo img{
+    width:132px;
+    top:-37px;
+  }
+  .admin-brand-pill{
+    min-height:22px;
+    padding:0 6px;
+    font-size:7px;
+  }
+}
+
 </style>
+<link rel="icon" type="image/png" href="/assets/brand/badai-logo-utama.png">
 </head>
 <body>
 <header class="topbar">
   <div class="shell topbar-inner">
-    <div class="brand">BAD<span>AI</span> / ADMIN</div>
+    <div class="admin-brand-wrap">
+      <div class="admin-brand-logo"><img src="/assets/brand/badai-logo-utama.png" alt="Komunitas BADAI"></div>
+      <span class="admin-brand-pill">ADMIN</span>
+    </div>
     <div class="top-actions">
       <button id="logoutBtn" class="small-btn danger hidden" type="button">LOGOUT</button>
     </div>
