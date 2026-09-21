@@ -2276,6 +2276,135 @@ body.register-modal-open{
   }
 }
 
+
+.qris-payment-stage{
+  display:grid;
+  gap:10px;
+  text-align:center;
+}
+.qris-payment-stage.hidden{display:none!important}
+.qris-stage-kicker{
+  color:#ff4fa3;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.11em;
+}
+.qris-payment-stage h3{
+  margin:0;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:22px;
+  line-height:1.1;
+}
+.qris-payment-stage>p{
+  margin:0;
+  color:#8e8e8e;
+  font-size:10px;
+}
+.qris-stage-amount{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 11px;
+  border:1px solid #4d2940;
+  border-radius:11px;
+  background:#160d12;
+}
+.qris-stage-amount span{
+  color:#8f8f8f;
+  font-size:8px;
+}
+.qris-stage-amount b{
+  color:#ff8fc5;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:16px;
+}
+.qris-image-wrap{
+  width:min(100%,310px);
+  margin:0 auto;
+  padding:10px;
+  border-radius:16px;
+  background:#fff;
+}
+.qris-image-wrap img{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:8px;
+}
+.qris-stage-status{
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:9px 11px;
+  border-radius:11px;
+  font-size:9px;
+}
+.qris-stage-status.waiting{
+  border:1px solid #3c3439;
+  background:#0d0d0d;
+  color:#ddd;
+}
+.qris-status-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ff4fa3;
+  animation:qrisPulse 1.2s infinite;
+}
+@keyframes qrisPulse{
+  0%,100%{opacity:.35;transform:scale(.85)}
+  50%{opacity:1;transform:scale(1.2)}
+}
+.qris-stage-status.success{
+  border:1px solid #285c39;
+  background:#0c1710;
+  color:#82dda0;
+}
+.qris-stage-status.failed{
+  border:1px solid #65303a;
+  background:#190d10;
+  color:#ff929f;
+}
+.qris-stage-status>span{
+  font-size:16px;
+  font-weight:950;
+}
+.qris-stage-status div{text-align:left}
+.qris-stage-status b{display:block;font-size:9px}
+.qris-stage-status small{
+  display:block;
+  margin-top:2px;
+  color:#969696;
+  font-size:7px;
+  line-height:1.4;
+}
+.qris-stage-link,
+.qris-retry{
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  border-radius:10px;
+  background:#ff4fa3;
+  color:#111;
+  text-decoration:none;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:8px;
+  font-weight:950;
+  cursor:pointer;
+}
+.qris-stage-note{
+  color:#747474;
+  font-size:8px;
+  line-height:1.45;
+}
+
 </style>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="icon" type="image/png"/>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="shortcut icon"/>
@@ -2946,6 +3075,36 @@ body.register-modal-open{
         <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
         <div class="register-note" id="registerStatus">Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.</div>
       </form>
+
+      <div id="qrisPaymentStage" class="qris-payment-stage hidden">
+        <div class="qris-stage-kicker">PEMBAYARAN QRIS</div>
+        <h3 id="qrisStageTitle">Scan QRIS untuk Membayar</h3>
+        <p id="qrisStagePackage">Paket BADAI</p>
+
+        <div class="qris-stage-amount">
+          <span>Total Pembayaran</span>
+          <b id="qrisStageAmount">Rp0</b>
+        </div>
+
+        <div class="qris-image-wrap">
+          <img id="qrisStageImage" alt="QRIS pembayaran BADAI"/>
+        </div>
+
+        <div id="qrisStageStatus" class="qris-stage-status waiting">
+          <span class="qris-status-dot"></span>
+          <b>Menunggu pembayaran...</b>
+        </div>
+
+        <a id="qrisStagePaymentLink" class="qris-stage-link hidden" href="#" target="_blank" rel="noopener">
+          BUKA HALAMAN PEMBAYARAN
+        </a>
+
+        <button id="qrisRetryBtn" class="qris-retry hidden" type="button">BUAT QR BARU</button>
+
+        <div class="qris-stage-note">
+          Scan QR dengan aplikasi bank atau e-wallet yang mendukung QRIS. Halaman ini akan mengecek pembayaran otomatis.
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -3101,6 +3260,8 @@ Mohon dibantu proses pendaftarannya ya.`
   let selectedPackage = 'newbie';
   let paymentMethods = [];
   let selectedPaymentMethodId = '';
+  let qrisPollTimer = null;
+  let qrisPublicToken = '';
 
   function escapePaymentHtml(value){
     return String(value ?? '').replace(/[&<>"']/g, ch => ({
@@ -3252,7 +3413,7 @@ Mohon dibantu proses pendaftarannya ya.`
   async function loadPaymentMethods(){
     try{
       const res = await fetch(
-        SUPABASE_URL + '/rest/v1/payment_methods?active=eq.true&select=id,method_type,display_name,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order&order=sort_order.asc,created_at.asc',
+        SUPABASE_URL + '/rest/v1/payment_methods?active=eq.true&select=id,method_type,provider,display_name,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order&order=sort_order.asc,created_at.asc',
         {headers:{'apikey':SUPABASE_PUBLISHABLE_KEY}}
       );
       if(!res.ok) throw new Error('Gagal memuat metode pembayaran');
@@ -3262,6 +3423,138 @@ Mohon dibantu proses pendaftarannya ya.`
       paymentMethods = [];
       renderPaymentMethods();
     }
+  }
+
+  function stopQrisPolling(){
+    if(qrisPollTimer){
+      clearTimeout(qrisPollTimer);
+      qrisPollTimer = null;
+    }
+  }
+
+  function showRegistrationForm(){
+    stopQrisPolling();
+    qrisPublicToken = '';
+    form.classList.remove('hidden');
+    document.getElementById('qrisPaymentStage')?.classList.add('hidden');
+    submitBtn.disabled = !selectedPaymentMethodId;
+    submitBtn.textContent = 'KLIK DAFTAR SEKARANG →';
+  }
+
+  function showQrisStage(data){
+    form.classList.add('hidden');
+
+    const stage = document.getElementById('qrisPaymentStage');
+    const image = document.getElementById('qrisStageImage');
+    const amount = document.getElementById('qrisStageAmount');
+    const pack = document.getElementById('qrisStagePackage');
+    const link = document.getElementById('qrisStagePaymentLink');
+    const status = document.getElementById('qrisStageStatus');
+    const retry = document.getElementById('qrisRetryBtn');
+
+    stage?.classList.remove('hidden');
+    if(image) image.src = data.qr_url || '';
+    if(amount) amount.textContent = formatRupiah(data.total_amount || data.amount || selectedPackagePrice());
+    if(pack) pack.textContent = selectedPackageName();
+    if(status){
+      status.className = 'qris-stage-status waiting';
+      status.innerHTML = '<span class="qris-status-dot"></span><b>Menunggu pembayaran...</b>';
+    }
+    if(retry) retry.classList.add('hidden');
+
+    if(link){
+      if(data.payment_url){
+        link.href = data.payment_url;
+        link.classList.remove('hidden');
+      }else{
+        link.classList.add('hidden');
+      }
+    }
+
+    qrisPublicToken = data.public_token || '';
+    if(qrisPublicToken) scheduleQrisCheck();
+  }
+
+  async function checkQrisPayment(){
+    if(!qrisPublicToken) return;
+
+    try{
+      const res = await fetch(SUPABASE_URL + '/functions/v1/check-buatqris-payment',{
+        method:'POST',
+        headers:{
+          'apikey':SUPABASE_PUBLISHABLE_KEY,
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({public_token:qrisPublicToken})
+      });
+
+      const data = await res.json().catch(()=>({}));
+      if(!res.ok) throw new Error(data?.error || 'Gagal mengecek pembayaran');
+
+      const status = String(data.status || 'pending');
+      const statusEl = document.getElementById('qrisStageStatus');
+      const retry = document.getElementById('qrisRetryBtn');
+
+      if(status === 'success'){
+        stopQrisPolling();
+        if(statusEl){
+          statusEl.className = 'qris-stage-status success';
+          statusEl.innerHTML = '<span>✓</span><div><b>Pembayaran berhasil!</b><small>Pembayaran sudah diterima. Akses akan diproses oleh admin BADAI.</small></div>';
+        }
+        document.getElementById('qrisStagePaymentLink')?.classList.add('hidden');
+        return;
+      }
+
+      if(status === 'expired' || status === 'failed'){
+        stopQrisPolling();
+        if(statusEl){
+          statusEl.className = 'qris-stage-status failed';
+          statusEl.innerHTML = '<span>!</span><div><b>' + (status === 'expired' ? 'QRIS kedaluwarsa' : 'Pembayaran gagal') + '</b><small>Silakan buat QR baru dan coba lagi.</small></div>';
+        }
+        retry?.classList.remove('hidden');
+        return;
+      }
+
+      scheduleQrisCheck();
+    }catch(_){
+      scheduleQrisCheck(7000);
+    }
+  }
+
+  function scheduleQrisCheck(delay=5000){
+    stopQrisPolling();
+    qrisPollTimer = setTimeout(checkQrisPayment,delay);
+  }
+
+  async function createBuatQrisPayment({nama,email,wa}){
+    const refCode = (
+      window.BADAI_AFFILIATE_REF ||
+      localStorage.getItem('badai_affiliate_ref') ||
+      null
+    );
+
+    const res = await fetch(SUPABASE_URL + '/functions/v1/create-buatqris-payment',{
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_PUBLISHABLE_KEY,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        full_name:nama,
+        email,
+        whatsapp:wa,
+        membership_plan:selectedPackage,
+        payment_method_id:selectedPaymentMethodId,
+        referred_by_code:refCode
+      })
+    });
+
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok || !data?.success){
+      throw new Error(data?.error || 'Gagal membuat QRIS');
+    }
+
+    showQrisStage(data);
   }
 
   function selectedPackagePrice(){
@@ -3294,6 +3587,7 @@ Mohon dibantu proses pendaftarannya ya.`
   function openRegistrationModal(plan){
     selectedPackage = plan === 'pro' ? 'pro' : 'newbie';
     syncSelectedPackageUI();
+    showRegistrationForm();
 
     const title = document.getElementById('registrationModalTitle');
     const desc = document.getElementById('registrationModalDesc');
@@ -3316,6 +3610,7 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function closeRegistrationModal(){
+    stopQrisPolling();
     registrationModal?.classList.remove('open');
     registrationModal?.setAttribute('aria-hidden','true');
     document.body.classList.remove('register-modal-open');
@@ -3328,6 +3623,11 @@ Mohon dibantu proses pendaftarannya ya.`
   });
 
   closeRegistrationModalBtn?.addEventListener('click', closeRegistrationModal);
+
+  document.getElementById('qrisRetryBtn')?.addEventListener('click', () => {
+    showRegistrationForm();
+    setStatus('Klik daftar untuk membuat QRIS baru.', false);
+  });
 
   registrationModal?.addEventListener('click', (e) => {
     if(e.target === registrationModal){
@@ -3425,6 +3725,17 @@ Mohon dibantu proses pendaftarannya ya.`
     setStatus('Sebentar, data pendaftaran sedang dicatat...', false);
 
     try {
+      const payment = selectedPaymentMethod();
+
+      if(payment?.method_type === 'qris' && payment?.provider === 'buatqris'){
+        submitBtn.textContent = 'MEMBUAT QRIS...';
+        setStatus('Sebentar, QRIS pembayaran sedang dibuat...', false);
+        await createBuatQrisPayment({nama,email,wa});
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        return;
+      }
+
       const response = await fetch(SUPABASE_URL + '/rest/v1/registrations', {
         method: 'POST',
         headers: {
