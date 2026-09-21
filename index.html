@@ -1784,7 +1784,7 @@ h2{font-weight:900}
 <body>
 <header class="nav"><div class="container nav-inner"><a aria-label="BADAI" class="brand brand-logo" href="#">
 <img alt="BADAI" src="https://ulva.my.id/uploads/1789901602_245f037026612d7ed6a3.png"/>
-</a><a class="nav-btn" href="https://ulva.my.id/checkout/ulva">GABUNG BADAI</a></div></header>
+</a><a class="nav-btn" href="#daftar">GABUNG BADAI</a></div></header>
 <main>
 <section class="hero">
 <div class="container">
@@ -1793,7 +1793,7 @@ h2{font-weight:900}
 <div class="hero-video hero-image" id="video-ulva">
 <img alt="BADAI — Untung Lewat Video AI" loading="eager" src="https://ulva.my.id/uploads/1789957681_a933acaec7d686701c22.png"/>
 </div>
-<a class="cta" href="https://ulva.my.id/checkout/ulva">GABUNG BADAI SEKARANG →</a>
+<a class="cta" href="#daftar">GABUNG BADAI SEKARANG →</a>
 <a class="cta secondary" href="#materi">LIHAT DULU MATERINYA</a>
 <div class="micro">Cocok untuk pemula. Nggak perlu ngerti istilah AI yang ribet.</div>
 </div>
@@ -2394,10 +2394,10 @@ h2{font-weight:900}
 </div>
 <div class="price-note">Selisih nilainya jauh, tapi aksesnya tetap dibuka dengan harga yang ramah buat pemula.</div>
 </div>
-<div class="pricing-register">
+<div class="pricing-register" id="daftar">
   <div class="register-head">
     <h3>Daftar BADAI Sekarang</h3>
-    <p>Isi data di bawah ini. Setelah klik tombol daftar, data kamu akan langsung dikirim ke WhatsApp admin.</p>
+    <p>Isi data di bawah ini. Setelah klik daftar, data kamu disimpan dulu lalu WhatsApp admin akan terbuka.</p>
   </div>
 
   <form id="badaiRegisterForm" class="register-form">
@@ -2424,7 +2424,7 @@ h2{font-weight:900}
     </div>
 
     <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
-    <div class="register-note">Setelah diklik, WhatsApp akan terbuka dengan data pendaftaran kamu secara otomatis.</div>
+    <div class="register-note" id="registerStatus">Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.</div>
   </form>
 </div>
 </div>
@@ -2445,7 +2445,7 @@ h2{font-weight:900}
 </section>
 </main>
 <footer><div class="container">BADAI — Untung Lewat Video AI<br/>Materi edukasi. Hasil setiap pengguna dapat berbeda.</div></footer>
-<a href="https://ulva.my.id/checkout/ulva">GABUNG SEKARANG</a>
+<a href="#daftar">GABUNG SEKARANG</a>
 <script>
 (function(){
   const slider = document.getElementById('chapterSlider');
@@ -2565,19 +2565,68 @@ h2{font-weight:900}
   const form = document.getElementById('badaiRegisterForm');
   if(!form) return;
 
-  form.addEventListener('submit', function(e){
+  const submitBtn = form.querySelector('.register-submit');
+  const statusEl = document.getElementById('registerStatus');
+
+  const SUPABASE_URL = 'https://tlvxlekqrllkvcpgwmic.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
+
+  function normalizeWhatsapp(value){
+    let digits = String(value || '').replace(/\\D/g, '');
+    if(digits.startsWith('0')) digits = '62' + digits.slice(1);
+    else if(digits.startsWith('8')) digits = '62' + digits;
+    return digits;
+  }
+
+  function setStatus(message, isError){
+    if(!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.style.color = isError ? '#ff8d8d' : '#8f8f8f';
+  }
+
+  form.addEventListener('submit', async function(e){
     e.preventDefault();
 
     const nama = document.getElementById('regNama').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const wa = document.getElementById('regWa').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const wa = normalizeWhatsapp(document.getElementById('regWa').value);
 
     if(!nama || !email || !wa){
       form.reportValidity();
       return;
     }
 
-    const message =
+    if(!/^62\\d{8,13}$/.test(wa)){
+      setStatus('Nomor WhatsApp belum valid. Contoh: 081234567890', true);
+      document.getElementById('regWa').focus();
+      return;
+    }
+
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'MENYIMPAN DATA...';
+    setStatus('Sebentar, data pendaftaran sedang dicatat...', false);
+
+    try {
+      const response = await fetch(SUPABASE_URL + '/rest/v1/registrations', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_PUBLISHABLE_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          full_name: nama,
+          email: email,
+          whatsapp: wa
+        })
+      });
+
+      if(!response.ok && response.status !== 409){
+        throw new Error('Gagal menyimpan pendaftaran');
+      }
+
+      const message =
 `Halo Admin BADAI 👋
 
 Saya mau daftar BADAI - Untung Lewat Video AI.
@@ -2595,8 +2644,15 @@ an PURKON N
 
 Mohon dibantu proses pendaftarannya ya.`;
 
-    const whatsappUrl = 'https://wa.me/628213752362?text=' + encodeURIComponent(message);
-    window.open(whatsappUrl, '_blank', 'noopener');
+      const whatsappUrl = 'https://wa.me/628213752362?text=' + encodeURIComponent(message);
+
+      setStatus('Data sudah tercatat. Membuka WhatsApp...', false);
+      window.location.href = whatsappUrl;
+    } catch (err) {
+      setStatus('Data belum berhasil tercatat. Coba klik daftar sekali lagi.', true);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
   });
 })();
 </script>
