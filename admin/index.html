@@ -1317,17 +1317,17 @@ main.shell{
           </div>
           <div class="marketing-price-grid">
             <div class="manage-field">
-              <label>Harga NEWBIE</label>
+              <label>Harga Paket Pemula</label>
               <input id="marketingNewbiePrice" type="number" min="1" step="1" inputmode="numeric" required/>
               <div class="price-plan-note">Belajar Ilmu AI + Update</div>
             </div>
             <div class="manage-field">
-              <label>Harga PRO</label>
+              <label>Harga Paket Untung</label>
               <input id="marketingProPrice" type="number" min="1" step="1" inputmode="numeric" required/>
-              <div class="price-plan-note">Semua Newbie + Program Afiliasi</div>
+              <div class="price-plan-note">Semua Paket Pemula + Program Afiliasi</div>
             </div>
           </div>
-          <div class="template-help">Untuk sementara pendaftaran dari landing page yang lama tetap menggunakan harga <b>NEWBIE</b> sampai pilihan paket dipasang di landing page.</div>
+          <div class="template-help">Untuk sementara pendaftaran dari landing page yang lama tetap menggunakan harga <b>Paket Pemula</b> sampai pilihan paket dipasang di landing page.</div>
         </div>
 
         <div class="marketing-card">
@@ -1534,8 +1534,8 @@ main.shell{
       <div class="manage-field full">
         <label>Paket Member</label>
         <select id="managePlan">
-          <option value="newbie">NEWBIE — Belajar AI + Update</option>
-          <option value="pro">PRO — Belajar AI + Program Afiliasi</option>
+          <option value="newbie">Paket Pemula — Belajar AI + Update</option>
+          <option value="pro">Paket Untung — Belajar AI + Program Afiliasi</option>
         </select>
       </div>
       <div class="manage-field full">
@@ -1800,8 +1800,8 @@ main.shell{
     const newbiePrice = Number($('marketingNewbiePrice').value);
     const proPrice = Number($('marketingProPrice').value);
 
-    if(!newbiePrice || newbiePrice < 1) throw new Error('Harga NEWBIE belum valid.');
-    if(!proPrice || proPrice < 1) throw new Error('Harga PRO belum valid.');
+    if(!newbiePrice || newbiePrice < 1) throw new Error('Harga Paket Pemula belum valid.');
+    if(!proPrice || proPrice < 1) throw new Error('Harga Paket Untung belum valid.');
 
     const body = {
       newbie_price:Math.round(newbiePrice),
@@ -1992,7 +1992,7 @@ main.shell{
   }
 
   function planBadge(plan){
-    const value = plan === 'pro' ? 'PRO' : 'NEWBIE';
+    const value = plan === 'pro' ? 'PAKET UNTUNG' : 'PAKET PEMULA';
     return '<span class="plan-badge ' + (plan === 'pro' ? 'pro' : 'newbie') + '">' + value + '</span>';
   }
 
