@@ -232,6 +232,263 @@ tr:last-child td{border-bottom:0}
   .page-title{align-items:flex-start;flex-direction:column}
 }
 
+
+/* ===== BADAI ADMIN — MOBILE APP UI ===== */
+:root{--max:640px}
+
+html{background:#151515}
+body{
+  background:#151515;
+  min-height:100vh;
+}
+
+.shell{
+  width:min(var(--max),100%);
+  margin:0 auto;
+  padding-left:16px;
+  padding-right:16px;
+}
+
+.topbar{
+  width:min(var(--max),100%);
+  margin:0 auto;
+  background:rgba(7,7,7,.94);
+  border-left:1px solid #1b1b1b;
+  border-right:1px solid #1b1b1b;
+  box-shadow:0 0 45px rgba(0,0,0,.24);
+}
+.topbar-inner{
+  height:58px;
+  padding-left:18px;
+  padding-right:18px;
+}
+.brand{font-size:18px}
+.small-btn{
+  min-height:34px;
+  border-radius:999px;
+  padding:0 12px;
+  font-size:10px;
+}
+
+main.shell{
+  min-height:calc(100vh - 58px);
+  background:var(--bg);
+  padding-top:20px;
+  padding-bottom:112px;
+  border-left:1px solid #1b1b1b;
+  border-right:1px solid #1b1b1b;
+  box-shadow:0 30px 70px rgba(0,0,0,.22);
+}
+
+.dashboard-head{margin-bottom:18px}
+.dashboard-head h1{
+  font-size:24px;
+  letter-spacing:-.035em;
+}
+.dashboard-head p{font-size:11px}
+
+.page-title{
+  margin:4px 0 14px;
+  align-items:flex-start;
+}
+.page-title h2{font-size:22px}
+.page-title p{font-size:11px;line-height:1.45}
+
+.stats{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:14px;
+}
+.stat{
+  border-radius:20px;
+  padding:15px;
+  min-height:104px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  background:linear-gradient(180deg,#121212,#0d0d0d);
+}
+.stat span{
+  font-size:9px;
+  letter-spacing:.035em;
+}
+.stat strong{
+  font-size:24px;
+  line-height:1.05;
+  margin-top:13px;
+}
+
+.toolbar{
+  grid-template-columns:1fr 120px;
+  gap:8px;
+  margin:12px 0;
+}
+#searchBox{grid-column:1/-1}
+.toolbar input,.toolbar select{
+  min-height:46px;
+  border-radius:15px;
+}
+.toolbar .refresh{
+  grid-column:auto!important;
+  min-height:46px;
+  border-radius:15px;
+}
+
+.desktop-table{display:none!important}
+.mobile-list{display:block!important}
+
+.card{
+  border-radius:20px;
+  padding:15px;
+  background:linear-gradient(180deg,#111,#0c0c0c);
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+.card + .card{margin-top:10px}
+.card-head{align-items:flex-start}
+.name{font-size:14px}
+.meta{font-size:10px}
+.card-data{
+  grid-template-columns:1fr 1fr;
+  gap:7px 10px;
+  margin:13px 0;
+  padding:11px;
+  border-radius:14px;
+  background:#090909;
+  border:1px solid #1d1d1d;
+}
+.card-data div{font-size:11px}
+.actions{gap:7px}
+.action{
+  min-height:34px;
+  border-radius:999px;
+  padding:0 11px;
+  font-size:9px;
+}
+
+.finance-report-toolbar{
+  grid-template-columns:1fr;
+  margin:12px 0;
+}
+.finance-report-toolbar select{
+  min-height:46px;
+  border-radius:15px;
+}
+.report-label{font-size:10px;padding:0 2px}
+
+.table-wrap{
+  border-radius:20px;
+}
+.finance-table th,.finance-table td{
+  padding:12px 10px;
+}
+.finance-table th{font-size:9px}
+.finance-table td{font-size:11px}
+
+.team-layout{
+  grid-template-columns:1fr;
+  gap:11px;
+}
+.team-panel{
+  border-radius:20px;
+  padding:15px;
+}
+.team-panel h3{font-size:16px}
+.team-form input,.team-form select{
+  min-height:48px;
+  border-radius:14px;
+}
+.team-help div{
+  border-radius:13px;
+  padding:10px 11px;
+}
+.team-table-wrap{
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.team-table-wrap table{min-width:540px}
+
+.login-wrap{min-height:calc(100vh - 100px)}
+.login-card{
+  width:100%;
+  max-width:460px;
+  border-radius:28px;
+  padding:22px;
+}
+.login-card h1{font-size:28px}
+
+/* Bottom app navigation */
+.admin-tabs{
+  position:fixed;
+  z-index:90;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:min(var(--max),100%);
+  height:auto;
+  margin:0;
+  padding:8px 14px calc(8px + env(safe-area-inset-bottom));
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  border:0;
+  border-top:1px solid #252525;
+  border-radius:0;
+  background:rgba(12,12,12,.96);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  box-shadow:0 -14px 40px rgba(0,0,0,.28);
+}
+
+.admin-tab{
+  min-height:56px;
+  padding:5px 4px;
+  border-radius:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  color:#777;
+  font-size:9px;
+  letter-spacing:.01em;
+}
+.admin-tab svg{
+  width:21px;
+  height:21px;
+  stroke:currentColor;
+  stroke-width:2;
+  fill:none;
+}
+.admin-tab.active{
+  background:#191116;
+  color:var(--pink);
+}
+.admin-tab.active .nav-label{color:#fff}
+.nav-label{line-height:1}
+
+/* Modal stays app-sized */
+.cred-modal{padding:14px}
+.cred-box{
+  width:min(100%,520px);
+  max-height:calc(100vh - 28px);
+  overflow:auto;
+  border-radius:24px;
+}
+.manage-grid{grid-template-columns:1fr}
+.manage-field.full{grid-column:auto}
+
+@media(max-width:420px){
+  .shell{padding-left:12px;padding-right:12px}
+  .topbar-inner{padding-left:14px;padding-right:14px}
+  main.shell{padding-top:16px}
+  .stat{padding:13px;min-height:96px}
+  .stat strong{font-size:21px}
+  .toolbar{grid-template-columns:1fr 105px}
+  .card-data{grid-template-columns:1fr}
+  .admin-tabs{padding-left:10px;padding-right:10px}
+  .admin-tab{min-height:54px}
+}
+
 </style>
 </head>
 <body>
@@ -277,10 +534,19 @@ tr:last-child td{border-bottom:0}
       </div>
     </div>
 
-    <nav class="admin-tabs">
-      <button id="tabSales" class="admin-tab active" data-page="sales" type="button">PENJUALAN</button>
-      <button id="tabFinance" class="admin-tab" data-page="finance" type="button">KEUANGAN</button>
-      <button id="tabTeam" class="admin-tab" data-page="team" type="button">TIM</button>
+    <nav class="admin-tabs" aria-label="Navigasi Admin BADAI">
+      <button id="tabSales" class="admin-tab active" data-page="sales" type="button" aria-label="Penjualan">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V10"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M22 19H2"/></svg>
+        <span class="nav-label">Penjualan</span>
+      </button>
+      <button id="tabFinance" class="admin-tab" data-page="finance" type="button" aria-label="Keuangan">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M16 11h5v4h-5a2 2 0 0 1 0-4Z"/><path d="M5 7V5h13v2"/></svg>
+        <span class="nav-label">Keuangan</span>
+      </button>
+      <button id="tabTeam" class="admin-tab" data-page="team" type="button" aria-label="Tim">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="nav-label">Tim</span>
+      </button>
     </nav>
 
     <section id="pageSales" class="admin-page">
