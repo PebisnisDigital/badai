@@ -1555,27 +1555,28 @@ main.shell{
   box-shadow:0 0 0 4px rgba(118,217,154,.08);
 }
 
-/* BADAI PRIMARY LOGO */
+/* BADAI HORIZONTAL LOGO — DIRECT FROM GOOGLE DRIVE */
 .admin-brand-wrap{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:9px;
   min-width:0;
 }
 .admin-brand-logo{
-  position:relative;
-  width:154px;
-  height:58px;
-  overflow:hidden;
+  display:flex;
+  align-items:center;
+  width:180px;
+  height:54px;
+  overflow:visible;
   flex:0 0 auto;
 }
 .admin-brand-logo img{
-  position:absolute;
-  width:154px;
+  position:static;
+  display:block;
+  width:100%;
   height:auto;
-  max-width:none;
-  left:0;
-  top:-43px;
+  max-width:180px;
+  object-fit:contain;
 }
 .admin-brand-pill{
   display:inline-flex;
@@ -1593,12 +1594,11 @@ main.shell{
 }
 @media(max-width:480px){
   .admin-brand-logo{
-    width:132px;
-    height:50px;
+    width:150px;
+    height:48px;
   }
   .admin-brand-logo img{
-    width:132px;
-    top:-37px;
+    max-width:150px;
   }
   .admin-brand-pill{
     min-height:22px;
@@ -1606,15 +1606,14 @@ main.shell{
     font-size:7px;
   }
 }
-
 </style>
-<link rel="icon" type="image/png" href="/assets/brand/badai-logo-utama.png">
+<link rel="icon" type="image/png" href="https://drive.google.com/uc?export=view&id=1uFX4U_hTUMeBezL6m_KddS5oeQgWcTCS">
 </head>
 <body>
 <header class="topbar">
   <div class="shell topbar-inner">
     <div class="admin-brand-wrap">
-      <div class="admin-brand-logo"><img src="/assets/brand/badai-logo-utama.png" alt="Komunitas BADAI"></div>
+      <div class="admin-brand-logo"><img src="https://drive.google.com/uc?export=view&id=1uFX4U_hTUMeBezL6m_KddS5oeQgWcTCS" alt="Komunitas BADAI"></div>
       <span class="admin-brand-pill">ADMIN</span>
     </div>
     <div class="top-actions">
