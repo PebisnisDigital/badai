@@ -2704,5 +2704,30 @@ Mohon dibantu proses pendaftarannya ya.`
 })();
 </script>
 
+
+<script>
+(function(){
+  const reserved = new Set(['admin','akses','api','login','logout']);
+  const path = decodeURIComponent(location.pathname || '/')
+    .replace(/^\/+|\/+$/g,'')
+    .trim();
+
+  let affiliateCode = '';
+
+  if(path && !path.includes('/') && !reserved.has(path.toLowerCase())){
+    affiliateCode = path.toUpperCase();
+  }else{
+    affiliateCode = (new URLSearchParams(location.search).get('ref') || '').trim().toUpperCase();
+  }
+
+  if(affiliateCode && /^[A-Z0-9][A-Z0-9_-]{2,23}$/.test(affiliateCode)){
+    try{
+      localStorage.setItem('badai_affiliate_ref', affiliateCode);
+    }catch(_){}
+    window.BADAI_AFFILIATE_REF = affiliateCode;
+  }
+})();
+</script>
+
 </body>
 </html>
