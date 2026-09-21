@@ -1114,6 +1114,128 @@ html.badai-auth-lock body > .app{
   display:none!important;
 }
 
+
+.affiliate-actions{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:8px;
+  margin-top:9px;
+}
+.affiliate-actions .copy,
+.affiliate-edit{
+  width:100%;
+  min-height:38px;
+  border-radius:11px;
+  font:900 9px "Raleway";
+  cursor:pointer;
+}
+.affiliate-actions .copy{
+  margin:0;
+}
+.affiliate-edit{
+  border:1px solid #5c2945;
+  background:#160d12;
+  color:#ff91c5;
+}
+.affiliate-edit-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:999999;
+  background:rgba(0,0,0,.78);
+  padding:16px;
+  align-items:center;
+  justify-content:center;
+}
+.affiliate-edit-modal.open{display:flex}
+.affiliate-edit-box{
+  width:min(100%,460px);
+  background:#111;
+  border:1px solid #2d2d2d;
+  border-radius:20px;
+  padding:17px;
+  box-shadow:0 28px 80px rgba(0,0,0,.48);
+}
+.affiliate-edit-kicker{
+  color:#ff8fc5;
+  font:900 8px "Raleway";
+  letter-spacing:.08em;
+}
+.affiliate-edit-box h2{
+  margin:5px 0 5px;
+  color:#fff;
+  font:900 20px "Raleway";
+}
+.affiliate-edit-box p{
+  margin:0 0 13px;
+  color:#909090;
+  font-size:9px;
+  line-height:1.45;
+  word-break:break-word;
+}
+.affiliate-edit-box p b{color:#fff}
+.affiliate-edit-box label{
+  display:block;
+  margin-bottom:5px;
+  color:#aaa;
+  font:900 8px "Raleway";
+}
+.affiliate-edit-box input{
+  width:100%;
+  min-height:42px;
+  border:1px solid #333;
+  border-radius:11px;
+  background:#080808;
+  color:#fff;
+  padding:0 11px;
+  outline:none;
+  text-transform:uppercase;
+  font:800 11px "Nunito";
+}
+.affiliate-edit-box input:focus{
+  border-color:#ff4fa3;
+  box-shadow:0 0 0 3px rgba(255,79,163,.10);
+}
+.affiliate-edit-help{
+  margin-top:6px;
+  color:#6f6f6f;
+  font-size:8px;
+  line-height:1.4;
+}
+.affiliate-edit-status{
+  min-height:18px;
+  margin-top:8px;
+  color:#8a8a8a;
+  font-size:8px;
+}
+.affiliate-edit-status.error{color:#ff8d8d}
+.affiliate-edit-status.ok{color:#7fdda5}
+.affiliate-edit-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:7px;
+}
+.affiliate-edit-buttons button{
+  min-height:40px;
+  border-radius:11px;
+  border:0;
+  font:900 9px "Raleway";
+  cursor:pointer;
+}
+.affiliate-edit-buttons button:first-child{
+  background:#ff4fa3;
+  color:#111;
+}
+.affiliate-edit-buttons .secondary{
+  background:#171717;
+  border:1px solid #303030;
+  color:#fff;
+}
+@media(max-width:430px){
+  .affiliate-actions{grid-template-columns:100px 1fr}
+}
+
 </style>
 <script src="/akses/auth.js?v=20260921-2" defer></script>
 </head>
@@ -1282,7 +1404,10 @@ html.badai-auth-lock body > .app{
         <h2>Link Afiliasi Kamu</h2>
         <p>Bagikan link ini untuk mengajak orang bergabung ke Komunitas BADAI.</p>
         <div id="affiliateLink" class="linkbox">Memuat link afiliasi...</div>
-        <button class="copy" onclick="copyLink()">SALIN LINK</button>
+        <div class="affiliate-actions">
+          <button class="affiliate-edit" type="button" onclick="openAffiliateEditor()">EDIT</button>
+          <button class="copy" type="button" onclick="copyLink()">SALIN LINK</button>
+        </div>
       </div>
 
       <div class="stats">
@@ -1837,5 +1962,28 @@ renderGrid();
 renderProfitRoutes();
 renderComics();
 </script>
+
+<div id="affiliateEditModal" class="affiliate-edit-modal" aria-hidden="true">
+  <div class="affiliate-edit-box">
+    <div class="affiliate-edit-kicker">EDIT LINK AFILIASI</div>
+    <h2>Buat Kode Kamu Sendiri</h2>
+    <p>Contoh: <b>AMBYAR</b> akan menjadi <b id="affiliatePreview">https://badai.vercel.app/AMBYAR</b></p>
+
+    <label for="affiliateCodeInput">Kode Afiliasi</label>
+    <input id="affiliateCodeInput" type="text" maxlength="24" autocomplete="off" placeholder="Contoh: AMBYAR"/>
+
+    <div class="affiliate-edit-help">
+      3–24 karakter. Boleh huruf, angka, tanda minus (-), dan underscore (_).
+    </div>
+
+    <div id="affiliateEditStatus" class="affiliate-edit-status"></div>
+
+    <div class="affiliate-edit-buttons">
+      <button id="saveAffiliateCodeBtn" type="button" onclick="saveAffiliateCode()">SIMPAN</button>
+      <button type="button" class="secondary" onclick="closeAffiliateEditor()">TUTUP</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
