@@ -2410,21 +2410,40 @@ body.register-modal-open{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
-  padding:8px 11px;
-  border:1px dashed #444;
-  border-radius:10px;
-  background:#0b0b0b;
+  gap:12px;
+  padding:12px 14px;
+  border:1px dashed #6a3652;
+  border-radius:12px;
+  background:#100c0f;
+  box-shadow:0 0 0 1px rgba(255,79,163,.035) inset;
 }
 .qris-countdown-box span{
-  color:#8c8c8c;
-  font-size:8px;
+  color:#f1f1f1;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:12px;
+  line-height:1.25;
+  font-weight:800;
 }
 .qris-countdown-box b{
-  color:#fff;
+  color:#ff6eb6;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:18px;
-  letter-spacing:.04em;
+  font-size:24px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.05em;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+@media(max-width:520px){
+  .qris-countdown-box{
+    padding:11px 12px;
+  }
+  .qris-countdown-box span{
+    font-size:11px;
+  }
+  .qris-countdown-box b{
+    font-size:22px;
+  }
 }
 
 
@@ -2442,6 +2461,19 @@ body.register-modal-open{
 }
 .registration-modal-card.qris-mode #qrisPaymentStage{
   display:grid !important;
+}
+
+
+.qris-countdown-box.urgent{
+  border-color:#ff4fa3;
+  background:#180d13;
+}
+.qris-countdown-box.urgent b{
+  animation:qrisCountdownPulse .9s ease-in-out infinite;
+}
+@keyframes qrisCountdownPulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.035);opacity:.78}
 }
 
 </style>
@@ -3495,6 +3527,11 @@ Mohon dibantu proses pendaftarannya ya.`
       String(minutes).padStart(2,'0') + ':' +
       String(seconds).padStart(2,'0') + ':' +
       String(hundredths).padStart(2,'0');
+
+    const box = el.closest('.qris-countdown-box');
+    if(box){
+      box.classList.toggle('urgent', diff > 0 && diff <= (5 * 60 * 1000));
+    }
 
     if(diff <= 0){
       if(qrisCountdownTimer){
