@@ -2405,6 +2405,28 @@ body.register-modal-open{
   line-height:1.45;
 }
 
+
+.qris-countdown-box{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 11px;
+  border:1px dashed #444;
+  border-radius:10px;
+  background:#0b0b0b;
+}
+.qris-countdown-box span{
+  color:#8c8c8c;
+  font-size:8px;
+}
+.qris-countdown-box b{
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:18px;
+  letter-spacing:.04em;
+}
+
 </style>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="icon" type="image/png"/>
 <link href="https://ulva.my.id/uploads/1789902042_7da3ce1eca8d83a4f3d7.png" rel="shortcut icon"/>
@@ -3086,6 +3108,11 @@ body.register-modal-open{
           <b id="qrisStageAmount">Rp0</b>
         </div>
 
+        <div class="qris-countdown-box">
+          <span>Selesaikan pembayaran dalam</span>
+          <b id="qrisCountdown">15:00</b>
+        </div>
+
         <div class="qris-image-wrap">
           <img id="qrisStageImage" alt="QRIS pembayaran BADAI"/>
         </div>
@@ -3261,6 +3288,8 @@ Mohon dibantu proses pendaftarannya ya.`
   let paymentMethods = [];
   let selectedPaymentMethodId = '';
   let qrisPollTimer = null;
+  let qrisCountdownTimer = null;
+  let qrisExpiresAt = 0;
   let qrisPublicToken = '';
 
   function escapePaymentHtml(value){
@@ -3430,11 +3459,53 @@ Mohon dibantu proses pendaftarannya ya.`
       clearTimeout(qrisPollTimer);
       qrisPollTimer = null;
     }
+    if(qrisCountdownTimer){
+      clearInterval(qrisCountdownTimer);
+      qrisCountdownTimer = null;
+    }
+  }
+
+  function updateQrisCountdown(){
+    const el = document.getElementById('qrisCountdown');
+    if(!el || !qrisExpiresAt) return;
+
+    const diff = Math.max(0, qrisExpiresAt - Date.now());
+    const totalSeconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    el.textContent =
+      String(minutes).padStart(2,'0') + ':' +
+      String(seconds).padStart(2,'0');
+
+    if(diff <= 0){
+      if(qrisCountdownTimer){
+        clearInterval(qrisCountdownTimer);
+        qrisCountdownTimer = null;
+      }
+    }
+  }
+
+  function startQrisCountdown(expiresAt){
+    if(qrisCountdownTimer){
+      clearInterval(qrisCountdownTimer);
+      qrisCountdownTimer = null;
+    }
+
+    qrisExpiresAt = expiresAt
+      ? new Date(expiresAt).getTime()
+      : Date.now() + (15 * 60 * 1000);
+
+    updateQrisCountdown();
+    qrisCountdownTimer = setInterval(updateQrisCountdown,1000);
   }
 
   function showRegistrationForm(){
     stopQrisPolling();
     qrisPublicToken = '';
+    qrisExpiresAt = 0;
+    const countdown = document.getElementById('qrisCountdown');
+    if(countdown) countdown.textContent = '15:00';
     form.classList.remove('hidden');
     document.getElementById('qrisPaymentStage')?.classList.add('hidden');
     submitBtn.disabled = !selectedPaymentMethodId;
@@ -3471,8 +3542,10 @@ Mohon dibantu proses pendaftarannya ya.`
       }
     }
 
+    startQrisCountdown(data.expires_at || null);
+
     qrisPublicToken = data.public_token || '';
-    if(qrisPublicToken) scheduleQrisCheck();
+    if(qrisPublicToken) scheduleQrisCheck(3000);
   }
 
   async function checkQrisPayment(){
@@ -3499,9 +3572,19 @@ Mohon dibantu proses pendaftarannya ya.`
         stopQrisPolling();
         if(statusEl){
           statusEl.className = 'qris-stage-status success';
-          statusEl.innerHTML = '<span>✓</span><div><b>Pembayaran berhasil!</b><small>Pembayaran sudah diterima. Akses akan diproses oleh admin BADAI.</small></div>';
+          statusEl.innerHTML = '<span>✓</span><div><b>Pembayaran berhasil!</b><small>Akun member sedang diaktifkan. Kamu akan masuk otomatis...</small></div>';
         }
         document.getElementById('qrisStagePaymentLink')?.classList.add('hidden');
+
+        if(data.login_url){
+          setTimeout(() => {
+            window.location.href = data.login_url;
+          }, 1200);
+        }else{
+          setTimeout(() => {
+            window.location.href = '/akses/';
+          }, 1800);
+        }
         return;
       }
 
