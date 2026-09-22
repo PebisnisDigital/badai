@@ -61,6 +61,24 @@ module.exports = async function handler(req, res) {
   .footer .label{
     color:inherit!important;
   }
+  .footer .emoji .badai-nav-icon{
+    display:block;
+    width:17px;
+    height:17px;
+    object-fit:contain;
+  }
+
+  .flaticon-credit{
+    margin:8px 0 0;
+    text-align:center;
+    font:600 7px "Nunito",Arial,sans-serif;
+    line-height:1.3;
+    opacity:.42;
+  }
+  .flaticon-credit a{
+    color:#aaa;
+    text-decoration:none;
+  }
 
   .badai-member-header{
     position:sticky;top:0;z-index:80;
@@ -119,9 +137,26 @@ document.addEventListener('DOMContentLoaded', function(){
 
   document.querySelectorAll('.footer .label').forEach(function(label){
     var text = String(label.textContent || '').trim().toLowerCase();
+
+    if(text === 'cara belajar'){
+      var button = label.closest('button');
+      var emoji = button ? button.querySelector('.emoji') : null;
+      if(emoji){
+        emoji.innerHTML = '<img class="badai-nav-icon" src="https://cdn-icons-png.flaticon.com/512/10905/10905175.png" alt="" aria-hidden="true">';
+      }
+    }
+
     if(text === 'kelas') label.textContent = 'ILMU';
     if(text === 'jalur untung') label.textContent = 'BONUS';
   });
+
+  if(hero && !document.getElementById('flaticonCredit')){
+    var credit = document.createElement('div');
+    credit.id = 'flaticonCredit';
+    credit.className = 'flaticon-credit';
+    credit.innerHTML = '<a href="https://www.flaticon.com/free-icons/htc-one" title="htc one icons" target="_blank" rel="noopener noreferrer">Htc one icons created by iconographics - Flaticon</a>';
+    hero.appendChild(credit);
+  }
 });
 </script>`;
 
