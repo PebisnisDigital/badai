@@ -1642,7 +1642,6 @@ main.shell{
         </div>
         <div class="login-actions">
           <button class="primary" type="submit">LOGIN ADMIN</button>
-          <button id="signupBtn" class="secondary" type="button">BUAT AKUN TIM / ADMIN</button>
         </div>
       </form>
       <div id="authStatus" class="status">Gunakan email Owner/Tim yang sudah diizinkan.</div>
@@ -3849,7 +3848,6 @@ main.shell{
     }catch(err){ setAuthStatus(err.message,'error'); }
   });
 
-  $('signupBtn').addEventListener('click', signup);
   logoutBtn.addEventListener('click', logout);
   $('refreshBtn').addEventListener('click', loadRegistrations);
   $('searchBox').addEventListener('input', renderSales);
