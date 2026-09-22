@@ -51,6 +51,19 @@ module.exports = async function handler(req, res) {
   #afiliasi .badai-affiliate-edit-code{font-size:10px!important;font-weight:600!important}
   #afiliasi .stats .stat b{font-size:15px!important;font-weight:700!important;line-height:1.15!important}
   #afiliasi .stats .stat span{font-size:10.5px!important;font-weight:500!important;line-height:1.3!important}
+  #afiliasi .badai-affiliate-payout{
+    margin-top:8px!important;
+    min-height:32px!important;
+    height:32px!important;
+    padding:0 12px!important;
+    border-radius:8px!important;
+    background:#25D366!important;
+    color:#07170d!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:9.5px!important;
+    font-weight:700!important;
+    text-decoration:none!important;
+  }
   #afiliasi .affiliate-member-heading>div>span{font-size:8.5px!important;font-weight:700!important}
   #afiliasi .affiliate-member-heading h2{font-size:20px!important;font-weight:700!important;line-height:1.08!important}
   #afiliasi .affiliate-member-heading p{font-size:10px!important;font-weight:500!important;line-height:1.35!important}
