@@ -8,6 +8,8 @@ module.exports = async function handler(req, res) {
 
     let html = await source.text();
 
+    const flaticonUicons = '<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css">';
+
     const headerStyle = String.raw`
 <style id="badai-member-header-style">
   .hero{display:none!important}
@@ -61,23 +63,11 @@ module.exports = async function handler(req, res) {
   .footer .label{
     color:inherit!important;
   }
-  .footer .emoji .badai-nav-icon{
+  .footer .emoji .fi{
     display:block;
-    width:17px;
-    height:17px;
-    object-fit:contain;
-  }
-
-  .flaticon-credit{
-    margin:8px 0 0;
-    text-align:center;
-    font:600 7px "Nunito",Arial,sans-serif;
-    line-height:1.3;
-    opacity:.42;
-  }
-  .flaticon-credit a{
-    color:#aaa;
-    text-decoration:none;
+    font-size:17px;
+    line-height:1;
+    color:currentColor;
   }
 
   .badai-member-header{
@@ -142,25 +132,17 @@ document.addEventListener('DOMContentLoaded', function(){
       var button = label.closest('button');
       var emoji = button ? button.querySelector('.emoji') : null;
       if(emoji){
-        emoji.innerHTML = '<img class="badai-nav-icon" src="https://cdn-icons-png.flaticon.com/512/10905/10905175.png" alt="" aria-hidden="true">';
+        emoji.innerHTML = '<i class="fi fi-sr-circle-1" aria-hidden="true"></i>';
       }
     }
 
     if(text === 'kelas') label.textContent = 'ILMU';
     if(text === 'jalur untung') label.textContent = 'BONUS';
   });
-
-  if(hero && !document.getElementById('flaticonCredit')){
-    var credit = document.createElement('div');
-    credit.id = 'flaticonCredit';
-    credit.className = 'flaticon-credit';
-    credit.innerHTML = '<a href="https://www.flaticon.com/free-icons/htc-one" title="htc one icons" target="_blank" rel="noopener noreferrer">Htc one icons created by iconographics - Flaticon</a>';
-    hero.appendChild(credit);
-  }
 });
 </script>`;
 
-    html = html.replace('</head>', headerStyle + '\n</head>');
+    html = html.replace('</head>', flaticonUicons + '\n' + headerStyle + '\n</head>');
     html = html.replace('</body>', memberEnhancement + '\n</body>');
 
     if (html.includes('<div class="app">')) {
