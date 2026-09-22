@@ -23,21 +23,17 @@ module.exports = async function handler(req, res) {
 
     body = body.replace(
       `$sp('socialProofTarget').value = s.target || 'both';`,
-      `$sp('socialProofTarget').value = s.target || 'both';
-      if($sp('socialProofAudienceMode')) $sp('socialProofAudienceMode').value = s.audience_mode || 'paid';`
+      `$sp('socialProofTarget').value = s.target || 'both';\n      if($sp('socialProofAudienceMode')) $sp('socialProofAudienceMode').value = s.audience_mode || 'paid';`
     );
 
     body = body.replace(
       `p_max_items:20`,
-      `p_max_items:20,
-      p_audience_mode:el('socialProofAudienceMode')?.value || 'paid'`
+      `p_max_items:20,\n      p_audience_mode:el('socialProofAudienceMode')?.value || 'paid'`
     );
 
     body = body.replace(
       `if($sp('socialProofPreviewTime')) $sp('socialProofPreviewTime').textContent = 'Contoh tampilan • data pembeli nyata';`,
-      `if($sp('socialProofPreviewTime')) $sp('socialProofPreviewTime').textContent = ($sp('socialProofAudienceMode')?.value === 'registrations')
-      ? 'Contoh • semua pendaftar, lunas maupun belum lunas'
-      : 'Contoh • pembelian terverifikasi';`
+      `if($sp('socialProofPreviewTime')) $sp('socialProofPreviewTime').textContent = ($sp('socialProofAudienceMode')?.value === 'registrations')\n      ? 'Contoh • semua pendaftar, lunas maupun belum lunas'\n      : 'Contoh • pembelian terverifikasi';`
     );
 
     body = body.replaceAll(
@@ -56,14 +52,13 @@ module.exports = async function handler(req, res) {
 
     const field = document.createElement('div');
     field.className = 'manage-field';
-    field.innerHTML = `
-      <label>Data Social Proof</label>
-      <select id="socialProofAudienceMode">
-        <option value="registrations">Semua pendaftar — sudah / belum bayar</option>
-        <option value="paid">Pembeli lunas saja</option>
-      </select>
-      <div class="price-plan-note">Landing Page otomatis mengikuti pilihan ini.</div>
-    `;
+    field.innerHTML =
+      '<label>Data Social Proof</label>' +
+      '<select id="socialProofAudienceMode">' +
+        '<option value="registrations">Semua pendaftar — sudah / belum bayar</option>' +
+        '<option value="paid">Pembeli lunas saja</option>' +
+      '</select>' +
+      '<div class="price-plan-note">Landing Page otomatis mengikuti pilihan ini.</div>';
     targetField.insertAdjacentElement('afterend', field);
 
     const select = document.getElementById('socialProofAudienceMode');
