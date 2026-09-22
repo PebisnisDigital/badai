@@ -1460,65 +1460,8 @@ h2{font-weight:900}
 
 
 /* MEMBER TESTIMONIAL — 3D CIRCULAR CAROUSEL */
-.member-testimonials{
-  overflow:hidden;
-}
 .member-testimonials .container{
   position:relative;
-}
-.member-testi-head{
-  text-align:center;
-  max-width:720px;
-  margin:0 auto 24px;
-}
-.member-testi-head h2{
-  margin-bottom:10px;
-}
-.member-testi-head p{
-  margin:0;
-  color:#aaa;
-  font-family:"Nunito",Arial,sans-serif;
-  font-size:14px;
-  line-height:1.7;
-}
-.member-testi-stage{
-  position:relative;
-  height:520px;
-  perspective:1300px;
-  margin-top:12px;
-  overflow:hidden;
-}
-.member-testi-card{
-  position:absolute;
-  top:0;
-  left:50%;
-  width:min(86vw,330px);
-  min-height:460px;
-  padding:14px;
-  border-radius:24px;
-  background:linear-gradient(180deg,#111,#0b0b0b);
-  border:1px solid #292129;
-  box-shadow:0 22px 50px rgba(0,0,0,.35);
-  transform-style:preserve-3d;
-  transition:transform .75s cubic-bezier(.22,.7,.23,1), opacity .6s ease, filter .6s ease;
-  will-change:transform,opacity;
-}
-.member-testi-photo{
-  width:100%;
-  aspect-ratio:1/1;
-  border-radius:18px;
-  overflow:hidden;
-  position:relative;
-  background:
-    radial-gradient(circle at 70% 25%,rgba(255,79,163,.18),transparent 24%),
-    linear-gradient(145deg,#1a1a1a,#0c0c0c);
-  border:1px solid #2c2c2c;
-}
-.member-testi-photo img{
-  width:100%;
-  height:100%;
-  display:block;
-  object-fit:cover;
 }
 .member-testi-photo .photo-placeholder{
   position:absolute;
@@ -1540,36 +1483,6 @@ h2{font-weight:900}
   font-family:"Nunito",Arial,sans-serif;
   font-size:11px;
   font-weight:600;
-}
-.member-testi-overlay{
-  position:absolute;
-  left:0; right:0; bottom:0;
-  padding:44px 14px 14px;
-  background:linear-gradient(to top,rgba(0,0,0,.92),rgba(0,0,0,0));
-}
-.member-testi-name{
-  display:block;
-  color:#fff;
-  font-family:"Raleway",Arial,sans-serif;
-  font-size:18px;
-  font-weight:900;
-  line-height:1.1;
-}
-.member-testi-job{
-  display:block;
-  margin-top:3px;
-  color:#ff8fc4;
-  font-family:"Nunito",Arial,sans-serif;
-  font-size:12px;
-  font-weight:700;
-}
-.member-testi-quote{
-  padding:16px 5px 4px;
-  color:#cfcfcf;
-  font-family:"Nunito",Arial,sans-serif;
-  font-size:13px;
-  line-height:1.65;
-  text-align:center;
 }
 .member-testi-quote::before{
   content:"“";
@@ -1616,22 +1529,7 @@ h2{font-weight:900}
   opacity:0;
   transform:translateX(-50%) translateZ(-420px) scale(.55);
 }
-.member-testi-tip{
-  text-align:center;
-  color:#838383;
-  font-family:"Nunito",Arial,sans-serif;
-  font-size:11px;
-  margin-top:8px;
-}
 @media(max-width:520px){
-  .member-testi-stage{height:475px}
-  .member-testi-card{
-    width:min(82vw,300px);
-    min-height:425px;
-    padding:12px;
-  }
-  .member-testi-name{font-size:16px}
-  .member-testi-quote{font-size:12px}
   .member-testi-card.t-left1{
     transform:translateX(-111%) translateZ(-110px) rotateY(34deg) scale(.82);
   }
@@ -2822,140 +2720,7 @@ body.register-modal-open{
     </div>
 </div>
 </section>
-<section class="member-testimonials">
-<div class="container">
-<div class="member-testi-head">
-<h2>Cerita mereka yang sudah <span class="pink">belajar &amp; berkembang.</span></h2>
-<p>
-        Kartu ini disiapkan untuk foto member, nama, profesi, dan testimoni asli.
-        Nanti tinggal ganti placeholder satu per satu tanpa mengubah animasinya.
-      </p>
-</div>
-<div class="member-testi-stage" id="memberTestiStage">
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Rina Puspitasari" loading="lazy" src="https://ulva.my.id/uploads/1789956361_9678e82f3e1c83f2511d.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Rina Puspitasari</span>
-<span class="member-testi-job">Pemilik usaha frozen food, Yogyakarta</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Awalnya saya pikir bikin video pakai AI itu rumit dan hanya untuk orang yang jago editing. Setelah belajar di Untung Lewat Video AI, ternyata saya jadi paham cara membuat video promosi dengan lebih cepat. Sekarang saya bisa bikin konten produk sendiri tanpa harus bingung mulai dari mana.
-      </div>
-</article>
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Dimas Prakoso" loading="lazy" src="https://ulva.my.id/uploads/1789956418_86c22f8d30cc51e9debd.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Dimas Prakoso</span>
-<span class="member-testi-job">Freelancer desain konten, Bandung</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Saya sudah sering pakai AI untuk bantu kerja, tapi baru di kelas ini saya merasa paham cara memanfaatkan AI khusus untuk video. Penjelasannya praktis dan tidak muter-muter. Yang paling saya suka, materinya langsung bikin saya kepikiran peluang jasa baru untuk klien.
-      </div>
-</article>
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Siti Aminah" loading="lazy" src="https://ulva.my.id/uploads/1789956465_7edc0ca2a4d173138089.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Siti Aminah</span>
-<span class="member-testi-job">Ibu rumah tangga sekaligus reseller, Solo</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Saya bukan orang yang terbiasa dengan teknologi, jadi awalnya sempat takut tidak bisa mengikuti. Ternyata materinya enak diikuti dan dijelaskan bertahap. Sekarang saya jadi lebih percaya diri untuk membuat video promosi sendiri buat jualan saya.
-      </div>
-</article>
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Andri Kurniawan" loading="lazy" src="https://ulva.my.id/uploads/1789956499_220aa70bc6028caad188.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Andri Kurniawan</span>
-<span class="member-testi-job">Pemilik toko online aksesoris, Bekasi</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Selama ini saya sering kesulitan bikin konten video karena tidak punya cukup bahan dan ide. Setelah ikut Untung Lewat Video AI, saya jadi tahu bagaimana mengubah ide sederhana menjadi video promosi yang menarik. Ini sangat membantu untuk jualan online.
-      </div>
-</article>
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Maya Lestari" loading="lazy" src="https://ulva.my.id/uploads/1789956533_cc96f7aab421d87added.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Maya Lestari</span>
-<span class="member-testi-job">Agen properti, Surabaya</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Yang saya suka dari kelas ini bukan cuma soal tools AI-nya, tapi cara berpikirnya juga dibuka. Saya jadi lebih mudah membayangkan konsep video untuk promosi properti maupun personal branding. Sangat berguna untuk pekerjaan saya sehari-hari.
-      </div>
-</article>
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Fajar Maulana" loading="lazy" src="https://ulva.my.id/uploads/1789956571_8cc840add2309af2b57b.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Fajar Maulana</span>
-<span class="member-testi-job">Karyawan swasta, Tangerang</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Saya ikut kelas ini karena penasaran apakah AI video benar-benar bisa dipakai orang biasa. Ternyata bisa, asal tahu alurnya. Setelah belajar di sini, saya jadi punya gambaran jelas bagaimana mulai membuat video AI dan bahkan kepikiran menjadikannya sebagai skill tambahan.
-      </div>
-</article>
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Nadia Safitri" loading="lazy" src="https://ulva.my.id/uploads/1789956605_ede903245d32cc91df2f.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Nadia Safitri</span>
-<span class="member-testi-job">Content creator pemula, Malang</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Saya sering punya ide, tapi bingung bagaimana mewujudkannya jadi video yang menarik. Di kelas ini saya belajar bahwa AI bisa sangat membantu dari tahap ide sampai visual. Sekarang saya merasa proses bikin konten jadi lebih ringan dan lebih seru.
-      </div>
-</article>
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Arif Nugroho" loading="lazy" src="https://ulva.my.id/uploads/1789956638_4ce233a97c6d7fde3c23.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Arif Nugroho</span>
-<span class="member-testi-job">Pemilik usaha laundry, Semarang</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Jujur saya awalnya merasa usaha laundry tidak terlalu butuh teknologi seperti ini. Tapi setelah ikut kelasnya, saya sadar video AI bisa dipakai untuk promosi dengan cara yang lebih menarik dan hemat waktu. Saya jadi punya sudut pandang baru untuk mengembangkan usaha.
-      </div>
-</article>
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Putri Amelia" loading="lazy" src="https://ulva.my.id/uploads/1789956672_39cac71f845fce61236d.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Putri Amelia</span>
-<span class="member-testi-job">Reseller produk kecantikan, Jakarta</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Biasanya saya fokus di foto dan caption produk. Setelah belajar di Untung Lewat Video AI, saya jadi paham bagaimana video bisa dibuat lebih cepat dengan bantuan AI. Yang paling saya suka, saya juga jadi belajar cara membuat prompt yang hasilnya lebih sesuai keinginan.
-      </div>
-</article>
-<article class="member-testi-card">
-<div class="member-testi-photo">
-<img alt="Yusuf Hidayat" loading="lazy" src="https://ulva.my.id/uploads/1789956699_7226dceab4709ec16b6a.png"/>
-<div class="member-testi-overlay">
-<span class="member-testi-name">Yusuf Hidayat</span>
-<span class="member-testi-job">Digital marketer, Bogor</span>
-</div>
-</div>
-<div class="member-testi-quote">
-        Saya sudah cukup akrab dengan dunia digital, tapi AI video punya ritme dan cara kerja yang berbeda. Kelas ini membantu saya memahami alur kerjanya dengan lebih jelas. Jadi bukan cuma tahu tools-nya, tapi tahu bagaimana memanfaatkannya untuk kebutuhan konten dan pemasaran.
-      </div>
-</article>
-</div>
-<div class="member-testi-tip">Kartu berputar otomatis dengan efek melingkar 3D.</div>
-</div>
-</section>
+
 <section>
 <div class="container">
 <div class="decision-wrap">
