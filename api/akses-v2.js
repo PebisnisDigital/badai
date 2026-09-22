@@ -30,11 +30,13 @@ module.exports = async function handler(req, res) {
   }
   .badai-member-help{
     flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;
-    min-height:40px;padding:0 13px;border-radius:999px;
-    background:#ff4fa3;color:#090909;text-decoration:none;
+    min-height:40px;padding:0 14px;border-radius:999px;
+    background:#25D366;color:#07170d;text-decoration:none;
     font-family:"Raleway",Arial,sans-serif;font-size:10px;font-weight:900;
-    letter-spacing:.02em;box-shadow:0 8px 24px rgba(255,79,163,.18);
+    letter-spacing:.02em;box-shadow:0 8px 24px rgba(37,211,102,.22);
+    border:1px solid rgba(255,255,255,.08);
   }
+  .badai-member-help:hover{filter:brightness(1.05)}
   .badai-member-help-icon{font-size:14px;line-height:1}
   @media(max-width:420px){
     .badai-member-header{padding:9px 10px;min-height:58px}
@@ -50,7 +52,7 @@ module.exports = async function handler(req, res) {
   </a>
   <a class="badai-member-help" href="https://wa.me/6281237523626?text=Halo%20Admin%20BADAI%2C%20saya%20butuh%20bantuan%20di%20Member%20Area." target="_blank" rel="noopener noreferrer">
     <span class="badai-member-help-icon">💬</span>
-    <span>CHAT ADMIN</span>
+    <span>HUBUNGI ADMIN</span>
   </a>
 </header>`;
 
