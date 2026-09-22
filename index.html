@@ -28,11 +28,13 @@ section{padding:54px 0}.hero{
 .hero-bg-video{
   position:absolute;
   inset:0;
+  display:block !important;
   width:100%;
   height:100%;
   object-fit:cover;
-  object-position:center;
+  object-position:center center;
   z-index:0;
+  opacity:.82;
   pointer-events:none;
 }
 .hero::before{
@@ -41,8 +43,8 @@ section{padding:54px 0}.hero{
   inset:0;
   z-index:1;
   background:
-    linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.58) 58%,rgba(0,0,0,.82) 100%),
-    radial-gradient(circle at 72% 24%,rgba(255,79,163,.14),transparent 34%);
+    linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.40) 58%,rgba(0,0,0,.68) 100%),
+    radial-gradient(circle at 72% 24%,rgba(255,79,163,.10),transparent 34%);
   pointer-events:none;
 }
 .hero::after{
@@ -2516,9 +2518,6 @@ body.register-modal-open{
 }
 
 
-@media (prefers-reduced-motion: reduce){
-  .hero-bg-video{display:none}
-}
 
 </style>
 <link rel="icon" type="image/webp" href="https://drive.google.com/thumbnail?id=1ud17jlGPc9akPy7mTPZNbYtw0XOJ8BCZ&sz=w256">
@@ -2531,8 +2530,17 @@ body.register-modal-open{
 </a><a class="nav-btn" href="#pricing">GABUNG BADAI</a></div></header>
 <main>
 <section class="hero">
-<video class="hero-bg-video" id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-hidden="true">
-<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_104036_bd6924f6-3c8e-417e-8465-6d03c8c2e9e6.mp4" type="video/mp4">
+<video
+  class="hero-bg-video"
+  id="heroBgVideo"
+  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_104036_bd6924f6-3c8e-417e-8465-6d03c8c2e9e6.mp4?utm_source=chatgpt.com"
+  autoplay
+  muted
+  loop
+  playsinline
+  webkit-playsinline
+  preload="auto"
+  aria-hidden="true">
 </video>
 <div class="container">
 <h1>Untung Lewat<br/>Video AI<br/><span class="pink">yang Lagi Viral.</span></h1>
@@ -3929,20 +3937,40 @@ Mohon dibantu proses pendaftarannya ya.`
   function ensureHeroVideoPlays(){
     const video = document.getElementById('heroBgVideo');
     if(!video) return;
+
     video.muted = true;
-    const playPromise = video.play();
-    if(playPromise && typeof playPromise.catch === 'function'){
-      playPromise.catch(() => {});
+    video.defaultMuted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+
+    const tryPlay = () => {
+      const p = video.play();
+      if(p && typeof p.catch === 'function'){
+        p.catch(() => {});
+      }
+    };
+
+    if(video.readyState >= 2){
+      tryPlay();
+    }else{
+      video.addEventListener('canplay', tryPlay, {once:true});
+      video.load();
     }
   }
 
+  window.addEventListener('DOMContentLoaded', ensureHeroVideoPlays);
   window.addEventListener('load', ensureHeroVideoPlays);
   window.addEventListener('focus', ensureHeroVideoPlays);
+
   document.addEventListener('visibilitychange', () => {
     if(document.visibilityState === 'visible'){
       ensureHeroVideoPlays();
     }
   });
+
+  document.addEventListener('pointerdown', ensureHeroVideoPlays, {once:true});
+  document.addEventListener('touchstart', ensureHeroVideoPlays, {once:true});
 
   function normalizeWhatsapp(value){
     let digits = String(value || '').replace(/\D/g, '');
