@@ -18,7 +18,46 @@ a{color:inherit;text-decoration:none}.container{width:min(var(--max),calc(100% -
 .nav-inner{height:62px;display:flex;align-items:center;justify-content:space-between}
 .brand{font-weight:900;letter-spacing:-.04em;font-size:22px}.brand span{color:var(--pink)}
 .nav-btn{background:var(--pink);color:#080808;padding:10px 14px;border-radius:12px;font-weight:800;font-size:13px}
-section{padding:54px 0}.hero{padding:68px 0 46px}
+section{padding:54px 0}.hero{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  padding:68px 0 46px;
+  background:#050505;
+}
+.hero-bg-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  z-index:-3;
+  pointer-events:none;
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.76) 58%,rgba(0,0,0,.94) 100%),
+    radial-gradient(circle at 72% 24%,rgba(255,79,163,.16),transparent 34%);
+  pointer-events:none;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0;
+  height:110px;
+  z-index:-1;
+  background:linear-gradient(180deg,transparent,#070707);
+  pointer-events:none;
+}
+.hero > .container{
+  position:relative;
+  z-index:1;
+}
 .badge{display:inline-block;color:var(--pink2);border:1px solid #50203a;background:#160b11;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 h1,h2,h3,p{margin-top:0}h1{font-size:clamp(40px,9vw,68px);line-height:.95;letter-spacing:-.055em;margin:18px 0}h1 .pink,h2 .pink{color:var(--pink)}
 .hero-copy{font-size:18px;color:#d5d5d5;max-width:600px}.hero-copy strong{color:#fff}
@@ -2476,6 +2515,11 @@ body.register-modal-open{
   50%{transform:scale(1.035);opacity:.78}
 }
 
+
+@media (prefers-reduced-motion: reduce){
+  .hero-bg-video{display:none}
+}
+
 </style>
 <link rel="icon" type="image/webp" href="https://drive.google.com/thumbnail?id=1ud17jlGPc9akPy7mTPZNbYtw0XOJ8BCZ&sz=w256">
 <link rel="shortcut icon" type="image/webp" href="https://drive.google.com/thumbnail?id=1ud17jlGPc9akPy7mTPZNbYtw0XOJ8BCZ&sz=w256">
@@ -2487,6 +2531,9 @@ body.register-modal-open{
 </a><a class="nav-btn" href="#pricing">GABUNG BADAI</a></div></header>
 <main>
 <section class="hero">
+<video class="hero-bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_104036_bd6924f6-3c8e-417e-8465-6d03c8c2e9e6.mp4?utm_source=chatgpt.com" type="video/mp4">
+</video>
 <div class="container">
 <h1>Untung Lewat<br/>Video AI<br/><span class="pink">yang Lagi Viral.</span></h1>
 <p class="hero-copy">BADAI bantu kamu belajar bikin Video AI yang <strong>seru, menarik, dan bisa dipakai untuk konten, promosi, jasa, sampai peluang cuan</strong>. Tinggal tonton, ikuti langkahnya, lalu bikin versimu sendiri.</p>
