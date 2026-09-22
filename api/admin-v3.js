@@ -32,6 +32,32 @@ module.exports = async function handler(req, res) {
 
         const compactStyle = String.raw`
 <style id="badai-affiliate-super-compact-v2">
+  #afiliasi,
+  #afiliasi *{
+    font-family:"Nunito",Arial,sans-serif!important;
+  }
+  #afiliasi{font-weight:600!important}
+  #afiliasi .center .title{font-size:26px!important;font-weight:700!important;line-height:1.05!important}
+  #afiliasi .center .subtitle{font-size:10.5px!important;font-weight:500!important;line-height:1.35!important;margin:4px 0 8px!important}
+  #afiliasi .affiliate-pro-pill{font-size:7.5px!important;font-weight:700!important}
+  #afiliasi .badai-affiliate-multilink-box>h2{font-size:18px!important;font-weight:700!important;line-height:1.1!important}
+  #afiliasi .badai-affiliate-link-intro{font-size:9.5px!important;font-weight:500!important;line-height:1.35!important}
+  #afiliasi .badai-affiliate-link-badge{font-size:7.2px!important;font-weight:700!important}
+  #afiliasi .badai-affiliate-link-card h3{font-size:11.5px!important;font-weight:600!important;line-height:1.12!important}
+  #afiliasi .badai-affiliate-copy,
+  #afiliasi .badai-affiliate-open{font-size:8px!important;font-weight:700!important}
+  #afiliasi .badai-affiliate-code-line b{font-size:16px!important;font-weight:600!important}
+  #afiliasi .badai-affiliate-code-line span{font-size:17px!important;font-weight:600!important}
+  #afiliasi .badai-affiliate-edit-code{font-size:10px!important;font-weight:600!important}
+  #afiliasi .stats .stat b{font-size:15px!important;font-weight:700!important;line-height:1.15!important}
+  #afiliasi .stats .stat span{font-size:10.5px!important;font-weight:500!important;line-height:1.3!important}
+  #afiliasi .affiliate-member-heading>div>span{font-size:8.5px!important;font-weight:700!important}
+  #afiliasi .affiliate-member-heading h2{font-size:20px!important;font-weight:700!important;line-height:1.08!important}
+  #afiliasi .affiliate-member-heading p{font-size:10px!important;font-weight:500!important;line-height:1.35!important}
+  #afiliasi .affiliate-rate{font-size:8px!important;font-weight:700!important}
+  #afiliasi .affiliate-empty,
+  #afiliasi .badai-affiliate-loading,
+  #afiliasi .badai-affiliate-empty{font-size:9.5px!important;font-weight:500!important;line-height:1.35!important}
   #afiliasi .center{margin-bottom:5px!important}
   #afiliasi .center .title{font-size:20px!important;line-height:1!important}
   #afiliasi .center .subtitle{font-size:8px!important;margin:3px 0 6px!important}
