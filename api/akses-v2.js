@@ -75,6 +75,113 @@ module.exports = async function handler(req, res) {
     color:currentColor;
   }
 
+  /* Affiliasi selalu terlihat. Paket Pemula dibuat terkunci. */
+  .footer #affiliateNavButton.is-affiliate-locked{
+    position:relative;
+    opacity:.62;
+  }
+  .footer #affiliateNavButton.is-affiliate-locked::after{
+    content:"🔒";
+    position:absolute;
+    top:5px;
+    right:calc(50% - 22px);
+    font-size:8px;
+    line-height:1;
+    filter:saturate(.8);
+  }
+  .footer #affiliateNavButton.is-affiliate-locked:hover{
+    opacity:1;
+    background:#ff4fa3!important;
+    color:#111!important;
+  }
+
+  .badai-upgrade-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999999;
+    padding:18px;
+    background:rgba(0,0,0,.76);
+    align-items:center;
+    justify-content:center;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+  }
+  .badai-upgrade-modal.open{display:flex}
+  .badai-upgrade-card{
+    width:min(100%,420px);
+    border-radius:22px;
+    border:1px solid #303030;
+    background:#111;
+    padding:21px;
+    color:#fff;
+    box-shadow:0 28px 80px rgba(0,0,0,.55);
+  }
+  .badai-upgrade-lock{
+    width:48px;
+    height:48px;
+    border-radius:15px;
+    display:grid;
+    place-items:center;
+    margin-bottom:13px;
+    background:#23101a;
+    border:1px solid #632c4b;
+    font-size:22px;
+  }
+  .badai-upgrade-kicker{
+    color:#ff8fc5;
+    font:700 9px "Nunito",Arial,sans-serif;
+    letter-spacing:.06em;
+  }
+  .badai-upgrade-card h2{
+    margin:5px 0 8px;
+    font:800 24px "Nunito",Arial,sans-serif;
+    line-height:1.08;
+  }
+  .badai-upgrade-card p{
+    margin:0;
+    color:#aaa;
+    font:500 12px "Nunito",Arial,sans-serif;
+    line-height:1.55;
+  }
+  .badai-upgrade-benefit{
+    margin:14px 0 0;
+    padding:12px 13px;
+    border-radius:14px;
+    background:#0a0a0a;
+    border:1px solid #252525;
+    color:#ddd;
+    font:500 11px "Nunito",Arial,sans-serif;
+    line-height:1.55;
+  }
+  .badai-upgrade-actions{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:15px;
+  }
+  .badai-upgrade-actions a,
+  .badai-upgrade-actions button{
+    min-height:44px;
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font:700 11px "Nunito",Arial,sans-serif;
+    cursor:pointer;
+  }
+  .badai-upgrade-actions a{
+    border:0;
+    background:#25D366;
+    color:#07170d;
+  }
+  .badai-upgrade-actions button{
+    border:1px solid #303030;
+    background:#171717;
+    color:#ddd;
+  }
+
   .badai-member-header{
     position:sticky;top:0;z-index:80;
     width:100%;
@@ -152,6 +259,102 @@ document.addEventListener('DOMContentLoaded', function(){
       emoji.innerHTML = '<i class="' + menu.icon + '" aria-hidden="true"></i>';
     }
   });
+
+  function ensureUpgradeModal(){
+    var existing = document.getElementById('badaiAffiliateUpgradeModal');
+    if(existing) return existing;
+
+    var modal = document.createElement('div');
+    modal.id = 'badaiAffiliateUpgradeModal';
+    modal.className = 'badai-upgrade-modal';
+    modal.setAttribute('aria-hidden','true');
+    modal.innerHTML = `
+      <div class="badai-upgrade-card" role="dialog" aria-modal="true" aria-labelledby="badaiUpgradeTitle">
+        <div class="badai-upgrade-lock">🔒</div>
+        <div class="badai-upgrade-kicker">FITUR PAKET UNTUNG</div>
+        <h2 id="badaiUpgradeTitle">Affiliasi masih terkunci</h2>
+        <p>Menu Affiliasi hanya terbuka untuk member Paket Untung. Upgrade paket supaya kamu bisa mulai memakai program affiliasi BADAI.</p>
+        <div class="badai-upgrade-benefit">Dapat link affiliasi pribadi, bahan promosi dari admin, data penjualan, dan komisi dari penjualan yang valid.</div>
+        <div class="badai-upgrade-actions">
+          <a href="https://wa.me/6281237523626?text=Halo%20Admin%20BADAI%2C%20saya%20member%20Paket%20Pemula%20dan%20ingin%20upgrade%20ke%20Paket%20Untung%20agar%20fitur%20Affiliasi%20terbuka." target="_blank" rel="noopener noreferrer">UPGRADE PAKET UNTUNG</a>
+          <button type="button" data-close-upgrade>NANTI DULU</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function(e){
+      if(e.target === modal || e.target.closest('[data-close-upgrade]')){
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden','true');
+      }
+    });
+
+    return modal;
+  }
+
+  function openUpgradeModal(){
+    var modal = ensureUpgradeModal();
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+  }
+
+  function isProPlan(){
+    var planName = document.getElementById('memberPlanName');
+    var text = String(planName ? planName.textContent : '').trim().toUpperCase();
+    return text.indexOf('UNTUNG') !== -1;
+  }
+
+  var syncBusy = false;
+  function syncAffiliateAccess(){
+    if(syncBusy) return;
+    syncBusy = true;
+
+    try{
+      var nav = document.getElementById('affiliateNavButton');
+      var footer = document.querySelector('.footer');
+      if(!nav) return;
+
+      if(nav.style.display === 'none') nav.style.display = '';
+      if(footer && footer.style.getPropertyValue('--member-nav-count') !== '5'){
+        footer.style.setProperty('--member-nav-count','5');
+      }
+
+      var locked = !isProPlan();
+      nav.classList.toggle('is-affiliate-locked', locked);
+      nav.setAttribute('aria-disabled', locked ? 'true' : 'false');
+      nav.dataset.affiliateLocked = locked ? '1' : '0';
+      nav.title = locked ? 'Upgrade ke Paket Untung untuk membuka Affiliasi' : '';
+    }finally{
+      syncBusy = false;
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    var nav = e.target.closest ? e.target.closest('#affiliateNavButton') : null;
+    if(!nav || nav.dataset.affiliateLocked !== '1') return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    if(typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    openUpgradeModal();
+  }, true);
+
+  var planName = document.getElementById('memberPlanName');
+  var affiliateNav = document.getElementById('affiliateNavButton');
+  var footer = document.querySelector('.footer');
+
+  var observer = new MutationObserver(function(){
+    window.requestAnimationFrame(syncAffiliateAccess);
+  });
+
+  if(planName) observer.observe(planName,{childList:true,subtree:true,characterData:true});
+  if(affiliateNav) observer.observe(affiliateNav,{attributes:true,attributeFilter:['style','class']});
+  if(footer) observer.observe(footer,{attributes:true,attributeFilter:['style']});
+
+  syncAffiliateAccess();
+  setTimeout(syncAffiliateAccess,250);
+  setTimeout(syncAffiliateAccess,900);
 });
 </script>`;
 
