@@ -8,7 +8,7 @@ module.exports = async function handler(req, res) {
 
     let html = await source.text();
 
-    const flaticonUicons = '<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css">';
+    const flaticonUicons = '<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">';
 
     const headerStyle = String.raw`
 <style id="badai-member-header-style">
@@ -125,19 +125,26 @@ document.addEventListener('DOMContentLoaded', function(){
     hero.appendChild(video);
   }
 
+  var footerMenus = [
+    {match:['cara belajar','aturan'], label:'Aturan', icon:'fi fi-rr-square-1'},
+    {match:['kelas','ilmu'], label:'Ilmu', icon:'fi fi-rr-square-2'},
+    {match:['jalur untung','bonus'], label:'Bonus', icon:'fi fi-rr-square-3'},
+    {match:['afiliasi','affiliasi'], label:'Affiliasi', icon:'fi fi-rr-square-4'},
+    {match:['akun'], label:'Akun', icon:'fi fi-rr-square-5'}
+  ];
+
   document.querySelectorAll('.footer .label').forEach(function(label){
     var text = String(label.textContent || '').trim().toLowerCase();
+    var menu = footerMenus.find(function(item){ return item.match.indexOf(text) !== -1; });
+    if(!menu) return;
 
-    if(text === 'cara belajar'){
-      var button = label.closest('button');
-      var emoji = button ? button.querySelector('.emoji') : null;
-      if(emoji){
-        emoji.innerHTML = '<i class="fi fi-sr-circle-1" aria-hidden="true"></i>';
-      }
+    label.textContent = menu.label;
+
+    var button = label.closest('button');
+    var emoji = button ? button.querySelector('.emoji') : null;
+    if(emoji){
+      emoji.innerHTML = '<i class="' + menu.icon + '" aria-hidden="true"></i>';
     }
-
-    if(text === 'kelas') label.textContent = 'ILMU';
-    if(text === 'jalur untung') label.textContent = 'BONUS';
   });
 });
 </script>`;
