@@ -117,8 +117,10 @@ module.exports = async function handler(req, res) {
     justify-content:center!important;
   }
   #afiliasi .badai-affiliate-edit-wrap{
-    margin-top:5px!important;
-    padding-top:5px!important;
+    margin:0 0 6px!important;
+    padding:0 0 6px!important;
+    border-top:0!important;
+    border-bottom:1px solid #242424!important;
   }
   #afiliasi .badai-affiliate-edit-code{
     min-height:27px!important;
