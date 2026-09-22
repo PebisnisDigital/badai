@@ -62,6 +62,11 @@ module.exports = async function handler(req, res) {
   }
   .footer .label{
     color:inherit!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:11.2px!important;
+    font-weight:900!important;
+    line-height:1.05!important;
+    letter-spacing:-.01em!important;
   }
   .footer .emoji .fi{
     display:block;
@@ -102,6 +107,7 @@ module.exports = async function handler(req, res) {
     .badai-member-header-logo img{height:30px;max-width:174px}
     .badai-member-help{min-height:37px;padding:0 11px;font-size:9px}
     #carapakai .guide-hero .guide-video{margin-top:12px!important;border-radius:15px!important}
+    .footer .label{font-size:10.8px!important}
   }
 </style>`;
 
