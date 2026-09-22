@@ -14,11 +14,11 @@
     },
     {
       "src": "^/$",
-      "dest": "/api/landing-v5"
+      "dest": "/api/landing-v6"
     },
     {
       "src": "^/[^/]+/?$",
-      "dest": "/api/landing-v5"
+      "dest": "/api/landing-v6"
     },
     {
       "handle": "filesystem"
