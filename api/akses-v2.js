@@ -42,15 +42,15 @@ module.exports = async function handler(req, res) {
     padding-bottom:11px!important;
   }
 
-  /* Sticky footer member area: putih, teks hitam, active/hover pink */
+  /* Sticky footer menyatu dengan body hitam; active/hover tetap pink */
   .footer{
-    background:rgba(255,255,255,.98)!important;
-    border-top:1px solid #e7e7e7!important;
-    box-shadow:0 -8px 24px rgba(0,0,0,.08)!important;
+    background:rgba(0,0,0,.98)!important;
+    border-top:1px solid #1f1f1f!important;
+    box-shadow:0 -8px 24px rgba(0,0,0,.18)!important;
   }
   .footer button{
     background:transparent!important;
-    color:#111!important;
+    color:#fff!important;
   }
   .footer button:hover{
     background:#ff4fa3!important;
