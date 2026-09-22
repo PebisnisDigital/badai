@@ -41,7 +41,24 @@ module.exports = async function handler(req, res) {
       'Sumber data mengikuti pilihan <b>Data Social Proof</b>: semua pendaftar atau pembeli yang sudah lunas.'
     );
 
+    body = body.replace(
+      '<select id="managePlan">\n          <option value="newbie">Paket Pemula — Belajar AI + Update</option>',
+      '<select id="managePlan">\n          <option value="free">Paket Gratisan — Komunitas + KulWA</option>\n          <option value="newbie">Paket Pemula — Belajar AI + Update</option>'
+    );
+
+    body = body.replace(
+      `function planBadge(plan){\n    const value = plan === 'pro' ? 'PAKET UNTUNG' : 'PAKET PEMULA';\n    return '<span class="plan-badge ' + (plan === 'pro' ? 'pro' : 'newbie') + '">' + value + '</span>';\n  }`,
+      `function planBadge(plan){\n    let value = 'PAKET PEMULA';\n    let cls = 'newbie';\n    if(plan === 'free'){ value = 'PAKET GRATISAN'; cls = 'free'; }\n    else if(plan === 'pro'){ value = 'PAKET UNTUNG'; cls = 'pro'; }\n    return '<span class="plan-badge ' + cls + '">' + value + '</span>';\n  }`
+    );
+
     const audienceUi = String.raw`
+<style id="badai-free-member-admin-style">
+  .plan-badge.free{
+    background:#171717!important;
+    border:1px solid #3b3b3b!important;
+    color:#d7d7d7!important;
+  }
+</style>
 <script id="badai-social-proof-audience-ui">
 (function(){
   function ensureAudienceField(){
@@ -72,8 +89,22 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ensureAudienceField);
-  else ensureAudienceField();
+  function ensureFreePlanOption(){
+    const select = document.getElementById('managePlan');
+    if(!select || select.querySelector('option[value="free"]')) return;
+    const option = document.createElement('option');
+    option.value = 'free';
+    option.textContent = 'Paket Gratisan — Komunitas + KulWA';
+    select.insertBefore(option, select.firstChild);
+  }
+
+  function boot(){
+    ensureAudienceField();
+    ensureFreePlanOption();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
 </script>`;
 
