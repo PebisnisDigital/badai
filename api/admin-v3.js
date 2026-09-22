@@ -1,6 +1,10 @@
 const adminHandler = require('./admin-v2.js');
 const memberHandler = require('./akses-v2.js');
 
+let compactMemberCache = '';
+let compactMemberCacheAt = 0;
+const COMPACT_CACHE_MS = 5 * 60 * 1000;
+
 module.exports = async function handler(req, res) {
   try {
     const compactAffiliate = String(req?.query?.accesscompact || '') === '1';
@@ -8,85 +12,185 @@ module.exports = async function handler(req, res) {
     if (compactAffiliate) {
       let memberStatus = 200;
       const memberHeaders = {};
-      let memberBody = '';
+      let memberBody = compactMemberCache;
 
-      const memberCapture = {
-        setHeader(name, value){ memberHeaders[String(name).toLowerCase()] = value; return this; },
-        status(code){ memberStatus = code; return this; },
-        send(payload){ memberBody = payload == null ? '' : String(payload); return this; }
-      };
+      if (!memberBody || (Date.now() - compactMemberCacheAt) > COMPACT_CACHE_MS) {
+        const memberCapture = {
+          setHeader(name, value){ memberHeaders[String(name).toLowerCase()] = value; return this; },
+          status(code){ memberStatus = code; return this; },
+          send(payload){ memberBody = payload == null ? '' : String(payload); return this; }
+        };
 
-      await memberHandler(req, memberCapture);
+        await memberHandler(req, memberCapture);
 
-      const memberType = String(memberHeaders['content-type'] || '');
-      if (memberStatus >= 400 || !memberType.includes('text/html')) {
-        Object.entries(memberHeaders).forEach(([k,v]) => res.setHeader(k,v));
-        res.status(memberStatus).send(memberBody);
-        return;
-      }
+        const memberType = String(memberHeaders['content-type'] || '');
+        if (memberStatus >= 400 || !memberType.includes('text/html')) {
+          Object.entries(memberHeaders).forEach(([k,v]) => res.setHeader(k,v));
+          res.status(memberStatus).send(memberBody);
+          return;
+        }
 
-      const compactStyle = String.raw`
-<style id="badai-affiliate-compact-v1">
-  .badai-affiliate-multilink-box{padding:11px!important}
-  .badai-affiliate-multilink-box>h2{font-size:18px!important;line-height:1.08!important;margin:4px 0 2px!important}
-  .badai-affiliate-link-intro{margin:0 0 7px!important;font-size:8px!important;line-height:1.3!important;color:#858585!important}
-  .badai-affiliate-link-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;margin-top:6px!important}
-  .badai-affiliate-link-card{padding:8px!important;border-radius:11px!important;min-width:0!important}
-  .badai-affiliate-link-badge{min-height:17px!important;padding:0 5px!important;font-size:5.8px!important}
-  .badai-affiliate-link-card h3{margin:3px 0 1px!important;font-size:10.5px!important;line-height:1.12!important}
-  .badai-affiliate-link-card p{margin:0!important;font-size:7px!important;line-height:1.25!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-  .badai-affiliate-url{margin-top:5px!important;padding:5px 6px!important;border-radius:7px!important;font-size:6.5px!important}
-  .badai-affiliate-link-actions{display:flex!important;gap:4px!important;margin-top:5px!important}
-  .badai-affiliate-copy,.badai-affiliate-open{min-height:27px!important;border-radius:7px!important;font-size:7px!important}
-  .badai-affiliate-copy{flex:1!important;padding:0 7px!important}
-  .badai-affiliate-open{min-width:45px!important;padding:0 7px!important}
-  .badai-affiliate-edit-wrap{margin-top:6px!important;padding-top:6px!important}
-  .badai-affiliate-edit-code{min-height:29px!important;font-size:7px!important;border-radius:8px!important}
-  .badai-affiliate-loading,.badai-affiliate-empty{grid-column:1/-1!important;padding:9px!important;font-size:8px!important}
-  @media(max-width:520px){
-    .badai-affiliate-link-list{grid-template-columns:1fr!important;gap:5px!important}
-    .badai-affiliate-multilink-box{padding:9px!important}
-    .badai-affiliate-link-card{padding:7px 8px!important}
-    .badai-affiliate-link-card h3{font-size:10px!important}
-    .badai-affiliate-url{margin-top:4px!important}
-    .badai-affiliate-link-actions{margin-top:4px!important}
+        const compactStyle = String.raw`
+<style id="badai-affiliate-super-compact-v2">
+  #afiliasi .center{margin-bottom:5px!important}
+  #afiliasi .center .title{font-size:20px!important;line-height:1!important}
+  #afiliasi .center .subtitle{font-size:8px!important;margin:3px 0 6px!important}
+
+  #afiliasi .badai-affiliate-multilink-box{
+    padding:8px!important;
+    border-radius:13px!important;
+  }
+  #afiliasi .badai-affiliate-multilink-box>h2{
+    margin:2px 0!important;
+    font-size:14px!important;
+    line-height:1.05!important;
+  }
+  #afiliasi .badai-affiliate-link-intro{
+    margin:1px 0 5px!important;
+    font-size:7.5px!important;
+    line-height:1.2!important;
+    color:#818181!important;
+  }
+  #afiliasi .affiliate-pro-pill{
+    min-height:17px!important;
+    padding:0 6px!important;
+    margin-bottom:3px!important;
+    font-size:5.8px!important;
+  }
+  #afiliasi .badai-affiliate-link-list{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:4px!important;
+    margin-top:4px!important;
+  }
+  #afiliasi .badai-affiliate-link-card{
+    min-width:0!important;
+    min-height:42px!important;
+    padding:6px!important;
+    border-radius:9px!important;
+    display:grid!important;
+    grid-template-columns:auto minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:5px!important;
+  }
+  #afiliasi .badai-affiliate-link-card p,
+  #afiliasi .badai-affiliate-url{
+    display:none!important;
+  }
+  #afiliasi .badai-affiliate-link-badge{
+    min-height:17px!important;
+    padding:0 5px!important;
+    border-radius:999px!important;
+    font-size:5.4px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  #afiliasi .badai-affiliate-link-card h3{
+    margin:0!important;
+    min-width:0!important;
+    font-size:9.5px!important;
+    line-height:1.05!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  #afiliasi .badai-affiliate-link-actions{
+    display:flex!important;
+    align-items:center!important;
+    gap:3px!important;
+    margin:0!important;
+  }
+  #afiliasi .badai-affiliate-copy,
+  #afiliasi .badai-affiliate-open{
+    min-height:25px!important;
+    height:25px!important;
+    width:auto!important;
+    min-width:0!important;
+    padding:0 7px!important;
+    border-radius:7px!important;
+    font-size:6.2px!important;
+    line-height:1!important;
+  }
+  #afiliasi .badai-affiliate-open{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  #afiliasi .badai-affiliate-edit-wrap{
+    margin-top:5px!important;
+    padding-top:5px!important;
+  }
+  #afiliasi .badai-affiliate-edit-code{
+    min-height:27px!important;
+    height:27px!important;
+    border-radius:7px!important;
+    font-size:6.5px!important;
+  }
+  #afiliasi .badai-affiliate-loading,
+  #afiliasi .badai-affiliate-empty{
+    grid-column:1/-1!important;
+    padding:8px!important;
+    font-size:7.5px!important;
+  }
+
+  @media(max-width:560px){
+    #afiliasi .badai-affiliate-link-list{
+      grid-template-columns:1fr!important;
+      gap:3px!important;
+    }
+    #afiliasi .badai-affiliate-link-card{
+      min-height:39px!important;
+      padding:5px 6px!important;
+      grid-template-columns:72px minmax(0,1fr) auto!important;
+    }
+    #afiliasi .badai-affiliate-link-badge{font-size:5.2px!important}
+    #afiliasi .badai-affiliate-link-card h3{font-size:9px!important}
+    #afiliasi .badai-affiliate-copy,
+    #afiliasi .badai-affiliate-open{
+      min-height:24px!important;
+      height:24px!important;
+      padding:0 6px!important;
+      font-size:6px!important;
+    }
   }
 </style>`;
 
-      const compactScript = String.raw`
-<script id="badai-affiliate-compact-copy">
+        const compactScript = String.raw`
+<script id="badai-affiliate-super-compact-copy-v2">
 (function(){
   function compact(){
-    var intro=document.querySelector('.badai-affiliate-link-intro');
-    if(intro) intro.textContent='Pilih link sesuai cara jualanmu.';
-    var cards=document.querySelectorAll('.badai-affiliate-link-card');
-    var titles=['Link Utama','Masuk Gratis Dulu','Jual Paket Pemula','Jual Paket Untung'];
-    var descs=['Bebas pilih paket','Ajak masuk komunitas','Langsung ke Paket Pemula','Langsung ke Paket Untung'];
+    var intro=document.querySelector('#afiliasi .badai-affiliate-link-intro');
+    if(intro && intro.textContent !== 'Pilih link sesuai cara jualanmu.') intro.textContent='Pilih link sesuai cara jualanmu.';
+
+    var cards=document.querySelectorAll('#afiliasi .badai-affiliate-link-card');
+    var titles=['Link Utama','Gratisan','Pemula','Untung'];
     cards.forEach(function(card,i){
       var h=card.querySelector('h3');
-      var p=card.querySelector('p');
       var copy=card.querySelector('.badai-affiliate-copy');
-      if(h&&titles[i]) h.textContent=titles[i];
-      if(p&&descs[i]) p.textContent=descs[i];
-      if(copy&&copy.textContent==='SALIN LINK') copy.textContent='SALIN';
+      if(h && titles[i] && h.textContent !== titles[i]) h.textContent=titles[i];
+      if(copy && copy.textContent.trim()==='SALIN LINK') copy.textContent='SALIN';
     });
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',compact);
-  else compact();
-  var target=document.getElementById('afiliasi')||document.body;
-  if(typeof MutationObserver!=='undefined') new MutationObserver(compact).observe(target,{childList:true,subtree:true});
-  setTimeout(compact,600);
-  setTimeout(compact,1400);
+
+  function start(){
+    compact();
+    [250,600,1200,2200,4000].forEach(function(ms){ setTimeout(compact,ms); });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+  else start();
 })();
 </script>`;
 
-      memberBody = memberBody.replace('</head>', compactStyle + '\n</head>');
-      memberBody = memberBody.replace('</body>', compactScript + '\n</body>');
+        memberBody = memberBody.replace('</head>', compactStyle + '\n</head>');
+        memberBody = memberBody.replace('</body>', compactScript + '\n</body>');
+        compactMemberCache = memberBody;
+        compactMemberCacheAt = Date.now();
+      }
 
-      Object.entries(memberHeaders).forEach(([k,v]) => res.setHeader(k,v));
       res.setHeader('Content-Type','text/html; charset=utf-8');
-      res.setHeader('Cache-Control','no-store');
-      res.status(memberStatus).send(memberBody);
+      res.setHeader('Cache-Control','public, s-maxage=300, stale-while-revalidate=600');
+      res.status(200).send(memberBody);
       return;
     }
 
