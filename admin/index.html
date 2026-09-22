@@ -1555,34 +1555,34 @@ main.shell{
   box-shadow:0 0 0 4px rgba(118,217,154,.08);
 }
 
-/* BADAI HORIZONTAL LOGO — DIRECT FROM GOOGLE DRIVE */
+/* BADAI ADMIN HEADER LOGO */
 .admin-brand-wrap{
   display:flex;
   align-items:center;
-  gap:9px;
+  gap:10px;
   min-width:0;
 }
 .admin-brand-logo{
   display:flex;
   align-items:center;
-  width:180px;
-  height:54px;
-  overflow:visible;
+  justify-content:flex-start;
+  width:150px;
+  height:40px;
+  overflow:hidden;
   flex:0 0 auto;
 }
 .admin-brand-logo img{
-  position:static;
   display:block;
   width:100%;
-  height:auto;
-  max-width:180px;
+  height:100%;
   object-fit:contain;
+  object-position:left center;
 }
 .admin-brand-pill{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  min-height:24px;
+  min-height:22px;
   padding:0 8px;
   border:1px solid #55243d;
   border-radius:999px;
@@ -1593,15 +1593,13 @@ main.shell{
   letter-spacing:.08em;
 }
 @media(max-width:480px){
+  .admin-brand-wrap{gap:8px}
   .admin-brand-logo{
-    width:150px;
-    height:48px;
-  }
-  .admin-brand-logo img{
-    max-width:150px;
+    width:128px;
+    height:34px;
   }
   .admin-brand-pill{
-    min-height:22px;
+    min-height:20px;
     padding:0 6px;
     font-size:7px;
   }
@@ -1615,7 +1613,7 @@ main.shell{
 <header class="topbar">
   <div class="shell topbar-inner">
     <div class="admin-brand-wrap">
-      <div class="admin-brand-logo"><img src="https://drive.google.com/uc?export=view&id=1uFX4U_hTUMeBezL6m_KddS5oeQgWcTCS" alt="Komunitas BADAI"></div>
+      <div class="admin-brand-logo"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="Komunitas BADAI"></div>
       <span class="admin-brand-pill">ADMIN</span>
     </div>
     <div class="top-actions">
