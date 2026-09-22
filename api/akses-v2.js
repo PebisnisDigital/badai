@@ -40,6 +40,28 @@ module.exports = async function handler(req, res) {
     padding-bottom:11px!important;
   }
 
+  /* Sticky footer member area: putih, teks hitam, active/hover pink */
+  .footer{
+    background:rgba(255,255,255,.98)!important;
+    border-top:1px solid #e7e7e7!important;
+    box-shadow:0 -8px 24px rgba(0,0,0,.08)!important;
+  }
+  .footer button{
+    background:transparent!important;
+    color:#111!important;
+  }
+  .footer button:hover{
+    background:#ff4fa3!important;
+    color:#111!important;
+  }
+  .footer button.active{
+    background:#ff4fa3!important;
+    color:#111!important;
+  }
+  .footer .label{
+    color:inherit!important;
+  }
+
   .badai-member-header{
     position:sticky;top:0;z-index:80;
     width:100%;
