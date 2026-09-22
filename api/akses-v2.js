@@ -116,6 +116,12 @@ document.addEventListener('DOMContentLoaded', function(){
   if(hero && video && video.parentElement !== hero){
     hero.appendChild(video);
   }
+
+  document.querySelectorAll('.footer .label').forEach(function(label){
+    var text = String(label.textContent || '').trim().toLowerCase();
+    if(text === 'kelas') label.textContent = 'ILMU';
+    if(text === 'jalur untung') label.textContent = 'BONUS';
+  });
 });
 </script>`;
 
