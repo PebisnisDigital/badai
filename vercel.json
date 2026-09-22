@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "^/admin/?$",
-      "dest": "/api/admin-v5"
+      "dest": "/api/admin-v6"
     },
     {
       "src": "^/akses/?$",
