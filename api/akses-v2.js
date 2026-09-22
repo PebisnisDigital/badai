@@ -1,0 +1,72 @@
+module.exports = async function handler(req, res) {
+  try {
+    const ref = process.env.VERCEL_GIT_COMMIT_SHA || 'main';
+    const sourceUrl = `https://raw.githubusercontent.com/PebisnisDigital/badai/${encodeURIComponent(ref)}/akses/index.html`;
+    const source = await fetch(sourceUrl, { headers: { 'User-Agent': 'BADAI-Member-Area/1.0' } });
+
+    if (!source.ok) throw new Error(`Gagal memuat member area (${source.status})`);
+
+    let html = await source.text();
+
+    const headerStyle = String.raw`
+<style id="badai-member-header-style">
+  .hero{display:none!important}
+  .badai-member-header{
+    position:sticky;top:0;z-index:80;
+    width:100%;
+    min-height:64px;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:10px 14px;
+    background:rgba(7,7,7,.96);
+    border-bottom:1px solid #242424;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+  }
+  .badai-member-header-logo{
+    display:flex;align-items:center;min-width:0;text-decoration:none;
+  }
+  .badai-member-header-logo img{
+    display:block;width:auto;height:34px;max-width:210px;object-fit:contain;
+  }
+  .badai-member-help{
+    flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    min-height:40px;padding:0 13px;border-radius:999px;
+    background:#ff4fa3;color:#090909;text-decoration:none;
+    font-family:"Raleway",Arial,sans-serif;font-size:10px;font-weight:900;
+    letter-spacing:.02em;box-shadow:0 8px 24px rgba(255,79,163,.18);
+  }
+  .badai-member-help-icon{font-size:14px;line-height:1}
+  @media(max-width:420px){
+    .badai-member-header{padding:9px 10px;min-height:58px}
+    .badai-member-header-logo img{height:30px;max-width:174px}
+    .badai-member-help{min-height:37px;padding:0 11px;font-size:9px}
+  }
+</style>`;
+
+    const headerMarkup = String.raw`
+<header class="badai-member-header" aria-label="Header Member Area BADAI">
+  <a class="badai-member-header-logo" href="/akses" aria-label="BADAI Member Area">
+    <img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI — Belajar Apa Saja Dengan Artificial Intelligence">
+  </a>
+  <a class="badai-member-help" href="https://wa.me/6281237523626?text=Halo%20Admin%20BADAI%2C%20saya%20butuh%20bantuan%20di%20Member%20Area." target="_blank" rel="noopener noreferrer">
+    <span class="badai-member-help-icon">💬</span>
+    <span>CHAT ADMIN</span>
+  </a>
+</header>`;
+
+    html = html.replace('</head>', headerStyle + '\n</head>');
+
+    if (html.includes('<div class="app">')) {
+      html = html.replace('<div class="app">', '<div class="app">\n' + headerMarkup);
+    } else {
+      html = html.replace('<body>', '<body>\n' + headerMarkup);
+    }
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
+    res.status(200).send(html);
+  } catch (error) {
+    res.status(500).setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send('BADAI member area gagal dimuat: ' + String(error?.message || error));
+  }
+};
