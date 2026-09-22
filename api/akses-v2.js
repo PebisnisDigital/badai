@@ -12,6 +12,20 @@ module.exports = async function handler(req, res) {
 <style id="badai-member-header-style">
   .hero{display:none!important}
   .guide-steps{display:none!important}
+
+  /* Video Cara Belajar dibuat menyatu di dalam kartu pembuka */
+  #carapakai .guide-hero{
+    padding-bottom:14px!important;
+  }
+  #carapakai .guide-hero .guide-video{
+    width:100%;
+    margin:14px 0 0!important;
+    border-radius:17px!important;
+    border:1px solid #2b2b2b!important;
+    box-shadow:none!important;
+    background:#080808!important;
+  }
+
   .badai-member-header{
     position:sticky;top:0;z-index:80;
     width:100%;
@@ -43,6 +57,7 @@ module.exports = async function handler(req, res) {
     .badai-member-header{padding:9px 10px;min-height:58px}
     .badai-member-header-logo img{height:30px;max-width:174px}
     .badai-member-help{min-height:37px;padding:0 11px;font-size:9px}
+    #carapakai .guide-hero .guide-video{margin-top:12px!important;border-radius:15px!important}
   }
 </style>`;
 
@@ -57,7 +72,19 @@ module.exports = async function handler(req, res) {
   </a>
 </header>`;
 
+    const memberEnhancement = String.raw`
+<script id="badai-member-layout-enhancement">
+document.addEventListener('DOMContentLoaded', function(){
+  var hero = document.querySelector('#carapakai .guide-hero');
+  var video = document.querySelector('#carapakai .guide-video');
+  if(hero && video && video.parentElement !== hero){
+    hero.appendChild(video);
+  }
+});
+</script>`;
+
     html = html.replace('</head>', headerStyle + '\n</head>');
+    html = html.replace('</body>', memberEnhancement + '\n</body>');
 
     if (html.includes('<div class="app">')) {
       html = html.replace('<div class="app">', '<div class="app">\n' + headerMarkup);
