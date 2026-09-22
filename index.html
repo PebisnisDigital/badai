@@ -20,49 +20,23 @@ a{color:inherit;text-decoration:none}.container{width:min(var(--max),calc(100% -
 .nav-btn{background:var(--pink);color:#080808;padding:10px 14px;border-radius:12px;font-weight:800;font-size:13px}
 section{padding:54px 0}.hero{
   position:relative;
-  isolation:isolate;
   overflow:hidden;
   padding:68px 0 46px;
-  background:#050505;
-}
-.hero-bg-video{
-  position:absolute;
-  inset:-6% 0;
-  display:block !important;
-  width:100%;
-  height:112%;
-  object-fit:cover;
-  object-position:center center;
-  z-index:0;
-  opacity:.82;
-  pointer-events:none;
-  transform:translate3d(0,var(--hero-parallax-y,0px),0) scale(1.06);
-  will-change:transform;
-}
-.hero::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:1;
   background:
-    linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.40) 58%,rgba(0,0,0,.68) 100%),
-    radial-gradient(circle at 72% 24%,rgba(255,79,163,.10),transparent 34%);
-  pointer-events:none;
+    radial-gradient(circle at 78% 18%,rgba(255,79,163,.08),transparent 30%),
+    linear-gradient(180deg,#080808 0%,#070707 100%);
 }
 .hero::after{
   content:"";
   position:absolute;
   inset:auto 0 0;
-  height:110px;
-  z-index:2;
+  height:90px;
   background:linear-gradient(180deg,transparent,#070707);
   pointer-events:none;
 }
 .hero > .container{
   position:relative;
-  z-index:3;
-  transform:translate3d(0,var(--hero-content-y,0px),0);
-  will-change:transform;
+  z-index:1;
 }
 .badge{display:inline-block;color:var(--pink2);border:1px solid #50203a;background:#160b11;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 h1,h2,h3,p{margin-top:0}h1{font-size:clamp(40px,9vw,68px);line-height:.95;letter-spacing:-.055em;margin:18px 0}h1 .pink,h2 .pink{color:var(--pink)}
@@ -2534,18 +2508,6 @@ body.register-modal-open{
 </a><a class="nav-btn" href="#pricing">GABUNG BADAI</a></div></header>
 <main>
 <section class="hero">
-<video
-  class="hero-bg-video"
-  id="heroBgVideo"
-  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_065045_c44942da-53c6-4804-b734-f9e07fc22e08.mp4?utm_source=chatgpt.com"
-  autoplay
-  muted
-  loop
-  playsinline
-  webkit-playsinline
-  preload="auto"
-  aria-hidden="true">
-</video>
 <div class="container">
 <h1>Untung Lewat<br/>Video AI<br/><span class="pink">yang Lagi Viral.</span></h1>
 <p class="hero-copy">BADAI bantu kamu belajar bikin Video AI yang <strong>seru, menarik, dan bisa dipakai untuk konten, promosi, jasa, sampai peluang cuan</strong>. Tinggal tonton, ikuti langkahnya, lalu bikin versimu sendiri.</p>
@@ -3935,77 +3897,6 @@ Mohon dibantu proses pendaftarannya ya.`
       autoSyncLanding();
     }
   });
-
-  function ensureHeroVideoPlays(){
-    const video = document.getElementById('heroBgVideo');
-    if(!video) return;
-
-    video.muted = true;
-    video.defaultMuted = true;
-    video.autoplay = true;
-    video.loop = true;
-    video.playsInline = true;
-
-    const tryPlay = () => {
-      const p = video.play();
-      if(p && typeof p.catch === 'function'){
-        p.catch(() => {});
-      }
-    };
-
-    if(video.readyState >= 2){
-      tryPlay();
-    }else{
-      video.addEventListener('canplay', tryPlay, {once:true});
-      video.load();
-    }
-  }
-
-  window.addEventListener('DOMContentLoaded', ensureHeroVideoPlays);
-  window.addEventListener('load', ensureHeroVideoPlays);
-  window.addEventListener('focus', ensureHeroVideoPlays);
-
-  document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible'){
-      ensureHeroVideoPlays();
-    }
-  });
-
-  document.addEventListener('pointerdown', ensureHeroVideoPlays, {once:true});
-  document.addEventListener('touchstart', ensureHeroVideoPlays, {once:true});
-
-  const heroSection = document.querySelector('.hero');
-  let heroParallaxTicking = false;
-
-  function updateHeroParallax(){
-    heroParallaxTicking = false;
-    if(!heroSection) return;
-
-    const rect = heroSection.getBoundingClientRect();
-    const viewportH = window.innerHeight || document.documentElement.clientHeight;
-
-    if(rect.bottom < 0 || rect.top > viewportH){
-      return;
-    }
-
-    const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
-    const videoShift = Math.min(scrolled * 0.18, 72);
-    const contentShift = Math.min(scrolled * 0.045, 18);
-
-    heroSection.style.setProperty('--hero-parallax-y', videoShift.toFixed(2) + 'px');
-    heroSection.style.setProperty('--hero-content-y', (-contentShift).toFixed(2) + 'px');
-  }
-
-  function requestHeroParallax(){
-    if(heroParallaxTicking) return;
-    heroParallaxTicking = true;
-    requestAnimationFrame(updateHeroParallax);
-  }
-
-  window.addEventListener('scroll', requestHeroParallax, {passive:true});
-  window.addEventListener('resize', requestHeroParallax);
-  window.addEventListener('load', requestHeroParallax);
-  requestHeroParallax();
 
   function normalizeWhatsapp(value){
     let digits = String(value || '').replace(/\D/g, '');
