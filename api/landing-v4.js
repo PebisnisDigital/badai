@@ -56,6 +56,20 @@ module.exports = async function handler(req, res) {
 
     body = body.replaceAll("[nama] baru bergabung di [paket] 🎉", "[nama] daftar [paket] • [waktu]");
 
+    body = body.replaceAll(
+`      if(!response.ok && response.status !== 409){
+        throw new Error('Gagal menyimpan pendaftaran');
+      }`,
+`      if(!response.ok && response.status !== 409){
+        let registrationError = 'Gagal menyimpan pendaftaran';
+        try{
+          const errorData = await response.clone().json();
+          registrationError = errorData?.message || errorData?.error_description || errorData?.error || registrationError;
+        }catch(_){ }
+        throw new Error(registrationError);
+      }`
+    );
+
     Object.entries(headers).forEach(([k,v]) => res.setHeader(k,v));
     res.setHeader('Content-Type','text/html; charset=utf-8');
     res.setHeader('Cache-Control','public, s-maxage=120, stale-while-revalidate=300');
