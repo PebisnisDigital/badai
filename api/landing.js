@@ -193,22 +193,11 @@ module.exports = async function handler(req, res) {
       var regBody = {};
       try{ regBody = JSON.parse((init && init.body) || '{}'); }catch(_){ }
 
-      var rpcBody = {
-        p_full_name:regBody.full_name || '',
-        p_email:regBody.email || '',
-        p_whatsapp:regBody.whatsapp || '',
-        p_membership_plan:regBody.membership_plan || currentPlan(),
-        p_payment_method_id:regBody.payment_method_id || null,
-        p_referred_by_code:regBody.referred_by_code || null,
-        p_coupon_code:(state.valid && state.plan === currentPlan()) ? state.code : null
-      };
+      if(state.valid && state.plan === currentPlan()) regBody.coupon_code = state.code;
+      else delete regBody.coupon_code;
 
-      var rpcHeaders = Object.assign({}, (init && init.headers) || {}, {'Content-Type':'application/json'});
-      return nativeFetch(SUPABASE_URL + '/rest/v1/rpc/submit_badai_registration', {
-        method:'POST',
-        headers:rpcHeaders,
-        body:JSON.stringify(rpcBody)
-      });
+      var regInit = Object.assign({}, init || {}, {body:JSON.stringify(regBody)});
+      return nativeFetch(input, regInit);
     }
 
     if(url.indexOf('/rest/v1/marketing_public_config') !== -1 && method === 'GET' && state.valid){
