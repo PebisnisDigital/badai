@@ -62,11 +62,11 @@ module.exports = async function handler(req, res) {
   }
   .footer .label{
     color:inherit!important;
-    font-family:"Raleway",Arial,sans-serif!important;
+    font-family:"Nunito",Arial,sans-serif!important;
     font-size:11.2px!important;
-    font-weight:900!important;
+    font-weight:600!important;
     line-height:1.05!important;
-    letter-spacing:-.01em!important;
+    letter-spacing:0!important;
   }
   .footer .emoji .fi{
     display:block;
