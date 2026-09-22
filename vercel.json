@@ -5,10 +5,6 @@
       "dest": "/api/admin-v5"
     },
     {
-      "src": "^/akses/auth\\.js$",
-      "dest": "/api/member-auth"
-    },
-    {
       "src": "^/akses/?$",
       "dest": "/api/akses-v2"
     },
