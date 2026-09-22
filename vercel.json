@@ -17,8 +17,12 @@
       "destination": "/akses/index.html"
     },
     {
+      "source": "/",
+      "destination": "/api/landing"
+    },
+    {
       "source": "/:affiliate",
-      "destination": "/index.html"
+      "destination": "/api/landing"
     }
   ]
 }
