@@ -116,17 +116,30 @@ module.exports = async function handler(req, res) {
     align-items:center!important;
     justify-content:center!important;
   }
-  #afiliasi .badai-affiliate-edit-wrap{
-    margin:0 0 6px!important;
-    padding:0 0 6px!important;
-    border-top:0!important;
-    border-bottom:1px solid #242424!important;
+  #afiliasi .badai-affiliate-code-slot{
+    margin:4px 0 6px!important;
+  }
+  #afiliasi .badai-affiliate-code-card{
+    min-height:36px!important;
+    padding:5px 7px!important;
+    border-radius:9px!important;
+    grid-template-columns:auto minmax(0,1fr) auto!important;
+    gap:6px!important;
+  }
+  #afiliasi .badai-affiliate-code-card>b{
+    font-size:8.5px!important;
+    line-height:1!important;
+  }
+  #afiliasi .badai-affiliate-code-card>span{
+    font-size:7.5px!important;
+    line-height:1!important;
   }
   #afiliasi .badai-affiliate-edit-code{
-    min-height:27px!important;
-    height:27px!important;
+    min-height:25px!important;
+    height:25px!important;
+    padding:0 8px!important;
     border-radius:7px!important;
-    font-size:6.5px!important;
+    font-size:6.2px!important;
   }
   #afiliasi .badai-affiliate-loading,
   #afiliasi .badai-affiliate-empty{
