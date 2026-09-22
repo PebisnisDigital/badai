@@ -26,6 +26,20 @@ module.exports = async function handler(req, res) {
     background:#080808!important;
   }
 
+  /* Kartu BAB dibuat lebih clean: cover + nama bahasan saja */
+  #chapterGrid .card .meta,
+  #chapterGrid .card p,
+  #chapterGrid .card .arrow{
+    display:none!important;
+  }
+  #chapterGrid .card h3{
+    margin:9px 1px 2px!important;
+    line-height:1.2!important;
+  }
+  #chapterGrid .card{
+    padding-bottom:11px!important;
+  }
+
   .badai-member-header{
     position:sticky;top:0;z-index:80;
     width:100%;
