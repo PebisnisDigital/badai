@@ -201,9 +201,9 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   var footerMenus = [
-    {screen:'carapakai', label:'Komunitas', icon:'fi fi-rr-square-1'},
-    {screen:'kelas', label:'Ilmu', icon:'fi fi-rr-square-2'},
-    {screen:'jaluruntung', label:'Bonus', icon:'fi fi-rr-square-3'},
+    {screen:'carapakai', label:'Gratisan', icon:'fi fi-rr-square-1'},
+    {screen:'kelas', label:'Pemula', icon:'fi fi-rr-square-2'},
+    {screen:'jaluruntung', label:'Untung', icon:'fi fi-rr-square-3'},
     {screen:'afiliasi', label:'Affiliasi', icon:'fi fi-rr-square-4'},
     {screen:'akun', label:'Akun', icon:'fi fi-rr-square-5'}
   ];
