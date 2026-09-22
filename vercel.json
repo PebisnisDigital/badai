@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "^/admin/?$",
-      "dest": "/api/admin-v4"
+      "dest": "/api/admin-v5"
     },
     {
       "src": "^/akses/?$",
@@ -14,11 +14,11 @@
     },
     {
       "src": "^/$",
-      "dest": "/api/landing-v4"
+      "dest": "/api/landing-v5"
     },
     {
       "src": "^/[^/]+/?$",
-      "dest": "/api/landing-v4"
+      "dest": "/api/landing-v5"
     },
     {
       "handle": "filesystem"
