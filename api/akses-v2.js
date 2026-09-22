@@ -15,7 +15,6 @@ module.exports = async function handler(req, res) {
   .hero{display:none!important}
   .guide-steps{display:none!important}
 
-  /* Video Cara Belajar dibuat menyatu di dalam kartu pembuka */
   #carapakai .guide-hero{
     padding-bottom:14px!important;
   }
@@ -28,7 +27,6 @@ module.exports = async function handler(req, res) {
     background:#080808!important;
   }
 
-  /* Kartu BAB dibuat lebih clean: cover + nama bahasan saja */
   #chapterGrid .card .meta,
   #chapterGrid .card p,
   #chapterGrid .card .arrow{
@@ -42,11 +40,14 @@ module.exports = async function handler(req, res) {
     padding-bottom:11px!important;
   }
 
-  /* Sticky footer menyatu dengan body hitam; active/hover tetap pink */
   .footer{
     background:rgba(0,0,0,.98)!important;
     border-top:1px solid #1f1f1f!important;
     box-shadow:0 -8px 24px rgba(0,0,0,.18)!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  }
+  .footer #affiliateNavButton{
+    display:flex!important;
   }
   .footer button{
     background:transparent!important;
@@ -75,7 +76,6 @@ module.exports = async function handler(req, res) {
     color:currentColor;
   }
 
-  /* Bonus + Affiliasi tetap terlihat, tapi terkunci untuk Paket Pemula */
   .footer button.is-plan-locked{
     position:relative;
     opacity:.58;
@@ -314,13 +314,9 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function syncPlanLocks(){
-    var footer = document.querySelector('.footer');
     var bonus = document.querySelector('.footer [data-screen="jaluruntung"]');
     var affiliate = document.getElementById('affiliateNavButton');
     var pro = isPaketUntung();
-
-    if(footer) footer.style.setProperty('--member-nav-count','5');
-    if(affiliate && affiliate.style.display === 'none') affiliate.style.display = '';
 
     [bonus,affiliate].forEach(function(btn){
       if(!btn) return;
@@ -328,6 +324,13 @@ document.addEventListener('DOMContentLoaded', function(){
       btn.dataset.planLocked = pro ? '0' : '1';
       btn.setAttribute('aria-disabled', pro ? 'false' : 'true');
     });
+
+    if(!pro){
+      var restrictedActive = document.querySelector('#jaluruntung.screen.active, #afiliasi.screen.active');
+      if(restrictedActive && typeof window.show === 'function'){
+        window.show('carapakai');
+      }
+    }
   }
 
   document.addEventListener('click', function(e){
@@ -344,8 +347,15 @@ document.addEventListener('DOMContentLoaded', function(){
     openUpgrade(screen === 'jaluruntung' ? 'Bonus' : 'Affiliasi');
   }, true);
 
+  var planName = document.getElementById('memberPlanName');
+  if(planName && typeof MutationObserver !== 'undefined'){
+    var planObserver = new MutationObserver(function(){
+      syncPlanLocks();
+    });
+    planObserver.observe(planName,{childList:true,subtree:true,characterData:true});
+  }
+
   syncPlanLocks();
-  setInterval(syncPlanLocks, 800);
 });
 </script>`;
 
@@ -362,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function(){
     res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
     res.status(200).send(html);
   } catch (error) {
-    res.status(500).setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.send('BADAI member area gagal dimuat: ' + String(error?.message || error));
+    res.status(500).setHeader('Content-Type','text/plain; charset=utf-8');
+    res.send('BADAI member area gagal dimuat: ' + String(error && error.message ? error.message : error));
   }
 };
