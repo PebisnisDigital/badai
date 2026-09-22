@@ -27,15 +27,17 @@ section{padding:54px 0}.hero{
 }
 .hero-bg-video{
   position:absolute;
-  inset:0;
+  inset:-6% 0;
   display:block !important;
   width:100%;
-  height:100%;
+  height:112%;
   object-fit:cover;
   object-position:center center;
   z-index:0;
   opacity:.82;
   pointer-events:none;
+  transform:translate3d(0,var(--hero-parallax-y,0px),0) scale(1.06);
+  will-change:transform;
 }
 .hero::before{
   content:"";
@@ -59,6 +61,8 @@ section{padding:54px 0}.hero{
 .hero > .container{
   position:relative;
   z-index:3;
+  transform:translate3d(0,var(--hero-content-y,0px),0);
+  will-change:transform;
 }
 .badge{display:inline-block;color:var(--pink2);border:1px solid #50203a;background:#160b11;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 h1,h2,h3,p{margin-top:0}h1{font-size:clamp(40px,9vw,68px);line-height:.95;letter-spacing:-.055em;margin:18px 0}h1 .pink,h2 .pink{color:var(--pink)}
@@ -3971,6 +3975,39 @@ Mohon dibantu proses pendaftarannya ya.`
 
   document.addEventListener('pointerdown', ensureHeroVideoPlays, {once:true});
   document.addEventListener('touchstart', ensureHeroVideoPlays, {once:true});
+
+  const heroSection = document.querySelector('.hero');
+  let heroParallaxTicking = false;
+
+  function updateHeroParallax(){
+    heroParallaxTicking = false;
+    if(!heroSection) return;
+
+    const rect = heroSection.getBoundingClientRect();
+    const viewportH = window.innerHeight || document.documentElement.clientHeight;
+
+    if(rect.bottom < 0 || rect.top > viewportH){
+      return;
+    }
+
+    const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
+    const videoShift = Math.min(scrolled * 0.18, 72);
+    const contentShift = Math.min(scrolled * 0.045, 18);
+
+    heroSection.style.setProperty('--hero-parallax-y', videoShift.toFixed(2) + 'px');
+    heroSection.style.setProperty('--hero-content-y', (-contentShift).toFixed(2) + 'px');
+  }
+
+  function requestHeroParallax(){
+    if(heroParallaxTicking) return;
+    heroParallaxTicking = true;
+    requestAnimationFrame(updateHeroParallax);
+  }
+
+  window.addEventListener('scroll', requestHeroParallax, {passive:true});
+  window.addEventListener('resize', requestHeroParallax);
+  window.addEventListener('load', requestHeroParallax);
+  requestHeroParallax();
 
   function normalizeWhatsapp(value){
     let digits = String(value || '').replace(/\D/g, '');
