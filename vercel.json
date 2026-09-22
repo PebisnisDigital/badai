@@ -6,7 +6,7 @@
     },
     {
       "src": "^/akses/?$",
-      "dest": "/api/akses-v2"
+      "dest": "/api/admin-v3?accesscompact=1"
     },
     {
       "src": "^/buatqris-verify-7c7a191a8da43b57bf28704876b92857\\.txt$",
