@@ -11,6 +11,7 @@ module.exports = async function handler(req, res) {
     const headerStyle = String.raw`
 <style id="badai-member-header-style">
   .hero{display:none!important}
+  .guide-steps{display:none!important}
   .badai-member-header{
     position:sticky;top:0;z-index:80;
     width:100%;
