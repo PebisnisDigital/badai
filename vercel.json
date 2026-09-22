@@ -1,28 +1,27 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/admin",
-      "destination": "/admin/index.html"
+      "src": "^/admin/?$",
+      "dest": "/admin/index.html"
     },
     {
-      "source": "/admin/",
-      "destination": "/admin/index.html"
+      "src": "^/akses/?$",
+      "dest": "/akses/index.html"
     },
     {
-      "source": "/akses",
-      "destination": "/akses/index.html"
+      "src": "^/buatqris-verify-7c7a191a8da43b57bf28704876b92857\\.txt$",
+      "dest": "/buatqris-verify-7c7a191a8da43b57bf28704876b92857.txt"
     },
     {
-      "source": "/akses/",
-      "destination": "/akses/index.html"
+      "src": "^/$",
+      "dest": "/api/landing"
     },
     {
-      "source": "/",
-      "destination": "/api/landing"
+      "src": "^/[^/]+/?$",
+      "dest": "/api/landing"
     },
     {
-      "source": "/:affiliate",
-      "destination": "/api/landing"
+      "handle": "filesystem"
     }
   ]
 }
