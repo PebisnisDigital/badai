@@ -2643,6 +2643,191 @@ body.register-modal-open{
 }
 
 
+
+/* GRATISAN — lead only, no member area/login */
+.registration-modal-card.free-form-mode .payment-choice-section,
+.registration-modal-card.free-form-mode #couponGroup,
+.registration-modal-card.free-form-mode #couponSection,
+.registration-modal-card.free-form-mode .coupon-group,
+.registration-modal-card.free-form-mode .coupon-section,
+.registration-modal-card.free-form-mode [data-coupon-group]{
+  display:none!important;
+}
+.free-success-stage{
+  display:none;
+  text-align:center;
+}
+.free-success-stage.hidden{display:none!important}
+.free-success-stage:not(.hidden){display:block}
+.registration-modal-card.free-success-mode{
+  padding-top:30px!important;
+}
+.registration-modal-card.free-success-mode .register-head,
+.registration-modal-card.free-success-mode .selected-package-box,
+.registration-modal-card.free-success-mode #badaiRegisterForm,
+.registration-modal-card.free-success-mode #qrisPaymentStage{
+  display:none!important;
+}
+.registration-modal-card.free-success-mode #freeSuccessStage{
+  display:block!important;
+}
+.free-success-kicker{
+  color:#ff4fa3;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.11em;
+  margin-bottom:7px;
+}
+.free-success-stage>h3{
+  margin:0;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:30px;
+  line-height:1.05;
+  font-weight:950;
+  letter-spacing:-.04em;
+}
+.free-success-stage>p{
+  margin:7px 0 15px;
+  color:#aaa;
+  font-size:11px;
+  line-height:1.45;
+}
+.free-success-card{
+  padding:16px;
+  border:1px solid #333;
+  border-radius:20px;
+  background:linear-gradient(180deg,#151515,#0b0b0b);
+  text-align:left;
+}
+.free-success-title{
+  margin-bottom:10px;
+  color:#fff;
+  text-align:center;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:19px;
+  font-weight:950;
+}
+.free-success-list{
+  display:grid;
+  gap:8px;
+}
+.free-success-row{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) auto;
+  gap:9px;
+  align-items:center;
+  min-height:61px;
+  padding:10px 11px;
+  border:1px solid #292929;
+  border-radius:14px;
+  background:#080808;
+}
+.free-success-check{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:#102b1c;
+  color:#24d56d;
+  font-size:17px;
+  font-weight:950;
+}
+.free-success-row b{
+  color:#fff;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:11px;
+  line-height:1.3;
+}
+.free-success-row>span:last-child{
+  color:#ff67ae;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:9px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.free-success-total{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:10px;
+  padding:12px;
+  border:1px solid #64304e;
+  border-radius:14px;
+  background:#160d12;
+}
+.free-success-total>b{
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:11px;
+  font-weight:950;
+}
+.free-success-total>div{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.free-success-total s{
+  color:#aaa;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:15px;
+  font-weight:800;
+}
+.free-success-total strong{
+  color:#25d366;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:22px;
+  font-weight:950;
+}
+.free-success-cta{
+  min-height:48px;
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  background:#25d366;
+  color:#07170d;
+  text-decoration:none;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:10px;
+  font-weight:950;
+}
+.free-success-card>small{
+  display:block;
+  margin-top:8px;
+  color:#777;
+  text-align:center;
+  font-size:7px;
+  line-height:1.4;
+}
+@media(max-width:520px){
+  .free-success-card{padding:12px;border-radius:17px}
+  .free-success-stage>h3{font-size:26px}
+  .free-success-title{font-size:17px}
+  .free-success-row{
+    grid-template-columns:25px minmax(0,1fr);
+    min-height:54px;
+    padding:9px;
+  }
+  .free-success-check{width:25px;height:25px;font-size:15px}
+  .free-success-row b{font-size:10px}
+  .free-success-row>span:last-child{
+    grid-column:2;
+    margin-top:-4px;
+    font-size:7px;
+  }
+  .free-success-total{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .free-success-total>div{width:100%;justify-content:space-between}
+  .free-success-total strong{font-size:20px}
+}
+
 /* QRIS PAYMENT MODE — show only payment stage, never the registration form */
 .registration-modal-card.qris-mode .register-head,
 .registration-modal-card.qris-mode .selected-package-box,
@@ -3208,12 +3393,6 @@ body.register-modal-open{
           <input id="regWa" name="wa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
         </div>
 
-        <div class="form-group" id="freePasswordGroup" style="display:none">
-          <label for="regPassword">Buat Password</label>
-          <input id="regPassword" name="password" type="password" minlength="8" placeholder="Minimal 8 karakter" autocomplete="new-password">
-          <small class="form-hint">Password ini dipakai untuk login lagi ke Member Area.</small>
-        </div>
-
         <div class="payment-choice-section">
           <div class="payment-choice-head">
             <b>Pilih cara bayarnya</b>
@@ -3227,6 +3406,44 @@ body.register-modal-open{
         <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
         <div class="register-note" id="registerStatus">Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.</div>
       </form>
+
+      <div id="freeSuccessStage" class="free-success-stage hidden">
+        <div class="free-success-kicker">PENDAFTARAN BERHASIL ✓</div>
+        <h3>Gratisan BADAI</h3>
+        <p id="freeSuccessGreeting">Akses gratis untuk mulai belajar bersama BADAI.</p>
+
+        <div class="free-success-card">
+          <div class="free-success-title">Yang kamu dapatkan:</div>
+
+          <div class="free-success-list">
+            <div class="free-success-row">
+              <span class="free-success-check">✓</span>
+              <b>Kuliah WhatsApp Rutin Setiap Hari</b>
+              <span>Senilai Rp49.000</span>
+            </div>
+            <div class="free-success-row">
+              <span class="free-success-check">✓</span>
+              <b>Ebook AI &amp; Bisnis</b>
+              <span>Senilai Rp39.000</span>
+            </div>
+            <div class="free-success-row">
+              <span class="free-success-check">✓</span>
+              <b>Belajar AI Gratisan</b>
+              <span>Senilai Rp29.000</span>
+            </div>
+          </div>
+
+          <div class="free-success-total">
+            <b>TOTAL SENILAI</b>
+            <div><s>Rp117.000</s><strong>GRATIS</strong></div>
+          </div>
+
+          <a class="free-success-cta" href="https://chat.whatsapp.com/LCGm5LowkYG3NiHKItShC6" target="_blank" rel="noopener noreferrer">
+            MASUK KULIAH BADAI
+          </a>
+          <small>Klik tombol di atas untuk langsung bergabung ke Kuliah WhatsApp BADAI.</small>
+        </div>
+      </div>
 
       <div id="qrisPaymentStage" class="qris-payment-stage hidden">
         <div class="qris-stage-kicker">PEMBAYARAN QRIS</div>
@@ -3661,7 +3878,7 @@ Mohon dibantu proses pendaftarannya ya.`
     qrisExpiresAt = 0;
 
     const modalCard = document.querySelector('.registration-modal-card');
-    modalCard?.classList.remove('qris-mode');
+    modalCard?.classList.remove('qris-mode','free-success-mode');
 
     const countdown = document.getElementById('qrisCountdown');
     if(countdown) countdown.textContent = '15:00:00';
@@ -3669,6 +3886,7 @@ Mohon dibantu proses pendaftarannya ya.`
     form.classList.remove('hidden');
     form.style.display = '';
     document.getElementById('qrisPaymentStage')?.classList.add('hidden');
+    document.getElementById('freeSuccessStage')?.classList.add('hidden');
 
     submitBtn.disabled = selectedPackage === 'free' ? false : !selectedPaymentMethodId;
     submitBtn.textContent = selectedPackage === 'free' ? 'DAFTAR GRATIS →' : 'KLIK DAFTAR SEKARANG →';
@@ -3835,6 +4053,43 @@ Mohon dibantu proses pendaftarannya ya.`
   const registrationModal = document.getElementById('registrationModal');
   const closeRegistrationModalBtn = document.getElementById('closeRegistrationModal');
 
+  function syncFreeFormFields(isFree){
+    const modalCard = document.querySelector('.registration-modal-card');
+    modalCard?.classList.toggle('free-form-mode', isFree);
+
+    const paymentSection = document.querySelector('.payment-choice-section');
+    if(paymentSection) paymentSection.style.display = isFree ? 'none' : '';
+
+    // Kompatibel jika field kupon disisipkan oleh versi landing/admin lain.
+    document.querySelectorAll('#registrationModal input').forEach(input => {
+      const token = ((input.id || '') + ' ' + (input.name || '')).toLowerCase();
+      if(token.includes('coupon') || token.includes('kupon')){
+        const group = input.closest('.form-group,.coupon-group,.coupon-section,[data-coupon-group]');
+        if(group) group.style.display = isFree ? 'none' : '';
+      }
+    });
+  }
+
+  function showFreeSuccessStage(nama){
+    stopAllQrisTimers();
+    const modalCard = document.querySelector('.registration-modal-card');
+    modalCard?.classList.remove('qris-mode','free-form-mode');
+    modalCard?.classList.add('free-success-mode');
+
+    form.classList.add('hidden');
+    form.style.display = 'none';
+    document.getElementById('qrisPaymentStage')?.classList.add('hidden');
+    document.getElementById('freeSuccessStage')?.classList.remove('hidden');
+
+    const greeting = document.getElementById('freeSuccessGreeting');
+    if(greeting){
+      const first = String(nama || '').trim().split(/\s+/)[0] || '';
+      greeting.textContent = first
+        ? 'Berhasil, Kak ' + first + '. Akses Gratisan kamu sudah terbuka.'
+        : 'Akses gratis untuk mulai belajar bersama BADAI.';
+    }
+  }
+
   function openRegistrationModal(plan){
     selectedPackage = ['free','newbie','pro'].includes(plan) ? plan : 'newbie';
     syncSelectedPackageUI();
@@ -3843,24 +4098,20 @@ Mohon dibantu proses pendaftarannya ya.`
     const title = document.getElementById('registrationModalTitle');
     const desc = document.getElementById('registrationModalDesc');
     const status = document.getElementById('registerStatus');
-    const passwordGroup = document.getElementById('freePasswordGroup');
-    const passwordInput = document.getElementById('regPassword');
-    const paymentSection = document.querySelector('.payment-choice-section');
     const isFree = selectedPackage === 'free';
 
-    if(passwordGroup) passwordGroup.style.display = isFree ? 'grid' : 'none';
-    if(passwordInput) passwordInput.required = isFree;
-    if(paymentSection) paymentSection.style.display = isFree ? 'none' : '';
+    syncFreeFormFields(isFree);
+    setTimeout(() => syncFreeFormFields(isFree), 120);
 
     if(title) title.textContent = 'Daftar ' + selectedPackageName();
     if(desc){
       desc.textContent = isFree
-        ? 'Isi data berikut. Akun Gratisan akan langsung aktif setelah pendaftaran berhasil.'
+        ? 'Cukup isi Nama, Email, dan WA. Setelah daftar, konten Gratisan langsung terbuka di sini.'
         : 'Isi data di bawah ini untuk melanjutkan pendaftaran ' + selectedPackageName() + '.';
     }
     if(status){
       status.textContent = isFree
-        ? 'Gratis. Setelah berhasil, kamu langsung masuk ke Member Area BADAI.'
+        ? 'Gratis. Tidak perlu password dan tidak perlu pembayaran.'
         : 'Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.';
       status.style.color = '#7e7e7e';
     }
@@ -4003,13 +4254,8 @@ Mohon dibantu proses pendaftarannya ya.`
     const nama = document.getElementById('regNama').value.trim();
     const email = document.getElementById('regEmail').value.trim().toLowerCase();
     const wa = normalizeWhatsapp(document.getElementById('regWa').value);
-    const password = String(document.getElementById('regPassword')?.value || '');
-
-    if(!nama || !email || !wa || (selectedPackage === 'free' && password.length < 8)){
+    if(!nama || !email || !wa){
       form.reportValidity();
-      if(selectedPackage === 'free' && password.length < 8){
-        setStatus('Buat password minimal 8 karakter dulu.', true);
-      }
       return;
     }
 
@@ -4026,10 +4272,10 @@ Mohon dibantu proses pendaftarannya ya.`
 
     try {
       if(selectedPackage === 'free'){
-        submitBtn.textContent = 'MENGAKTIFKAN AKUN...';
-        setStatus('Sebentar, akun Gratisan sedang dibuat...', false);
+        submitBtn.textContent = 'MENDAFTARKAN...';
+        setStatus('Sebentar, data Gratisan sedang disimpan...', false);
 
-        const freeResponse = await fetch(SUPABASE_URL + '/functions/v1/register-free-member',{
+        const freeResponse = await fetch(SUPABASE_URL + '/functions/v1/register-free-lead',{
           method:'POST',
           headers:{
             'apikey':SUPABASE_PUBLISHABLE_KEY,
@@ -4039,7 +4285,6 @@ Mohon dibantu proses pendaftarannya ya.`
             full_name:nama,
             email,
             whatsapp:wa,
-            password,
             referred_by_code:(
               window.BADAI_AFFILIATE_REF ||
               localStorage.getItem('badai_affiliate_ref') ||
@@ -4049,20 +4294,13 @@ Mohon dibantu proses pendaftarannya ya.`
         });
 
         const freeData = await freeResponse.json().catch(()=>({}));
-        if(!freeResponse.ok){
-          throw new Error(freeData?.error || 'Gagal mengaktifkan Paket Gratisan');
-        }
-        if(!freeData?.session?.access_token){
-          throw new Error('Akun berhasil dibuat, tetapi sesi login belum tersedia.');
+        if(!freeResponse.ok || !freeData?.success){
+          throw new Error(freeData?.error || 'Gagal mendaftar Paket Gratisan');
         }
 
-        localStorage.setItem('badai_member_session', JSON.stringify(freeData.session));
-        setStatus('Berhasil! Membuka Member Area Gratisan...', false);
+        setStatus('Berhasil! Konten Gratisan sudah terbuka.', false);
         submitBtn.textContent = 'BERHASIL ✓';
-
-        setTimeout(() => {
-          window.location.href = '/akses/';
-        }, 650);
+        showFreeSuccessStage(nama);
         return;
       }
 
