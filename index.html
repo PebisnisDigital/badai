@@ -1749,7 +1749,7 @@ h2{font-weight:900}
 }
 .package-card-featured{
   z-index:3;
-  min-height:390px;
+  min-height:430px;
   overflow:hidden;
   border-color:#ff4fa3;
   background:
@@ -1762,7 +1762,7 @@ h2{font-weight:900}
     0 0 28px rgba(255,79,163,.22);
   transform:scale(1.045);
   transform-origin:center bottom;
-  animation:badaiUntungPulse 2.35s ease-in-out infinite;
+  animation:badaiUntungJump 3.15s cubic-bezier(.22,.8,.3,1) infinite;
 }
 .package-card-featured::before{
   content:"";
@@ -1799,15 +1799,33 @@ h2{font-weight:900}
   z-index:1;
 }
 .package-card-featured:hover{
-  transform:scale(1.07);
   box-shadow:
     0 26px 62px rgba(0,0,0,.42),
     0 0 0 1px rgba(255,79,163,.32) inset,
     0 0 38px rgba(255,79,163,.36);
 }
-@keyframes badaiUntungPulse{
-  0%,100%{transform:scale(1.045)}
-  50%{transform:scale(1.065)}
+@keyframes badaiUntungJump{
+  0%,42%,100%{
+    transform:translate3d(0,0,0) rotate(0deg) scale(1.045);
+  }
+  49%{
+    transform:translate3d(-5px,-10px,0) rotate(-1deg) scale(1.06);
+  }
+  56%{
+    transform:translate3d(0,0,0) rotate(.25deg) scale(1.048);
+  }
+  64%{
+    transform:translate3d(5px,-11px,0) rotate(1deg) scale(1.062);
+  }
+  71%{
+    transform:translate3d(0,0,0) rotate(-.2deg) scale(1.048);
+  }
+  79%{
+    transform:translate3d(0,-6px,0) rotate(0deg) scale(1.055);
+  }
+  86%{
+    transform:translate3d(0,0,0) rotate(0deg) scale(1.045);
+  }
 }
 @keyframes badaiUntungShine{
   0%,38%{left:-70%;opacity:0}
@@ -2005,6 +2023,51 @@ h2{font-weight:900}
   filter:brightness(1.08);
   box-shadow:0 11px 28px rgba(255,79,163,.36), inset 0 1px 0 rgba(255,255,255,.3);
 }
+.package-click-hand{
+  position:absolute!important;
+  right:9px;
+  bottom:2px;
+  z-index:5!important;
+  width:28px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+  color:#fff;
+  font-size:24px;
+  line-height:1;
+  text-shadow:
+    0 2px 3px rgba(0,0,0,.9),
+    0 0 10px rgba(255,255,255,.28);
+  transform-origin:50% 100%;
+  animation:badaiClickHand 1.35s ease-in-out infinite;
+}
+.package-click-hand::after{
+  content:"";
+  position:absolute;
+  top:1px;
+  left:50%;
+  width:12px;
+  height:12px;
+  border:1.5px solid rgba(255,255,255,.9);
+  border-radius:50%;
+  opacity:0;
+  transform:translateX(-50%) scale(.25);
+  animation:badaiClickRipple 1.35s ease-out infinite;
+}
+@keyframes badaiClickHand{
+  0%,18%,100%{transform:translate3d(0,8px,0) rotate(-8deg) scale(.92)}
+  38%{transform:translate3d(-2px,-5px,0) rotate(-12deg) scale(1.05)}
+  50%{transform:translate3d(0,1px,0) rotate(-8deg) scale(.96)}
+  62%{transform:translate3d(0,-1px,0) rotate(-8deg) scale(1)}
+  78%{transform:translate3d(0,8px,0) rotate(-8deg) scale(.92)}
+}
+@keyframes badaiClickRipple{
+  0%,39%{opacity:0;transform:translateX(-50%) scale(.25)}
+  50%{opacity:.95;transform:translateX(-50%) scale(.45)}
+  72%{opacity:0;transform:translateX(-50%) scale(1.65)}
+  100%{opacity:0;transform:translateX(-50%) scale(1.65)}
+}
 .package-card.is-selected{
   outline:1.5px solid rgba(255,255,255,.8);
   outline-offset:2px;
@@ -2057,14 +2120,26 @@ h2{font-weight:900}
   .package-card-free{min-height:225px}
   .package-card:not(.package-card-free):not(.package-card-featured){min-height:255px}
   .package-card-featured{
-    min-height:350px;
+    min-height:365px;
     transform:scale(1.028);
     transform-origin:center bottom;
-    animation:badaiUntungPulseMobile 2.35s ease-in-out infinite;
+    animation:badaiUntungJumpMobile 3.15s cubic-bezier(.22,.8,.3,1) infinite;
   }
-  @keyframes badaiUntungPulseMobile{
-    0%,100%{transform:scale(1.028)}
-    50%{transform:scale(1.045)}
+  @keyframes badaiUntungJumpMobile{
+    0%,42%,100%{transform:translate3d(0,0,0) rotate(0deg) scale(1.028)}
+    49%{transform:translate3d(-2px,-7px,0) rotate(-.7deg) scale(1.04)}
+    56%{transform:translate3d(0,0,0) rotate(.15deg) scale(1.03)}
+    64%{transform:translate3d(2px,-8px,0) rotate(.7deg) scale(1.042)}
+    71%{transform:translate3d(0,0,0) rotate(-.15deg) scale(1.03)}
+    80%{transform:translate3d(0,-4px,0) rotate(0deg) scale(1.036)}
+    87%{transform:translate3d(0,0,0) rotate(0deg) scale(1.028)}
+  }
+  .package-click-hand{
+    right:4px;
+    bottom:0;
+    width:21px;
+    height:30px;
+    font-size:18px;
   }
   .package-popular{top:6px;right:6px;padding:3px 4px;font-size:4.8px}
   .package-label{min-height:18px;padding:0 5px;font-size:5.3px;margin-bottom:6px}
@@ -2082,7 +2157,9 @@ h2{font-weight:900}
 @media (prefers-reduced-motion:reduce){
   .package-card-featured,
   .package-card-featured::before,
-  .package-select-btn.hot{
+  .package-select-btn.hot,
+  .package-click-hand,
+  .package-click-hand::after{
     animation:none!important;
   }
   .package-card-featured{
@@ -3029,6 +3106,7 @@ body.register-modal-open{
       <button class="package-select-btn hot" type="button" data-package-select="pro">
         PILIH UNTUNG
       </button>
+      <span class="package-click-hand" aria-hidden="true">☝</span>
     </article>
   </div>
 
