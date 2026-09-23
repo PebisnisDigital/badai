@@ -107,22 +107,22 @@ module.exports = async function handler(req, res) {
   .badai-upgrade-modal.open{display:flex}.badai-upgrade-card{width:min(100%,420px);border:1px solid #303030;border-radius:22px;background:#111;color:#fff;padding:21px;box-shadow:0 28px 80px rgba(0,0,0,.55)}
   .badai-upgrade-lock{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;margin-bottom:12px;background:#25101a;border:1px solid #65304d;font-size:21px}.badai-upgrade-kicker{color:#ff8fc5;font:700 9px "Nunito",Arial,sans-serif}.badai-upgrade-card h2{margin:5px 0 8px;font:800 23px "Nunito",Arial,sans-serif}.badai-upgrade-card p{margin:0;color:#aaa;font:500 12px "Nunito",Arial,sans-serif;line-height:1.55}.badai-upgrade-benefits{display:grid;gap:7px;margin-top:14px;padding:12px 13px;border-radius:14px;background:#090909;border:1px solid #252525;color:#ddd;font:500 11px "Nunito",Arial,sans-serif}.badai-upgrade-actions{display:grid;gap:8px;margin-top:15px}.badai-upgrade-actions a,.badai-upgrade-actions button{min-height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;text-decoration:none;font:700 11px "Nunito",Arial,sans-serif;cursor:pointer}.badai-upgrade-actions a{border:0;background:#25D366;color:#07170d}.badai-upgrade-actions button{border:1px solid #303030;background:#181818;color:#ddd}
 
-  .badai-affiliate-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 10px;padding:5px;border:1px solid #252525;border-radius:14px;background:#0c0c0c}
-  .badai-affiliate-tab{min-height:40px;border:1px solid transparent;border-radius:10px;background:transparent;color:#858585;font:700 10px "Nunito",Arial,sans-serif;cursor:pointer}
+  .badai-affiliate-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 12px;padding:6px;border:1px solid #252525;border-radius:14px;background:#0c0c0c}
+  .badai-affiliate-tab{min-height:44px;border:1px solid transparent;border-radius:10px;background:transparent;color:#a7a7a7;font:700 12px "Nunito",Arial,sans-serif;cursor:pointer}
   .badai-affiliate-tab.active{background:#ff4fa3;border-color:#ff4fa3;color:#111}
   .badai-affiliate-panel{display:none}
   .badai-affiliate-panel.active{display:block}
   .badai-affiliate-panel.badai-affiliate-tutorial{display:none}
-  .badai-affiliate-panel.badai-affiliate-tutorial.active{display:grid;gap:10px}
-  .badai-affiliate-video-placeholder{aspect-ratio:16/9;border-radius:18px;border:1px solid #2c2c2c;background:radial-gradient(circle at center,rgba(255,79,163,.16),transparent 34%),#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px}
-  .badai-affiliate-video-placeholder .play{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#ff4fa3;color:#111;font-size:18px;margin-bottom:9px}
-  .badai-affiliate-video-placeholder b{color:#fff;font:700 15px "Nunito",Arial,sans-serif}
-  .badai-affiliate-video-placeholder span{margin-top:4px;color:#777;font:500 9px "Nunito",Arial,sans-serif}
-  .badai-affiliate-rules{padding:14px;border-radius:16px;border:1px solid #262626;background:#101010}
-  .badai-affiliate-rules h3{margin:0 0 9px;color:#fff;font:700 15px "Nunito",Arial,sans-serif}
-  .badai-affiliate-rule-list{display:grid;gap:7px}
-  .badai-affiliate-rule{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:start;color:#b9b9b9;font:500 10px "Nunito",Arial,sans-serif;line-height:1.4}
-  .badai-affiliate-rule i{width:24px;height:24px;border-radius:8px;background:#211018;color:#ff8fc5;display:grid;place-items:center;font-style:normal;font-weight:800}
+  .badai-affiliate-panel.badai-affiliate-tutorial.active{display:grid;gap:12px}
+  .badai-affiliate-video-placeholder{width:100%;max-width:none;aspect-ratio:16/9;border-radius:18px;border:1px solid #2c2c2c;background:radial-gradient(circle at center,rgba(255,79,163,.16),transparent 34%),#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px}
+  .badai-affiliate-video-placeholder .play{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#ff4fa3;color:#111;font-size:22px;margin-bottom:12px}
+  .badai-affiliate-video-placeholder b{color:#fff;font:700 19px "Nunito",Arial,sans-serif}
+  .badai-affiliate-video-placeholder span{display:none}
+  .badai-affiliate-rules{padding:17px;border-radius:16px;border:1px solid #262626;background:#101010}
+  .badai-affiliate-rules h3{margin:0 0 12px;color:#fff;font:700 18px "Nunito",Arial,sans-serif}
+  .badai-affiliate-rule-list{display:grid;gap:9px}
+  .badai-affiliate-rule{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;color:#d1d1d1;font:600 12.5px "Nunito",Arial,sans-serif;line-height:1.5}
+  .badai-affiliate-rule i{width:30px;height:30px;border-radius:9px;background:#211018;color:#ff8fc5;display:grid;place-items:center;font:800 11px "Nunito",Arial,sans-serif}
   .badai-sales-section{gap:9px}
   .badai-affiliate-panel.badai-sales-section:not(.active){display:none!important}
   .badai-affiliate-panel.badai-sales-section.active{display:grid!important}
@@ -301,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var tutorial=document.createElement('div');
     tutorial.className='badai-affiliate-panel badai-affiliate-tutorial active';
     tutorial.dataset.affPanel='tutorial';
-    tutorial.innerHTML='<div class="badai-affiliate-video-placeholder"><div class="play">▶</div><b>Video Tutorial Afiliasi BADAI</b><span>Slot video YouTube sudah disiapkan. Tinggal masukkan link videonya.</span></div><div class="badai-affiliate-rules"><h3>Aturan Main Afiliasi</h3><div class="badai-affiliate-rule-list"><div class="badai-affiliate-rule"><i>1</i><span>Bagikan link afiliasi milik kamu sendiri agar referral tercatat otomatis.</span></div><div class="badai-affiliate-rule"><i>2</i><span>Komisi dihitung dari transaksi yang valid dan berhasil terverifikasi.</span></div><div class="badai-affiliate-rule"><i>3</i><span>Pencairan komisi dilakukan melalui Admin BADAI dan riwayatnya tercatat di menu Penjualan.</span></div><div class="badai-affiliate-rule"><i>4</i><span>Gunakan materi promosi dengan wajar. Hindari spam dan klaim yang menyesatkan.</span></div></div></div>';
+    tutorial.innerHTML='<div class="badai-affiliate-video-placeholder"><div class="play">▶</div><b>Video Tutorial Afiliasi BADAI</b></div><div class="badai-affiliate-rules"><h3>Aturan Main Afiliasi</h3><div class="badai-affiliate-rule-list"><div class="badai-affiliate-rule"><i>1</i><span>Bagikan link afiliasi milik kamu sendiri agar referral tercatat otomatis.</span></div><div class="badai-affiliate-rule"><i>2</i><span>Komisi dihitung dari transaksi yang valid dan berhasil terverifikasi.</span></div><div class="badai-affiliate-rule"><i>3</i><span>Pencairan komisi dilakukan melalui Admin BADAI dan riwayatnya tercatat di menu Penjualan.</span></div><div class="badai-affiliate-rule"><i>4</i><span>Gunakan materi promosi dengan wajar. Hindari spam dan klaim yang menyesatkan.</span></div></div></div>';
 
     var linkPanel=document.createElement('div');
     linkPanel.className='badai-affiliate-panel';
