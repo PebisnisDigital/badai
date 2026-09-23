@@ -591,6 +591,180 @@ module.exports = async function handler(req, res) {
     }
   }
 
+
+  /* BADAI ACCOUNT FIT READABILITY — larger text + fuller vertical composition */
+  #akun{
+    padding-bottom:18px!important;
+  }
+  #akun .account-head{
+    margin:0 0 14px!important;
+    padding:10px 14px 4px!important;
+  }
+  #akun .account-head h1{
+    font-size:40px!important;
+    line-height:1.04!important;
+    margin-bottom:8px!important;
+  }
+  #akun .account-head p{
+    font-size:16px!important;
+    line-height:1.5!important;
+    font-weight:600!important;
+    color:#c8c8c8!important;
+  }
+
+  #akun .member-plan-card{
+    min-height:92px!important;
+    padding:16px 18px!important;
+    margin-bottom:12px!important;
+    gap:4px!important;
+    border-radius:17px!important;
+  }
+  #akun .member-plan-card span{
+    font-size:13px!important;
+    line-height:1.2!important;
+    font-weight:800!important;
+    letter-spacing:.06em!important;
+  }
+  #akun .member-plan-card strong{
+    font-size:24px!important;
+    line-height:1.12!important;
+  }
+  #akun .member-plan-card small{
+    font-size:14px!important;
+    line-height:1.45!important;
+    font-weight:600!important;
+  }
+
+  #akun .account-card{
+    padding:20px 18px!important;
+    border-radius:20px!important;
+  }
+  #akun .account-field{
+    gap:7px!important;
+    margin-bottom:14px!important;
+  }
+  #akun .account-field:last-of-type{
+    margin-bottom:0!important;
+  }
+  #akun .account-field label{
+    font-size:14px!important;
+    line-height:1.2!important;
+    font-weight:800!important;
+    letter-spacing:.035em!important;
+  }
+  #akun .account-field input{
+    min-height:52px!important;
+    padding:0 14px!important;
+    border-radius:12px!important;
+    font-size:16px!important;
+    line-height:1.2!important;
+    font-weight:700!important;
+  }
+  #akun .account-help{
+    margin-top:2px!important;
+    font-size:13px!important;
+    line-height:1.45!important;
+    font-weight:600!important;
+    color:#929292!important;
+  }
+  #akun .account-save{
+    min-height:54px!important;
+    margin-top:15px!important;
+    border-radius:12px!important;
+    font-size:14px!important;
+    line-height:1!important;
+    font-weight:900!important;
+  }
+  #akun .account-status{
+    margin-top:8px!important;
+    font-size:13px!important;
+    line-height:1.4!important;
+  }
+
+  #akun .account-logout-card{
+    min-height:86px!important;
+    margin-top:12px!important;
+    padding:16px 18px!important;
+    border-radius:18px!important;
+    gap:14px!important;
+    align-items:center!important;
+  }
+  #akun .account-logout-card h3{
+    margin:0 0 5px!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:19px!important;
+    line-height:1.2!important;
+    font-weight:800!important;
+  }
+  #akun .account-logout-card p{
+    font-size:13px!important;
+    line-height:1.45!important;
+    font-weight:600!important;
+  }
+  #akun #badaiMemberLogout{
+    min-height:44px!important;
+    padding:0 16px!important;
+    border-radius:10px!important;
+    font-size:12.5px!important;
+    font-weight:900!important;
+  }
+
+  @media(max-width:430px){
+    #akun .account-head h1{
+      font-size:35px!important;
+    }
+    #akun .account-head p{
+      font-size:14.5px!important;
+    }
+    #akun .member-plan-card{
+      min-height:84px!important;
+      padding:14px 15px!important;
+    }
+    #akun .member-plan-card span{
+      font-size:12px!important;
+    }
+    #akun .member-plan-card strong{
+      font-size:22px!important;
+    }
+    #akun .member-plan-card small{
+      font-size:13px!important;
+    }
+    #akun .account-card{
+      padding:17px 15px!important;
+    }
+    #akun .account-field{
+      margin-bottom:12px!important;
+    }
+    #akun .account-field label{
+      font-size:13px!important;
+    }
+    #akun .account-field input{
+      min-height:49px!important;
+      font-size:15px!important;
+    }
+    #akun .account-help{
+      font-size:12px!important;
+    }
+    #akun .account-save{
+      min-height:50px!important;
+      font-size:13px!important;
+    }
+    #akun .account-logout-card{
+      min-height:80px!important;
+      padding:14px 15px!important;
+    }
+    #akun .account-logout-card h3{
+      font-size:18px!important;
+    }
+    #akun .account-logout-card p{
+      font-size:12.5px!important;
+    }
+    #akun #badaiMemberLogout{
+      min-height:42px!important;
+      font-size:12px!important;
+    }
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
