@@ -3205,6 +3205,150 @@ body.register-modal-open{
 
 
 
+
+/* HERO STAMP HEADLINE — surprise "ngecap" rotating word */
+.hero-stamp-title{
+  width:min(100%,660px);
+  margin:18px auto 18px !important;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:9px;
+  text-align:center !important;
+}
+.hero-stamp-title > span{
+  display:block;
+}
+.hero-stamp-top{
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:clamp(30px,6.4vw,50px);
+  font-weight:900;
+  line-height:1.02;
+  letter-spacing:-.045em;
+}
+.hero-stamp-stage{
+  position:relative;
+  width:100%;
+  min-height:82px;
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  overflow:visible;
+}
+.hero-stamp-word{
+  position:relative;
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  min-width:min(88%,430px);
+  min-height:74px;
+  padding:9px 28px 8px;
+  border:2px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0)),
+    linear-gradient(135deg,#ff67b2,#ff3297);
+  color:#fff;
+  box-shadow:
+    0 16px 38px rgba(255,79,163,.28),
+    inset 0 1px 0 rgba(255,255,255,.26);
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:clamp(38px,8vw,62px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-.045em;
+  text-transform:uppercase;
+  transform-origin:50% 50%;
+  will-change:transform,opacity,filter;
+}
+.hero-stamp-word::after{
+  content:"";
+  position:absolute;
+  inset:-7px;
+  border:2px solid rgba(255,79,163,.28);
+  border-radius:22px;
+  opacity:.35;
+  pointer-events:none;
+}
+.hero-stamp-word.is-stamping{
+  animation:heroStampHit .56s cubic-bezier(.14,.86,.28,1.25);
+}
+.hero-stamp-word.is-stamping::after{
+  animation:heroStampRing .56s ease-out;
+}
+.hero-stamp-bottom{
+  max-width:650px;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:clamp(23px,4.9vw,38px);
+  font-weight:900;
+  line-height:1.1;
+  letter-spacing:-.035em;
+}
+@keyframes heroStampHit{
+  0%{
+    opacity:0;
+    transform:translateY(-26px) scale(1.55) rotate(-4deg);
+    filter:blur(7px);
+  }
+  34%{
+    opacity:1;
+    transform:translateY(3px) scale(.84) rotate(1.5deg);
+    filter:blur(0);
+  }
+  58%{
+    transform:translateY(-2px) scale(1.09) rotate(-.8deg);
+  }
+  78%{
+    transform:translateY(1px) scale(.97) rotate(.35deg);
+  }
+  100%{
+    opacity:1;
+    transform:translateY(0) scale(1) rotate(0);
+    filter:blur(0);
+  }
+}
+@keyframes heroStampRing{
+  0%{opacity:.65;transform:scale(.82)}
+  100%{opacity:0;transform:scale(1.14)}
+}
+@media(max-width:520px){
+  .hero-stamp-title{
+    gap:7px;
+    margin-top:16px !important;
+  }
+  .hero-stamp-top{
+    font-size:clamp(28px,9vw,38px);
+    line-height:1.04;
+  }
+  .hero-stamp-stage{
+    min-height:64px;
+  }
+  .hero-stamp-word{
+    min-width:min(94%,330px);
+    min-height:58px;
+    padding:8px 17px 7px;
+    border-radius:15px;
+    font-size:clamp(33px,11vw,46px);
+  }
+  .hero-stamp-word::after{
+    inset:-5px;
+    border-radius:18px;
+  }
+  .hero-stamp-bottom{
+    max-width:360px;
+    font-size:clamp(20px,6.7vw,28px);
+    line-height:1.14;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-stamp-word.is-stamping,
+  .hero-stamp-word.is-stamping::after{
+    animation:none !important;
+  }
+}
+
 /* SECTION TITLES — CENTER ALIGN */
 main section h1,
 main section h2{
@@ -3377,7 +3521,15 @@ main section > .container > .badai-copy-kicker,
 <section class="hero">
 <div class="container">
 <div class="badge">BELAJAR • UPDATE • CUAN</div>
-<h1>Satu Tempat<br/>Buat Belajar AI.<br/><span class="pink">Terus Update &amp; Cari Cuan.</span></h1>
+
+<h1 class="hero-stamp-title">
+  <span class="hero-stamp-top">1 Tempat Belajar Bikin</span>
+  <span class="hero-stamp-stage" aria-live="polite">
+    <span id="heroStampWord" class="hero-stamp-word">GAMBAR</span>
+  </span>
+  <span class="hero-stamp-bottom">Pakai AI + <span class="pink">Update Terus</span> + <span class="pink">Cuan Terus</span></span>
+</h1>
+
 <p class="hero-copy">BADAI dibuat buat kamu yang capek bingung harus belajar AI dari mana. <strong>Belajar dari dasar, praktik sampai punya hasil sendiri, dapat update materi yang relevan, lalu pelajari jalur memanfaatkan AI untuk membuka peluang cuan.</strong></p>
 <div class="hero-video hero-image" id="video-ulva">
 <img alt="Komunitas BADAI" loading="eager" src="https://i.ibb.co.com/Psbkc4Hr/BADAI-HERO-KOMUNITAS-UNDER55-KB-1.webp"/>
@@ -5060,6 +5212,45 @@ Mohon dibantu proses pendaftarannya ya.`
     }catch(_){}
     window.BADAI_AFFILIATE_REF = affiliateCode;
   }
+})();
+</script>
+
+
+<script id="badai-hero-stamp-words">
+(function(){
+  const target = document.getElementById('heroStampWord');
+  if(!target) return;
+
+  const words = ['GAMBAR','VIDEO','WEBSITE','APLIKASI','APA AJA'];
+  let index = 0;
+  let timer = null;
+
+  function stamp(word){
+    target.classList.remove('is-stamping');
+    target.textContent = word;
+    void target.offsetWidth;
+    target.classList.add('is-stamping');
+  }
+
+  function next(){
+    index = (index + 1) % words.length;
+    stamp(words[index]);
+  }
+
+  stamp(words[index]);
+
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    timer = window.setInterval(next, 1750);
+  }
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden && timer){
+      clearInterval(timer);
+      timer = null;
+    }else if(!document.hidden && !timer && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      timer = window.setInterval(next, 1750);
+    }
+  });
 })();
 </script>
 
