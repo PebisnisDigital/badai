@@ -407,7 +407,7 @@ h2{font-weight:900}
   top:0;
   left:50%;
   width:min(100%,390px);
-  min-height:390px;
+  min-height:430px;
   padding:16px;
   border-radius:24px;
   background:linear-gradient(180deg,#101010,#0b0b0b);
@@ -1721,7 +1721,8 @@ h2{font-weight:900}
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:8px;
-  align-items:start;
+  align-items:end;
+  padding-top:18px;
 }
 .package-card{
   position:relative;
@@ -1737,10 +1738,10 @@ h2{font-weight:900}
   box-shadow:0 14px 34px rgba(0,0,0,.24);
 }
 .package-card:not(.package-card-free):not(.package-card-featured){
-  min-height:305px;
+  min-height:320px;
 }
 .package-card-free{
-  min-height:285px;
+  min-height:280px;
   border-color:#444;
   background:
     radial-gradient(circle at 88% 10%,rgba(255,255,255,.055),transparent 28%),
@@ -1759,8 +1760,8 @@ h2{font-weight:900}
     0 22px 54px rgba(0,0,0,.38),
     0 0 0 1px rgba(255,79,163,.22) inset,
     0 0 28px rgba(255,79,163,.22);
-  transform:translateY(-7px) scale(1.055);
-  transform-origin:center;
+  transform:scale(1.045);
+  transform-origin:center bottom;
   animation:badaiUntungPulse 2.35s ease-in-out infinite;
 }
 .package-card-featured::before{
@@ -1798,15 +1799,15 @@ h2{font-weight:900}
   z-index:1;
 }
 .package-card-featured:hover{
-  transform:translateY(-9px) scale(1.075);
+  transform:scale(1.07);
   box-shadow:
     0 26px 62px rgba(0,0,0,.42),
     0 0 0 1px rgba(255,79,163,.32) inset,
     0 0 38px rgba(255,79,163,.36);
 }
 @keyframes badaiUntungPulse{
-  0%,100%{transform:translateY(-7px) scale(1.055)}
-  50%{transform:translateY(-9px) scale(1.075)}
+  0%,100%{transform:scale(1.045)}
+  50%{transform:scale(1.065)}
 }
 @keyframes badaiUntungShine{
   0%,38%{left:-70%;opacity:0}
@@ -2046,18 +2047,24 @@ h2{font-weight:900}
   .package-pricing-head{margin-bottom:14px}
   .package-pricing-head h2{font-size:25px}
   .package-pricing-head p{font-size:10.5px}
-  .package-pricing-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .package-pricing-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:5px;
+    align-items:end;
+    padding-top:14px;
+  }
   .package-card{padding:10px 7px 8px;border-radius:14px}
-  .package-card-free{min-height:238px}
-  .package-card:not(.package-card-free):not(.package-card-featured){min-height:260px}
+  .package-card-free{min-height:225px}
+  .package-card:not(.package-card-free):not(.package-card-featured){min-height:255px}
   .package-card-featured{
-    min-height:330px;
-    transform:translateY(-5px) scale(1.035);
+    min-height:350px;
+    transform:scale(1.028);
+    transform-origin:center bottom;
     animation:badaiUntungPulseMobile 2.35s ease-in-out infinite;
   }
   @keyframes badaiUntungPulseMobile{
-    0%,100%{transform:translateY(-5px) scale(1.035)}
-    50%{transform:translateY(-6px) scale(1.055)}
+    0%,100%{transform:scale(1.028)}
+    50%{transform:scale(1.045)}
   }
   .package-popular{top:6px;right:6px;padding:3px 4px;font-size:4.8px}
   .package-label{min-height:18px;padding:0 5px;font-size:5.3px;margin-bottom:6px}
@@ -2079,7 +2086,8 @@ h2{font-weight:900}
     animation:none!important;
   }
   .package-card-featured{
-    transform:translateY(-7px) scale(1.055);
+    transform:scale(1.045);
+    transform-origin:center bottom;
   }
 }
 
