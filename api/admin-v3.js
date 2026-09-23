@@ -482,6 +482,80 @@ module.exports = async function handler(req, res) {
     #afiliasi .badai-affiliate-payout{font-size:10px!important}
   }
 
+
+  /* BADAI AFFILIATE FINAL FIT SIZE COMPACT — must stay last */
+  #afiliasi .center{
+    margin:0 0 16px!important;
+    padding-top:4px!important;
+  }
+  #afiliasi .center .title{
+    margin:0!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:36px!important;
+    line-height:1.04!important;
+    font-weight:900!important;
+    letter-spacing:-.035em!important;
+  }
+  #afiliasi .center .subtitle{
+    margin:8px 0 0!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:16px!important;
+    line-height:1.4!important;
+    font-weight:700!important;
+    color:#c6c6c6!important;
+  }
+  #afiliasi .badai-affiliate-tabs{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:8px!important;
+    margin:0 0 16px!important;
+    padding:7px!important;
+    border-radius:16px!important;
+  }
+  #afiliasi .badai-affiliate-tab{
+    min-width:0!important;
+    min-height:58px!important;
+    padding:8px 10px!important;
+    border-radius:12px!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:18px!important;
+    line-height:1.15!important;
+    font-weight:900!important;
+    white-space:normal!important;
+    text-wrap:balance!important;
+    overflow-wrap:anywhere!important;
+    transition:transform .18s ease,font-size .18s ease,background .18s ease,border-color .18s ease!important;
+  }
+  #afiliasi .badai-affiliate-tab.active{
+    font-size:19px!important;
+    transform:scale(1.025)!important;
+  }
+  @media(max-width:560px){
+    #afiliasi .center{
+      margin-bottom:14px!important;
+    }
+    #afiliasi .center .title{
+      font-size:32px!important;
+    }
+    #afiliasi .center .subtitle{
+      margin-top:7px!important;
+      font-size:15px!important;
+      line-height:1.4!important;
+    }
+    #afiliasi .badai-affiliate-tabs{
+      gap:5px!important;
+      padding:5px!important;
+    }
+    #afiliasi .badai-affiliate-tab{
+      min-height:54px!important;
+      padding:7px 5px!important;
+      font-size:16px!important;
+      line-height:1.12!important;
+    }
+    #afiliasi .badai-affiliate-tab.active{
+      font-size:17px!important;
+    }
+  }
+
 </style>`;
 
         const compactScript = String.raw`
