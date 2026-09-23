@@ -12,18 +12,18 @@ module.exports = async function handler(req, res) {
 
     const couponStyle = String.raw`
 <style id="badai-coupon-style">
-.registration-modal-card .coupon-group{gap:7px}
-.registration-modal-card .coupon-optional{color:#888;font-family:"Nunito",Arial,sans-serif;font-size:10px;font-weight:700}
-.registration-modal-card .coupon-input-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:stretch}
+.registration-modal-card .coupon-group{gap:4px}
+.registration-modal-card .coupon-optional{color:#888;font-family:"Nunito",Arial,sans-serif;font-size:8px;font-weight:700}
+.registration-modal-card .coupon-input-row{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:stretch}
 .registration-modal-card .coupon-input-row input{text-transform:uppercase}
 .registration-modal-card .coupon-apply-btn{
-  min-width:84px;border:0;border-radius:12px;background:#ff4fa3;color:#0a0a0a;
-  padding:0 14px;font-family:"Raleway",Arial,sans-serif;font-size:10px;font-weight:950;
+  min-width:76px;border:0;border-radius:10px;background:#ff4fa3;color:#0a0a0a;
+  padding:0 12px;font-family:"Raleway",Arial,sans-serif;font-size:9px;font-weight:950;
   cursor:pointer;transition:transform .18s ease,opacity .18s ease
 }
 .registration-modal-card .coupon-apply-btn:active{transform:scale(.97)}
 .registration-modal-card .coupon-apply-btn:disabled{opacity:.55;cursor:wait}
-.registration-modal-card .coupon-feedback{min-height:16px;margin-top:-1px;font-family:"Nunito",Arial,sans-serif;font-size:10px;line-height:1.45;color:#858585}
+.registration-modal-card .coupon-feedback{min-height:0;margin-top:0;font-family:"Nunito",Arial,sans-serif;font-size:8px;line-height:1.25;color:#858585}.registration-modal-card .coupon-feedback:empty{display:none}
 .registration-modal-card .coupon-feedback.ok{color:#82dda0}
 .registration-modal-card .coupon-feedback.error{color:#ff929f}
 .registration-modal-card .coupon-group.coupon-success input{border-color:#66ce8d!important;box-shadow:0 0 0 4px rgba(102,206,141,.12)!important}
