@@ -45,6 +45,8 @@
   let currentProfile = null;
   let membershipRefreshBusy = false;
   let currentAffiliateMaterials = [];
+  let currentAffiliateReferrals = [];
+  let currentAffiliatePayouts = [];
 
   function saveSession(data){
     session = data;
@@ -265,6 +267,92 @@
     }[ch]));
   }
 
+  function affiliatePlanLabel(plan){
+    if(plan === 'pro') return 'Paket Untung';
+    if(plan === 'free') return 'Paket Gratisan';
+    return 'Paket Pemula';
+  }
+
+  function affiliateStatusLabel(row){
+    if(row?.sale_status === 'valid') return 'KOMISI VALID';
+    if(row?.sale_status === 'reversed') return 'DIBATALKAN';
+    if(row?.member_status === 'active') return 'MEMBER AKTIF';
+    if(row?.payment_status === 'paid') return 'SUDAH BAYAR';
+    return 'MENUNGGU';
+  }
+
+  function formatAffiliateDate(value){
+    if(!value) return '-';
+    try{
+      return new Intl.DateTimeFormat('id-ID',{
+        day:'2-digit',month:'short',year:'numeric'
+      }).format(new Date(value));
+    }catch(_){
+      return '-';
+    }
+  }
+
+  function renderAffiliateReferrals(referrals){
+    currentAffiliateReferrals = referrals || [];
+    const box = document.getElementById('affiliateReferralList');
+    if(!box) return;
+
+    if(!currentAffiliateReferrals.length){
+      box.innerHTML = '<div class="affiliate-empty">Belum ada member yang mendaftar dari link afiliasi kamu.</div>';
+      return;
+    }
+
+    box.innerHTML = currentAffiliateReferrals.map(row => {
+      const commission = Number(row.commission_amount || 0);
+      return `
+        <div class="badai-referral-row">
+          <div class="badai-referral-main">
+            <b>${escapeAffiliateHtml(row.full_name || 'Member BADAI')}</b>
+            <span>${escapeAffiliateHtml(affiliatePlanLabel(row.membership_plan))} • ${formatAffiliateDate(row.registered_at)}</span>
+          </div>
+          <div class="badai-referral-side">
+            <strong>${formatAffiliateRupiah(commission)}</strong>
+            <small>${escapeAffiliateHtml(affiliateStatusLabel(row))}</small>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderAffiliatePayoutHistory(payouts){
+    currentAffiliatePayouts = payouts || [];
+    const box = document.getElementById('affiliatePayoutHistory');
+    if(!box) return;
+
+    if(!currentAffiliatePayouts.length){
+      box.innerHTML = '<div class="affiliate-empty">Belum ada komisi yang pernah dicairkan.</div>';
+      return;
+    }
+
+    box.innerHTML = currentAffiliatePayouts.map(row => `
+      <div class="badai-payout-history-row">
+        <div><b>DICAIRKAN</b><span>${formatAffiliateDate(row.paid_at)}</span></div>
+        <strong>${formatAffiliateRupiah(row.amount)}</strong>
+      </div>
+    `).join('');
+  }
+
+  function renderAffiliateCommissionSummary(sales,payouts){
+    const commissionTotal = (sales || []).reduce((sum,s)=>sum+Number(s.commission_amount||0),0);
+    const commissionPaid = (payouts || []).reduce((sum,p)=>sum+Number(p.amount||0),0);
+    const commissionUnpaid = Math.max(commissionTotal - commissionPaid,0);
+
+    const grossEl = document.getElementById('affiliateCommissionGross');
+    const paidEl = document.getElementById('affiliateCommissionPaid');
+    const unpaidEl = document.getElementById('affiliateCommissionTotal');
+    const salesEl = document.getElementById('affiliateSalesCount');
+
+    if(grossEl) grossEl.textContent = formatAffiliateRupiah(commissionTotal);
+    if(paidEl) paidEl.textContent = formatAffiliateRupiah(commissionPaid);
+    if(unpaidEl) unpaidEl.textContent = formatAffiliateRupiah(commissionUnpaid);
+    if(salesEl) salesEl.textContent = (sales || []).length + ' sales';
+  }
+
   function renderAffiliateMaterials(materials){
     currentAffiliateMaterials = materials || [];
     const box = document.getElementById('affiliateMaterialsMember');
@@ -396,7 +484,11 @@
           '&status=eq.paid&select=id,amount,paid_at&order=paid_at.desc'
         ),
         api('/rest/v1/affiliate_settings?id=eq.1&select=commission_type,commission_value,inactivity_months'),
-        api('/rest/v1/affiliate_materials?active=eq.true&select=id,material_type,title,content,media_url,sort_order,created_at&order=sort_order.asc,created_at.desc')
+        api('/rest/v1/affiliate_materials?active=eq.true&select=id,material_type,title,content,media_url,sort_order,created_at&order=sort_order.asc,created_at.desc'),
+        api('/rest/v1/rpc/member_affiliate_referrals', {
+          method:'POST',
+          body:JSON.stringify({})
+        })
       ]);
 
       const affiliate = results[0]?.[0];
@@ -404,6 +496,7 @@
       const payouts = results[2] || [];
       const settings = results[3]?.[0] || null;
       const materials = results[4] || [];
+      const referrals = results[5] || [];
 
       const linkEl = document.getElementById('affiliateLink');
       const codeEl = document.getElementById('affiliateCode');
@@ -414,6 +507,9 @@
       if(!affiliate){
         if(linkEl) linkEl.textContent = 'Akun afiliasi belum aktif. Hubungi admin BADAI.';
         if(codeEl) codeEl.textContent = '-';
+        renderAffiliateCommissionSummary([],[]);
+        renderAffiliateReferrals([]);
+        renderAffiliatePayoutHistory([]);
         renderAffiliateMaterials(materials);
         return;
       }
@@ -430,6 +526,9 @@
       if(codeEl) codeEl.textContent = affiliate.affiliate_code;
       if(salesEl) salesEl.textContent = sales.length + ' sales';
       if(commissionEl) commissionEl.textContent = formatAffiliateRupiah(commissionUnpaid);
+      renderAffiliateCommissionSummary(sales,payouts);
+      renderAffiliateReferrals(referrals);
+      renderAffiliatePayoutHistory(payouts);
 
       if(rateEl && settings){
         rateEl.textContent = settings.commission_type === 'percent'
@@ -441,6 +540,9 @@
     }catch(err){
       const linkEl = document.getElementById('affiliateLink');
       if(linkEl) linkEl.textContent = 'Gagal memuat data afiliasi.';
+      renderAffiliateCommissionSummary([],[]);
+      renderAffiliateReferrals([]);
+      renderAffiliatePayoutHistory([]);
       renderAffiliateMaterials([]);
       console.warn('Gagal memuat affiliate:', err?.message || err);
     }
