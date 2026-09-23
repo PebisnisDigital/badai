@@ -218,22 +218,6 @@ document.addEventListener('DOMContentLoaded', function(){
   function el(id){return document.getElementById(id)}
   function memberSession(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')}catch(_){return null}}
 
-  var community=el('carapakai');
-  if(community){
-    community.innerHTML='<div class="badai-gratisan-heading"><h1>Gratisan BADAI</h1><p>Akses gratis untuk mulai belajar bersama BADAI.</p></div><div class="gratisan-offer-card">'+
-      '<div class="gratisan-offer-label">Yang kamu dapatkan:</div>'+
-      '<div class="gratisan-value-list">'+
-        '<div class="gratisan-value-row"><span class="gratisan-value-check">✓</span><b>Kuliah WhatsApp Rutin Setiap Hari</b><span>Senilai Rp49.000</span></div>'+
-        '<div class="gratisan-value-row"><span class="gratisan-value-check">✓</span><b>Ebook AI &amp; Bisnis</b><span>Senilai Rp39.000</span></div>'+
-        '<div class="gratisan-value-row"><span class="gratisan-value-check">✓</span><b>Belajar AI Gratisan</b><span>Senilai Rp29.000</span></div>'+
-      '</div>'+
-      '<div class="gratisan-price-box"><div class="gratisan-price-label">TOTAL SENILAI</div><div class="gratisan-price-right"><span class="gratisan-price-total">Rp117.000</span><span class="gratisan-price">GRATIS</span></div></div>'+
-      '<a class="gratisan-offer-cta" href="https://chat.whatsapp.com/LCGm5LowkYG3NiHKItShC6" target="_blank" rel="noopener noreferrer">MASUK KULIAH BADAI</a>'+
-      '<p class="gratisan-offer-note">Klik tombol di atas untuk langsung bergabung ke Kuliah WhatsApp BADAI.</p>'+
-      '<span id="communityPlanName" style="display:none">MEMBER GRATISAN</span>'+
-      '</div>';
-  }
-
   var kelas=el('kelas');
   if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading"><h1>Pemula BADAI</h1><p>10 materi khusus Member Pemula untuk mulai bikin karya dengan AI.</p></div>');
   var bonus=el('jaluruntung');
@@ -321,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function(){
   renderMemberMaterials('profitRouteGrid',untungMaterials,'Materi Untung',11);
 
   [
-    ['carapakai','Gratisan','fi fi-rr-square-1'],['kelas','Pemula','fi fi-rr-square-2'],['jaluruntung','Untung','fi fi-rr-square-3'],['afiliasi','Affiliasi','fi fi-rr-square-4'],['akun','Akun','fi fi-rr-square-5']
+    ['kelas','Pemula','fi fi-rr-square-1'],['jaluruntung','Untung','fi fi-rr-square-2'],['afiliasi','Affiliasi','fi fi-rr-square-3'],['akun','Akun','fi fi-rr-square-4']
   ].forEach(function(menu){var button=document.querySelector('.footer [data-screen="'+menu[0]+'"]');if(!button)return;var label=button.querySelector('.label');var emoji=button.querySelector('.emoji');if(label)label.textContent=menu[1];if(emoji)emoji.innerHTML='<i class="'+menu[2]+'" aria-hidden="true"></i>'});
 
   function levelFromPlan(plan){if(plan==='pro')return 3;if(plan==='free')return 1;return 2}
@@ -332,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function getUpgradeModal(){if(upgradeModal)return upgradeModal;upgradeModal=document.createElement('div');upgradeModal.className='badai-upgrade-modal';upgradeModal.innerHTML='<div class="badai-upgrade-card" role="dialog" aria-modal="true"><div class="badai-upgrade-lock">🔒</div><div class="badai-upgrade-kicker">AKSES TERKUNCI</div><h2 id="badaiUpgradeTitle">Menu ini masih terkunci</h2><p id="badaiUpgradeText">Naik paket untuk membuka akses ini.</p><div id="badaiUpgradeBenefits" class="badai-upgrade-benefits"></div><div class="badai-upgrade-actions"><a id="badaiUpgradeButton" href="#" target="_blank" rel="noopener noreferrer">UPGRADE SEKARANG</a><button type="button" data-close-upgrade>NANTI DULU</button></div></div>';document.body.appendChild(upgradeModal);upgradeModal.addEventListener('click',function(e){if(e.target===upgradeModal||(e.target.closest&&e.target.closest('[data-close-upgrade]')))upgradeModal.classList.remove('open')});return upgradeModal}
   function openUpgrade(feature,targetPackage){var modal=getUpgradeModal();var target=targetPackage==='Pemula'?'Paket Pemula':'Paket Untung';el('badaiUpgradeTitle').textContent=feature+' masih terkunci';el('badaiUpgradeText').textContent='Upgrade ke '+target+' untuk membuka menu '+feature+'.';el('badaiUpgradeBenefits').innerHTML=targetPackage==='Pemula'?'<span>✓ Buka seluruh menu Pemula</span><span>✓ Akses kelas dan update materi BADAI</span><span>✓ Tetap dapat Komunitas + KulWA</span>':'<span>✓ Menu Untung terbuka</span><span>✓ Program Affiliasi aktif</span><span>✓ Link afiliasi + bahan promosi + komisi</span>';var btn=el('badaiUpgradeButton');btn.textContent='UPGRADE KE '+target.toUpperCase();btn.href='https://wa.me/6281237523626?text='+encodeURIComponent('Halo Admin BADAI, saya ingin upgrade ke '+target+'.');modal.classList.add('open')}
 
-  function syncPlanAccess(){var level=levelFromPlan(currentPlan());var req={kelas:2,jaluruntung:3,afiliasi:3};Object.keys(req).forEach(function(screen){var btn=document.querySelector('.footer [data-screen="'+screen+'"]');if(!btn)return;var locked=level<req[screen];btn.classList.toggle('is-plan-locked',locked);btn.dataset.planLocked=locked?'1':'0';btn.setAttribute('aria-disabled',locked?'true':'false')});var planText=el('communityPlanName');if(planText)planText.textContent=planLabel(level);document.querySelectorAll('[data-member-level]').forEach(function(card){card.classList.toggle('active',Number(card.getAttribute('data-member-level'))===level)});var active=document.querySelector('#kelas.screen.active,#jaluruntung.screen.active,#afiliasi.screen.active');if(active&&level<(req[active.id]||1)&&typeof window.show==='function')window.show('carapakai')}
+  function syncPlanAccess(){var level=levelFromPlan(currentPlan());var req={kelas:2,jaluruntung:3,afiliasi:3};Object.keys(req).forEach(function(screen){var btn=document.querySelector('.footer [data-screen="'+screen+'"]');if(!btn)return;var locked=level<req[screen];btn.classList.toggle('is-plan-locked',locked);btn.dataset.planLocked=locked?'1':'0';btn.setAttribute('aria-disabled',locked?'true':'false')});document.querySelectorAll('[data-member-level]').forEach(function(card){card.classList.toggle('active',Number(card.getAttribute('data-member-level'))===level)});var active=document.querySelector('#kelas.screen.active,#jaluruntung.screen.active,#afiliasi.screen.active');if(active&&level<(req[active.id]||1)&&typeof window.show==='function')window.show('kelas')}
 
   document.addEventListener('click',function(e){var btn=e.target.closest?e.target.closest('.footer button'):null;if(!btn||btn.dataset.planLocked!=='1')return;var screen=btn.getAttribute('data-screen');if(!['kelas','jaluruntung','afiliasi'].includes(screen))return;e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();if(screen==='kelas')openUpgrade('Pemula','Pemula');if(screen==='jaluruntung')openUpgrade('Untung','Untung');if(screen==='afiliasi')openUpgrade('Affiliasi','Untung')},true);
 
