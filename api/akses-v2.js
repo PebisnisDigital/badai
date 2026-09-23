@@ -261,6 +261,336 @@ module.exports = async function handler(req, res) {
     .app .footer .label{font-size:10.5px!important}
   }
 
+
+  /* BADAI MEMBER ACCESSIBILITY READABILITY FINAL
+     Prioritas: jelas dibaca di HP, terutama untuk mata yang cepat lelah. */
+  .app{
+    font-size:15px!important;
+  }
+
+  /* Heading halaman */
+  .screen-heading,
+  .badai-gratisan-heading,
+  #akun .account-head{
+    margin-bottom:18px!important;
+  }
+  .screen-heading h1,
+  .badai-gratisan-heading h1,
+  #akun .account-head h1{
+    font-size:36px!important;
+    line-height:1.06!important;
+  }
+  .screen-heading p,
+  .badai-gratisan-heading p,
+  #akun .account-head p{
+    font-size:15px!important;
+    line-height:1.55!important;
+    font-weight:600!important;
+    color:#c3c3c3!important;
+  }
+
+  /* Materi accordion */
+  .badai-material-accordion{
+    gap:10px!important;
+  }
+  .badai-material-faq{
+    border-radius:16px!important;
+  }
+  .badai-material-summary{
+    grid-template-columns:42px minmax(0,1fr) 34px!important;
+    gap:12px!important;
+    min-height:70px!important;
+    padding:11px 12px!important;
+  }
+  .badai-material-index{
+    width:42px!important;
+    height:42px!important;
+    border-radius:11px!important;
+    font-size:12px!important;
+    font-weight:900!important;
+  }
+  .badai-material-title{
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:16px!important;
+    line-height:1.32!important;
+    font-weight:800!important;
+  }
+  .badai-material-chevron{
+    width:34px!important;
+    height:34px!important;
+    border-radius:10px!important;
+    font-size:20px!important;
+    font-weight:900!important;
+  }
+  .badai-material-content{
+    padding:0 12px 13px!important;
+  }
+  .badai-material-video{
+    margin-top:12px!important;
+    border-radius:14px!important;
+  }
+  .badai-material-video-empty{
+    padding:22px!important;
+    color:#aaa!important;
+    font-size:13px!important;
+    line-height:1.55!important;
+    font-weight:600!important;
+  }
+  .badai-material-video-empty b{
+    margin-bottom:6px!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:16px!important;
+    line-height:1.2!important;
+    font-weight:800!important;
+  }
+  .badai-material-copy{
+    margin-top:11px!important;
+    padding:14px 15px!important;
+    border-radius:13px!important;
+    color:#c7c7c7!important;
+    font-size:14px!important;
+    line-height:1.65!important;
+    font-weight:600!important;
+  }
+  .badai-material-copy>b{
+    margin-bottom:6px!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:15px!important;
+    line-height:1.3!important;
+    font-weight:800!important;
+  }
+  .badai-material-copy b:not(:first-child){
+    color:#fff!important;
+    font-weight:800!important;
+  }
+
+  /* Header & navigasi bawah */
+  .badai-member-help{
+    min-height:42px!important;
+    padding:0 15px!important;
+    font-size:12px!important;
+    font-weight:800!important;
+  }
+  .footer{
+    min-height:68px!important;
+  }
+  .footer .emoji .fi{
+    font-size:19px!important;
+  }
+  .footer .label{
+    font-size:12px!important;
+    font-weight:700!important;
+    line-height:1.15!important;
+  }
+
+  /* Community */
+  .community-kicker,
+  .community-card .eyebrow{
+    font-size:11px!important;
+  }
+  .community-hero p,
+  .community-card p{
+    font-size:13px!important;
+    line-height:1.55!important;
+  }
+  .community-plan-pill{
+    font-size:11.5px!important;
+  }
+  .community-wa p,
+  .community-access-card p{
+    font-size:12.5px!important;
+    line-height:1.5!important;
+  }
+  .community-wa a,
+  .community-access-card a{
+    font-size:12px!important;
+  }
+  .community-levels-head span{
+    font-size:11px!important;
+  }
+  .community-level small{
+    font-size:10px!important;
+  }
+  .community-level b{
+    font-size:14px!important;
+    line-height:1.3!important;
+  }
+  .community-level span{
+    font-size:11.5px!important;
+    line-height:1.45!important;
+  }
+
+  /* Akun */
+  #akun .member-plan-card span{
+    font-size:12px!important;
+  }
+  #akun .member-plan-card strong{
+    font-size:21px!important;
+  }
+  #akun .member-plan-card small{
+    font-size:12.5px!important;
+    line-height:1.45!important;
+  }
+  #akun .account-field label{
+    font-size:13px!important;
+    font-weight:800!important;
+  }
+  #akun .account-field input{
+    min-height:46px!important;
+    font-size:14px!important;
+  }
+  #akun .account-help,
+  #akun .account-status{
+    font-size:12px!important;
+    line-height:1.45!important;
+  }
+  #akun .account-save{
+    min-height:46px!important;
+    font-size:13px!important;
+  }
+  #akun .account-logout-card p{
+    font-size:12.5px!important;
+    line-height:1.5!important;
+  }
+  #akun #badaiMemberLogout{
+    min-height:42px!important;
+    font-size:12px!important;
+  }
+
+  /* Gratisan / offer */
+  .gratisan-offer-note{
+    font-size:11.5px!important;
+    line-height:1.5!important;
+  }
+  .gratisan-value-row b{
+    font-size:15px!important;
+    line-height:1.4!important;
+  }
+  .gratisan-value-row span:last-child{
+    font-size:13px!important;
+  }
+
+  /* Affiliate & statistik */
+  .badai-affiliate-kicker,
+  .affiliate-pro-pill,
+  .badai-affiliate-link-badge{
+    font-size:10px!important;
+  }
+  .badai-affiliate-link-intro,
+  .affiliate-member-heading p{
+    font-size:13px!important;
+    line-height:1.5!important;
+  }
+  .badai-affiliate-link-card h3{
+    font-size:16px!important;
+    line-height:1.3!important;
+  }
+  .badai-affiliate-link-card p{
+    font-size:12.5px!important;
+    line-height:1.5!important;
+  }
+  .badai-affiliate-url{
+    font-size:11.5px!important;
+  }
+  .badai-affiliate-copy,
+  .badai-affiliate-open,
+  .badai-affiliate-edit-code,
+  .badai-affiliate-payout{
+    font-size:11px!important;
+  }
+  .badai-affiliate-rule{
+    font-size:13px!important;
+    line-height:1.55!important;
+  }
+  .badai-sales-subhead span{
+    font-size:11.5px!important;
+  }
+  .badai-referral-main b{
+    font-size:14px!important;
+  }
+  .badai-referral-main span,
+  .badai-payout-history-row div span{
+    font-size:11.5px!important;
+  }
+  .badai-referral-side strong,
+  .badai-payout-history-row>strong{
+    font-size:13px!important;
+  }
+  .badai-referral-side small{
+    font-size:10.5px!important;
+  }
+  .badai-payout-history-row div b{
+    font-size:12.5px!important;
+  }
+
+  /* Modal upgrade */
+  .badai-upgrade-kicker{
+    font-size:11px!important;
+  }
+  .badai-upgrade-card h2{
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:26px!important;
+  }
+  .badai-upgrade-card p{
+    font-size:14px!important;
+    line-height:1.55!important;
+  }
+  .badai-upgrade-benefits{
+    font-size:13px!important;
+    line-height:1.5!important;
+  }
+  .badai-upgrade-actions a,
+  .badai-upgrade-actions button{
+    font-size:12.5px!important;
+  }
+
+  @media(max-width:430px){
+    .screen-heading h1,
+    .badai-gratisan-heading h1,
+    #akun .account-head h1{
+      font-size:32px!important;
+    }
+    .screen-heading p,
+    .badai-gratisan-heading p,
+    #akun .account-head p{
+      font-size:14px!important;
+    }
+    .badai-material-summary{
+      grid-template-columns:40px minmax(0,1fr) 32px!important;
+      gap:10px!important;
+      min-height:66px!important;
+      padding:10px!important;
+    }
+    .badai-material-index{
+      width:40px!important;
+      height:40px!important;
+      font-size:11px!important;
+    }
+    .badai-material-title{
+      font-size:15px!important;
+    }
+    .badai-material-video-empty{
+      font-size:12.5px!important;
+    }
+    .badai-material-video-empty b{
+      font-size:15px!important;
+    }
+    .badai-material-copy{
+      font-size:13.5px!important;
+      padding:13px!important;
+    }
+    .badai-material-copy>b{
+      font-size:14px!important;
+    }
+    .footer .label{
+      font-size:11.5px!important;
+    }
+    .badai-member-help{
+      font-size:11.5px!important;
+      padding:0 12px!important;
+    }
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
