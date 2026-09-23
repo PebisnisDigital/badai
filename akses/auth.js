@@ -426,17 +426,25 @@
   };
 
   async function configureMembership(profile){
-    const plan = profile?.membership_plan === 'pro' ? 'pro' : 'newbie';
+    const plan = profile?.membership_plan === 'pro'
+      ? 'pro'
+      : (profile?.membership_plan === 'free' ? 'free' : 'newbie');
     const planName = document.getElementById('memberPlanName');
     const planDesc = document.getElementById('memberPlanDesc');
     const affiliateNav = document.getElementById('affiliateNavButton');
     const footer = document.querySelector('.footer');
 
-    if(planName) planName.textContent = plan === 'pro' ? 'PAKET UNTUNG' : 'PAKET PEMULA';
+    document.documentElement.dataset.membershipPlan = plan;
+
+    if(planName){
+      planName.textContent = plan === 'pro'
+        ? 'PAKET UNTUNG'
+        : (plan === 'free' ? 'PAKET GRATISAN' : 'PAKET PEMULA');
+    }
     if(planDesc){
       planDesc.textContent = plan === 'pro'
         ? 'Belajar Ilmu AI + Update + Program Afiliasi'
-        : 'Belajar Ilmu AI + Update';
+        : (plan === 'free' ? 'Komunitas + KulWA' : 'Belajar Ilmu AI + Update');
     }
 
     window.BADAI_AFFILIATE_LINK = '';
