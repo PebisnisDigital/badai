@@ -2023,50 +2023,49 @@ h2{font-weight:900}
   filter:brightness(1.08);
   box-shadow:0 11px 28px rgba(255,79,163,.36), inset 0 1px 0 rgba(255,255,255,.3);
 }
-.package-click-hand{
-  position:absolute!important;
-  right:9px;
-  bottom:2px;
-  z-index:5!important;
-  width:28px;
+.package-click-hands{
+  position:relative;
+  z-index:5;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  gap:8px;
   height:38px;
+  margin-top:5px;
+  pointer-events:none;
+}
+.package-click-hand{
+  position:relative!important;
+  width:25px;
+  height:32px;
   display:grid;
   place-items:center;
   pointer-events:none;
   color:#fff;
-  font-size:24px;
+  font-size:23px;
   line-height:1;
   text-shadow:
     0 2px 3px rgba(0,0,0,.9),
-    0 0 10px rgba(255,255,255,.28);
-  transform-origin:50% 100%;
-  animation:badaiClickHand 1.35s ease-in-out infinite;
+    0 0 12px rgba(255,255,255,.30),
+    0 0 16px rgba(255,79,163,.18);
+  animation:badaiClickGuide 1.05s ease-in-out infinite;
 }
-.package-click-hand::after{
-  content:"";
-  position:absolute;
-  top:1px;
-  left:50%;
-  width:12px;
-  height:12px;
-  border:1.5px solid rgba(255,255,255,.9);
-  border-radius:50%;
-  opacity:0;
-  transform:translateX(-50%) scale(.25);
-  animation:badaiClickRipple 1.35s ease-out infinite;
-}
-@keyframes badaiClickHand{
-  0%,18%,100%{transform:translate3d(0,8px,0) rotate(-8deg) scale(.92)}
-  38%{transform:translate3d(-2px,-5px,0) rotate(-12deg) scale(1.05)}
-  50%{transform:translate3d(0,1px,0) rotate(-8deg) scale(.96)}
-  62%{transform:translate3d(0,-1px,0) rotate(-8deg) scale(1)}
-  78%{transform:translate3d(0,8px,0) rotate(-8deg) scale(.92)}
-}
-@keyframes badaiClickRipple{
-  0%,39%{opacity:0;transform:translateX(-50%) scale(.25)}
-  50%{opacity:.95;transform:translateX(-50%) scale(.45)}
-  72%{opacity:0;transform:translateX(-50%) scale(1.65)}
-  100%{opacity:0;transform:translateX(-50%) scale(1.65)}
+.package-click-hand:nth-child(1){animation-delay:0s}
+.package-click-hand:nth-child(2){animation-delay:.11s}
+.package-click-hand:nth-child(3){animation-delay:.22s}
+@keyframes badaiClickGuide{
+  0%,100%{
+    transform:translateY(8px) scale(.93);
+    opacity:.72;
+  }
+  48%{
+    transform:translateY(-5px) scale(1.08);
+    opacity:1;
+  }
+  66%{
+    transform:translateY(-2px) scale(1.02);
+    opacity:.96;
+  }
 }
 .package-card.is-selected{
   outline:1.5px solid rgba(255,255,255,.8);
@@ -2134,12 +2133,15 @@ h2{font-weight:900}
     80%{transform:translate3d(0,-4px,0) rotate(0deg) scale(1.036)}
     87%{transform:translate3d(0,0,0) rotate(0deg) scale(1.028)}
   }
+  .package-click-hands{
+    gap:4px;
+    height:31px;
+    margin-top:4px;
+  }
   .package-click-hand{
-    right:4px;
-    bottom:0;
-    width:21px;
-    height:30px;
-    font-size:18px;
+    width:18px;
+    height:26px;
+    font-size:17px;
   }
   .package-popular{top:6px;right:6px;padding:3px 4px;font-size:4.8px}
   .package-label{min-height:18px;padding:0 5px;font-size:5.3px;margin-bottom:6px}
@@ -2158,8 +2160,7 @@ h2{font-weight:900}
   .package-card-featured,
   .package-card-featured::before,
   .package-select-btn.hot,
-  .package-click-hand,
-  .package-click-hand::after{
+  .package-click-hand{
     animation:none!important;
   }
   .package-card-featured{
@@ -3106,7 +3107,11 @@ body.register-modal-open{
       <button class="package-select-btn hot" type="button" data-package-select="pro">
         PILIH UNTUNG
       </button>
-      <span class="package-click-hand" aria-hidden="true">☝</span>
+      <div class="package-click-hands" aria-hidden="true">
+        <span class="package-click-hand">☝</span>
+        <span class="package-click-hand">☝</span>
+        <span class="package-click-hand">☝</span>
+      </div>
     </article>
   </div>
 
