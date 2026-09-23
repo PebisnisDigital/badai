@@ -91,6 +91,38 @@ module.exports = async function handler(req, res) {
   .badai-upgrade-modal.open{display:flex}.badai-upgrade-card{width:min(100%,420px);border:1px solid #303030;border-radius:22px;background:#111;color:#fff;padding:21px;box-shadow:0 28px 80px rgba(0,0,0,.55)}
   .badai-upgrade-lock{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;margin-bottom:12px;background:#25101a;border:1px solid #65304d;font-size:21px}.badai-upgrade-kicker{color:#ff8fc5;font:700 9px "Nunito",Arial,sans-serif}.badai-upgrade-card h2{margin:5px 0 8px;font:800 23px "Nunito",Arial,sans-serif}.badai-upgrade-card p{margin:0;color:#aaa;font:500 12px "Nunito",Arial,sans-serif;line-height:1.55}.badai-upgrade-benefits{display:grid;gap:7px;margin-top:14px;padding:12px 13px;border-radius:14px;background:#090909;border:1px solid #252525;color:#ddd;font:500 11px "Nunito",Arial,sans-serif}.badai-upgrade-actions{display:grid;gap:8px;margin-top:15px}.badai-upgrade-actions a,.badai-upgrade-actions button{min-height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;text-decoration:none;font:700 11px "Nunito",Arial,sans-serif;cursor:pointer}.badai-upgrade-actions a{border:0;background:#25D366;color:#07170d}.badai-upgrade-actions button{border:1px solid #303030;background:#181818;color:#ddd}
 
+  .badai-affiliate-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 10px;padding:5px;border:1px solid #252525;border-radius:14px;background:#0c0c0c}
+  .badai-affiliate-tab{min-height:40px;border:1px solid transparent;border-radius:10px;background:transparent;color:#858585;font:700 10px "Nunito",Arial,sans-serif;cursor:pointer}
+  .badai-affiliate-tab.active{background:#ff4fa3;border-color:#ff4fa3;color:#111}
+  .badai-affiliate-panel{display:none}
+  .badai-affiliate-panel.active{display:block}
+  .badai-affiliate-tutorial{display:grid;gap:10px}
+  .badai-affiliate-video-placeholder{aspect-ratio:16/9;border-radius:18px;border:1px solid #2c2c2c;background:radial-gradient(circle at center,rgba(255,79,163,.16),transparent 34%),#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px}
+  .badai-affiliate-video-placeholder .play{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#ff4fa3;color:#111;font-size:18px;margin-bottom:9px}
+  .badai-affiliate-video-placeholder b{color:#fff;font:700 15px "Nunito",Arial,sans-serif}
+  .badai-affiliate-video-placeholder span{margin-top:4px;color:#777;font:500 9px "Nunito",Arial,sans-serif}
+  .badai-affiliate-rules{padding:14px;border-radius:16px;border:1px solid #262626;background:#101010}
+  .badai-affiliate-rules h3{margin:0 0 9px;color:#fff;font:700 15px "Nunito",Arial,sans-serif}
+  .badai-affiliate-rule-list{display:grid;gap:7px}
+  .badai-affiliate-rule{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:start;color:#b9b9b9;font:500 10px "Nunito",Arial,sans-serif;line-height:1.4}
+  .badai-affiliate-rule i{width:24px;height:24px;border-radius:8px;background:#211018;color:#ff8fc5;display:grid;place-items:center;font-style:normal;font-weight:800}
+  .badai-sales-section{display:grid;gap:9px}
+  .badai-sales-section .stats{margin:0!important}
+  .badai-sales-subcard{padding:13px;border-radius:16px;background:#101010;border:1px solid #262626}
+  .badai-sales-subhead{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .badai-sales-subhead h3{margin:0;color:#fff;font:700 15px "Nunito",Arial,sans-serif}
+  .badai-sales-subhead span{color:#777;font:500 8px "Nunito",Arial,sans-serif}
+  .badai-referral-list,.badai-payout-history{display:grid;gap:6px}
+  .badai-referral-row,.badai-payout-history-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border-radius:11px;background:#090909;border:1px solid #222}
+  .badai-referral-main{min-width:0}
+  .badai-referral-main b{display:block;color:#fff;font:600 11px "Nunito",Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .badai-referral-main span{display:block;margin-top:2px;color:#777;font:500 8px "Nunito",Arial,sans-serif}
+  .badai-referral-side{text-align:right;flex:0 0 auto}
+  .badai-referral-side strong{display:block;color:#ff8fc5;font:700 10px "Nunito",Arial,sans-serif}
+  .badai-referral-side small{display:block;margin-top:2px;color:#777;font:700 7px "Nunito",Arial,sans-serif}
+  .badai-payout-history-row div b{display:block;color:#fff;font:700 9px "Nunito",Arial,sans-serif}
+  .badai-payout-history-row div span{display:block;margin-top:2px;color:#777;font:500 8px "Nunito",Arial,sans-serif}
+  .badai-payout-history-row>strong{color:#25D366;font:700 11px "Nunito",Arial,sans-serif}
   .badai-affiliate-multilink-box{padding:16px!important}.badai-affiliate-link-intro{margin:0 0 12px!important;color:#aaa!important;font-size:10px!important;line-height:1.5!important}
   .badai-affiliate-link-list{display:grid;gap:8px;margin-top:10px}.badai-affiliate-link-card{padding:12px;border:1px solid #2a2a2a;border-radius:15px;background:#0b0b0b}.badai-affiliate-link-card.is-featured{border-color:#66324e;background:#160d12}
   .badai-affiliate-link-badge{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:999px;border:1px solid #553047;background:#211018;color:#ff92c7;font:800 7px "Nunito",Arial,sans-serif;letter-spacing:.06em}
@@ -98,7 +130,7 @@ module.exports = async function handler(req, res) {
   .badai-affiliate-url{display:block;margin-top:9px;padding:9px 10px;border-radius:10px;border:1px solid #222;background:#050505;color:#d9d9d9;font:600 8px ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .badai-affiliate-link-actions{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:8px}.badai-affiliate-copy,.badai-affiliate-open,.badai-affiliate-edit-code{min-height:38px;border-radius:10px;font:800 9px "Nunito",Arial,sans-serif;cursor:pointer}.badai-affiliate-copy{border:0;background:#ff4fa3;color:#090909;padding:0 12px}.badai-affiliate-copy.copied{background:#25D366;color:#07170d}.badai-affiliate-open{min-width:66px;padding:0 12px;display:flex;align-items:center;justify-content:center;border:1px solid #333;background:#151515;color:#fff;text-decoration:none}.badai-affiliate-code-slot{margin:5px 0 7px}.badai-affiliate-code-card{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin:0!important;padding:9px 10px!important;border-radius:10px!important;background:#0b0b0b!important;border:1px solid #2d2d2d!important;box-shadow:none!important}.badai-affiliate-code-line{display:flex!important;align-items:baseline!important;gap:6px!important;flex:1 1 auto!important;min-width:0!important;flex-wrap:nowrap!important;color:#fff!important;font-family:"Nunito",Arial,sans-serif!important}.badai-affiliate-code-line b{margin:0!important;font-size:15px!important;font-weight:500!important;line-height:1.1!important;letter-spacing:0!important;white-space:nowrap!important}.badai-affiliate-code-line span{font-family:"Nunito",Arial,sans-serif!important;font-size:16px!important;font-weight:500!important;line-height:1.1!important;color:#ff8fc5!important;letter-spacing:.02em!important;white-space:nowrap!important}.badai-affiliate-edit-code{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;width:auto!important;min-height:31px!important;margin:0!important;padding:0 11px!important;border:1px solid #3a3a3a;background:#151515;color:#fff;border-radius:8px;font:500 10px "Nunito",Arial,sans-serif;cursor:pointer;white-space:nowrap!important}.badai-affiliate-commission-card{position:relative!important;padding-right:145px!important}.badai-affiliate-payout{display:inline-flex!important;align-items:center!important;justify-content:center!important;position:absolute!important;right:14px!important;bottom:14px!important;margin:0!important;min-height:34px!important;padding:0 13px!important;border-radius:9px!important;background:#25D366!important;color:#07170d!important;text-decoration:none!important;font:700 10px "Nunito",Arial,sans-serif!important;white-space:nowrap!important}.badai-affiliate-loading,.badai-affiliate-empty{padding:13px;border:1px dashed #333;border-radius:13px;color:#888;text-align:center;font:600 9px "Nunito",Arial,sans-serif;line-height:1.5}
 
-  @media(max-width:420px){.badai-member-header{padding:9px 10px;min-height:58px}.badai-member-header-logo img{height:30px;max-width:174px}.badai-member-help{min-height:37px;padding:0 11px;font-size:9px}.footer .label{font-size:9.7px!important}.community-hero{padding:17px}.community-hero h1{font-size:24px}.community-access-grid{grid-template-columns:1fr;gap:7px}.community-access-card{padding:12px}.gratisan-offer-card{padding:14px;border-radius:18px}.gratisan-offer-label{font-size:23px}.gratisan-value-row{padding:9px}.gratisan-value-row b{font-size:11px}.gratisan-value-row span:last-child{font-size:9.5px}.gratisan-price-box{grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:13px 10px}.gratisan-price-label{font-size:14px}.gratisan-price-right{gap:7px}.gratisan-price-total{font-size:20px}.gratisan-price{font-size:24px}.gratisan-offer-cta{min-height:46px}.community-two{gap:7px}.community-card{padding:12px}.community-level{padding:8px;min-height:82px}}
+  @media(max-width:420px){.badai-affiliate-tabs{gap:3px;padding:4px}.badai-affiliate-tab{min-height:36px;padding:0 4px;font-size:8.5px}.badai-affiliate-video-placeholder{border-radius:14px}.badai-sales-subcard{padding:10px}.badai-referral-row,.badai-payout-history-row{padding:8px}.badai-member-header{padding:9px 10px;min-height:58px}.badai-member-header-logo img{height:30px;max-width:174px}.badai-member-help{min-height:37px;padding:0 11px;font-size:9px}.footer .label{font-size:9.7px!important}.community-hero{padding:17px}.community-hero h1{font-size:24px}.community-access-grid{grid-template-columns:1fr;gap:7px}.community-access-card{padding:12px}.gratisan-offer-card{padding:14px;border-radius:18px}.gratisan-offer-label{font-size:23px}.gratisan-value-row{padding:9px}.gratisan-value-row b{font-size:11px}.gratisan-value-row span:last-child{font-size:9.5px}.gratisan-price-box{grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:13px 10px}.gratisan-price-label{font-size:14px}.gratisan-price-right{gap:7px}.gratisan-price-total{font-size:20px}.gratisan-price{font-size:24px}.gratisan-offer-cta{min-height:46px}.community-two{gap:7px}.community-card{padding:12px}.community-level{padding:8px;min-height:82px}}
 </style>`;
 
     const headerMarkup = String.raw`
@@ -157,6 +189,89 @@ document.addEventListener('DOMContentLoaded', function(){
 
   async function resolveRealPlan(){try{var s=memberSession();if(!s||!s.access_token)return;var userId=s.user&&s.user.id?s.user.id:'';if(!userId){var ur=await fetch(SUPABASE_URL+'/auth/v1/user',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+s.access_token}});if(ur.ok){var u=await ur.json();userId=u&&u.id?u.id:''}}if(!userId)return;var pr=await fetch(SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(userId)+'&select=membership_plan',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+s.access_token}});if(!pr.ok)return;var rows=await pr.json();var plan=rows&&rows[0]&&rows[0].membership_plan?rows[0].membership_plan:'newbie';document.documentElement.dataset.membershipPlan=plan;var pn=el('memberPlanName'),pd=el('memberPlanDesc');if(pn)pn.textContent=plan==='pro'?'PAKET UNTUNG':plan==='free'?'PAKET GRATISAN':'PAKET PEMULA';if(pd)pd.textContent=plan==='pro'?'Ilmu + Bonus + Program Affiliasi':plan==='free'?'Komunitas + KulWA':'Belajar Ilmu AI + Update';syncPlanAccess()}catch(err){console.warn('BADAI plan sync:',err&&err.message?err.message:err)}}
 
+  function setupAffiliateTabs(){
+    var root=el('afiliasi');
+    if(!root||root.dataset.tabsReady==='1')return;
+    root.dataset.tabsReady='1';
+
+    var heading=root.querySelector('.center');
+    var affbox=root.querySelector('.affbox');
+    var stats=root.querySelector('.stats');
+    var materials=root.querySelector('.affiliate-member-section');
+    if(!heading||!affbox||!stats||!materials)return;
+
+    var nav=document.createElement('div');
+    nav.className='badai-affiliate-tabs';
+    nav.innerHTML='<button class="badai-affiliate-tab active" type="button" data-aff-tab="tutorial">Tutorial</button><button class="badai-affiliate-tab" type="button" data-aff-tab="link">Link</button><button class="badai-affiliate-tab" type="button" data-aff-tab="sales">Penjualan</button><button class="badai-affiliate-tab" type="button" data-aff-tab="materials">Bahan Promosi</button>';
+    heading.insertAdjacentElement('afterend',nav);
+
+    var tutorial=document.createElement('div');
+    tutorial.className='badai-affiliate-panel badai-affiliate-tutorial active';
+    tutorial.dataset.affPanel='tutorial';
+    tutorial.innerHTML='<div class="badai-affiliate-video-placeholder"><div class="play">▶</div><b>Video Tutorial Afiliasi BADAI</b><span>Slot video YouTube sudah disiapkan. Tinggal masukkan link videonya.</span></div><div class="badai-affiliate-rules"><h3>Aturan Main Afiliasi</h3><div class="badai-affiliate-rule-list"><div class="badai-affiliate-rule"><i>1</i><span>Bagikan link afiliasi milik kamu sendiri agar referral tercatat otomatis.</span></div><div class="badai-affiliate-rule"><i>2</i><span>Komisi dihitung dari transaksi yang valid dan berhasil terverifikasi.</span></div><div class="badai-affiliate-rule"><i>3</i><span>Pencairan komisi dilakukan melalui Admin BADAI dan riwayatnya tercatat di menu Penjualan.</span></div><div class="badai-affiliate-rule"><i>4</i><span>Gunakan materi promosi dengan wajar. Hindari spam dan klaim yang menyesatkan.</span></div></div></div>';
+
+    var linkPanel=document.createElement('div');
+    linkPanel.className='badai-affiliate-panel';
+    linkPanel.dataset.affPanel='link';
+    linkPanel.appendChild(affbox);
+
+    var salesPanel=document.createElement('div');
+    salesPanel.className='badai-affiliate-panel badai-sales-section';
+    salesPanel.dataset.affPanel='sales';
+
+    var codeEl=el('affiliateCode');
+    var codeCard=codeEl&&codeEl.closest?codeEl.closest('.stat'):null;
+    var salesEl=el('affiliateSalesCount');
+    var salesCard=salesEl&&salesEl.closest?salesEl.closest('.stat'):null;
+    var commissionEl=el('affiliateCommissionTotal');
+    var commissionCard=commissionEl&&commissionEl.closest?commissionEl.closest('.stat'):null;
+    if(commissionCard){
+      var commissionLabel=commissionCard.querySelector('b');
+      if(commissionLabel)commissionLabel.textContent='Belum Dicairkan';
+    }
+
+    var grossCard=document.createElement('div');
+    grossCard.className='stat';
+    grossCard.innerHTML='💰<b>Total Komisi</b><span id="affiliateCommissionGross">Rp0</span>';
+    var paidCard=document.createElement('div');
+    paidCard.className='stat';
+    paidCard.innerHTML='✅<b>Sudah Dicairkan</b><span id="affiliateCommissionPaid">Rp0</span>';
+
+    if(salesCard)stats.appendChild(salesCard);
+    stats.appendChild(grossCard);
+    stats.appendChild(paidCard);
+    if(commissionCard)stats.appendChild(commissionCard);
+    salesPanel.appendChild(stats);
+
+    var referralCard=document.createElement('div');
+    referralCard.className='badai-sales-subcard';
+    referralCard.innerHTML='<div class="badai-sales-subhead"><h3>Member dari Link Kamu</h3><span>Referral yang mendaftar lewat link afiliasi</span></div><div id="affiliateReferralList" class="badai-referral-list"><div class="affiliate-empty">Memuat data referral...</div></div>';
+    salesPanel.appendChild(referralCard);
+
+    var payoutCard=document.createElement('div');
+    payoutCard.className='badai-sales-subcard';
+    payoutCard.innerHTML='<div class="badai-sales-subhead"><h3>Riwayat Pencairan</h3><span>Komisi yang sudah dibayarkan</span></div><div id="affiliatePayoutHistory" class="badai-payout-history"><div class="affiliate-empty">Memuat riwayat pencairan...</div></div>';
+    salesPanel.appendChild(payoutCard);
+
+    var materialsPanel=document.createElement('div');
+    materialsPanel.className='badai-affiliate-panel';
+    materialsPanel.dataset.affPanel='materials';
+    materialsPanel.appendChild(materials);
+
+    nav.insertAdjacentElement('afterend',tutorial);
+    tutorial.insertAdjacentElement('afterend',linkPanel);
+    linkPanel.insertAdjacentElement('afterend',salesPanel);
+    salesPanel.insertAdjacentElement('afterend',materialsPanel);
+
+    nav.addEventListener('click',function(e){
+      var btn=e.target.closest?e.target.closest('[data-aff-tab]'):null;
+      if(!btn)return;
+      var target=btn.getAttribute('data-aff-tab');
+      nav.querySelectorAll('.badai-affiliate-tab').forEach(function(item){item.classList.toggle('active',item===btn)});
+      root.querySelectorAll('.badai-affiliate-panel').forEach(function(panel){panel.classList.toggle('active',panel.getAttribute('data-aff-panel')===target)});
+    });
+  }
+
   function prepareAffiliateBox(){var legacy=el('affiliateLink');if(!legacy)return null;var box=legacy.closest?legacy.closest('.affbox'):null;if(!box)return null;if(box.dataset.multiLinkReady==='1')return box;box.dataset.multiLinkReady='1';box.classList.add('badai-affiliate-multilink-box');box.innerHTML='<div class="affiliate-pro-pill">PAKET UNTUNG • AKTIF</div><div id="badaiAffiliateCodeSlot" class="badai-affiliate-code-slot"></div><h2>Pilih Link Jualan Kamu</h2><p class="badai-affiliate-link-intro">Mau ajak orang masuk gratis dulu atau langsung jual paket? Pilih link sesuai cara jualanmu.</p><div id="badaiAffiliateLinkChoices" class="badai-affiliate-link-list"><div class="badai-affiliate-loading">Menyiapkan link jualan...</div></div><div id="affiliateLink" class="linkbox" style="display:none">Memuat link afiliasi...</div>';var slot=el('badaiAffiliateCodeSlot');var codeEl=el('affiliateCode');var codeStat=codeEl&&codeEl.closest?codeEl.closest('.stat'):null;if(slot&&codeStat){codeStat.classList.add('badai-affiliate-code-card');slot.appendChild(codeStat);var label=codeStat.querySelector('b');var line=document.createElement('div');line.className='badai-affiliate-code-line';Array.from(codeStat.childNodes).forEach(function(node){if(node.nodeType===3)node.remove()});if(label){label.textContent='KODE AFFILIASI :';line.appendChild(label)}line.appendChild(codeEl);codeStat.appendChild(line);var edit=document.createElement('button');edit.type='button';edit.className='badai-affiliate-edit-code';edit.textContent='EDIT KODE';edit.addEventListener('click',function(){if(typeof window.openAffiliateEditor==='function')window.openAffiliateEditor()});codeStat.appendChild(edit)}return box}
   function ensurePayoutButton(){var commission=el('affiliateCommissionTotal');if(!commission)return;var card=commission.closest?commission.closest('.stat'):null;if(!card)return;card.classList.add('badai-affiliate-commission-card');if(el('badaiAffiliatePayout'))return;var btn=document.createElement('a');btn.id='badaiAffiliatePayout';btn.className='badai-affiliate-payout';btn.href='#';btn.target='_blank';btn.rel='noopener noreferrer';btn.textContent='CAIRKAN KOMISI';btn.addEventListener('click',function(){var code=String(el('affiliateCode')?el('affiliateCode').textContent:'-').trim()||'-';var amount=String(commission.textContent||'Rp0').trim()||'Rp0';btn.href='https://wa.me/6281237523626?text='+encodeURIComponent('Halo Admin BADAI, saya ingin mencairkan komisi afiliasi saya.\n\nKode Afiliasi: '+code+'\nTotal Komisi: '+amount)});card.appendChild(btn)}
   function affiliateCode(){var code=String(el('affiliateCode')?el('affiliateCode').textContent:'').trim();if(code&&code!=='-'&&code.toLowerCase().indexOf('memuat')===-1)return code;var link=String(window.BADAI_AFFILIATE_LINK||'').trim();if(link){try{var parsed=new URL(link,location.origin);var seg=parsed.pathname.split('/').filter(Boolean).pop();if(seg)return decodeURIComponent(seg)}catch(_){}}return''}
@@ -170,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var planNode=el('memberPlanName');if(planNode&&typeof MutationObserver!=='undefined')new MutationObserver(syncPlanAccess).observe(planNode,{childList:true,subtree:true,characterData:true});
   var codeNode=el('affiliateCode');if(codeNode&&typeof MutationObserver!=='undefined')new MutationObserver(function(){affiliateRenderedCode='';bootAffiliate(0)}).observe(codeNode,{childList:true,subtree:true,characterData:true});
 
-  syncPlanAccess();setTimeout(resolveRealPlan,250);setTimeout(function(){bootAffiliate(0)},350);
+  setupAffiliateTabs();syncPlanAccess();setTimeout(resolveRealPlan,250);setTimeout(function(){bootAffiliate(0)},350);
 });
 </script>`;
 
