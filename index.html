@@ -3430,151 +3430,281 @@ main section > .container > .badai-copy-kicker,
 }
 
 
-/* MENTOR AUTHORITY + TRUST */
-.mentor-authority-section h2{
+/* MENTOR CV — compact authority profile */
+.mentor-cv-section h2{
   text-align:center !important;
 }
-.mentor-authority-lead{
-  max-width:620px;
-  margin:0 auto !important;
+.mentor-cv-lead{
+  max-width:610px;
+  margin:0 auto 22px !important;
   text-align:center !important;
 }
-.mentor-authority-lead strong{color:#fff}
-.mentor-authority-card{
-  margin-top:22px;
-  padding:18px;
+.mentor-cv{
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.25fr);
+  gap:12px;
+  align-items:stretch;
+}
+.mentor-cv-profile,
+.mentor-cv-main{
+  border:1px solid #2b2027;
+  border-radius:22px;
   background:
-    radial-gradient(circle at 88% 8%,rgba(255,79,163,.10),transparent 28%),
+    radial-gradient(circle at 85% 8%,rgba(255,79,163,.09),transparent 28%),
     linear-gradient(180deg,#111,#0b0b0b);
 }
-.mentor-authority-photo{
-  position:relative;
-  overflow:hidden;
+.mentor-cv-profile{
+  padding:16px;
+  text-align:center;
 }
-.mentor-photo-proof{
+.mentor-cv-photo{
+  position:relative;
+  width:100%;
+  aspect-ratio:1/1;
+  overflow:hidden;
+  border-radius:18px;
+  border:1px solid #382331;
+  background:#0b0b0b;
+}
+.mentor-cv-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.mentor-cv-photo-badge{
   position:absolute;
   left:50%;
-  bottom:10px;
+  bottom:9px;
   transform:translateX(-50%);
   width:max-content;
-  max-width:calc(100% - 22px);
-  padding:7px 11px;
+  max-width:calc(100% - 18px);
+  padding:6px 9px;
   border:1px solid rgba(255,255,255,.16);
   border-radius:999px;
-  background:rgba(7,7,7,.78);
+  background:rgba(7,7,7,.80);
   backdrop-filter:blur(8px);
   color:#fff;
-  font:900 8px "Raleway",Arial,sans-serif;
-  letter-spacing:.07em;
+  font:900 7.5px "Raleway",Arial,sans-serif;
+  letter-spacing:.06em;
 }
-.mentor-authority-strip{
+.mentor-cv-name{
+  margin-top:14px;
+  color:#fff;
+  font:900 28px/1 "Raleway",Arial,sans-serif;
+  letter-spacing:-.04em;
+}
+.mentor-cv-role{
+  margin-top:6px;
+  color:var(--pink);
+  font:900 10px/1.35 "Raleway",Arial,sans-serif;
+}
+.mentor-cv-summary{
+  margin:11px auto 0;
+  color:#aaa;
+  font:500 11px/1.55 "Nunito",Arial,sans-serif;
+}
+.mentor-cv-tags{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
-  gap:7px;
-  max-width:590px;
-  margin:12px auto 16px;
+  gap:5px;
+  margin-top:12px;
 }
-.mentor-authority-strip span{
+.mentor-cv-tags span{
+  min-height:24px;
   display:inline-flex;
   align-items:center;
-  min-height:28px;
-  padding:0 10px;
+  padding:0 8px;
+  border:1px solid #392331;
   border-radius:999px;
-  border:1px solid #3c2a34;
-  background:#0d0d0d;
-  color:#d6d6d6;
-  font:700 9px "Nunito",Arial,sans-serif;
+  background:#100d0f;
+  color:#d3d3d3;
+  font:700 8px "Nunito",Arial,sans-serif;
 }
-.mentor-authority-copy{
-  max-width:570px;
+.mentor-cv-quote{
+  margin-top:12px;
+  padding:11px;
+  border:1px solid #42233a;
+  border-radius:13px;
+  background:#140d12;
+  color:#bababa;
+  font:600 10px/1.5 "Nunito",Arial,sans-serif;
 }
-.mentor-authority-copy strong{color:#fff}
-.mentor-proof-title{
-  margin:22px auto 11px;
-  text-align:center;
-  color:#fff;
-  font:900 12px "Raleway",Arial,sans-serif;
-  letter-spacing:.02em;
-}
-.mentor-proof-title span{color:var(--pink)}
-.mentor-proof-grid{
+.mentor-cv-quote b{color:#fff}
+.mentor-cv-main{
+  padding:16px;
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
+  align-content:start;
+  gap:12px;
 }
-.mentor-proof-item{
-  min-height:112px;
+.mentor-cv-block{
   padding:13px;
-  text-align:left;
-  border:1px solid #292929;
-  border-radius:15px;
+  border:1px solid #252525;
+  border-radius:16px;
   background:#0d0d0d;
 }
-.mentor-proof-item b{
-  display:block;
-  margin-bottom:6px;
-  color:#fff;
-  font:900 11px "Raleway",Arial,sans-serif;
+.mentor-cv-title{
+  margin-bottom:12px;
+  color:#ff72b6;
+  font:900 9px "Raleway",Arial,sans-serif;
+  letter-spacing:.10em;
 }
-.mentor-proof-item span{
-  display:block;
-  color:#9e9e9e;
-  font:500 10.5px/1.5 "Nunito",Arial,sans-serif;
-}
-.mentor-authority-points{
+.mentor-skill + .mentor-skill{
   margin-top:10px;
 }
-.mentor-authority-points .mentor-point{
-  min-height:88px;
+.mentor-skill-head{
   display:flex;
-  flex-direction:column;
-  justify-content:center;
+  justify-content:space-between;
+  gap:8px;
+  align-items:flex-end;
+  margin-bottom:5px;
 }
-.mentor-founder-story,
-.mentor-transparency{
-  max-width:600px;
-  margin:16px auto 0;
-  padding:17px;
-  border-radius:17px;
+.mentor-skill-head b{
+  color:#f3f3f3;
+  font:800 10.5px "Raleway",Arial,sans-serif;
+}
+.mentor-skill-head span{
+  flex:0 0 auto;
+  color:#767676;
+  font:800 6.5px "Raleway",Arial,sans-serif;
+  letter-spacing:.05em;
+}
+.mentor-skill-bar{
+  height:7px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#21171d;
+  box-shadow:inset 0 0 0 1px #2f2229;
+}
+.mentor-skill-bar i{
+  display:block;
+  width:var(--level);
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#ff2d93,#ff75ba);
+  box-shadow:0 0 15px rgba(255,79,163,.28);
+  transform-origin:left center;
+  animation:mentorSkillFill 1.1s ease both;
+}
+@keyframes mentorSkillFill{
+  from{transform:scaleX(0)}
+  to{transform:scaleX(1)}
+}
+.mentor-timeline{
+  position:relative;
+  display:grid;
+  gap:0;
+}
+.mentor-timeline::before{
+  content:"";
+  position:absolute;
+  left:5px;
+  top:7px;
+  bottom:7px;
+  width:1px;
+  background:#392533;
+}
+.mentor-timeline-item{
+  position:relative;
+  display:grid;
+  grid-template-columns:12px 1fr;
+  gap:9px;
+  padding:7px 0;
+  text-align:left;
+}
+.mentor-timeline-dot{
+  position:relative;
+  z-index:1;
+  width:11px;
+  height:11px;
+  margin-top:2px;
+  border:2px solid #ff4fa3;
+  border-radius:50%;
+  background:#0d0d0d;
+  box-shadow:0 0 0 3px rgba(255,79,163,.08);
+}
+.mentor-timeline-item b{
+  display:block;
+  color:#fff;
+  font:800 10.5px "Raleway",Arial,sans-serif;
+}
+.mentor-timeline-item small{
+  display:block;
+  margin-top:3px;
+  color:#8f8f8f;
+  font:500 9px/1.45 "Nunito",Arial,sans-serif;
+}
+.mentor-method-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+.mentor-method-grid>div{
+  min-height:66px;
+  padding:9px 7px;
+  border:1px solid #292929;
+  border-radius:12px;
+  background:#101010;
   text-align:center;
 }
-.mentor-founder-story{
-  border:1px solid #4a2639;
-  background:linear-gradient(180deg,#160e13,#0e0d0e);
-}
-.mentor-story-kicker{
-  margin-bottom:8px;
+.mentor-method-grid b{
+  display:block;
   color:var(--pink);
   font:900 9px "Raleway",Arial,sans-serif;
-  letter-spacing:.1em;
 }
-.mentor-founder-story p,
-.mentor-transparency p{
-  margin:0;
-  color:#b7b7b7;
-  font:500 12px/1.65 "Nunito",Arial,sans-serif;
-}
-.mentor-founder-story strong,
-.mentor-transparency strong{color:#fff}
-.mentor-transparency{
-  border:1px solid #2b2b2b;
-  background:#0b0b0b;
-}
-.mentor-transparency>b{
+.mentor-method-grid span{
   display:block;
-  margin-bottom:7px;
-  color:#fff;
-  font:900 11px "Raleway",Arial,sans-serif;
+  margin-top:4px;
+  color:#ddd;
+  font:700 9px/1.25 "Nunito",Arial,sans-serif;
 }
-@media(max-width:520px){
-  .mentor-authority-card{padding:14px}
-  .mentor-authority-strip{gap:6px}
-  .mentor-authority-strip span{font-size:8px;padding:0 8px}
-  .mentor-proof-grid{grid-template-columns:1fr}
-  .mentor-proof-item{min-height:0}
-  .mentor-authority-points{grid-template-columns:1fr}
-  .mentor-founder-story,.mentor-transparency{padding:14px}
+.mentor-cv-foot{
+  max-width:640px;
+  margin:12px auto 0;
+  padding:13px 15px;
+  border:1px solid #3c2633;
+  border-radius:15px;
+  background:#120e10;
+  text-align:center;
+}
+.mentor-cv-foot b{
+  display:block;
+  color:#fff;
+  font:900 10.5px/1.35 "Raleway",Arial,sans-serif;
+}
+.mentor-cv-foot span{
+  display:block;
+  margin-top:4px;
+  color:#9a9a9a;
+  font:500 9.5px/1.5 "Nunito",Arial,sans-serif;
+}
+@media(max-width:620px){
+  .mentor-cv{
+    grid-template-columns:1fr;
+  }
+  .mentor-cv-profile,
+  .mentor-cv-main{
+    border-radius:18px;
+  }
+  .mentor-cv-profile{
+    padding:14px;
+  }
+  .mentor-cv-photo{
+    width:min(100%,320px);
+    margin:auto;
+  }
+}
+@media(max-width:420px){
+  .mentor-method-grid{
+    grid-template-columns:1fr;
+  }
+  .mentor-method-grid>div{
+    min-height:0;
+  }
+  .mentor-skill-head span{
+    display:none;
+  }
 }
 
 /* BADAI COPY UPGRADE — keeps existing visual DNA, adds trust/conversion sections */
@@ -3821,57 +3951,99 @@ main section > .container > .badai-copy-kicker,
 </div>
 </div>
 </section>
-<section class="mentor-authority-section">
+<section class="mentor-cv-section">
 <div class="container">
-<h2>Belajar AI Bareng Orang yang Paham<br/><span class="pink">Rasanya Jadi Pemula.</span></h2>
-<p class="lead mentor-authority-lead">
-  Nggak perlu jadi anak IT. Yang penting kamu tahu <strong>apa yang perlu dicoba dulu, cara memakainya, dan skill itu bisa dimanfaatkan ke mana.</strong>
-</p>
+<h2>Kenalan dengan<br/><span class="pink">Teh Vini.</span></h2>
+<p class="lead mentor-cv-lead">Orang di balik BADAI yang membantu menerjemahkan AI jadi lebih sederhana, praktis, dan dekat dengan kebutuhan bisnis sehari-hari.</p>
 
-<div class="mentor-card mentor-authority-card">
-<div class="mentor-photo mentor-authority-photo">
-<img alt="Teh Vini — Mentor BADAI" loading="lazy" src="https://i.ibb.co.com/5hhZDWX9/TEH-VINI-BADAI-SEMINAR-UNDER50-KB-1.webp"/>
-<div class="mentor-photo-proof">PRAKTISI • BUKAN CUMA TEORI</div>
+<div class="mentor-cv">
+  <div class="mentor-cv-profile">
+    <div class="mentor-cv-photo">
+      <img alt="Teh Vini — Founder BADAI" loading="lazy" src="https://i.ibb.co.com/5hhZDWX9/TEH-VINI-BADAI-SEMINAR-UNDER50-KB-1.webp"/>
+      <span class="mentor-cv-photo-badge">PRAKTISI • BUKAN CUMA TEORI</span>
+    </div>
+
+    <div class="mentor-cv-name">Teh Vini</div>
+    <div class="mentor-cv-role">Founder BADAI &amp; PEBISNIS.DIGITAL</div>
+
+    <p class="mentor-cv-summary">Membantu orang biasa belajar AI dengan bahasa yang lebih mudah dipahami, langsung dicoba, lalu diarahkan ke manfaat nyata.</p>
+
+    <div class="mentor-cv-tags">
+      <span>Digital Marketer</span>
+      <span>Produk Digital</span>
+      <span>AI untuk Bisnis</span>
+      <span>Marketing</span>
+    </div>
+
+    <div class="mentor-cv-quote">“Nggak harus tahu semua AI. Yang penting tahu <b>apa yang berguna, cara memakainya, dan bisa dipakai buat apa.</b>”</div>
+  </div>
+
+  <div class="mentor-cv-main">
+    <div class="mentor-cv-block">
+      <div class="mentor-cv-title">SKILLS &amp; FOKUS</div>
+
+      <div class="mentor-skill">
+        <div class="mentor-skill-head"><b>Digital Marketing</b><span>FOKUS UTAMA</span></div>
+        <div class="mentor-skill-bar"><i style="--level:94%"></i></div>
+      </div>
+
+      <div class="mentor-skill">
+        <div class="mentor-skill-head"><b>Produk Digital</b><span>AKTIF DIPAKAI</span></div>
+        <div class="mentor-skill-bar"><i style="--level:92%"></i></div>
+      </div>
+
+      <div class="mentor-skill">
+        <div class="mentor-skill-head"><b>AI untuk Konten &amp; Promosi</b><span>AKTIF DIPAKAI</span></div>
+        <div class="mentor-skill-bar"><i style="--level:90%"></i></div>
+      </div>
+
+      <div class="mentor-skill">
+        <div class="mentor-skill-head"><b>Website &amp; Sistem Bisnis</b><span>TERUS DIKEMBANGKAN</span></div>
+        <div class="mentor-skill-bar"><i style="--level:86%"></i></div>
+      </div>
+
+      <div class="mentor-skill">
+        <div class="mentor-skill-head"><b>Monetisasi &amp; Affiliate</b><span>FOKUS BISNIS</span></div>
+        <div class="mentor-skill-bar"><i style="--level:88%"></i></div>
+      </div>
+    </div>
+
+    <div class="mentor-cv-block">
+      <div class="mentor-cv-title">PENGALAMAN</div>
+      <div class="mentor-timeline">
+        <div class="mentor-timeline-item">
+          <span class="mentor-timeline-dot"></span>
+          <div><b>Founder PEBISNIS.DIGITAL</b><small>Membangun ekosistem belajar dan bisnis digital untuk pemula.</small></div>
+        </div>
+        <div class="mentor-timeline-item">
+          <span class="mentor-timeline-dot"></span>
+          <div><b>Founder Komunitas BADAI</b><small>Mengembangkan tempat belajar AI yang terus update dan fokus pada praktik.</small></div>
+        </div>
+        <div class="mentor-timeline-item">
+          <span class="mentor-timeline-dot"></span>
+          <div><b>Praktisi Produk Digital</b><small>Membuat, memasarkan, dan mengembangkan produk digital untuk market Indonesia.</small></div>
+        </div>
+        <div class="mentor-timeline-item">
+          <span class="mentor-timeline-dot"></span>
+          <div><b>AI Dipakai di Bisnis Sendiri</b><small>Untuk konten, website, marketing, produk digital, dan workflow bisnis.</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mentor-cv-block mentor-cv-method">
+      <div class="mentor-cv-title">CARA MENGAJAR</div>
+      <div class="mentor-method-grid">
+        <div><b>01</b><span>Bahasa orang biasa</span></div>
+        <div><b>02</b><span>Langsung praktik</span></div>
+        <div><b>03</b><span>Selalu cari “buat apa?”</span></div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="mentor-role">MENTOR &amp; FOUNDER BADAI</div>
-<div class="mentor-name">Teh Vini</div>
-
-<div class="mentor-authority-strip">
-  <span>Digital Marketer</span>
-  <span>Founder PEBISNIS.DIGITAL</span>
-  <span>Founder BADAI</span>
-  <span>Praktisi Produk Digital</span>
-</div>
-
-<p class="mentor-copy mentor-authority-copy">
-  Teh Vini membantu “menerjemahkan” AI menjadi langkah yang lebih gampang dipahami orang biasa:
-  <strong>ini gunanya buat apa, cara pakainya gimana, dan kalau sudah bisa — bisa dimanfaatkan ke arah mana.</strong>
-</p>
-
-<div class="mentor-proof-title">BUKAN CUMA DIAJARKAN. <span>DIPAKAI SENDIRI.</span></div>
-<div class="mentor-proof-grid">
-  <div class="mentor-proof-item"><b>🌐 WEBSITE</b><span>AI dipakai untuk membantu membangun dan mengembangkan website bisnis.</span></div>
-  <div class="mentor-proof-item"><b>✍️ KONTEN</b><span>AI dipakai untuk membantu ide, materi, dan kebutuhan promosi.</span></div>
-  <div class="mentor-proof-item"><b>📦 PRODUK DIGITAL</b><span>AI dipakai dari proses ide, pembuatan, sampai pengembangan produk.</span></div>
-  <div class="mentor-proof-item"><b>⚙️ OTOMASI &amp; MARKETING</b><span>AI dipakai untuk membantu sistem, workflow, dan aktivitas pemasaran.</span></div>
-</div>
-
-<div class="mentor-points mentor-authority-points">
-<div class="mentor-point"><b>NGGAK SOK TEKNIS</b>Bahasa orang biasa. Bukan bahasa programmer.</div>
-<div class="mentor-point"><b>LANGSUNG COBA</b>Yang dipelajari diarahkan untuk benar-benar dipraktikkan.</div>
-<div class="mentor-point"><b>SELALU CARI “BUAT APA?”</b>Bukan sekadar hafal tools, tapi pahami manfaat dan peluangnya.</div>
-</div>
-
-<div class="mentor-founder-story">
-  <div class="mentor-story-kicker">KENAPA BADAI DIBUAT?</div>
-  <p>“Aku melihat banyak orang beli kelas AI satu-satu, tapi beberapa bulan kemudian tools-nya berubah lagi. Ada juga yang sudah belajar AI, tapi masih bingung: <strong>‘terus ini jadi duitnya gimana?’</strong> Dari situ BADAI dibuat — biar kita punya satu tempat untuk terus belajar, update, praktik, dan mencari cara memanfaatkan AI.”</p>
-</div>
-
-<div class="mentor-transparency">
-  <b>TEH VINI JUGA MASIH BELAJAR.</b>
-  <p>AI berkembang terlalu cepat untuk ada orang yang tahu semuanya. Karena itu BADAI bukan dibangun dengan konsep “guru paling tahu”. Kalau ada hal baru yang relevan: <strong>kita pelajari → kita coba → yang bermanfaat kita bagikan ke member.</strong></p>
-</div>
+<div class="mentor-cv-foot">
+  <b>BADAI bukan dibangun karena merasa sudah tahu semuanya.</b>
+  <span>Kalau ada perkembangan AI yang relevan: dipelajari → dicoba → yang bermanfaat dibagikan ke member.</span>
 </div>
 </div>
 </section>
