@@ -37,6 +37,16 @@ module.exports = async function handler(req, res) {
     font-family:"Nunito",Arial,sans-serif!important;
   }
   #afiliasi{font-weight:600!important}
+  /* BADAI COMPACT HEADING TYPOGRAPHY */
+  #afiliasi h1,
+  #afiliasi h2,
+  #afiliasi h3,
+  #afiliasi h4,
+  #afiliasi h5,
+  #afiliasi h6,
+  #afiliasi .title{
+    font-family:"Raleway",Arial,sans-serif!important;
+  }
   #afiliasi .center .title{font-size:26px!important;font-weight:700!important;line-height:1.05!important}
   #afiliasi .center .subtitle{font-size:10.5px!important;font-weight:500!important;line-height:1.35!important;margin:4px 0 8px!important}
   #afiliasi .affiliate-pro-pill{font-size:7.5px!important;font-weight:700!important}
