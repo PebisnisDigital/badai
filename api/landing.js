@@ -281,17 +281,14 @@ module.exports = async function handler(req, res) {
 })();
 </script>`;
 
-    const waMarker = String.raw`        <div class="form-group">
-          <label for="regWa">WA</label>
-          <input id="regWa" name="wa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
-        </div>`;
+    const submitMarker = String.raw`        <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>`;
 
-    if (!html.includes(waMarker)) {
-      throw new Error('Marker formulir WA tidak ditemukan');
+    if (!html.includes(submitMarker)) {
+      throw new Error('Marker tombol daftar tidak ditemukan');
     }
 
     html = html.replace('</head>', couponStyle + '\n' + couponBootstrap + '\n</head>');
-    html = html.replace(waMarker, waMarker + '\n' + couponMarkup);
+    html = html.replace(submitMarker, couponMarkup + '\n\n' + submitMarker);
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
