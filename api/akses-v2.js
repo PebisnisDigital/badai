@@ -62,11 +62,7 @@ module.exports = async function handler(req, res) {
     background:linear-gradient(180deg,#141414,#0d0d0d);border:1px solid #2a2a2a;
     box-shadow:0 18px 48px rgba(0,0,0,.28);font-family:"Nunito",Arial,sans-serif
   }
-  .gratisan-offer-top{text-align:center;padding:3px 4px 14px}
-  .gratisan-offer-badge{display:inline-flex;align-items:center;min-height:25px;padding:0 9px;border-radius:999px;background:#24101a;border:1px solid #65304d;color:#ff8fc5;font-size:8px;font-weight:700;letter-spacing:.06em}
-  .gratisan-offer-top h1{margin:9px 0 5px;color:#fff;font-size:24px;font-weight:700;line-height:1.05}
-  .gratisan-offer-top p{margin:0;color:#969696;font-size:10.5px;font-weight:500;line-height:1.45}
-  .gratisan-offer-label{margin:4px 0 8px;color:#fff;font-size:13px;font-weight:700}
+  .gratisan-offer-label{margin:2px 0 10px;color:#fff;font-size:14px;font-weight:700}
   .gratisan-value-list{display:grid;gap:7px}
   .gratisan-value-row{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px 11px;border-radius:12px;background:#0a0a0a;border:1px solid #242424}
   .gratisan-value-check{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;background:#0d2818;color:#25D366;font-size:13px;font-weight:700}
@@ -75,7 +71,8 @@ module.exports = async function handler(req, res) {
   .gratisan-price-box{margin-top:12px;padding:13px 14px;border-radius:14px;background:#161016;border:1px solid #4d263a;display:flex;align-items:center;justify-content:space-between;gap:12px}
   .gratisan-price-box small{display:block;color:#a98a99;font-size:8px;font-weight:600;letter-spacing:.05em}
   .gratisan-price-box strong{display:block;margin-top:2px;color:#fff;font-size:13px;font-weight:700}
-  .gratisan-price{color:#ff4fa3;font-size:28px;font-weight:800;line-height:1}
+  .gratisan-price-total{display:block;margin-top:4px;color:#8c8c8c;font-size:11px;font-weight:600;text-decoration:line-through;text-decoration-thickness:1.5px}
+  .gratisan-price{color:#25D366;font-size:28px;font-weight:800;line-height:1}
   .gratisan-offer-cta{display:flex;align-items:center;justify-content:center;min-height:48px;margin-top:12px;border-radius:13px;background:#25D366;color:#07170d;text-decoration:none;font-size:12px;font-weight:800;box-shadow:0 10px 26px rgba(37,211,102,.18)}
   .gratisan-offer-note{margin:8px 0 0;text-align:center;color:#777;font-size:8.5px;font-weight:500;line-height:1.35}
   .community-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -101,7 +98,7 @@ module.exports = async function handler(req, res) {
   .badai-affiliate-url{display:block;margin-top:9px;padding:9px 10px;border-radius:10px;border:1px solid #222;background:#050505;color:#d9d9d9;font:600 8px ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .badai-affiliate-link-actions{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:8px}.badai-affiliate-copy,.badai-affiliate-open,.badai-affiliate-edit-code{min-height:38px;border-radius:10px;font:800 9px "Nunito",Arial,sans-serif;cursor:pointer}.badai-affiliate-copy{border:0;background:#ff4fa3;color:#090909;padding:0 12px}.badai-affiliate-copy.copied{background:#25D366;color:#07170d}.badai-affiliate-open{min-width:66px;padding:0 12px;display:flex;align-items:center;justify-content:center;border:1px solid #333;background:#151515;color:#fff;text-decoration:none}.badai-affiliate-code-slot{margin:5px 0 7px}.badai-affiliate-code-card{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin:0!important;padding:9px 10px!important;border-radius:10px!important;background:#0b0b0b!important;border:1px solid #2d2d2d!important;box-shadow:none!important}.badai-affiliate-code-line{display:flex!important;align-items:baseline!important;gap:6px!important;flex:1 1 auto!important;min-width:0!important;flex-wrap:nowrap!important;color:#fff!important;font-family:"Nunito",Arial,sans-serif!important}.badai-affiliate-code-line b{margin:0!important;font-size:15px!important;font-weight:500!important;line-height:1.1!important;letter-spacing:0!important;white-space:nowrap!important}.badai-affiliate-code-line span{font-family:"Nunito",Arial,sans-serif!important;font-size:16px!important;font-weight:500!important;line-height:1.1!important;color:#ff8fc5!important;letter-spacing:.02em!important;white-space:nowrap!important}.badai-affiliate-edit-code{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;width:auto!important;min-height:31px!important;margin:0!important;padding:0 11px!important;border:1px solid #3a3a3a;background:#151515;color:#fff;border-radius:8px;font:500 10px "Nunito",Arial,sans-serif;cursor:pointer;white-space:nowrap!important}.badai-affiliate-commission-card{position:relative!important;padding-right:145px!important}.badai-affiliate-payout{display:inline-flex!important;align-items:center!important;justify-content:center!important;position:absolute!important;right:14px!important;bottom:14px!important;margin:0!important;min-height:34px!important;padding:0 13px!important;border-radius:9px!important;background:#25D366!important;color:#07170d!important;text-decoration:none!important;font:700 10px "Nunito",Arial,sans-serif!important;white-space:nowrap!important}.badai-affiliate-loading,.badai-affiliate-empty{padding:13px;border:1px dashed #333;border-radius:13px;color:#888;text-align:center;font:600 9px "Nunito",Arial,sans-serif;line-height:1.5}
 
-  @media(max-width:420px){.badai-member-header{padding:9px 10px;min-height:58px}.badai-member-header-logo img{height:30px;max-width:174px}.badai-member-help{min-height:37px;padding:0 11px;font-size:9px}.footer .label{font-size:9.7px!important}.community-hero{padding:17px}.community-hero h1{font-size:24px}.community-access-grid{grid-template-columns:1fr;gap:7px}.community-access-card{padding:12px}.gratisan-offer-card{padding:14px;border-radius:18px}.gratisan-offer-top h1{font-size:22px}.gratisan-value-row{padding:9px}.gratisan-value-row b{font-size:11px}.gratisan-price{font-size:25px}.gratisan-offer-cta{min-height:46px}.community-two{gap:7px}.community-card{padding:12px}.community-level{padding:8px;min-height:82px}}
+  @media(max-width:420px){.badai-member-header{padding:9px 10px;min-height:58px}.badai-member-header-logo img{height:30px;max-width:174px}.badai-member-help{min-height:37px;padding:0 11px;font-size:9px}.footer .label{font-size:9.7px!important}.community-hero{padding:17px}.community-hero h1{font-size:24px}.community-access-grid{grid-template-columns:1fr;gap:7px}.community-access-card{padding:12px}.gratisan-offer-card{padding:14px;border-radius:18px}.gratisan-value-row{padding:9px}.gratisan-value-row b{font-size:11px}.gratisan-price{font-size:25px}.gratisan-offer-cta{min-height:46px}.community-two{gap:7px}.community-card{padding:12px}.community-level{padding:8px;min-height:82px}}
 </style>`;
 
     const headerMarkup = String.raw`
@@ -124,16 +121,15 @@ document.addEventListener('DOMContentLoaded', function(){
   var community=el('carapakai');
   if(community){
     community.innerHTML='<div class="gratisan-offer-card">'+
-      '<div class="gratisan-offer-top"><div class="gratisan-offer-badge">PAKET GRATISAN • MEMBER BADAI</div><h1>Masuk KulWA BADAI</h1><p>Satu akses untuk mulai belajar bareng BADAI tanpa biaya.</p></div>'+
       '<div class="gratisan-offer-label">Yang kamu dapatkan:</div>'+
       '<div class="gratisan-value-list">'+
-        '<div class="gratisan-value-row"><span class="gratisan-value-check">✓</span><b>Kuliah WhatsApp Rutin Setiap Hari</b><span>TERMASUK</span></div>'+
-        '<div class="gratisan-value-row"><span class="gratisan-value-check">✓</span><b>Ebook AI &amp; Bisnis</b><span>TERMASUK</span></div>'+
-        '<div class="gratisan-value-row"><span class="gratisan-value-check">✓</span><b>Belajar AI Gratisan</b><span>TERMASUK</span></div>'+
+        '<div class="gratisan-value-row"><span class="gratisan-value-check">✓</span><b>Kuliah WhatsApp Rutin Setiap Hari</b><span>Senilai Rp49.000</span></div>'+
+        '<div class="gratisan-value-row"><span class="gratisan-value-check">✓</span><b>Ebook AI &amp; Bisnis</b><span>Senilai Rp39.000</span></div>'+
+        '<div class="gratisan-value-row"><span class="gratisan-value-check">✓</span><b>Belajar AI Gratisan</b><span>Senilai Rp29.000</span></div>'+
       '</div>'+
-      '<div class="gratisan-price-box"><div><small>TOTAL BAYAR</small><strong>Akses Paket Gratisan</strong></div><div class="gratisan-price">Rp0</div></div>'+
-      '<a class="gratisan-offer-cta" href="https://chat.whatsapp.com/LCGm5LowkYG3NiHKItShC6" target="_blank" rel="noopener noreferrer">MASUK KULWA</a>'+
-      '<p class="gratisan-offer-note">Klik tombol di atas untuk langsung bergabung ke grup KulWA BADAI.</p>'+
+      '<div class="gratisan-price-box"><div><small>TOTAL NILAI</small><strong>Akses Paket Gratisan</strong><span class="gratisan-price-total">Rp117.000</span></div><div class="gratisan-price">GRATIS</div></div>'+
+      '<a class="gratisan-offer-cta" href="https://chat.whatsapp.com/LCGm5LowkYG3NiHKItShC6" target="_blank" rel="noopener noreferrer">MASUK KULIAH BADAI</a>'+
+      '<p class="gratisan-offer-note">Klik tombol di atas untuk langsung bergabung ke Kuliah WhatsApp BADAI.</p>'+
       '<span id="communityPlanName" style="display:none">MEMBER GRATISAN</span>'+
       '</div>';
   }
