@@ -19,10 +19,18 @@ module.exports = async function handler(req, res) {
   .footer{
     background:rgba(0,0,0,.98)!important;border-top:1px solid #1f1f1f!important;
     box-shadow:0 -8px 24px rgba(0,0,0,.18)!important;
-    grid-template-columns:repeat(5,minmax(0,1fr))!important
+    grid-template-columns:repeat(var(--member-nav-count,4),minmax(0,1fr))!important;
+    gap:4px!important;
+    padding-left:6px!important;
+    padding-right:6px!important;
+    box-sizing:border-box!important
   }
-  .footer #affiliateNavButton{display:flex!important}
-  .footer button{background:transparent!important;color:#fff!important}
+  .footer button{
+    width:100%!important;
+    min-width:0!important;
+    background:transparent!important;
+    color:#fff!important
+  }
   .footer button:hover,.footer button.active{background:#ff4fa3!important;color:#111!important}
   .footer .label{color:inherit!important;font-family:"Nunito",Arial,sans-serif!important;font-size:11px!important;font-weight:600!important;line-height:1.05!important;letter-spacing:0!important}
   .footer .emoji .fi{display:block;font-size:17px;line-height:1;color:currentColor}
