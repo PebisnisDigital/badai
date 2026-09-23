@@ -5,8 +5,8 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#070707" name="theme-color"/>
-<title>BADAI — Untung Lewat Video AI</title>
-<meta content="Belajar bikin Video AI dari nol. Tutorial singkat, mudah dipahami, langsung praktek. Gabung ULVA Rp123.000." name="description"/>
+<title>BADAI — Belajar Apa Aja Dengan AI + Jalur Cuan</title>
+<meta content="BADAI adalah komunitas belajar AI untuk pemula: belajar praktis, update materi mengikuti perkembangan AI, dan jalur untuk memanfaatkan skill AI menjadi peluang cuan." name="description"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&amp;family=Raleway:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
@@ -3203,6 +3203,137 @@ body.register-modal-open{
 
 
 
+
+
+/* BADAI COPY UPGRADE — keeps existing visual DNA, adds trust/conversion sections */
+.badai-copy-kicker{
+  color:var(--pink);
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+  margin-bottom:8px;
+}
+.badai-core-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+  margin-top:20px;
+}
+.badai-core-card{
+  position:relative;
+  overflow:hidden;
+  min-height:190px;
+  padding:17px 14px;
+  border:1px solid #292929;
+  border-radius:18px;
+  background:linear-gradient(180deg,#121212,#0c0c0c);
+  box-shadow:0 14px 35px rgba(0,0,0,.2);
+}
+.badai-core-card.hot{
+  border-color:#5a2843;
+  background:radial-gradient(circle at 85% 10%,rgba(255,79,163,.15),transparent 32%),linear-gradient(180deg,#181015,#0c0c0c);
+}
+.badai-core-no{
+  width:34px;height:34px;display:grid;place-items:center;margin-bottom:18px;
+  border-radius:10px;background:#24101a;border:1px solid #65304d;color:#ff87c1;
+  font:900 10px "Raleway",Arial,sans-serif;
+}
+.badai-core-card b{
+  display:block;color:#fff;font:900 16px "Raleway",Arial,sans-serif;margin-bottom:6px;
+}
+.badai-core-card span{
+  display:block;color:#aaa;font:500 11px/1.5 "Nunito",Arial,sans-serif;
+}
+.badai-statement{
+  margin-top:12px;padding:17px;border:1px solid #3d2633;border-radius:17px;background:#120d10;
+}
+.badai-statement strong{
+  display:block;color:#fff;font:800 15px/1.35 "Raleway",Arial,sans-serif;margin-bottom:5px;
+}
+.badai-statement span{color:#aaa;font:500 12px/1.55 "Nunito",Arial,sans-serif}
+
+.badai-target-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:20px;
+}
+.badai-target-item{
+  display:grid;grid-template-columns:42px minmax(0,1fr);gap:11px;align-items:center;
+  min-height:86px;padding:12px;border:1px solid #292929;border-radius:16px;background:#101010;
+}
+.badai-target-item>span{
+  width:40px;height:40px;display:grid;place-items:center;border-radius:12px;
+  background:var(--pink);color:#080808;font:900 11px "Raleway",Arial,sans-serif;
+}
+.badai-target-item b{display:block;font:900 13px "Raleway",Arial,sans-serif;color:#fff}
+.badai-target-item small{display:block;margin-top:3px;color:#999;font:500 10.5px/1.35 "Nunito",Arial,sans-serif}
+.badai-target-punch{
+  margin-top:11px;padding:13px 15px;text-align:center;border-radius:14px;background:#ff4fa3;color:#090909;
+  font:800 11px "Raleway",Arial,sans-serif;letter-spacing:.02em;
+}
+.badai-target-punch strong{font-weight:950}
+
+.badai-update-card{
+  position:relative;overflow:hidden;padding:24px;border:1px solid #44243a;border-radius:24px;
+  background:radial-gradient(circle at 92% 8%,rgba(255,79,163,.16),transparent 29%),linear-gradient(180deg,#151015,#0b0b0b);
+}
+.badai-update-card>p{color:#b1b1b1;font:500 14px/1.6 "Nunito",Arial,sans-serif}
+.badai-update-lines{display:grid;gap:8px;margin-top:18px}
+.badai-update-lines>div{
+  display:grid;grid-template-columns:86px 1fr;gap:10px;align-items:center;padding:12px;
+  border:1px solid #2a2a2a;border-radius:13px;background:#0b0b0b;
+}
+.badai-update-lines span{color:#ff83bf;font:900 7px "Raleway",Arial,sans-serif;letter-spacing:.08em}
+.badai-update-lines b{color:#f1f1f1;font:700 11px/1.4 "Nunito",Arial,sans-serif}
+.badai-update-note{margin-top:12px;color:#7f7f7f;font:500 9.5px/1.45 "Nunito",Arial,sans-serif}
+.badai-update-note strong{color:#aaa}
+
+.badai-cuan-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:19px;
+}
+.badai-cuan-grid article{
+  min-height:150px;padding:15px;border:1px solid #292929;border-radius:17px;background:#101010;
+}
+.badai-cuan-grid article>span{
+  display:inline-flex;align-items:center;justify-content:center;min-width:29px;height:24px;padding:0 7px;
+  border-radius:8px;background:#24101a;color:#ff8fc5;font:900 8px "Raleway",Arial,sans-serif;
+}
+.badai-cuan-grid b{
+  display:block;margin-top:12px;color:#fff;font:900 12px/1.3 "Raleway",Arial,sans-serif;
+}
+.badai-cuan-grid p{margin:7px 0 0;color:#999;font:500 10.5px/1.5 "Nunito",Arial,sans-serif}
+.badai-cuan-callout{
+  margin-top:11px;padding:14px;text-align:center;border:1px solid #542942;border-radius:14px;background:#160d12;
+  color:#ff89c2;font:800 10.5px "Raleway",Arial,sans-serif;
+}
+.badai-cuan-callout strong{color:#fff;font-weight:950}
+
+.decision-card.responsibility{border-color:#4a2a3d;background:linear-gradient(180deg,#151014,#0d0d0d)}
+.decision-card.responsibility .decision-badge{background:#ff4fa3;color:#090909}
+.decision-card.responsibility .decision-icon{background:#29101e;color:#ff8fc5}
+
+.badai-fomo-card{
+  padding:25px 21px;text-align:center;border:1px solid #402437;border-radius:24px;
+  background:radial-gradient(circle at 50% 0,rgba(255,79,163,.16),transparent 38%),linear-gradient(180deg,#151014,#0a0a0a);
+  box-shadow:0 20px 50px rgba(0,0,0,.24);
+}
+.badai-fomo-card p{max-width:560px;margin:0 auto 17px;color:#aaa;font:500 13px/1.65 "Nunito",Arial,sans-serif}
+.badai-fomo-card>strong{
+  display:block;color:#fff;font:900 11px/1.4 "Raleway",Arial,sans-serif;letter-spacing:.03em;
+}
+@keyframes badaiCopyGlow{
+  0%,100%{box-shadow:0 14px 35px rgba(0,0,0,.2)}
+  50%{box-shadow:0 14px 42px rgba(255,79,163,.10)}
+}
+.badai-core-card.hot,.badai-fomo-card{animation:badaiCopyGlow 3.2s ease-in-out infinite}
+@media(max-width:560px){
+  .badai-core-grid{grid-template-columns:1fr}
+  .badai-core-card{min-height:0;display:grid;grid-template-columns:40px 1fr;gap:11px;align-items:start}
+  .badai-core-no{margin:0}
+  .badai-target-grid,.badai-cuan-grid{grid-template-columns:1fr}
+  .badai-update-card{padding:19px 16px}
+  .badai-update-lines>div{grid-template-columns:74px 1fr}
+}
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -3213,21 +3344,24 @@ body.register-modal-open{
 <img alt="Komunitas BADAI" src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp"/>
 </a><a class="nav-btn" href="#pricing">GABUNG BADAI</a></div></header>
 <main>
+
 <section class="hero">
 <div class="container">
-<h1>Untung Lewat<br/>Video AI<br/><span class="pink">yang Lagi Viral.</span></h1>
-<p class="hero-copy">BADAI bantu kamu belajar bikin Video AI yang <strong>seru, menarik, dan bisa dipakai untuk konten, promosi, jasa, sampai peluang cuan</strong>. Tinggal tonton, ikuti langkahnya, lalu bikin versimu sendiri.</p>
+<div class="badge">BELAJAR • UPDATE • CUAN</div>
+<h1>Satu Tempat<br/>Buat Belajar AI.<br/><span class="pink">Terus Update &amp; Cari Cuan.</span></h1>
+<p class="hero-copy">BADAI dibuat buat kamu yang capek bingung harus belajar AI dari mana. <strong>Belajar dari dasar, praktik sampai punya hasil sendiri, dapat update materi yang relevan, lalu pelajari jalur memanfaatkan AI untuk membuka peluang cuan.</strong></p>
 <div class="hero-video hero-image" id="video-ulva">
 <img alt="Komunitas BADAI" loading="eager" src="https://i.ibb.co.com/Psbkc4Hr/BADAI-HERO-KOMUNITAS-UNDER55-KB-1.webp"/>
 </div>
-<a class="cta" href="#pricing">GABUNG BADAI SEKARANG →</a>
-<div class="micro">Cocok untuk pemula. Nggak perlu ngerti istilah AI yang ribet.</div>
+<a class="cta" href="#pricing">PILIH CARA MASUK BADAI →</a>
+<div class="micro">Bisa mulai Gratis • Cocok untuk pemula • Materi terus berkembang</div>
 </div>
 </section>
+
 <section class="problem-danger">
 <div class="container">
-<h2>Belum Bisa Cuan dari <span class="pink">VIDEO AI ?</span></h2>
-<p class="lead">Ini yang bahaya: orang lain sudah mulai pakai AI untuk bikin konten, promosi, dan peluang cuan. Sementara banyak orang masih berhenti di tahap bingung, takut, dan cuma jadi penonton.</p>
+<h2>AI Berubah Cepat.<br/><span class="pink">Kamu Masih Bingung Mulai dari Mana?</span></h2>
+<p class="lead">Hari ini ada tools baru, besok ada teknik baru. Kalau setiap perubahan bikin kita cari kelas baru lagi, akhirnya yang terkumpul banyak... tapi yang dipraktikkan sedikit.</p>
 <div class="problem-wrap">
 <div class="problem-media">
 <img alt="Mascot BADAI sedang bingung dan menangis" loading="lazy" src="https://i.ibb.co.com/xq80PzDb/BADAI-MASCOTS-MELTDOWN-UNDER50-KB-1.webp"/>
@@ -3235,28 +3369,54 @@ body.register-modal-open{
 <div class="box problem-list">
 <div class="item">
 <div class="icon">✕</div>
-<div><b>Bingung mulai dari mana</b><span>Buka tools AI, menunya banyak. Akhirnya cuma lihat-lihat dan nggak jadi mulai.</span></div>
+<div><b>Bingung mulai dari mana</b><span>Tools dan tutorial makin banyak. Mau mulai malah makin pusing.</span></div>
 </div>
 <div class="item">
 <div class="icon">✕</div>
-<div><b>Tutorial terlalu teknis</b><span>Baru beberapa menit sudah ketemu istilah yang bikin pusing dan akhirnya menyerah duluan.</span></div>
+<div><b>Capek beli kelas satu-satu</b><span>Video AI beli kelas. Website AI beli lagi. Ada tools baru, rasanya harus beli lagi.</span></div>
 </div>
 <div class="item">
 <div class="icon">✕</div>
-<div><b>Takut buang kredit</b><span>Sudah coba generate berkali-kali, hasilnya masih aneh. Uang keluar, hasil belum jadi.</span></div>
+<div><b>Sudah belajar, tapi bingung cuannya dari mana</b><span>Bisa bikin sesuatu dengan AI belum otomatis tahu cara menjadikannya konten, jasa, promosi, affiliate, atau produk.</span></div>
 </div>
 <div class="item">
 <div class="icon">✕</div>
-<div><b>Akhirnya cuma jadi penonton</b><span>Lihat orang lain pakai Video AI untuk konten dan bisnis, sementara kita sendiri belum mulai apa-apa.</span></div>
+<div><b>Materi numpuk, praktiknya nanti</b><span>Merasa sudah maju karena beli banyak kelas, padahal hasil pertama saja belum sempat dibuat.</span></div>
 </div>
-<div class="danger-note">Kalau dibiarkan terus, kamu bukan cuma telat belajar. Kamu juga telat ambil peluangnya.</div>
+<div class="danger-note">Kalau cuma mengumpulkan kelas, yang bertambah belum tentu skill. BADAI ingin bantu kamu mulai dari satu hal yang benar-benar dipraktikkan.</div>
 </div>
+</div>
+</div>
+</section>
+
+<section class="badai-core-section">
+<div class="container">
+<div class="badai-copy-kicker">KENAPA BADAI DIBUAT?</div>
+<h2>Bukan Sekadar Kelas AI.<br/><span class="pink">Ini Tempat Buat Terus Bertumbuh.</span></h2>
+<p class="lead">Tujuannya sederhana: kamu punya satu tempat utama untuk belajar AI, mengikuti perkembangan yang relevan, dan memahami bagaimana skill itu bisa dimanfaatkan.</p>
+<div class="badai-core-grid">
+  <article class="badai-core-card">
+    <div class="badai-core-no">01</div>
+    <div><b>BELAJAR</b><span>Materi dibuat sederhana supaya pemula tahu harus mulai dari mana.</span></div>
+  </article>
+  <article class="badai-core-card">
+    <div class="badai-core-no">02</div>
+    <div><b>UPDATE</b><span>Materi BADAI dirancang terus berkembang mengikuti kebutuhan member dan perkembangan AI yang relevan.</span></div>
+  </article>
+  <article class="badai-core-card hot">
+    <div class="badai-core-no">03</div>
+    <div><b>CUAN</b><span>Nggak berhenti di “bisa bikin”. Pelajari juga jalur untuk mengarahkannya ke peluang penghasilan.</span></div>
+  </article>
+</div>
+<div class="badai-statement">
+  <strong>Jadi nggak perlu buru-buru beli kelas baru setiap ada topik AI yang berubah.</strong>
+  <span>Cek BADAI dulu. Kalau pembahasannya relevan untuk member, di sinilah kami ingin terus menambahkannya.</span>
 </div>
 </div>
 </section>
 <section>
 <div class="container">
-<h2>Belajar Bikin Apa AIa Dengan AI<br/><span class="pink">Bersama Teh Vini</span></h2>
+<h2>Belajar Apa Aja Dengan AI<br/><span class="pink">Bersama Teh Vini</span></h2>
 <p class="lead">
       Materi BADAI dibawakan dengan gaya yang sederhana, santai, dan langsung praktek supaya pemula nggak merasa ribet saat mulai belajar Video AI.
     </p>
@@ -3267,21 +3427,20 @@ body.register-modal-open{
 <div class="mentor-role">MENTOR BADAI</div>
 <div class="mentor-name">Teh Vini</div>
 <p class="mentor-copy">
-        Di BADAI, Teh Vini membimbing member memahami cara membuat Video AI dari langkah paling dasar,
-        lalu mengarahkannya supaya bisa dipakai untuk konten, promosi, dan membuka peluang cuan.
+        Di BADAI, Teh Vini membantu “menerjemahkan” AI menjadi langkah yang lebih gampang dipahami: ini gunanya buat apa, cara pakainya gimana, dan kalau sudah bisa — bisa dimanfaatkan ke arah mana.
       </p>
 <div class="mentor-points">
 <div class="mentor-point"><b>Bahasa Sederhana</b>Mudah diikuti pemula.</div>
 <div class="mentor-point"><b>Langsung Praktek</b>Nggak kebanyakan teori.</div>
-<div class="mentor-point"><b>Fokus Manfaat</b>Bikin video sekaligus paham peluangnya.</div>
+<div class="mentor-point"><b>Fokus Manfaat</b>Bukan hafal tools. Pahami cara pakai dan peluangnya.</div>
 </div>
 </div>
 </div>
 </section>
 <section>
 <div class="container">
-<h2>Video unik begini biar viral<br/><span class="pink">dan menghasilkan cuan.</span></h2>
-<p class="lead">Di bawah ini contoh jenis video yang bisa kamu pelajari. Masing-masing point sudah disiapkan slot video YouTube supaya pengunjung bisa langsung lihat contoh hasilnya.</p>
+<h2>Mulai dari yang Seru Dulu.<br/><span class="pink">Yang Penting: 1 Karya Jadi.</span></h2>
+<p class="lead">Video AI adalah salah satu pintu masuk yang gampang bikin semangat praktik. Pilih satu contoh, ikuti langkahnya, dan fokus bikin hasil pertamamu dulu. Setelah itu baru lanjut ke skill AI lainnya.</p>
 <div class="use-grid">
 <div class="use">
 <div class="use-head">
@@ -3356,15 +3515,11 @@ body.register-modal-open{
 </div>
 </div>
 </div>
-<div class="youtube-note">
-  Tinggal ganti <b>VIDEO_ID_1</b> sampai <b>VIDEO_ID_6</b> dengan ID YouTube contoh video masing-masing.
-</div>
-</div>
-</section>
+<div class="youtube-note">Nggak perlu bisa semuanya hari ini. Satu karya selesai lebih berharga daripada sepuluh materi yang cuma disimpan.</div>\n</div>\n</section>
 <section id="materi">
 <div class="container">
-<h2>7 BAB. <span class="pink">Nggak muter-muter.</span></h2>
-<p class="lead">Mulai dari cara bikin sampai cara memakai hasil Video AI untuk konten, promosi, dan peluang cuan.</p>
+<h2>Mulai dari 1 Jalur Dulu.<br/><span class="pink">Video AI, Misalnya.</span></h2>
+<p class="lead">Ini salah satu contoh jalur belajar di BADAI. Kamu nggak wajib menamatkan semua materi sekaligus — pilih yang paling kamu butuhkan, praktikkan, lalu lanjut.</p>
 <div class="chapter-slider" id="chapterSlider">
 <div class="chapter-stage">
 <article class="chapter-card">
@@ -3428,23 +3583,55 @@ body.register-modal-open{
 </div>
 </div>
 </section>
+
+<section class="badai-target-section">
+<div class="container">
+<div class="badai-copy-kicker">TARGET PERTAMA MEMBER BARU</div>
+<h2>Bukan Langsung Jago AI.<br/><span class="pink">Cukup 1 Hasil Jadi Dulu.</span></h2>
+<p class="lead">BADAI punya banyak materi. Tapi kamu nggak perlu mengejar semuanya. Fokus pertama justru dibuat sesederhana mungkin.</p>
+<div class="badai-target-grid">
+  <div class="badai-target-item"><span>01</span><div><b>PILIH</b><small>Satu materi yang paling kamu butuhkan.</small></div></div>
+  <div class="badai-target-item"><span>02</span><div><b>TONTON</b><small>Ikuti langkahnya tanpa loncat ke mana-mana.</small></div></div>
+  <div class="badai-target-item"><span>03</span><div><b>PRAKTIK</b><small>Tekan tombolnya. Coba. Ulang kalau perlu.</small></div></div>
+  <div class="badai-target-item"><span>04</span><div><b>JADI</b><small>Punya satu video, poster, website, konten, atau hasil buatanmu sendiri.</small></div></div>
+</div>
+<div class="badai-target-punch">BELI BUKAN GARIS FINISH. <strong>BELI ITU BARU MULAI.</strong></div>
+</div>
+</section>
+
 <section>
 <div class="container">
-<h2>Materinya Cocok Dipelajari Oleh :</h2>
+<h2>BADAI Cocok Buat Kamu yang...</h2>
 <div class="box check-list">
-<div class="item"><div class="icon">✓</div><div><b>Belum pernah bikin Video AI</b><span>Nggak masalah. Materinya dimulai dari dasar.</span></div></div>
-<div class="item"><div class="icon">✓</div><div><b>Nggak terlalu ngerti teknologi</b><span>Bahasanya dibuat sederhana dan langsung ke tindakan.</span></div></div>
-<div class="item"><div class="icon">✓</div><div><b>Pengen belajar tapi malas kelas panjang</b><span>Fokusnya tutorial singkat dan praktek.</span></div></div>
-<div class="item"><div class="icon">✓</div><div><b>Pengen punya skill yang bisa dipakai buat cuan</b><span>Kamu bisa arahkan Video AI untuk konten, promosi, jasa, atau affiliate.</span></div></div>
+<div class="item"><div class="icon">✓</div><div><b>Masih pemula atau merasa gaptek</b><span>Nggak masalah. Fokusnya memahami langkah praktis, bukan istilah teknis yang bikin mumet.</span></div></div>
+<div class="item"><div class="icon">✓</div><div><b>Capek beli kelas AI satu-satu</b><span>Pengen punya satu tempat utama untuk belajar dan mengikuti update materi yang relevan.</span></div></div>
+<div class="item"><div class="icon">✓</div><div><b>Suka belajar dengan cara langsung praktik</b><span>Nggak harus menonton semuanya. Pilih satu materi, kerjakan, lalu lanjut.</span></div></div>
+<div class="item"><div class="icon">✓</div><div><b>Pengen tahu cara AI bisa diarahkan jadi cuan</b><span>Bukan cuma belajar bikin, tapi juga memahami pilihan monetisasinya.</span></div></div>
+</div>
+</div>
+</section>
+
+<section class="badai-update-section">
+<div class="container">
+<div class="badai-update-card">
+  <div class="badai-copy-kicker">AI NGGAK BERHENTI BERKEMBANG</div>
+  <h2>Kalau AI Berubah,<br/><span class="pink">BADAI Ikut Belajar.</span></h2>
+  <p>Tools bisa berubah. Teknik bisa berubah. Peluang juga bisa berubah. Karena itu BADAI bukan dibuat sebagai materi sekali jadi lalu ditinggal.</p>
+  <div class="badai-update-lines">
+    <div><span>HARI INI</span><b>Video • Konten • Poster • Website • Prompt</b></div>
+    <div><span>BERKEMBANG</span><b>Aplikasi • Edukasi • Otomasi • Bisnis • Skill baru</b></div>
+    <div><span>TUJUANNYA</span><b>Satu tempat belajar, jadi lebih hemat dan nggak mulai dari nol terus.</b></div>
+  </div>
+  <div class="badai-update-note"><strong>Catatan:</strong> update mengikuti perkembangan AI yang relevan dan kebutuhan member BADAI. Kami nggak menjanjikan semua tools di dunia akan dibahas.</div>
 </div>
 </div>
 </section>
 <section class="testi-section">
 <div class="container">
 <div class="testi-head">
-<h2>Testimoni WA member yang <span class="pink">sudah ikut BADAI.</span></h2>
+<h2>Bukan Cuma Katanya.<br/><span class="pink">Lihat Cerita Member BADAI.</span></h2>
 <p>
-        Cerita asli dari member BADAI yang sudah belajar, praktik, dan mulai memakai AI untuk kebutuhan sehari-hari maupun usaha.
+        Ada yang baru mulai, ada yang sudah praktik, ada yang memakai AI untuk usaha. Perjalanan tiap orang berbeda — dan itu normal.
       </p>
 </div>
 <div class="testi-marquee">
@@ -3508,84 +3695,69 @@ body.register-modal-open{
 </div>
 </section>
 
+
+<section class="badai-cuan-section">
+<div class="container">
+<div class="badai-copy-kicker">SUDAH BELAJAR AI, TERUS CUANNYA DARI MANA?</div>
+<h2>Skill AI Bisa Dipakai.<br/><span class="pink">Sekarang Cari Jalur Untungnya.</span></h2>
+<p class="lead">BADAI tidak menjanjikan “masuk hari ini, besok kaya”. Yang kami bantu adalah memperlihatkan beberapa jalan yang bisa kamu pelajari dan praktikkan sesuai kemampuanmu.</p>
+<div class="badai-cuan-grid">
+  <article><span>01</span><b>AI → KONTEN → AFFILIATE</b><p>Pakai AI untuk membantu bikin konten, lalu arahkan ke produk atau link affiliate yang relevan.</p></article>
+  <article><span>02</span><b>AI → SKILL → JASA</b><p>Skill seperti desain, video, website, atau konten bisa dikembangkan menjadi layanan untuk orang lain.</p></article>
+  <article><span>03</span><b>AI → PRODUK DIGITAL</b><p>Manfaatkan AI untuk membantu membuat aset, materi, atau produk digital yang punya nilai guna.</p></article>
+  <article><span>04</span><b>AI → PROMOSI BISNIS</b><p>Kalau sudah punya usaha, AI bisa membantu produksi konten dan bahan promosi lebih cepat.</p></article>
+</div>
+<div class="badai-cuan-callout">BADAI MENUNJUKKAN JALANNYA. <strong>KAMU YANG MENJALANKANNYA.</strong></div>
+</div>
+</section>
+
 <section>
 <div class="container">
 <div class="decision-wrap">
 <div class="decision-head">
-<h2>Sebelum Membeli,<br/>Pastikan kelas ini<br/><span class="pink">cocok untuk kamu.</span></h2>
-<p>
-          BADAI dibuat untuk orang yang mau belajar bikin Video AI dengan cara yang lebih sederhana,
-          lalu memanfaatkannya untuk konten, promosi, dan peluang cuan. Jadi, biar lebih pas, cek dulu
-          kamu masuk yang sebelah mana.
-        </p>
+<h2>Sebelum Gabung,<br/>Kita Sepakat<br/><span class="pink">Satu Hal Dulu.</span></h2>
+<p>BADAI ingin membantu kamu belajar dan menemukan jalannya. Tapi hasil tetap butuh praktik. Jadi bukan soal siapa yang paling cepat — yang penting kamu benar-benar mulai.</p>
 </div>
 <div class="decision-grid">
 <div class="decision-card good">
 <div class="decision-title">
 <span class="decision-badge">✓</span>
-<span>Beli Jika</span>
+<span>BADAI Bisa Bantu</span>
 </div>
 <div class="decision-list">
-<div class="decision-item">
-<span class="decision-icon">✓</span>
-<div class="decision-text">Mau belajar bikin Video AI dari nol tanpa harus paham istilah teknis yang ribet.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">✓</span>
-<div class="decision-text">Mau punya skill baru yang bisa dipakai untuk konten, promosi, atau bahan jualan.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">✓</span>
-<div class="decision-text">Mau bikin video yang lebih menarik, unik, dan punya potensi lebih gampang dilirik.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">✓</span>
-<div class="decision-text">Suka materi yang langsung praktek dan tidak muter-muter.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">✓</span>
-<div class="decision-text">Mau memanfaatkan Video AI untuk membuka peluang cuan tambahan.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">✓</span>
-<div class="decision-text">Pengen mulai dari kelas yang harganya masih ramah untuk pemula.</div>
+<div class="decision-item"><span class="decision-icon">✓</span><div class="decision-text">Menyederhanakan materi AI supaya lebih gampang diikuti pemula.</div></div>
+<div class="decision-item"><span class="decision-icon">✓</span><div class="decision-text">Memberikan contoh, tutorial, dan jalur belajar yang lebih terarah.</div></div>
+<div class="decision-item"><span class="decision-icon">✓</span><div class="decision-text">Menambahkan update materi yang relevan mengikuti perkembangan AI dan kebutuhan member.</div></div>
+<div class="decision-item"><span class="decision-icon">✓</span><div class="decision-text">Memberikan ide dan jalur monetisasi untuk yang ingin belajar menghasilkan dari AI.</div></div>
+<div class="decision-item"><span class="decision-icon">✓</span><div class="decision-text">Menjadi tempat belajar bersama supaya kamu nggak merasa sendirian.</div></div>
 </div>
 </div>
-</div>
-<div class="decision-card bad">
+<div class="decision-card responsibility">
 <div class="decision-title">
-<span class="decision-badge">×</span>
-<span>Jangan Beli Jika</span>
+<span class="decision-badge">→</span>
+<span>Bagian yang Tetap Kamu Kerjakan</span>
 </div>
 <div class="decision-list">
-<div class="decision-item">
-<span class="decision-icon">×</span>
-<div class="decision-text">Maunya langsung jago tanpa mau nonton tutorial dan tanpa mau praktek.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">×</span>
-<div class="decision-text">Mencari jaminan kaya mendadak hanya dengan sekali beli kelas.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">×</span>
-<div class="decision-text">Tidak tertarik bikin konten, promosi, atau mencoba skill baru sama sekali.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">×</span>
-<div class="decision-text">Tidak mau menyentuh tools AI, tidak mau eksplor, dan ingin semua serba instan.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">×</span>
-<div class="decision-text">Mudah bosan dengan proses belajar step by step.</div>
-</div>
-<div class="decision-item">
-<span class="decision-icon">×</span>
-<div class="decision-text">Mau hasil besar, tapi tidak mau meluangkan waktu sedikit pun untuk mencoba.</div>
+<div class="decision-item"><span class="decision-icon">1</span><div class="decision-text">Buka satu materi yang paling kamu butuhkan.</div></div>
+<div class="decision-item"><span class="decision-icon">2</span><div class="decision-text">Coba sendiri, bukan cuma menonton sampai selesai.</div></div>
+<div class="decision-item"><span class="decision-icon">3</span><div class="decision-text">Ulangi kalau hasil pertama belum sesuai harapan.</div></div>
+<div class="decision-item"><span class="decision-icon">4</span><div class="decision-text">Terapkan strategi monetisasi ke market, konten, atau usaha yang kamu pilih.</div></div>
+<div class="decision-item"><span class="decision-icon">5</span><div class="decision-text">Konsisten. Karena tidak ada kelas yang bisa menggantikan praktik membernya.</div></div>
 </div>
 </div>
 </div>
+<div class="decision-note"><strong>BADAI menyediakan jalan, materi, update, dan komunitas.</strong> Hasil setiap member bisa berbeda tergantung praktik, konsistensi, market, dan cara penerapannya.</div>
 </div>
-<div class="decision-note">Kalau kamu merasa lebih banyak cocok dengan kolom kiri, berarti BADAI memang dibuat untuk kamu.</div>
+</div>
+</section>
+
+<section class="badai-fomo-section">
+<div class="container">
+<div class="badai-fomo-card">
+  <div class="badai-copy-kicker">AI NGGAK NUNGGU KITA SIAP</div>
+  <h2>30 Hari Lagi,<br/><span class="pink">Mau Masih Bingung di Titik yang Sama?</span></h2>
+  <p>Kamu nggak harus menguasai AI hari ini. Tapi kalau mulai sekarang dan benar-benar praktik, 30 hari dari sekarang kamu punya peluang lebih besar untuk sudah punya karya, pengalaman, dan arah belajar yang lebih jelas.</p>
+  <strong>MAKIN LAMA MULAI, MAKIN BANYAK YANG TERASA HARUS DIKEJAR.</strong>
 </div>
 </div>
 </section>
@@ -3594,7 +3766,7 @@ body.register-modal-open{
   <div class="package-pricing-head">
     <div class="package-kicker">PILIH CARA MASUK BADAI</div>
     <h2>MAU MASUK BADAI LEWAT MANA?</h2>
-    <p>Mulai gratis. Belajar serius. Atau sekalian cari untung.</p>
+    <p>Pilih berdasarkan niatmu sekarang. Mau coba dulu, fokus belajar, atau belajar sekaligus masuk Jalur Untung.</p>
   </div>
 
   <div class="package-pricing-grid">
@@ -3602,7 +3774,7 @@ body.register-modal-open{
       <div class="package-card-top">
         <div class="package-label free">COBA DULU</div>
         <h3>GRATISAN</h3>
-        <p>Masuk dulu tanpa bayar.</p>
+        <p>“Aku mau coba dulu.”</p>
       </div>
 
       <div class="package-price-wrap">
@@ -3617,7 +3789,7 @@ body.register-modal-open{
       </div>
 
       <button class="package-select-btn free" type="button" data-package-select="free">
-        DAFTAR GRATIS
+        COBA BADAI GRATIS
       </button>
     </article>
 
@@ -3625,7 +3797,7 @@ body.register-modal-open{
       <div class="package-card-top">
         <div class="package-label">BELAJAR</div>
         <h3>PEMULA</h3>
-        <p>Total 10 materi untuk mulai belajar AI.</p>
+        <p>“Aku mau benar-benar belajar.”</p>
       </div>
 
       <div class="package-price-wrap">
@@ -3642,7 +3814,7 @@ body.register-modal-open{
       </div>
 
       <button class="package-select-btn" type="button" data-package-select="newbie">
-        PILIH PEMULA
+        MULAI BELAJAR
       </button>
     </article>
 
@@ -3653,7 +3825,7 @@ body.register-modal-open{
       <div class="package-card-top">
         <div class="package-label hot">BELAJAR + CUAN</div>
         <h3>UNTUNG</h3>
-        <p>Total 31 materi + jalur cuan.</p>
+        <p>“Aku mau belajar + cari jalur menghasilkan.”</p>
       </div>
 
       <div class="package-price-wrap">
@@ -3672,7 +3844,7 @@ body.register-modal-open{
       </div>
 
       <button class="package-select-btn hot" type="button" data-package-select="pro">
-        PILIH UNTUNG
+        MASUK JALUR UNTUNG
       </button>
     </article>
     <div class="package-click-hands" aria-hidden="true">
@@ -3685,21 +3857,24 @@ body.register-modal-open{
 
 </div>
 </section>
+
 <section>
 <div class="container">
-<h2>Masih kepikiran ini?</h2>
+<h2>Masih Ada yang<br/><span class="pink">Bikin Ragu?</span></h2>
 <div class="faq">
-<details><summary>BADAI cocok untuk pemula?</summary><p>Iya. BADAI memang dibuat untuk orang yang pengen mulai bikin Video AI tanpa harus paham hal teknis dulu.</p></details>
-<details><summary>Harus punya laptop?</summary><p>Tergantung tool Video AI yang sedang digunakan. Sebagian proses dapat dilakukan lewat browser di HP, tetapi pengalaman penggunaan bisa berbeda tergantung perangkat dan tool.</p></details>
-<details><summary>Apakah biaya tool AI sudah termasuk harga paket BADAI?</summary><p>Tidak. Harga yang tertera adalah harga akses BADAI. Jika tool pihak ketiga menggunakan kredit atau paket berbayar, biaya tersebut mengikuti kebijakan tool masing-masing.</p></details>
-<details><summary>Materinya berupa apa?</summary><p>Materi utama disajikan melalui Member Area berupa video tutorial, judul materi, dan langkah praktek.</p></details>
-<details><summary>BADAI benar-benar bisa menghasilkan cuan?</summary><p>BADAI membuka beberapa peluang: skill Video AI bisa dipakai untuk konten, promosi, atau jasa, dan member juga bisa ikut program afiliasi BADAI dengan komisi sesuai pengaturan yang berlaku. Namun hasil tetap bergantung pada cara masing-masing orang memanfaatkan dan mempromosikannya.</p></details>
-<details><summary>Kalau belum pernah pakai AI sama sekali?</summary><p>Nggak masalah. Mulai saja dari BAB pertama dan ikuti langkahnya satu per satu.</p></details>
+<details><summary>BADAI cocok untuk pemula atau yang merasa gaptek?</summary><p>Iya. BADAI dibuat dengan bahasa yang lebih sederhana dan fokus praktik. Kamu juga nggak perlu belajar semua materi sekaligus — mulai dari satu yang paling kamu butuhkan.</p></details>
+<details><summary>Kalau AI terus berubah, materinya bagaimana?</summary><p>BADAI dirancang sebagai komunitas belajar yang terus berkembang. Materi baru atau update dapat ditambahkan mengikuti perkembangan AI yang relevan dan kebutuhan member. Kami tidak menjanjikan semua tools AI di dunia akan selalu dibahas.</p></details>
+<details><summary>Berarti saya nggak perlu beli kelas AI lain lagi?</summary><p>Tujuan BADAI adalah menjadi salah satu tempat utama kamu untuk terus belajar AI, supaya nggak perlu buru-buru membeli kelas baru setiap muncul topik baru. Namun kebutuhan setiap orang bisa berbeda, jadi tetap sesuaikan dengan kebutuhanmu.</p></details>
+<details><summary>BADAI bisa bikin saya menghasilkan uang dari AI?</summary><p>BADAI menyediakan materi, contoh, ide, dan beberapa jalur monetisasi seperti konten, affiliate, jasa, produk digital, serta promosi bisnis. Tapi tidak ada jaminan jumlah penghasilan tertentu. Hasil dipengaruhi praktik, konsistensi, market, dan cara kamu menerapkannya.</p></details>
+<details><summary>Saya takut beli tapi akhirnya nggak dipraktikkan.</summary><p>Jangan mulai dari semua materi. Target pertamamu cukup pilih satu materi lalu bikin satu hasil jadi. Setelah itu baru lanjut. BADAI ingin membantu kamu bergerak, bukan sekadar menambah koleksi kelas.</p></details>
+<details><summary>Harus punya laptop?</summary><p>Tergantung materi dan tools yang digunakan. Sebagian aktivitas bisa dilakukan lewat browser di HP, sementara beberapa tools akan lebih nyaman digunakan lewat laptop atau komputer.</p></details>
+<details><summary>Apakah biaya tools AI sudah termasuk harga BADAI?</summary><p>Tidak selalu. Harga paket BADAI adalah untuk akses BADAI sesuai paket yang dipilih. Jika tools pihak ketiga membutuhkan kredit atau paket berbayar, biaya mengikuti kebijakan tools tersebut.</p></details>
+<details><summary>Materinya berupa apa?</summary><p>Materi utama disajikan di Member Area dalam bentuk video tutorial dan panduan praktik. Paket dan akses yang kamu dapatkan mengikuti pilihan Gratisan, Pemula, atau Untung.</p></details>
 </div>
 </div>
 </section>
 </main>
-<footer><div class="container">BADAI — Untung Lewat Video AI<br/>Materi edukasi. Hasil setiap pengguna dapat berbeda.</div></footer>
+<footer><div class="container">BADAI — Belajar Apa Aja Dengan Artificial Intelligence<br/>Belajar • Update • Jalur Cuan — Hasil setiap member dapat berbeda.</div></footer>
 <div id="registrationModal" class="register-modal-overlay" aria-hidden="true">
   <div class="register-modal-shell" role="dialog" aria-modal="true" aria-labelledby="registrationModalTitle">
     <button id="closeRegistrationModal" class="register-modal-close" type="button" aria-label="Tutup formulir">×</button>
