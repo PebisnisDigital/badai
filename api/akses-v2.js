@@ -96,7 +96,8 @@ module.exports = async function handler(req, res) {
   .badai-affiliate-tab.active{background:#ff4fa3;border-color:#ff4fa3;color:#111}
   .badai-affiliate-panel{display:none}
   .badai-affiliate-panel.active{display:block}
-  .badai-affiliate-tutorial{display:grid;gap:10px}
+  .badai-affiliate-panel.badai-affiliate-tutorial{display:none}
+  .badai-affiliate-panel.badai-affiliate-tutorial.active{display:grid;gap:10px}
   .badai-affiliate-video-placeholder{aspect-ratio:16/9;border-radius:18px;border:1px solid #2c2c2c;background:radial-gradient(circle at center,rgba(255,79,163,.16),transparent 34%),#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px}
   .badai-affiliate-video-placeholder .play{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#ff4fa3;color:#111;font-size:18px;margin-bottom:9px}
   .badai-affiliate-video-placeholder b{color:#fff;font:700 15px "Nunito",Arial,sans-serif}
