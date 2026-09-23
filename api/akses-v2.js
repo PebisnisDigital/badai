@@ -86,6 +86,18 @@ module.exports = async function handler(req, res) {
   .community-level.active{border-color:#ff4fa3;background:#201018}.community-level small{color:#777;font:700 7px "Nunito",Arial,sans-serif}.community-level b{display:block;margin-top:4px;color:#fff;font:800 11px "Raleway",Arial,sans-serif}.community-level span{display:block;margin-top:7px;color:#919191;font:500 8px "Nunito",Arial,sans-serif;line-height:1.35}.community-level.active small{color:#ff8fc5}
 
   .screen-heading{margin-bottom:12px}.screen-heading .kicker{color:#ff8fc5;font:700 8px "Nunito",Arial,sans-serif;letter-spacing:.08em}.screen-heading h1{margin:4px 0 5px;color:#fff;font:800 25px "Raleway",Arial,sans-serif;letter-spacing:-.04em}.screen-heading p{margin:0;color:#999;font:500 10px "Nunito",Arial,sans-serif;line-height:1.45}
+  .badai-material-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  .badai-material-card{min-width:0;overflow:hidden;border:1px solid #262626;border-radius:16px;background:#101010;box-shadow:0 10px 24px rgba(0,0,0,.16)}
+  .badai-material-cover{position:relative;aspect-ratio:16/10;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 72% 28%,rgba(255,79,163,.26),transparent 28%),linear-gradient(145deg,#221019,#0b0b0b 70%)}
+  .badai-material-cover::before{content:"";position:absolute;width:76px;height:76px;border-radius:50%;left:-24px;bottom:-30px;background:rgba(255,255,255,.035)}
+  .badai-material-cover::after{content:"";position:absolute;width:58px;height:58px;border-radius:18px;right:-18px;top:-20px;transform:rotate(22deg);background:rgba(255,79,163,.08)}
+  .badai-material-card:nth-child(3n+2) .badai-material-cover{background:radial-gradient(circle at 68% 25%,rgba(37,211,102,.18),transparent 28%),linear-gradient(145deg,#0e2016,#0b0b0b 70%)}
+  .badai-material-card:nth-child(3n) .badai-material-cover{background:radial-gradient(circle at 70% 25%,rgba(129,91,255,.20),transparent 28%),linear-gradient(145deg,#171126,#0b0b0b 70%)}
+  .badai-material-icon{position:relative;z-index:2;font-size:37px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.28))}
+  .badai-material-no{position:absolute;z-index:2;top:8px;left:8px;min-width:25px;height:20px;padding:0 6px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:rgba(5,5,5,.78);border:1px solid rgba(255,255,255,.12);color:#ff8fc5;font:800 7px "Nunito",Arial,sans-serif}
+  .badai-material-body{padding:10px 11px 11px}
+  .badai-material-body h3{margin:0;color:#fff;font:700 11.5px "Nunito",Arial,sans-serif;line-height:1.28}
+  .badai-material-type{display:block;margin-top:5px;color:#777;font:600 7.5px "Nunito",Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase}
 
   .badai-upgrade-modal{display:none;position:fixed;inset:0;z-index:9999999;padding:18px;background:rgba(0,0,0,.80);align-items:center;justify-content:center;backdrop-filter:blur(8px)}
   .badai-upgrade-modal.open{display:flex}.badai-upgrade-card{width:min(100%,420px);border:1px solid #303030;border-radius:22px;background:#111;color:#fff;padding:21px;box-shadow:0 28px 80px rgba(0,0,0,.55)}
@@ -133,7 +145,7 @@ module.exports = async function handler(req, res) {
   .badai-affiliate-url{display:block;margin-top:9px;padding:9px 10px;border-radius:10px;border:1px solid #222;background:#050505;color:#d9d9d9;font:600 8px ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .badai-affiliate-link-actions{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:8px}.badai-affiliate-copy,.badai-affiliate-open,.badai-affiliate-edit-code{min-height:38px;border-radius:10px;font:800 9px "Nunito",Arial,sans-serif;cursor:pointer}.badai-affiliate-copy{border:0;background:#ff4fa3;color:#090909;padding:0 12px}.badai-affiliate-copy.copied{background:#25D366;color:#07170d}.badai-affiliate-open{min-width:66px;padding:0 12px;display:flex;align-items:center;justify-content:center;border:1px solid #333;background:#151515;color:#fff;text-decoration:none}.badai-affiliate-code-slot{margin:5px 0 7px}.badai-affiliate-code-card{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin:0!important;padding:9px 10px!important;border-radius:10px!important;background:#0b0b0b!important;border:1px solid #2d2d2d!important;box-shadow:none!important}.badai-affiliate-code-line{display:flex!important;align-items:baseline!important;gap:6px!important;flex:1 1 auto!important;min-width:0!important;flex-wrap:nowrap!important;color:#fff!important;font-family:"Nunito",Arial,sans-serif!important}.badai-affiliate-code-line b{margin:0!important;font-size:15px!important;font-weight:500!important;line-height:1.1!important;letter-spacing:0!important;white-space:nowrap!important}.badai-affiliate-code-line span{font-family:"Nunito",Arial,sans-serif!important;font-size:16px!important;font-weight:500!important;line-height:1.1!important;color:#ff8fc5!important;letter-spacing:.02em!important;white-space:nowrap!important}.badai-affiliate-edit-code{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;width:auto!important;min-height:31px!important;margin:0!important;padding:0 11px!important;border:1px solid #3a3a3a;background:#151515;color:#fff;border-radius:8px;font:500 10px "Nunito",Arial,sans-serif;cursor:pointer;white-space:nowrap!important}.badai-affiliate-commission-card{position:static!important;padding-right:12px!important}.badai-affiliate-payout-row{display:flex;justify-content:flex-end;align-items:center;margin:1px 0 10px}.badai-affiliate-payout{display:inline-flex!important;align-items:center!important;justify-content:center!important;position:static!important;margin:0!important;min-height:36px!important;padding:0 14px!important;border-radius:9px!important;background:#25D366!important;color:#07170d!important;text-decoration:none!important;font:700 10px "Nunito",Arial,sans-serif!important;white-space:nowrap!important}.badai-referral-card{margin-top:5px!important}.badai-affiliate-loading,.badai-affiliate-empty{padding:13px;border:1px dashed #333;border-radius:13px;color:#888;text-align:center;font:600 9px "Nunito",Arial,sans-serif;line-height:1.5}
 
-  @media(max-width:420px){.badai-affiliate-tabs{gap:3px;padding:4px}.badai-affiliate-tab{min-height:36px;padding:0 4px;font-size:8.5px}.badai-affiliate-video-placeholder{border-radius:14px}.badai-sales-subcard{padding:10px}.badai-referral-row,.badai-payout-history-row{padding:8px}.badai-member-header{padding:9px 10px;min-height:58px}.badai-member-header-logo img{height:30px;max-width:174px}.badai-member-help{min-height:37px;padding:0 11px;font-size:9px}.footer .label{font-size:9.7px!important}.community-hero{padding:17px}.community-hero h1{font-size:24px}.community-access-grid{grid-template-columns:1fr;gap:7px}.community-access-card{padding:12px}.gratisan-offer-card{padding:14px;border-radius:18px}.gratisan-offer-label{font-size:23px}.gratisan-value-row{padding:9px}.gratisan-value-row b{font-size:11px}.gratisan-value-row span:last-child{font-size:9.5px}.gratisan-price-box{grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:13px 10px}.gratisan-price-label{font-size:14px}.gratisan-price-right{gap:7px}.gratisan-price-total{font-size:20px}.gratisan-price{font-size:24px}.gratisan-offer-cta{min-height:46px}.community-two{gap:7px}.community-card{padding:12px}.community-level{padding:8px;min-height:82px}}
+  @media(max-width:420px){.badai-material-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.badai-material-card{border-radius:13px}.badai-material-body{padding:8px 9px 9px}.badai-material-body h3{font-size:10.5px}.badai-material-icon{font-size:31px}.badai-affiliate-tabs{gap:3px;padding:4px}.badai-affiliate-tab{min-height:36px;padding:0 4px;font-size:8.5px}.badai-affiliate-video-placeholder{border-radius:14px}.badai-sales-subcard{padding:10px}.badai-referral-row,.badai-payout-history-row{padding:8px}.badai-member-header{padding:9px 10px;min-height:58px}.badai-member-header-logo img{height:30px;max-width:174px}.badai-member-help{min-height:37px;padding:0 11px;font-size:9px}.footer .label{font-size:9.7px!important}.community-hero{padding:17px}.community-hero h1{font-size:24px}.community-access-grid{grid-template-columns:1fr;gap:7px}.community-access-card{padding:12px}.gratisan-offer-card{padding:14px;border-radius:18px}.gratisan-offer-label{font-size:23px}.gratisan-value-row{padding:9px}.gratisan-value-row b{font-size:11px}.gratisan-value-row span:last-child{font-size:9.5px}.gratisan-price-box{grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:13px 10px}.gratisan-price-label{font-size:14px}.gratisan-price-right{gap:7px}.gratisan-price-total{font-size:20px}.gratisan-price{font-size:24px}.gratisan-offer-cta{min-height:46px}.community-two{gap:7px}.community-card{padding:12px}.community-level{padding:8px;min-height:82px}}
 </style>`;
 
     const headerMarkup = String.raw`
@@ -170,9 +182,55 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   var kelas=el('kelas');
-  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading"><div class="kicker">PERPUSTAKAAN BADAI</div><h1>Pemula</h1><p>Kumpulan kelas dan materi AI untuk dipelajari langkah demi langkah.</p></div>');
+  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading"><div class="kicker">PERPUSTAKAAN BADAI</div><h1>Pemula</h1><p>10 materi dasar untuk mulai bikin karya dengan AI.</p></div>');
   var bonus=el('jaluruntung');
-  if(bonus&&!bonus.querySelector('.screen-heading')) bonus.insertAdjacentHTML('afterbegin','<div class="screen-heading"><div class="kicker">KHUSUS MEMBER UNTUNG</div><h1>Untung</h1><p>Bonus dan jalur praktik untuk membantu ilmu BADAI dipakai menghasilkan.</p></div>');
+  if(bonus&&!bonus.querySelector('.screen-heading')) bonus.insertAdjacentHTML('afterbegin','<div class="screen-heading"><div class="kicker">KHUSUS MEMBER UNTUNG</div><h1>Untung</h1><p>15 materi lanjutan untuk bikin produk, konten, dan sistem yang bisa dipakai menghasilkan.</p></div>');
+
+  var pemulaMaterials=[
+    ['🎓','BIKIN AI EDUCATOR'],
+    ['🌍','BIKIN GEO-SPASIAL'],
+    ['🕌','BIKIN DAKWAH INFLUENCER'],
+    ['📸','BIKIN SELEBGRAM AI'],
+    ['🛒','BIKIN AFFILIATE AI'],
+    ['✂️','BIKIN PAPER CRAFT'],
+    ['📦','BIKIN UNBOXING AI'],
+    ['🎮','BIKIN GAME'],
+    ['🌀','BIKIN VIDEO GENJUTSU VIRAL'],
+    ['👥','BIKIN VIDEO KLONING']
+  ];
+
+  var untungMaterials=[
+    ['📱','BIKIN APLIKASI'],
+    ['🖼️','BIKIN POSTER'],
+    ['📊','BIKIN PRESENTASI'],
+    ['📚','BIKIN BUKU'],
+    ['💻','BIKIN WEB APP'],
+    ['📝','BIKIN RPP'],
+    ['📄','BIKIN LKPD'],
+    ['💬','BIKIN KOMIK DIGITAL'],
+    ['🧩','BIKIN LKPD INTERAKTIF'],
+    ['📈','INFOGRAFIS'],
+    ['🚀','SLIDE PRESENTASI MASA DEPAN'],
+    ['🎯','BIKIN GAME EDUKASI'],
+    ['🧠','WEB RAHASIA KUMPULAN PROMPT GRATIS'],
+    ['🎬','BUAT VIDEO PENDEK SUPAYA DIBAYAR LYNK.ID'],
+    ['🔁','JUALAN OTOMATIS DI INSTAGRAM DAN THREADS']
+  ];
+
+  function renderMemberMaterials(targetId,items,label){
+    var grid=el(targetId);
+    if(!grid)return;
+    grid.className='badai-material-grid';
+    grid.innerHTML=items.map(function(item,i){
+      return '<article class="badai-material-card" data-material-no="'+(i+1)+'">'+
+        '<div class="badai-material-cover" role="img" aria-label="'+item[1]+'"><span class="badai-material-no">'+String(i+1).padStart(2,'0')+'</span><span class="badai-material-icon">'+item[0]+'</span></div>'+
+        '<div class="badai-material-body"><h3>'+item[1]+'</h3><span class="badai-material-type">'+label+'</span></div>'+
+      '</article>';
+    }).join('');
+  }
+
+  renderMemberMaterials('chapterGrid',pemulaMaterials,'Materi Pemula');
+  renderMemberMaterials('profitRouteGrid',untungMaterials,'Materi Untung');
 
   [
     ['carapakai','Gratisan','fi fi-rr-square-1'],['kelas','Pemula','fi fi-rr-square-2'],['jaluruntung','Untung','fi fi-rr-square-3'],['afiliasi','Affiliasi','fi fi-rr-square-4'],['akun','Akun','fi fi-rr-square-5']
