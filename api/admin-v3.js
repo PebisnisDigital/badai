@@ -51,8 +51,15 @@ module.exports = async function handler(req, res) {
   #afiliasi .badai-affiliate-edit-code{font-size:10px!important;font-weight:600!important}
   #afiliasi .stats .stat b{font-size:15px!important;font-weight:700!important;line-height:1.15!important}
   #afiliasi .stats .stat span{font-size:10.5px!important;font-weight:500!important;line-height:1.3!important}
+  #afiliasi .badai-affiliate-commission-card{
+    position:relative!important;
+    padding-right:148px!important;
+  }
   #afiliasi .badai-affiliate-payout{
-    margin-top:8px!important;
+    position:absolute!important;
+    right:14px!important;
+    bottom:13px!important;
+    margin:0!important;
     min-height:32px!important;
     height:32px!important;
     padding:0 12px!important;
@@ -227,6 +234,17 @@ module.exports = async function handler(req, res) {
       height:24px!important;
       padding:0 6px!important;
       font-size:6px!important;
+    }
+    #afiliasi .badai-affiliate-commission-card{
+      padding-right:128px!important;
+    }
+    #afiliasi .badai-affiliate-payout{
+      right:10px!important;
+      bottom:10px!important;
+      min-height:29px!important;
+      height:29px!important;
+      padding:0 9px!important;
+      font-size:8.5px!important;
     }
   }
 </style>`;
