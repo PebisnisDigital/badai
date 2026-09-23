@@ -52,13 +52,17 @@ module.exports = async function handler(req, res) {
   #afiliasi .stats .stat b{font-size:15px!important;font-weight:700!important;line-height:1.15!important}
   #afiliasi .stats .stat span{font-size:10.5px!important;font-weight:500!important;line-height:1.3!important}
   #afiliasi .badai-affiliate-commission-card{
-    position:relative!important;
-    padding-right:148px!important;
+    position:static!important;
+    padding-right:10px!important;
+  }
+  #afiliasi .badai-affiliate-payout-row{
+    display:flex!important;
+    justify-content:flex-end!important;
+    align-items:center!important;
+    margin:2px 0 12px!important;
   }
   #afiliasi .badai-affiliate-payout{
-    position:absolute!important;
-    right:14px!important;
-    bottom:13px!important;
+    position:static!important;
     margin:0!important;
     min-height:32px!important;
     height:32px!important;
@@ -70,6 +74,9 @@ module.exports = async function handler(req, res) {
     font-size:9.5px!important;
     font-weight:700!important;
     text-decoration:none!important;
+  }
+  #afiliasi .badai-referral-card{
+    margin-top:6px!important;
   }
   #afiliasi .affiliate-member-heading>div>span{font-size:8.5px!important;font-weight:700!important}
   #afiliasi .affiliate-member-heading h2{font-size:20px!important;font-weight:700!important;line-height:1.08!important}
@@ -310,15 +317,19 @@ module.exports = async function handler(req, res) {
       font-size:6px!important;
     }
     #afiliasi .badai-affiliate-commission-card{
-      padding-right:128px!important;
+      padding-right:8px!important;
+    }
+    #afiliasi .badai-affiliate-payout-row{
+      margin:2px 0 10px!important;
     }
     #afiliasi .badai-affiliate-payout{
-      right:10px!important;
-      bottom:10px!important;
       min-height:29px!important;
       height:29px!important;
       padding:0 9px!important;
       font-size:8.5px!important;
+    }
+    #afiliasi .badai-referral-card{
+      margin-top:5px!important;
     }
   }
 </style>`;
