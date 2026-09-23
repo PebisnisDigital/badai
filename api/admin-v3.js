@@ -49,8 +49,8 @@ module.exports = async function handler(req, res) {
   #afiliasi .badai-affiliate-code-line b{font-size:16px!important;font-weight:600!important}
   #afiliasi .badai-affiliate-code-line span{font-size:17px!important;font-weight:600!important}
   #afiliasi .badai-affiliate-edit-code{font-size:10px!important;font-weight:600!important}
-  #afiliasi .stats .stat b{font-size:15px!important;font-weight:700!important;line-height:1.15!important}
-  #afiliasi .stats .stat span{font-size:10.5px!important;font-weight:500!important;line-height:1.3!important}
+  #afiliasi .stats .stat b{font-size:17px!important;font-weight:800!important;line-height:1.15!important}
+  #afiliasi .stats .stat span{font-size:12.5px!important;font-weight:600!important;line-height:1.3!important}
   #afiliasi .badai-affiliate-commission-card{
     position:static!important;
     padding-right:10px!important;
@@ -78,63 +78,70 @@ module.exports = async function handler(req, res) {
   #afiliasi .badai-referral-card{
     margin-top:6px!important;
   }
-  #afiliasi .affiliate-member-heading>div>span{font-size:8.5px!important;font-weight:700!important}
-  #afiliasi .affiliate-member-heading h2{font-size:20px!important;font-weight:700!important;line-height:1.08!important}
-  #afiliasi .affiliate-member-heading p{font-size:10px!important;font-weight:500!important;line-height:1.35!important}
-  #afiliasi .affiliate-rate{font-size:8px!important;font-weight:700!important}
+  #afiliasi .affiliate-member-heading>div>span{font-size:10px!important;font-weight:800!important}
+  #afiliasi .affiliate-member-heading h2{font-size:22px!important;font-weight:800!important;line-height:1.08!important}
+  #afiliasi .affiliate-member-heading p{font-size:12px!important;font-weight:600!important;line-height:1.4!important}
+  #afiliasi .affiliate-rate{font-size:10px!important;font-weight:800!important}
   #afiliasi .affiliate-empty,
   #afiliasi .badai-affiliate-loading,
-  #afiliasi .badai-affiliate-empty{font-size:9.5px!important;font-weight:500!important;line-height:1.35!important}
-  #afiliasi .center{margin-bottom:5px!important}
-  #afiliasi .center .title{font-size:20px!important;line-height:1!important}
-  #afiliasi .center .subtitle{font-size:8px!important;margin:3px 0 6px!important}
+  #afiliasi .badai-affiliate-empty{font-size:11.5px!important;font-weight:600!important;line-height:1.45!important}
+  #afiliasi .center{margin-bottom:9px!important}
+  #afiliasi .center .title{font-size:28px!important;font-weight:800!important;line-height:1.05!important}
+  #afiliasi .center .subtitle{font-size:11px!important;font-weight:600!important;margin:5px 0 9px!important;color:#a7a7a7!important}
   #afiliasi .badai-affiliate-tabs{
-    gap:4px!important;
-    margin:0 0 7px!important;
-    padding:4px!important;
-    border-radius:11px!important;
+    gap:6px!important;
+    margin:0 0 12px!important;
+    padding:6px!important;
+    border-radius:13px!important;
   }
   #afiliasi .badai-affiliate-tab{
-    min-height:32px!important;
-    padding:0 5px!important;
-    border-radius:8px!important;
-    font-size:8.5px!important;
+    min-height:42px!important;
+    padding:0 8px!important;
+    border-radius:9px!important;
+    font-size:11.5px!important;
     font-weight:700!important;
   }
   #afiliasi .badai-affiliate-panel.active{display:block!important}
   #afiliasi .badai-affiliate-tutorial.active{display:grid!important}
   #afiliasi .badai-affiliate-video-placeholder{
-    max-height:250px!important;
-    min-height:180px!important;
-    border-radius:13px!important;
-    padding:12px!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    min-height:0!important;
+    aspect-ratio:16/9!important;
+    border-radius:16px!important;
+    padding:18px!important;
   }
   #afiliasi .badai-affiliate-video-placeholder .play{
-    width:39px!important;
-    height:39px!important;
-    margin-bottom:7px!important;
-    font-size:14px!important;
+    width:58px!important;
+    height:58px!important;
+    margin-bottom:12px!important;
+    font-size:21px!important;
   }
-  #afiliasi .badai-affiliate-video-placeholder b{font-size:13px!important}
-  #afiliasi .badai-affiliate-video-placeholder span{font-size:8px!important}
+  #afiliasi .badai-affiliate-video-placeholder b{font-size:19px!important;font-weight:800!important}
+  #afiliasi .badai-affiliate-video-placeholder span{display:none!important}
   #afiliasi .badai-affiliate-rules,
   #afiliasi .badai-sales-subcard{
-    padding:10px!important;
-    border-radius:12px!important;
+    padding:16px!important;
+    border-radius:14px!important;
   }
   #afiliasi .badai-affiliate-rules h3,
   #afiliasi .badai-sales-subhead h3{
-    font-size:13px!important;
+    font-size:18px!important;
+    font-weight:800!important;
   }
   #afiliasi .badai-affiliate-rule{
-    grid-template-columns:21px 1fr!important;
-    gap:6px!important;
-    font-size:8.5px!important;
+    grid-template-columns:30px 1fr!important;
+    gap:10px!important;
+    font-size:12.5px!important;
+    font-weight:600!important;
+    line-height:1.5!important;
   }
   #afiliasi .badai-affiliate-rule i{
-    width:21px!important;
-    height:21px!important;
-    border-radius:7px!important;
+    width:30px!important;
+    height:30px!important;
+    border-radius:9px!important;
+    font-size:11px!important;
   }
   #afiliasi [data-aff-panel="sales"] .stats{
     display:grid!important;
@@ -145,30 +152,30 @@ module.exports = async function handler(req, res) {
     min-width:0!important;
     padding:10px!important;
   }
-  #afiliasi .badai-sales-subhead span{font-size:7.5px!important}
+  #afiliasi .badai-sales-subhead span{font-size:9.5px!important;font-weight:600!important}
   #afiliasi .badai-referral-row,
   #afiliasi .badai-payout-history-row{
-    padding:8px 9px!important;
+    padding:10px 11px!important;
   }
-  #afiliasi .badai-referral-main b{font-size:10.5px!important}
-  #afiliasi .badai-referral-main span{font-size:7.5px!important}
-  #afiliasi .badai-referral-side strong{font-size:10px!important}
-  #afiliasi .badai-referral-side small{font-size:6.8px!important}
+  #afiliasi .badai-referral-main b{font-size:12.5px!important;font-weight:700!important}
+  #afiliasi .badai-referral-main span{font-size:9.5px!important;font-weight:600!important}
+  #afiliasi .badai-referral-side strong{font-size:12px!important}
+  #afiliasi .badai-referral-side small{font-size:8.5px!important}
 
   #afiliasi .badai-affiliate-multilink-box{
     padding:8px!important;
     border-radius:13px!important;
   }
   #afiliasi .badai-affiliate-multilink-box>h2{
-    margin:2px 0!important;
-    font-size:14px!important;
-    line-height:1.05!important;
+    margin:4px 0!important;
+    font-size:18px!important;
+    line-height:1.1!important;
   }
   #afiliasi .badai-affiliate-link-intro{
-    margin:1px 0 5px!important;
-    font-size:7.5px!important;
-    line-height:1.2!important;
-    color:#818181!important;
+    margin:2px 0 7px!important;
+    font-size:10.5px!important;
+    line-height:1.35!important;
+    color:#9a9a9a!important;
   }
   #afiliasi .affiliate-pro-pill{
     min-height:17px!important;
@@ -197,18 +204,18 @@ module.exports = async function handler(req, res) {
     display:none!important;
   }
   #afiliasi .badai-affiliate-link-badge{
-    min-height:17px!important;
-    padding:0 5px!important;
+    min-height:20px!important;
+    padding:0 6px!important;
     border-radius:999px!important;
-    font-size:5.4px!important;
+    font-size:7px!important;
     line-height:1!important;
     white-space:nowrap!important;
   }
   #afiliasi .badai-affiliate-link-card h3{
     margin:0!important;
     min-width:0!important;
-    font-size:9.5px!important;
-    line-height:1.05!important;
+    font-size:11.5px!important;
+    line-height:1.15!important;
     white-space:nowrap!important;
     overflow:hidden!important;
     text-overflow:ellipsis!important;
@@ -221,13 +228,14 @@ module.exports = async function handler(req, res) {
   }
   #afiliasi .badai-affiliate-copy,
   #afiliasi .badai-affiliate-open{
-    min-height:25px!important;
-    height:25px!important;
+    min-height:30px!important;
+    height:30px!important;
     width:auto!important;
     min-width:0!important;
-    padding:0 7px!important;
-    border-radius:7px!important;
-    font-size:6.2px!important;
+    padding:0 9px!important;
+    border-radius:8px!important;
+    font-size:8px!important;
+    font-weight:800!important;
     line-height:1!important;
   }
   #afiliasi .badai-affiliate-open{
