@@ -1737,10 +1737,11 @@ h2{font-weight:900}
   box-shadow:0 14px 34px rgba(0,0,0,.24);
 }
 .package-card-free{
-  border-color:#244a35;
+  border-color:#272727;
   background:
-    radial-gradient(circle at 88% 10%,rgba(37,211,102,.08),transparent 28%),
-    linear-gradient(180deg,#101512,#090b0a);
+    radial-gradient(circle at 88% 10%,rgba(255,255,255,.025),transparent 28%),
+    linear-gradient(180deg,#0d0d0d,#080808);
+  opacity:.86;
 }
 .package-card-featured{
   border-color:#8a315e;
@@ -1785,9 +1786,9 @@ h2{font-weight:900}
   white-space:nowrap;
 }
 .package-label.free{
-  border-color:#24553a;
-  background:#0d2115;
-  color:#62e69a;
+  border-color:#2c2c2c;
+  background:#121212;
+  color:#777;
 }
 .package-label.hot{
   border-color:#642a4b;
@@ -1819,8 +1820,8 @@ h2{font-weight:900}
   background:#0b0b0b;
 }
 .package-card-free .package-price-wrap{
-  border-color:#244b34;
-  background:#09110c;
+  border-color:#242424;
+  background:#0a0a0a;
 }
 .package-card-featured .package-price-wrap{
   border-color:#4d263d;
@@ -1841,7 +1842,20 @@ h2{font-weight:900}
   letter-spacing:-.045em;
   white-space:nowrap;
 }
-.package-card-free .package-price{color:#25D366}
+.package-card-free .package-price{color:#8a8a8a}
+
+.package-card-free .package-card-top h3{color:#b0b0b0}
+.package-card-free .package-card-top p{color:#666}
+.package-card-free .package-feature b{color:#858585}
+.package-card-free .package-feature>span{
+  background:#151515;
+  color:#6f6f6f;
+}
+.package-card-free .package-select-btn.free:hover{
+  background:#222;
+  color:#aaa;
+}
+
 .package-card-featured .package-price{color:#ff8fc5}
 .package-feature-list{
   display:grid;
@@ -1895,9 +1909,9 @@ h2{font-weight:900}
   cursor:pointer;
 }
 .package-select-btn.free{
-  border-color:#25D366;
-  background:#25D366;
-  color:#07170d;
+  border-color:#2d2d2d;
+  background:#1a1a1a;
+  color:#8a8a8a;
 }
 .package-select-btn.hot{
   border-color:#ff4fa3;
@@ -1907,7 +1921,7 @@ h2{font-weight:900}
   outline:1.5px solid rgba(255,255,255,.8);
   outline-offset:2px;
 }
-.package-card-free.is-selected{outline-color:#25D366}
+.package-card-free.is-selected{outline-color:#5a5a5a}
 .package-card-featured.is-selected{outline-color:#ff4fa3}
 .selected-package-box{
   display:flex;
