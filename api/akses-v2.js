@@ -214,6 +214,53 @@ module.exports = async function handler(req, res) {
   .app .title,.app .logo{
     font-family:"Raleway",Arial,sans-serif!important;
   }
+
+  /* BADAI MEMBER DYNAMIC READABILITY */
+  .app .title{font-size:34px!important;line-height:1.06!important}
+  .app .subtitle{font-size:14px!important;line-height:1.5!important}
+  .app p{line-height:1.5!important}
+  .app .community-kicker{font-size:10.5px!important}
+  .app .community-hero h1{font-size:32px!important;line-height:1.06!important}
+  .app .community-hero p{font-size:13px!important;line-height:1.55!important}
+  .app .community-plan-pill{font-size:10.5px!important}
+  .app .community-wa h2,
+  .app .community-access-card h2{font-size:18px!important;line-height:1.25!important}
+  .app .community-wa p,
+  .app .community-access-card p{font-size:12px!important;line-height:1.5!important}
+  .app .community-wa a,
+  .app .community-access-card a{font-size:11.5px!important}
+  .app .gratisan-offer-label{font-size:33px!important}
+  .app .gratisan-value-row b{font-size:16px!important;line-height:1.35!important}
+  .app .gratisan-value-row span:last-child{font-size:14px!important}
+  .app .badai-affiliate-tabs button,
+  .app .badai-affiliate-tab{font-size:12px!important}
+  .app .badai-affiliate-multilink-box>h2{font-size:23px!important;line-height:1.15!important}
+  .app .badai-affiliate-link-intro{font-size:13px!important;line-height:1.5!important}
+  .app .badai-affiliate-link-card h3{font-size:16px!important;line-height:1.25!important}
+  .app .badai-affiliate-link-card p{font-size:12px!important;line-height:1.5!important}
+  .app .badai-affiliate-url{font-size:11.5px!important}
+  .app .badai-affiliate-copy,
+  .app .badai-affiliate-open{font-size:10.5px!important}
+  .app .stats .stat b{font-size:19px!important;line-height:1.2!important}
+  .app .stats .stat span{font-size:12.5px!important;line-height:1.35!important}
+  .app .affiliate-member-heading h2{font-size:25px!important;line-height:1.1!important}
+  .app .affiliate-member-heading p{font-size:13px!important;line-height:1.5!important}
+  .app .badai-affiliate-rules h3,
+  .app .badai-sales-subhead h3{font-size:19px!important}
+  .app .badai-affiliate-rule{font-size:13px!important;line-height:1.5!important}
+  .app .badai-referral-main b{font-size:14px!important}
+  .app .badai-referral-main span{font-size:11px!important}
+  .app .badai-member-help{font-size:11px!important}
+  .app .footer .label{font-size:11px!important}
+  @media(max-width:430px){
+    .app .title{font-size:30px!important}
+    .app .subtitle{font-size:13px!important}
+    .app .community-hero h1{font-size:28px!important}
+    .app .badai-affiliate-multilink-box>h2{font-size:21px!important}
+    .app .badai-affiliate-link-card h3{font-size:14px!important}
+    .app .footer .label{font-size:10.5px!important}
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
