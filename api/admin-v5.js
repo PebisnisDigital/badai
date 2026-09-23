@@ -392,6 +392,23 @@ module.exports = async function handler(req, res) {
     body = body.replace('</body>', audienceUi + '\n</body>');
     body = body.replace('</body>', affiliateLinkUi + '\n</body>');
 
+
+    const typographyUi = String.raw`
+<style id="badai-admin-typography-final">
+  body,button,input,select,textarea,label,p,span,small,a,td,th{
+    font-family:"Nunito",Arial,sans-serif!important;
+  }
+  h1,h2,h3,h4,h5,h6,
+  .brand,.page-title,.statement-title,
+  .card-head h3,.marketing-card-head h3,
+  .affiliate-admin-title b,.dashboard-head h1{
+    font-family:"Raleway",Arial,sans-serif!important;
+  }
+  code,pre,kbd,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important}
+</style>`;
+
+    body = body.replace('</head>', typographyUi + '\n</head>');
+
     Object.entries(headers).forEach(([k,v]) => res.setHeader(k,v));
     res.setHeader('Content-Type','text/html; charset=utf-8');
     res.setHeader('Cache-Control','no-store');
