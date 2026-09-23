@@ -451,7 +451,7 @@
 
     if(plan !== 'pro'){
       if(affiliateNav) affiliateNav.style.display = 'none';
-      if(footer) footer.style.setProperty('--member-nav-count','4');
+      if(footer) footer.style.setProperty('--member-nav-count','3');
 
       const affiliateScreen = document.getElementById('afiliasi');
       if(affiliateScreen?.classList.contains('active')){
@@ -475,7 +475,7 @@
     }
 
     if(affiliateNav) affiliateNav.style.display = '';
-    if(footer) footer.style.setProperty('--member-nav-count','5');
+    if(footer) footer.style.setProperty('--member-nav-count','4');
 
     try{
       const results = await Promise.all([
