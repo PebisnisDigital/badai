@@ -1616,16 +1616,14 @@ h2{font-weight:900}
 }
 .register-benefit-viewport{
   position:relative;
-  height:114px;
+  height:54px;
   min-width:0;
   overflow:hidden;
-  mask-image:linear-gradient(to bottom,transparent 0,#000 8%,#000 92%,transparent 100%);
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 8%,#000 92%,transparent 100%);
-}
-.register-benefit-ticker.is-free .register-benefit-viewport{
-  height:38px;
   mask-image:none;
   -webkit-mask-image:none;
+}
+.register-benefit-ticker.is-free .register-benefit-viewport{
+  height:54px;
 }
 .register-benefit-track{
   position:absolute;
@@ -1639,38 +1637,39 @@ h2{font-weight:900}
   to{transform:translate3d(0,calc(-1 * var(--benefit-distance,228px)),0)}
 }
 .register-benefit-item{
-  height:38px;
+  height:54px;
   box-sizing:border-box;
   display:grid;
-  grid-template-columns:29px minmax(0,1fr);
-  gap:9px;
+  grid-template-columns:40px minmax(0,1fr);
+  gap:11px;
   align-items:center;
-  padding:4px 9px;
-  border:1px solid #2a2a2a;
-  border-radius:9px;
-  background:rgba(5,5,5,.74);
+  padding:6px 11px;
+  border:1px solid #2f2f2f;
+  border-radius:11px;
+  background:rgba(5,5,5,.78);
   color:#fff;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:10.5px;
-  line-height:1.2;
-  font-weight:900;
+  font-size:13.5px;
+  line-height:1.18;
+  font-weight:950;
   letter-spacing:.01em;
   text-transform:uppercase;
   overflow:hidden;
 }
 .register-benefit-number{
-  width:27px;
-  height:27px;
+  width:38px;
+  height:38px;
   display:grid;
   place-items:center;
-  border-radius:8px;
+  border-radius:10px;
   background:#2b101e;
-  border:1px solid #743456;
+  border:1px solid #7b365b;
   color:#ff9acb;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:8px;
+  font-size:11px;
   font-weight:950;
   letter-spacing:.02em;
+  box-shadow:0 0 14px rgba(255,79,163,.12);
 }
 .register-benefit-text{
   min-width:0;
@@ -1686,20 +1685,20 @@ h2{font-weight:900}
     border-radius:13px;
   }
   .register-benefit-prefix{font-size:7.5px;margin-bottom:7px}
-  .register-benefit-viewport{height:108px}
-  .register-benefit-ticker.is-free .register-benefit-viewport{height:36px}
+  .register-benefit-viewport{height:50px}
+  .register-benefit-ticker.is-free .register-benefit-viewport{height:50px}
   .register-benefit-item{
-    height:36px;
-    grid-template-columns:25px minmax(0,1fr);
-    gap:7px;
-    padding:4px 7px;
-    font-size:9px;
+    height:50px;
+    grid-template-columns:36px minmax(0,1fr);
+    gap:9px;
+    padding:5px 8px;
+    font-size:11.5px;
   }
   .register-benefit-number{
-    width:24px;
-    height:24px;
-    border-radius:7px;
-    font-size:7px;
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    font-size:10px;
   }
 }
 .register-form{
@@ -3832,10 +3831,10 @@ body.register-modal-open{
 
     requestAnimationFrame(() => {
       const firstItem = track.querySelector('.register-benefit-item');
-      const rowHeight = firstItem ? firstItem.getBoundingClientRect().height : (isFree ? 38 : 38);
+      const rowHeight = firstItem ? firstItem.getBoundingClientRect().height : 54;
       const distance = rowHeight * items.length;
-      const secondsPerRow = isFree ? 1.55 : 1.35;
-      const duration = Math.max(7,items.length * secondsPerRow);
+      const secondsPerRow = isFree ? 1.15 : 1.05;
+      const duration = Math.max(5.5,items.length * secondsPerRow);
 
       track.style.setProperty('--benefit-distance',distance + 'px');
       track.style.setProperty('--benefit-duration',duration + 's');
