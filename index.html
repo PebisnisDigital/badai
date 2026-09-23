@@ -1614,6 +1614,13 @@ h2{font-weight:900}
   border-color:#ff3f9c;
   box-shadow:0 0 0 3px rgba(255,63,156,.12);
 }
+.form-hint{
+  margin-top:-1px;
+  color:#777;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:10px;
+  line-height:1.45;
+}
 .payment-box{
   margin-top:2px;
   padding:17px;
@@ -1679,7 +1686,7 @@ h2{font-weight:900}
 }
 
 
-/* TWO PACKAGE PRICING */
+/* THREE PACKAGE PRICING */
 .package-pricing-head{
   text-align:center;
   max-width:620px;
@@ -1723,6 +1730,29 @@ h2{font-weight:900}
     linear-gradient(180deg,#111,#090909);
   box-shadow:0 20px 48px rgba(0,0,0,.24);
 }
+.package-card-free{
+  grid-column:1/-1;
+  border-color:#24553a;
+  background:
+    radial-gradient(circle at 88% 12%,rgba(37,211,102,.10),transparent 27%),
+    linear-gradient(180deg,#101713,#090b0a);
+}
+.package-card-free .package-price-wrap{
+  border-color:#244b34;
+  background:#09110c;
+}
+.package-card-free .package-price{color:#25D366}
+.package-label.free{
+  border-color:#24553a;
+  background:#0d2115;
+  color:#62e69a;
+}
+.package-select-btn.free{
+  border-color:#25D366;
+  background:#25D366;
+  color:#07170d;
+}
+.package-card-free.is-selected{outline-color:#25D366}
 .package-card-featured{
   border-color:#7b3157;
   box-shadow:
@@ -2771,10 +2801,33 @@ body.register-modal-open{
   <div class="package-pricing-head">
     <div class="package-kicker">PILIH PAKET BADAI</div>
     <h2>Pilih Paket yang Paling Cocok Buat Kamu</h2>
-    <p>Mau fokus belajar AI dulu, pilih Paket Pemula. Mau belajar sekaligus punya program afiliasi, pilih Paket Untung.</p>
+    <p>Mulai gratis dulu juga boleh. Kalau sudah siap belajar lebih dalam, lanjut ke Paket Pemula atau Paket Untung.</p>
   </div>
 
   <div class="package-pricing-grid">
+    <article class="package-card package-card-free" data-package-card="free">
+      <div class="package-card-top">
+        <div class="package-label free">PAKET GRATISAN</div>
+        <h3>Masuk BADAI Gratis</h3>
+        <p>Masuk komunitas dulu, ikut KulWA, dan kenalan dengan BADAI tanpa bayar.</p>
+      </div>
+
+      <div class="package-price-wrap">
+        <div class="package-price-label">Harga akses</div>
+        <div class="package-price">Rp0</div>
+      </div>
+
+      <div class="package-feature-list">
+        <div class="package-feature"><span>✓</span><div><b>Akses Menu Gratisan</b><small>Materi dan informasi khusus member Gratisan.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Gabung Komunitas BADAI</b><small>Mulai terhubung dan belajar bareng member lain.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>KulWA Rutin</b><small>Ikuti sesi belajar ringan lewat WhatsApp.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Bisa Upgrade Kapan Saja</b><small>Kalau sudah siap, lanjut ke Paket Pemula atau Paket Untung.</small></div></div>
+      </div>
+
+      <button class="package-select-btn free" type="button" data-package-select="free">
+        DAFTAR GRATIS
+      </button>
+    </article>
     <article class="package-card" data-package-card="newbie">
       <div class="package-card-top">
         <div class="package-label">PAKET PEMULA</div>
@@ -2880,6 +2933,12 @@ body.register-modal-open{
         <div class="form-group">
           <label for="regWa">WA</label>
           <input id="regWa" name="wa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
+        </div>
+
+        <div class="form-group" id="freePasswordGroup" style="display:none">
+          <label for="regPassword">Buat Password</label>
+          <input id="regPassword" name="password" type="password" minlength="8" placeholder="Minimal 8 karakter" autocomplete="new-password">
+          <small class="form-hint">Password ini dipakai untuk login lagi ke Member Area.</small>
         </div>
 
         <div class="payment-choice-section">
@@ -3183,7 +3242,7 @@ Mohon dibantu proses pendaftarannya ya.`
       box.innerHTML = '<div class="payment-method-loading">Belum ada metode pembayaran yang aktif.</div>';
       renderSelectedPaymentDetail();
       const submit = document.querySelector('.register-submit');
-      if(submit) submit.disabled = true;
+      if(submit) submit.disabled = selectedPackage === 'free' ? false : true;
       return;
     }
 
@@ -3227,12 +3286,12 @@ Mohon dibantu proses pendaftarannya ya.`
         renderSelectedPaymentDetail();
 
         const submit = document.querySelector('.register-submit');
-        if(submit) submit.disabled = !selectedPaymentMethodId;
+        if(submit) submit.disabled = selectedPackage === 'free' ? false : !selectedPaymentMethodId;
       });
     }
 
     const submit = document.querySelector('.register-submit');
-    if(submit) submit.disabled = !selectedPaymentMethodId;
+    if(submit) submit.disabled = selectedPackage === 'free' ? false : !selectedPaymentMethodId;
 
     renderSelectedPaymentDetail();
   }
@@ -3338,8 +3397,8 @@ Mohon dibantu proses pendaftarannya ya.`
     form.style.display = '';
     document.getElementById('qrisPaymentStage')?.classList.add('hidden');
 
-    submitBtn.disabled = !selectedPaymentMethodId;
-    submitBtn.textContent = 'KLIK DAFTAR SEKARANG →';
+    submitBtn.disabled = selectedPackage === 'free' ? false : !selectedPaymentMethodId;
+    submitBtn.textContent = selectedPackage === 'free' ? 'DAFTAR GRATIS →' : 'KLIK DAFTAR SEKARANG →';
   }
 
   function showQrisStage(data){
@@ -3475,12 +3534,14 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function selectedPackagePrice(){
+    if(selectedPackage === 'free') return 0;
     return selectedPackage === 'pro'
       ? Number(marketingConfig.pro_price || marketingConfig.product_price || 0)
       : Number(marketingConfig.newbie_price || marketingConfig.product_price || 0);
   }
 
   function selectedPackageName(){
+    if(selectedPackage === 'free') return 'Paket Gratisan';
     return selectedPackage === 'pro' ? 'Paket Untung' : 'Paket Pemula';
   }
 
@@ -3502,20 +3563,32 @@ Mohon dibantu proses pendaftarannya ya.`
   const closeRegistrationModalBtn = document.getElementById('closeRegistrationModal');
 
   function openRegistrationModal(plan){
-    selectedPackage = plan === 'pro' ? 'pro' : 'newbie';
+    selectedPackage = ['free','newbie','pro'].includes(plan) ? plan : 'newbie';
     syncSelectedPackageUI();
     showRegistrationForm();
 
     const title = document.getElementById('registrationModalTitle');
     const desc = document.getElementById('registrationModalDesc');
     const status = document.getElementById('registerStatus');
+    const passwordGroup = document.getElementById('freePasswordGroup');
+    const passwordInput = document.getElementById('regPassword');
+    const paymentSection = document.querySelector('.payment-choice-section');
+    const isFree = selectedPackage === 'free';
+
+    if(passwordGroup) passwordGroup.style.display = isFree ? 'grid' : 'none';
+    if(passwordInput) passwordInput.required = isFree;
+    if(paymentSection) paymentSection.style.display = isFree ? 'none' : '';
 
     if(title) title.textContent = 'Daftar ' + selectedPackageName();
     if(desc){
-      desc.textContent = 'Isi data di bawah ini untuk melanjutkan pendaftaran ' + selectedPackageName() + '.';
+      desc.textContent = isFree
+        ? 'Isi data berikut. Akun Gratisan akan langsung aktif setelah pendaftaran berhasil.'
+        : 'Isi data di bawah ini untuk melanjutkan pendaftaran ' + selectedPackageName() + '.';
     }
     if(status){
-      status.textContent = 'Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.';
+      status.textContent = isFree
+        ? 'Gratis. Setelah berhasil, kamu langsung masuk ke Member Area BADAI.'
+        : 'Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.';
       status.style.color = '#7e7e7e';
     }
 
@@ -3600,6 +3673,11 @@ Mohon dibantu proses pendaftarannya ya.`
   loadMarketingConfig();
   loadPaymentMethods();
 
+  const requestedPackage = (new URLSearchParams(location.search).get('paket') || '').trim().toLowerCase();
+  if(requestedPackage === 'gratisan'){
+    setTimeout(() => openRegistrationModal('free'), 80);
+  }
+
   let landingAutoSyncBusy = false;
 
   async function autoSyncLanding(){
@@ -3644,7 +3722,7 @@ Mohon dibantu proses pendaftarannya ya.`
   form.addEventListener('submit', async function(e){
     e.preventDefault();
 
-    if(!selectedPaymentMethodId || !selectedPaymentMethod()){
+    if(selectedPackage !== 'free' && (!selectedPaymentMethodId || !selectedPaymentMethod())){
       setStatus('Pilih metode pembayaran dulu.', true);
       return;
     }
@@ -3652,9 +3730,13 @@ Mohon dibantu proses pendaftarannya ya.`
     const nama = document.getElementById('regNama').value.trim();
     const email = document.getElementById('regEmail').value.trim().toLowerCase();
     const wa = normalizeWhatsapp(document.getElementById('regWa').value);
+    const password = String(document.getElementById('regPassword')?.value || '');
 
-    if(!nama || !email || !wa){
+    if(!nama || !email || !wa || (selectedPackage === 'free' && password.length < 8)){
       form.reportValidity();
+      if(selectedPackage === 'free' && password.length < 8){
+        setStatus('Buat password minimal 8 karakter dulu.', true);
+      }
       return;
     }
 
@@ -3670,6 +3752,47 @@ Mohon dibantu proses pendaftarannya ya.`
     setStatus('Sebentar, data pendaftaran sedang dicatat...', false);
 
     try {
+      if(selectedPackage === 'free'){
+        submitBtn.textContent = 'MENGAKTIFKAN AKUN...';
+        setStatus('Sebentar, akun Gratisan sedang dibuat...', false);
+
+        const freeResponse = await fetch(SUPABASE_URL + '/functions/v1/register-free-member',{
+          method:'POST',
+          headers:{
+            'apikey':SUPABASE_PUBLISHABLE_KEY,
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify({
+            full_name:nama,
+            email,
+            whatsapp:wa,
+            password,
+            referred_by_code:(
+              window.BADAI_AFFILIATE_REF ||
+              localStorage.getItem('badai_affiliate_ref') ||
+              null
+            )
+          })
+        });
+
+        const freeData = await freeResponse.json().catch(()=>({}));
+        if(!freeResponse.ok){
+          throw new Error(freeData?.error || 'Gagal mengaktifkan Paket Gratisan');
+        }
+        if(!freeData?.session?.access_token){
+          throw new Error('Akun berhasil dibuat, tetapi sesi login belum tersedia.');
+        }
+
+        localStorage.setItem('badai_member_session', JSON.stringify(freeData.session));
+        setStatus('Berhasil! Membuka Member Area Gratisan...', false);
+        submitBtn.textContent = 'BERHASIL ✓';
+
+        setTimeout(() => {
+          window.location.href = '/akses/';
+        }, 650);
+        return;
+      }
+
       const payment = selectedPaymentMethod();
 
       if(payment?.method_type === 'qris' && payment?.provider === 'buatqris'){
