@@ -1721,7 +1721,7 @@ h2{font-weight:900}
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:8px;
-  align-items:stretch;
+  align-items:start;
 }
 .package-card{
   position:relative;
@@ -1736,7 +1736,11 @@ h2{font-weight:900}
     linear-gradient(180deg,#111,#090909);
   box-shadow:0 14px 34px rgba(0,0,0,.24);
 }
+.package-card:not(.package-card-free):not(.package-card-featured){
+  min-height:305px;
+}
 .package-card-free{
+  min-height:285px;
   border-color:#444;
   background:
     radial-gradient(circle at 88% 10%,rgba(255,255,255,.055),transparent 28%),
@@ -1744,6 +1748,7 @@ h2{font-weight:900}
 }
 .package-card-featured{
   z-index:3;
+  min-height:390px;
   overflow:hidden;
   border-color:#ff4fa3;
   background:
@@ -1756,7 +1761,7 @@ h2{font-weight:900}
     0 0 28px rgba(255,79,163,.22);
   transform:translateY(-7px) scale(1.055);
   transform-origin:center;
-  animation:badaiUntungPulse 2.6s ease-in-out infinite;
+  animation:badaiUntungPulse 2.35s ease-in-out infinite;
 }
 .package-card-featured::before{
   content:"";
@@ -1776,7 +1781,7 @@ h2{font-weight:900}
     transparent
   );
   filter:blur(.2px);
-  animation:badaiUntungShine 3.2s ease-in-out infinite;
+  animation:badaiUntungShine 2.8s ease-in-out infinite;
 }
 .package-card-featured::after{
   content:"";
@@ -1793,7 +1798,6 @@ h2{font-weight:900}
   z-index:1;
 }
 .package-card-featured:hover{
-  animation-play-state:paused;
   transform:translateY(-9px) scale(1.075);
   box-shadow:
     0 26px 62px rgba(0,0,0,.42),
@@ -1914,6 +1918,14 @@ h2{font-weight:900}
 }
 
 .package-card-featured .package-price{color:#ff8fc5}
+
+.package-card-featured .package-feature{
+  padding:7px 0;
+}
+.package-card-featured .package-feature b{
+  color:#fff;
+}
+
 .package-feature-list{
   display:grid;
   gap:0;
@@ -1972,9 +1984,20 @@ h2{font-weight:900}
 }
 .package-select-btn.hot{
   border-color:#ff75b8;
-  background:linear-gradient(135deg,#ff75b8,#ff4fa3);
-  box-shadow:0 8px 22px rgba(255,79,163,.24), inset 0 1px 0 rgba(255,255,255,.24);
+  background:linear-gradient(135deg,#ff8ac4,#ff4fa3);
+  box-shadow:0 8px 22px rgba(255,79,163,.30), inset 0 1px 0 rgba(255,255,255,.28);
   transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+  animation:badaiUntungCta 1.9s ease-in-out infinite;
+}
+@keyframes badaiUntungCta{
+  0%,100%{
+    filter:brightness(1);
+    box-shadow:0 8px 22px rgba(255,79,163,.28), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  50%{
+    filter:brightness(1.12);
+    box-shadow:0 10px 30px rgba(255,79,163,.48), inset 0 1px 0 rgba(255,255,255,.36);
+  }
 }
 .package-select-btn.hot:hover{
   transform:translateY(-2px) scale(1.025);
@@ -2025,9 +2048,12 @@ h2{font-weight:900}
   .package-pricing-head p{font-size:10.5px}
   .package-pricing-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
   .package-card{padding:10px 7px 8px;border-radius:14px}
+  .package-card-free{min-height:238px}
+  .package-card:not(.package-card-free):not(.package-card-featured){min-height:260px}
   .package-card-featured{
+    min-height:330px;
     transform:translateY(-5px) scale(1.035);
-    animation:badaiUntungPulseMobile 2.6s ease-in-out infinite;
+    animation:badaiUntungPulseMobile 2.35s ease-in-out infinite;
   }
   @keyframes badaiUntungPulseMobile{
     0%,100%{transform:translateY(-5px) scale(1.035)}
@@ -2048,7 +2074,8 @@ h2{font-weight:900}
 
 @media (prefers-reduced-motion:reduce){
   .package-card-featured,
-  .package-card-featured::before{
+  .package-card-featured::before,
+  .package-select-btn.hot{
     animation:none!important;
   }
   .package-card-featured{
@@ -2982,10 +3009,13 @@ body.register-modal-open{
       </div>
 
       <div class="package-feature-list">
-        <div class="package-feature"><span>✓</span><div><b>Semua Pemula</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Semua Akses Pemula</b></div></div>
         <div class="package-feature"><span>✓</span><div><b>Jalur Untung</b></div></div>
         <div class="package-feature"><span>✓</span><div><b>Program Afiliasi</b></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Komisi + Promosi</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Link Afiliasi Pribadi</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Bahan Promosi Siap Pakai</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Pantau Sales & Komisi</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Komisi dari Penjualan</b></div></div>
       </div>
 
       <button class="package-select-btn hot" type="button" data-package-select="pro">
