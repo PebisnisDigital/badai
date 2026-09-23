@@ -18,6 +18,64 @@ a{color:inherit;text-decoration:none}.container{width:min(var(--max),calc(100% -
 .nav-inner{height:62px;display:flex;align-items:center;justify-content:space-between}
 .brand{font-weight:900;letter-spacing:-.04em;font-size:22px}.brand span{color:var(--pink)}
 .nav-btn{background:var(--pink);color:#080808;padding:10px 14px;border-radius:12px;font-weight:800;font-size:13px}
+.nav-cta-guide{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:7px;
+  min-width:0;
+}
+.nav-click-hands{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:1px;
+  pointer-events:none;
+  flex:0 0 auto;
+}
+.nav-click-hand{
+  display:inline-grid;
+  place-items:center;
+  width:20px;
+  height:26px;
+  font-size:19px;
+  line-height:1;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.85)) drop-shadow(0 0 8px rgba(255,79,163,.20));
+  will-change:transform,opacity;
+  animation:badaiNavClickGuide 900ms ease-in-out infinite;
+}
+.nav-click-hand:nth-child(1){animation-delay:0ms}
+.nav-click-hand:nth-child(2){animation-delay:120ms}
+.nav-click-hand:nth-child(3){animation-delay:240ms}
+@keyframes badaiNavClickGuide{
+  0%,100%{
+    transform:translate3d(-6px,0,0) scale(.92);
+    opacity:.60;
+  }
+  45%{
+    transform:translate3d(7px,0,0) scale(1.10);
+    opacity:1;
+  }
+  62%{
+    transform:translate3d(3px,0,0) scale(1.03);
+    opacity:.96;
+  }
+}
+@media(max-width:480px){
+  .nav-cta-guide{gap:3px}
+  .nav-click-hands{gap:0}
+  .nav-click-hand{
+    width:15px;
+    height:23px;
+    font-size:15px;
+  }
+  .nav-btn{
+    padding:9px 11px;
+    font-size:11px;
+    border-radius:11px;
+    white-space:nowrap;
+  }
+}
 section{padding:54px 0}.hero{
   position:relative;
   overflow:hidden;
@@ -4047,7 +4105,14 @@ main section > .container > .badai-copy-kicker,
 <body>
 <header class="nav"><div class="container nav-inner"><a aria-label="BADAI" class="brand brand-logo" href="#">
 <img alt="Komunitas BADAI" src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp"/>
-</a><a class="nav-btn" href="#pricing">GABUNG BADAI</a></div></header>
+</a><div class="nav-cta-guide">
+  <div class="nav-click-hands" aria-hidden="true">
+    <span class="nav-click-hand">👉</span>
+    <span class="nav-click-hand">👉</span>
+    <span class="nav-click-hand">👉</span>
+  </div>
+  <a class="nav-btn" href="#pricing">GABUNG BADAI</a>
+</div></div></header>
 <main>
 
 <section class="hero">
