@@ -160,10 +160,6 @@
       throw new Error('Nomor WhatsApp belum valid.');
     }
 
-    if(password && password.length < 8){
-      throw new Error('Password baru minimal 8 karakter.');
-    }
-
     const currentEmail = String(currentUser?.email || session?.user?.email || '').toLowerCase();
     const emailChanged = currentEmail && currentEmail !== requestedEmail;
 
