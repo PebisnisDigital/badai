@@ -1214,6 +1214,15 @@ main.shell{
 }
 .affiliate-overview-metrics span{display:block;color:#666;font-size:6px;margin-bottom:2px}
 .affiliate-overview-metrics b{display:block;font-size:8px;word-break:break-word}
+.affiliate-payout-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid #202020}
+.affiliate-payout-actions button{min-height:32px;padding:0 10px;border-radius:9px;font-size:7px;font-weight:900;cursor:pointer}
+.affiliate-payout-wa{border:0;background:#25D366;color:#07170d}
+.affiliate-payout-paid{border:1px solid #5b2945;background:#211018;color:#ff91c5}
+.affiliate-payout-actions button:disabled{opacity:.38;cursor:not-allowed}
+.affiliate-payout-meta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:7px;color:#777;font-size:7px}
+.affiliate-payout-meta b{color:#aaa;font-size:7px}
+.affiliate-overview-metrics .affiliate-due b{color:#7fe5a1;font-size:9px}
+.affiliate-overview-metrics .affiliate-paid b{color:#ff91c5}
 .affiliate-material-form{display:grid;gap:6px}
 .affiliate-material-form select,.affiliate-material-form input,.affiliate-material-form textarea{
   width:100%;box-sizing:border-box;border:1px solid #303030;background:#080808;color:#fff;
@@ -2325,6 +2334,7 @@ main.shell{
   let affiliateSettings = {commission_type:'percent', commission_value:30, inactivity_months:3};
   let affiliateAccounts = [];
   let affiliateSales = [];
+  let affiliatePayouts = [];
   let affiliateProfiles = [];
   let affiliateMaterials = [];
   let paymentMethods = [];
@@ -2530,7 +2540,8 @@ main.shell{
       api('/rest/v1/affiliate_settings?id=eq.1&select=id,commission_type,commission_value,inactivity_months'),
       api('/rest/v1/affiliate_accounts?select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
       api('/rest/v1/affiliate_sales?select=id,affiliate_user_id,registration_id,sale_amount,commission_amount,status,sale_at&order=sale_at.desc'),
-      api('/rest/v1/profiles?select=id,full_name,email,membership_plan,member_status'),
+      api('/rest/v1/affiliate_payouts?select=id,affiliate_user_id,amount,status,paid_at,created_at&order=paid_at.desc'),
+      api('/rest/v1/profiles?select=id,full_name,email,whatsapp,membership_plan,member_status'),
       api('/rest/v1/affiliate_materials?select=id,material_type,title,content,media_url,active,sort_order,created_at&order=sort_order.asc,created_at.desc'),
       api('/rest/v1/payment_methods?select=id,method_type,provider,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc'),
       api('/rest/v1/rpc/admin_get_buatqris_settings', {
@@ -2543,10 +2554,11 @@ main.shell{
     if(results[1]?.[0]) affiliateSettings = results[1][0];
     affiliateAccounts = results[2] || [];
     affiliateSales = results[3] || [];
-    affiliateProfiles = results[4] || [];
-    affiliateMaterials = results[5] || [];
-    paymentMethods = results[6] || [];
-    if(results[7]?.[0]) buatQrisSettings = results[7][0];
+    affiliatePayouts = results[4] || [];
+    affiliateProfiles = results[5] || [];
+    affiliateMaterials = results[6] || [];
+    paymentMethods = results[7] || [];
+    if(results[8]?.[0]) buatQrisSettings = results[8][0];
 
     $('marketingNewbiePrice').value = marketingSettings.newbie_price || marketingSettings.product_price || 123000;
     $('marketingProPrice').value = marketingSettings.pro_price || marketingSettings.product_price || 123000;
@@ -2709,6 +2721,71 @@ main.shell{
     await loadMarketing();
   }
 
+  function affiliateCommissionState(userId){
+    const sales = affiliateSales.filter(s => s.affiliate_user_id === userId && s.status === 'valid');
+    const payouts = affiliatePayouts.filter(p => p.affiliate_user_id === userId && p.status === 'paid');
+    const salesCount = sales.length;
+    const omzet = sales.reduce((sum,s)=>sum+Number(s.sale_amount||0),0);
+    const commission = sales.reduce((sum,s)=>sum+Number(s.commission_amount||0),0);
+    const paid = payouts.reduce((sum,p)=>sum+Number(p.amount||0),0);
+    const unpaid = Math.max(commission - paid, 0);
+    const lastSale = sales.length
+      ? sales.reduce((latest,s)=> !latest || new Date(s.sale_at) > new Date(latest) ? s.sale_at : latest, null)
+      : null;
+    const lastPayout = payouts.length
+      ? payouts.reduce((latest,p)=> !latest || new Date(p.paid_at) > new Date(latest) ? p.paid_at : latest, null)
+      : null;
+    return {salesCount,omzet,commission,paid,unpaid,lastSale,lastPayout};
+  }
+
+  function normalizeAffiliateWhatsapp(value){
+    let digits = String(value || '').replace(/\D/g,'');
+    if(!digits) return '';
+    if(digits.startsWith('0')) digits = '62' + digits.slice(1);
+    else if(digits.startsWith('8')) digits = '62' + digits;
+    return digits;
+  }
+
+  function openAffiliatePayoutWhatsapp(userId){
+    const account = affiliateAccounts.find(a => a.user_id === userId);
+    const profile = affiliateProfiles.find(p => p.id === userId) || {};
+    const state = affiliateCommissionState(userId);
+    if(!state.unpaid){
+      alert('Tidak ada komisi yang belum dicairkan.');
+      return;
+    }
+    const wa = normalizeAffiliateWhatsapp(profile.whatsapp);
+    if(!wa){
+      alert('Nomor WhatsApp affiliate belum tersedia.');
+      return;
+    }
+    const name = profile.full_name || profile.email || 'Kak';
+    const message =
+      'Halo ' + name + ', komisi afiliasi BADAI kamu siap dicairkan.\n\n' +
+      'Kode Afiliasi: ' + (account?.affiliate_code || '-') + '\n' +
+      'Komisi belum dicairkan: ' + rupiah(state.unpaid) + '\n\n' +
+      'Mohon konfirmasi data pencairan kamu ya.';
+    window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(message),'_blank','noopener');
+  }
+
+  async function markAffiliatePayoutPaid(userId){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mencairkan komisi.');
+    const profile = affiliateProfiles.find(p => p.id === userId) || {};
+    const state = affiliateCommissionState(userId);
+    if(!state.unpaid) throw new Error('Tidak ada komisi yang belum dicairkan.');
+
+    const name = profile.full_name || profile.email || 'affiliate ini';
+    if(!confirm('Tandai komisi ' + name + ' sebesar ' + rupiah(state.unpaid) + ' SUDAH DIBAYAR?')) return;
+
+    const rows = await api('/rest/v1/rpc/admin_mark_affiliate_payout', {
+      method:'POST',
+      body:JSON.stringify({p_affiliate_user_id:userId})
+    });
+    const paid = Number(rows?.[0]?.amount || state.unpaid);
+    alert('Komisi berhasil ditandai sudah dicairkan senilai ' + rupiah(paid) + '.');
+    await loadMarketing();
+  }
+
   function renderAffiliateOverview(){
     const box = $('affiliateOverview');
     if(!box) return;
@@ -2720,13 +2797,8 @@ main.shell{
 
     box.innerHTML = affiliateAccounts.map(account => {
       const profile = affiliateProfiles.find(p => p.id === account.user_id) || {};
-      const sales = affiliateSales.filter(s => s.affiliate_user_id === account.user_id && s.status === 'valid');
-      const salesCount = sales.length;
-      const omzet = sales.reduce((sum,s)=>sum+Number(s.sale_amount||0),0);
-      const commission = sales.reduce((sum,s)=>sum+Number(s.commission_amount||0),0);
-      const lastSale = sales.length
-        ? sales.reduce((latest,s)=> !latest || new Date(s.sale_at) > new Date(latest) ? s.sale_at : latest, null)
-        : null;
+      const state = affiliateCommissionState(account.user_id);
+      const hasWa = Boolean(normalizeAffiliateWhatsapp(profile.whatsapp));
 
       return `
         <div class="affiliate-overview-row">
@@ -2735,10 +2807,18 @@ main.shell{
             <span>${esc(account.affiliate_code)} • ${account.status === 'active' ? 'AKTIF' : 'NONAKTIF'}</span>
           </div>
           <div class="affiliate-overview-metrics">
-            <div><span>SALES</span><b>${salesCount}</b></div>
-            <div><span>OMZET</span><b>${rupiah(omzet)}</b></div>
-            <div><span>KOMISI</span><b>${rupiah(commission)}</b></div>
-            <div><span>LAST SALES</span><b>${lastSale ? dateTime(lastSale) : 'Belum ada'}</b></div>
+            <div><span>SALES</span><b>${state.salesCount}</b></div>
+            <div><span>OMZET</span><b>${rupiah(state.omzet)}</b></div>
+            <div class="affiliate-paid"><span>SUDAH DICAIRKAN</span><b>${rupiah(state.paid)}</b></div>
+            <div class="affiliate-due"><span>BELUM DICAIRKAN</span><b>${rupiah(state.unpaid)}</b></div>
+          </div>
+          <div class="affiliate-payout-meta">
+            <span>Last sales: <b>${state.lastSale ? dateTime(state.lastSale) : 'Belum ada'}</b></span>
+            <span>Last cair: <b>${state.lastPayout ? dateTime(state.lastPayout) : 'Belum pernah'}</b></span>
+          </div>
+          <div class="affiliate-payout-actions">
+            <button class="affiliate-payout-wa" data-affiliate-payout-action="whatsapp" data-id="${account.user_id}" type="button" ${!state.unpaid || !hasWa ? 'disabled' : ''}>CAIRKAN KOMISI VIA WA</button>
+            <button class="affiliate-payout-paid" data-affiliate-payout-action="mark-paid" data-id="${account.user_id}" type="button" ${!state.unpaid ? 'disabled' : ''}>TANDAI SUDAH DIBAYAR</button>
           </div>
         </div>
       `;
@@ -3987,6 +4067,25 @@ main.shell{
   });
 
   document.addEventListener('click', async (e) => {
+    const payoutBtn = e.target.closest('[data-affiliate-payout-action]');
+    if(payoutBtn){
+      const action = payoutBtn.dataset.affiliatePayoutAction;
+      const userId = payoutBtn.dataset.id;
+      if(action === 'whatsapp'){
+        openAffiliatePayoutWhatsapp(userId);
+        return;
+      }
+      payoutBtn.disabled = true;
+      try{
+        if(action === 'mark-paid') await markAffiliatePayoutPaid(userId);
+      }catch(err){
+        alert('Pencairan komisi gagal: ' + err.message);
+      }finally{
+        payoutBtn.disabled = false;
+      }
+      return;
+    }
+
     const paymentBtn = e.target.closest('[data-payment-action]');
     if(paymentBtn){
       paymentBtn.disabled = true;
