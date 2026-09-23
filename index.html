@@ -1580,6 +1580,79 @@ h2{font-weight:900}
   font-size:13px;
   line-height:1.6;
 }
+.register-benefit-ticker{
+  width:min(100%,480px);
+  margin:10px auto -2px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:9px;
+  align-items:center;
+  padding:7px 10px;
+  border-top:1px solid rgba(255,79,163,.24);
+  border-bottom:1px solid rgba(255,79,163,.24);
+  background:linear-gradient(90deg,transparent,rgba(255,79,163,.055),transparent);
+  overflow:hidden;
+}
+.register-benefit-prefix{
+  flex:0 0 auto;
+  color:#ff71b5;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:6.5px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.08em;
+  white-space:nowrap;
+}
+.register-benefit-viewport{
+  position:relative;
+  height:22px;
+  min-width:0;
+  overflow:hidden;
+}
+.register-benefit-track{
+  position:absolute;
+  inset:0 auto auto 0;
+  width:100%;
+  transition:transform .46s cubic-bezier(.22,.8,.28,1);
+  will-change:transform;
+}
+.register-benefit-item{
+  height:22px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  color:#f2f2f2;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:10.5px;
+  line-height:1.2;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.register-benefit-check{
+  width:15px;
+  height:15px;
+  flex:0 0 15px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#28101d;
+  border:1px solid #6a2d4d;
+  color:#ff84bf;
+  font-size:8px;
+  font-weight:950;
+}
+@media(max-width:520px){
+  .register-benefit-ticker{
+    margin-top:8px;
+    gap:6px;
+    padding:6px 7px;
+  }
+  .register-benefit-prefix{font-size:5.6px}
+  .register-benefit-item{font-size:9px}
+}
 .register-form{
   display:grid;
   gap:14px;
@@ -3365,6 +3438,13 @@ body.register-modal-open{
         <div class="register-modal-kicker">PENDAFTARAN BADAI</div>
         <h3 id="registrationModalTitle">Daftar Paket Pemula</h3>
         <p id="registrationModalDesc">Isi data di bawah ini untuk melanjutkan pendaftaran Paket Pemula.</p>
+
+        <div id="registrationBenefitTicker" class="register-benefit-ticker" aria-live="polite">
+          <span class="register-benefit-prefix">YANG KAMU DAPATKAN</span>
+          <div class="register-benefit-viewport">
+            <div id="registrationBenefitTrack" class="register-benefit-track"></div>
+          </div>
+        </div>
       </div>
 
       <form id="badaiRegisterForm" class="register-form">
@@ -3607,6 +3687,77 @@ body.register-modal-open{
 
   const SUPABASE_URL = 'https://tlvxlekqrllkvcpgwmic.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
+
+  let benefitTickerTimer = null;
+  let benefitTickerIndex = 0;
+  let benefitTickerDirection = 1;
+
+  const registrationBenefits = {
+    free:[
+      'Kuliah WhatsApp Rutin Setiap Hari',
+      'Ebook AI & Bisnis',
+      'Belajar AI Gratisan',
+      'Gabung Komunitas BADAI'
+    ],
+    newbie:[
+      '10 Materi AI Praktis',
+      'Semua Akses Gratisan',
+      'Update Materi BADAI',
+      'Member Area BADAI',
+      'Belajar Step by Step'
+    ],
+    pro:[
+      'Total 31 Materi BADAI',
+      'Semua Akses Paket Pemula',
+      '21 Materi Jalur Untung',
+      'Program Afiliasi BADAI',
+      'Link Afiliasi Pribadi',
+      'Bahan Promosi Siap Pakai',
+      'Pantau Sales & Komisi'
+    ]
+  };
+
+  function stopBenefitTicker(){
+    if(benefitTickerTimer){
+      clearInterval(benefitTickerTimer);
+      benefitTickerTimer = null;
+    }
+  }
+
+  function updateBenefitTickerPosition(){
+    const track = document.getElementById('registrationBenefitTrack');
+    if(!track) return;
+    track.style.transform = 'translate3d(0,' + (-22 * benefitTickerIndex) + 'px,0)';
+  }
+
+  function startBenefitTicker(plan){
+    stopBenefitTicker();
+    const track = document.getElementById('registrationBenefitTrack');
+    if(!track) return;
+
+    const items = registrationBenefits[plan] || registrationBenefits.newbie;
+    benefitTickerIndex = 0;
+    benefitTickerDirection = 1;
+
+    track.innerHTML = items.map(text =>
+      '<div class="register-benefit-item"><span class="register-benefit-check">✓</span><span>' + text + '</span></div>'
+    ).join('');
+
+    updateBenefitTickerPosition();
+
+    if(items.length < 2) return;
+
+    benefitTickerTimer = setInterval(() => {
+      if(benefitTickerDirection > 0 && benefitTickerIndex >= items.length - 1){
+        benefitTickerDirection = -1;
+      }else if(benefitTickerDirection < 0 && benefitTickerIndex <= 0){
+        benefitTickerDirection = 1;
+      }
+
+      benefitTickerIndex += benefitTickerDirection;
+      updateBenefitTickerPosition();
+    }, 1800);
+  }
 
   let marketingConfig = {
     product_price: 123000,
@@ -4100,6 +4251,7 @@ Mohon dibantu proses pendaftarannya ya.`
     const status = document.getElementById('registerStatus');
     const isFree = selectedPackage === 'free';
 
+    startBenefitTicker(selectedPackage);
     syncFreeFormFields(isFree);
     setTimeout(() => syncFreeFormFields(isFree), 120);
 
@@ -4125,6 +4277,7 @@ Mohon dibantu proses pendaftarannya ya.`
 
   function closeRegistrationModal(){
     stopAllQrisTimers();
+    stopBenefitTicker();
     registrationModal?.classList.remove('open');
     registrationModal?.setAttribute('aria-hidden','true');
     document.body.classList.remove('register-modal-open');
