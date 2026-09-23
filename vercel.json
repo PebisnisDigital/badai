@@ -21,7 +21,13 @@
       "dest": "/api/landing-v6"
     },
     {
-      "handle":"filesystem"
+      "handle": "filesystem"
     }
-  ]
+  ],
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "staging": false
+    }
+  }
 }
