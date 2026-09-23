@@ -1690,31 +1690,37 @@ h2{font-weight:900}
 .package-pricing-head{
   text-align:center;
   max-width:620px;
-  margin:0 auto 20px;
+  margin:0 auto 18px;
 }
 .package-kicker{
   color:#ff4fa3;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:10px;
+  font-size:9px;
   font-weight:900;
-  letter-spacing:.12em;
-  margin-bottom:7px;
+  letter-spacing:.13em;
+  margin-bottom:6px;
 }
 .package-pricing-head h2{
-  margin:0 0 8px;
+  margin:0 0 7px;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:30px;
+  line-height:1.02;
+  font-weight:900;
+  letter-spacing:-.04em;
 }
 .package-pricing-head p{
   margin:0 auto;
-  max-width:540px;
-  color:#a6a6a6;
+  max-width:520px;
+  color:#9a9a9a;
   font-family:"Nunito",Arial,sans-serif;
-  font-size:13px;
-  line-height:1.55;
+  font-size:12px;
+  line-height:1.5;
 }
 .package-pricing-grid{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
   align-items:stretch;
 }
 .package-card{
@@ -1722,185 +1728,187 @@ h2{font-weight:900}
   display:flex;
   flex-direction:column;
   min-width:0;
-  padding:20px;
-  border:1px solid #2b2b2b;
-  border-radius:24px;
+  padding:13px 11px 11px;
+  border:1px solid #292929;
+  border-radius:18px;
   background:
-    radial-gradient(circle at 90% 5%,rgba(255,255,255,.035),transparent 24%),
+    radial-gradient(circle at 90% 5%,rgba(255,255,255,.03),transparent 24%),
     linear-gradient(180deg,#111,#090909);
-  box-shadow:0 20px 48px rgba(0,0,0,.24);
+  box-shadow:0 14px 34px rgba(0,0,0,.24);
 }
 .package-card-free{
-  grid-column:1/-1;
-  border-color:#24553a;
+  border-color:#244a35;
   background:
-    radial-gradient(circle at 88% 12%,rgba(37,211,102,.10),transparent 27%),
-    linear-gradient(180deg,#101713,#090b0a);
+    radial-gradient(circle at 88% 10%,rgba(37,211,102,.08),transparent 28%),
+    linear-gradient(180deg,#101512,#090b0a);
 }
-.package-card-free .package-price-wrap{
-  border-color:#244b34;
-  background:#09110c;
-}
-.package-card-free .package-price{color:#25D366}
-.package-label.free{
-  border-color:#24553a;
-  background:#0d2115;
-  color:#62e69a;
-}
-.package-select-btn.free{
-  border-color:#25D366;
-  background:#25D366;
-  color:#07170d;
-}
-.package-card-free.is-selected{outline-color:#25D366}
 .package-card-featured{
-  border-color:#7b3157;
+  border-color:#8a315e;
+  background:
+    radial-gradient(circle at 88% 9%,rgba(255,79,163,.10),transparent 28%),
+    linear-gradient(180deg,#171016,#0a090a);
   box-shadow:
-    0 22px 54px rgba(0,0,0,.28),
-    0 0 0 1px rgba(255,79,163,.09) inset;
+    0 17px 42px rgba(0,0,0,.3),
+    0 0 0 1px rgba(255,79,163,.08) inset;
+  transform:translateY(-5px);
 }
 .package-popular{
   position:absolute;
-  top:12px;
-  right:12px;
+  top:8px;
+  right:8px;
   border-radius:999px;
-  padding:5px 8px;
+  padding:4px 6px;
   background:#ff4fa3;
   color:#111;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:7px;
+  font-size:5.8px;
   font-weight:950;
-  letter-spacing:.04em;
+  letter-spacing:.03em;
+  white-space:nowrap;
 }
 .package-label{
   display:inline-flex;
   width:max-content;
   max-width:100%;
   align-items:center;
-  min-height:27px;
-  padding:0 9px;
-  border:1px solid #363636;
+  min-height:21px;
+  padding:0 7px;
+  border:1px solid #333;
   border-radius:999px;
   background:#151515;
-  color:#ddd;
+  color:#d8d8d8;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:8px;
+  font-size:6.4px;
   font-weight:900;
-  margin-bottom:10px;
+  letter-spacing:.02em;
+  margin-bottom:8px;
+  white-space:nowrap;
+}
+.package-label.free{
+  border-color:#24553a;
+  background:#0d2115;
+  color:#62e69a;
 }
 .package-label.hot{
-  border-color:#5f2946;
+  border-color:#642a4b;
   background:#211018;
   color:#ff90c5;
 }
 .package-card-top h3{
-  margin:0 0 6px;
-  padding-right:20px;
+  margin:0 0 5px;
+  padding:0;
   color:#fff;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:21px;
-  line-height:1.1;
+  font-size:15px;
+  line-height:1.08;
   letter-spacing:-.025em;
 }
 .package-card-top p{
   margin:0;
-  min-height:42px;
-  color:#929292;
+  min-height:30px;
+  color:#858585;
   font-family:"Nunito",Arial,sans-serif;
-  font-size:11px;
-  line-height:1.45;
+  font-size:8px;
+  line-height:1.35;
 }
 .package-price-wrap{
-  margin:15px 0 12px;
-  padding:13px;
-  border:1px solid #272727;
-  border-radius:15px;
+  margin:10px 0 7px;
+  padding:9px 8px;
+  border:1px solid #252525;
+  border-radius:12px;
   background:#0b0b0b;
 }
+.package-card-free .package-price-wrap{
+  border-color:#244b34;
+  background:#09110c;
+}
 .package-card-featured .package-price-wrap{
-  border-color:#432439;
+  border-color:#4d263d;
   background:#110b0f;
 }
 .package-price-label{
-  color:#777;
+  color:#696969;
   font-family:"Nunito",Arial,sans-serif;
-  font-size:9px;
-  margin-bottom:3px;
+  font-size:6.8px;
+  margin-bottom:2px;
 }
 .package-price{
   color:#fff;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:30px;
+  font-size:22px;
   line-height:1;
   font-weight:900;
-  letter-spacing:-.04em;
+  letter-spacing:-.045em;
+  white-space:nowrap;
 }
+.package-card-free .package-price{color:#25D366}
 .package-card-featured .package-price{color:#ff8fc5}
 .package-feature-list{
   display:grid;
   gap:0;
-  margin-bottom:16px;
+  margin-bottom:9px;
 }
 .package-feature{
   display:flex;
-  gap:8px;
-  padding:10px 0;
-  border-bottom:1px solid #202020;
+  align-items:flex-start;
+  gap:5px;
+  padding:6px 0;
+  border-bottom:1px solid #1d1d1d;
 }
 .package-feature:last-child{border-bottom:0}
 .package-feature>span{
-  width:20px;
-  height:20px;
-  flex:0 0 20px;
+  width:15px;
+  height:15px;
+  flex:0 0 15px;
   display:grid;
   place-items:center;
-  margin-top:1px;
+  margin-top:0;
   border-radius:50%;
   background:#17261c;
   color:#72d495;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:9px;
+  font-size:7px;
   font-weight:950;
 }
 .package-feature b{
   display:block;
-  color:#fff;
-  font-family:"Raleway",Arial,sans-serif;
-  font-size:10px;
-  line-height:1.3;
-}
-.package-feature small{
-  display:block;
-  margin-top:2px;
-  color:#777;
+  color:#f6f6f6;
   font-family:"Nunito",Arial,sans-serif;
   font-size:8px;
-  line-height:1.4;
+  line-height:1.22;
+  font-weight:800;
 }
+.package-feature small{display:none}
 .package-select-btn{
   width:100%;
-  min-height:45px;
+  min-height:36px;
   margin-top:auto;
+  padding:5px 4px;
   border:1px solid #373737;
-  border-radius:13px;
+  border-radius:10px;
   background:#fff;
   color:#111;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:9px;
+  font-size:7px;
+  line-height:1.15;
   font-weight:950;
   cursor:pointer;
+}
+.package-select-btn.free{
+  border-color:#25D366;
+  background:#25D366;
+  color:#07170d;
 }
 .package-select-btn.hot{
   border-color:#ff4fa3;
   background:#ff4fa3;
 }
 .package-card.is-selected{
-  outline:2px solid rgba(255,255,255,.8);
+  outline:1.5px solid rgba(255,255,255,.8);
   outline-offset:2px;
 }
-.package-card-featured.is-selected{
-  outline-color:#ff4fa3;
-}
+.package-card-free.is-selected{outline-color:#25D366}
+.package-card-featured.is-selected{outline-color:#ff4fa3}
 .selected-package-box{
   display:flex;
   align-items:center;
@@ -1933,13 +1941,25 @@ h2{font-weight:900}
   font-size:15px;
   white-space:nowrap;
 }
-@media(max-width:640px){
-  .package-pricing-grid{grid-template-columns:1fr}
-  .package-card{padding:17px;border-radius:20px}
-  .package-card-top p{min-height:0}
-  .package-price{font-size:28px}
+@media(max-width:520px){
+  .package-pricing-head{margin-bottom:14px}
+  .package-pricing-head h2{font-size:25px}
+  .package-pricing-head p{font-size:10.5px}
+  .package-pricing-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .package-card{padding:10px 7px 8px;border-radius:14px}
+  .package-card-featured{transform:translateY(-4px)}
+  .package-popular{top:6px;right:6px;padding:3px 4px;font-size:4.8px}
+  .package-label{min-height:18px;padding:0 5px;font-size:5.3px;margin-bottom:6px}
+  .package-card-top h3{font-size:12px}
+  .package-card-top p{min-height:27px;font-size:6.9px}
+  .package-price-wrap{margin:7px 0 5px;padding:7px 6px;border-radius:9px}
+  .package-price-label{font-size:5.8px}
+  .package-price{font-size:17px}
+  .package-feature{gap:4px;padding:4px 0}
+  .package-feature>span{width:12px;height:12px;flex-basis:12px;font-size:5.5px}
+  .package-feature b{font-size:6.7px}
+  .package-select-btn{min-height:31px;border-radius:8px;font-size:5.8px}
 }
-
 
 /* PRICING REGISTRATION POPUP */
 .register-modal-overlay{
@@ -2799,17 +2819,17 @@ body.register-modal-open{
 <section id="pricing">
 <div class="container">
   <div class="package-pricing-head">
-    <div class="package-kicker">PILIH PAKET BADAI</div>
-    <h2>Pilih Paket yang Paling Cocok Buat Kamu</h2>
-    <p>Mulai gratis dulu juga boleh. Kalau sudah siap belajar lebih dalam, lanjut ke Paket Pemula atau Paket Untung.</p>
+    <div class="package-kicker">PILIH CARA MASUK BADAI</div>
+    <h2>MAU MASUK BADAI LEWAT MANA?</h2>
+    <p>Mulai gratis. Belajar serius. Atau sekalian cari untung.</p>
   </div>
 
   <div class="package-pricing-grid">
     <article class="package-card package-card-free" data-package-card="free">
       <div class="package-card-top">
-        <div class="package-label free">PAKET GRATISAN</div>
-        <h3>Masuk BADAI Gratis</h3>
-        <p>Masuk komunitas dulu, ikut KulWA, dan kenalan dengan BADAI tanpa bayar.</p>
+        <div class="package-label free">COBA DULU</div>
+        <h3>GRATISAN</h3>
+        <p>Masuk dulu tanpa bayar.</p>
       </div>
 
       <div class="package-price-wrap">
@@ -2818,21 +2838,21 @@ body.register-modal-open{
       </div>
 
       <div class="package-feature-list">
-        <div class="package-feature"><span>✓</span><div><b>Akses Menu Gratisan</b><small>Materi dan informasi khusus member Gratisan.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Gabung Komunitas BADAI</b><small>Mulai terhubung dan belajar bareng member lain.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>KulWA Rutin</b><small>Ikuti sesi belajar ringan lewat WhatsApp.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Bisa Upgrade Kapan Saja</b><small>Kalau sudah siap, lanjut ke Paket Pemula atau Paket Untung.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Komunitas BADAI</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>KulWA Rutin</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Materi Gratisan</b></div></div>
       </div>
 
       <button class="package-select-btn free" type="button" data-package-select="free">
         DAFTAR GRATIS
       </button>
     </article>
+
     <article class="package-card" data-package-card="newbie">
       <div class="package-card-top">
-        <div class="package-label">PAKET PEMULA</div>
-        <h3>Belajar AI dari Dasar</h3>
-        <p>Pas buat yang ingin fokus belajar dulu tanpa mikirin jualan.</p>
+        <div class="package-label">BELAJAR</div>
+        <h3>PEMULA</h3>
+        <p>Fokus belajar AI dulu.</p>
       </div>
 
       <div class="package-price-wrap">
@@ -2841,24 +2861,24 @@ body.register-modal-open{
       </div>
 
       <div class="package-feature-list">
-        <div class="package-feature"><span>✓</span><div><b>Belajar Ilmu AI</b><small>Materi dibuat sederhana dan mudah diikuti pemula.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Video Tutorial Praktis</b><small>Tonton, ikuti, lalu langsung praktek.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Akses Member Area</b><small>Semua materi tersusun rapi dalam satu tempat.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Update Materi</b><small>Dapat materi baru selama masih menjadi member aktif.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Semua Gratisan</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Kelas AI</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Update Materi</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Member Area</b></div></div>
       </div>
 
       <button class="package-select-btn" type="button" data-package-select="newbie">
-        DAFTAR PAKET PEMULA
+        PILIH PEMULA
       </button>
     </article>
 
     <article class="package-card package-card-featured" data-package-card="pro">
-      <div class="package-popular">LEBIH LENGKAP</div>
+      <div class="package-popular">PALING LENGKAP</div>
 
       <div class="package-card-top">
-        <div class="package-label hot">PAKET UNTUNG</div>
-        <h3>Belajar AI + Program Afiliasi</h3>
-        <p>Belajar tetap dapat, sekaligus punya jalur untuk mendapatkan komisi.</p>
+        <div class="package-label hot">BELAJAR + CUAN</div>
+        <h3>UNTUNG</h3>
+        <p>Belajar sekaligus punya jalur cuan.</p>
       </div>
 
       <div class="package-price-wrap">
@@ -2867,19 +2887,17 @@ body.register-modal-open{
       </div>
 
       <div class="package-feature-list">
-        <div class="package-feature"><span>✓</span><div><b>Semua di Paket Pemula</b><small>Materi, tutorial, member area, dan update tetap dapat.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Program Afiliasi BADAI</b><small>Dapat link afiliasi pribadi untuk mulai promosi.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Link Afiliasi Bisa Diedit</b><small>Buat kode sendiri seperti /AMBYAR agar mudah dibagikan.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Bahan Promosi Siap Pakai</b><small>Ambil teks, gambar, dan video langsung dari Member Area.</small></div></div>
-        <div class="package-feature"><span>✓</span><div><b>Pantau Sales & Komisi</b><small>Lihat hasil referral dan komisi dari akun sendiri.</small></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Semua Pemula</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Jalur Untung</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Program Afiliasi</b></div></div>
+        <div class="package-feature"><span>✓</span><div><b>Komisi + Promosi</b></div></div>
       </div>
 
       <button class="package-select-btn hot" type="button" data-package-select="pro">
-        DAFTAR PAKET UNTUNG
+        PILIH UNTUNG
       </button>
     </article>
   </div>
-
 
 </div>
 </section>
