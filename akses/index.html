@@ -1071,6 +1071,46 @@ body{
 }
 .account-status.ok{color:#7fdda5}
 .account-status.error{color:#ff8d8d}
+.account-logout-card{
+  margin-top:10px;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid #2a2a2a;
+  background:#111;
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:12px;
+}
+.account-logout-card h3{
+  margin:0 0 3px;
+  color:#fff;
+  font:700 14px "Nunito",Arial,sans-serif;
+}
+.account-logout-card p{
+  margin:0;
+  color:#8f8f8f;
+  font:500 9.5px "Nunito",Arial,sans-serif;
+  line-height:1.4;
+}
+#badaiMemberLogout{
+  min-height:38px;
+  padding:0 14px;
+  border-radius:10px;
+  border:1px solid #4a2a35;
+  background:#1a0e13;
+  color:#ff7fbc;
+  font:700 10px "Nunito",Arial,sans-serif;
+  cursor:pointer;
+}
+#badaiMemberLogout:hover{
+  border-color:#ff4fa3;
+  background:#24101a;
+}
+@media(max-width:420px){
+  .account-logout-card{grid-template-columns:1fr}
+  #badaiMemberLogout{width:100%}
+}
 
 
 .affiliate-pro-pill{
@@ -1631,6 +1671,14 @@ html.badai-auth-lock body > .app{
         <button id="memberAccountSave" class="account-save" type="submit">SIMPAN PERUBAHAN</button>
         <div id="memberAccountStatus" class="account-status"></div>
       </form>
+
+      <div class="account-logout-card">
+        <div>
+          <h3>Keluar dari Akun</h3>
+          <p>Keluar dari Member Area BADAI di perangkat ini.</p>
+        </div>
+        <button id="badaiMemberLogout" type="button">KELUAR</button>
+      </div>
     </section>
 
   </main>
