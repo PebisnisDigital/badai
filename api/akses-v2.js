@@ -106,7 +106,9 @@ module.exports = async function handler(req, res) {
   .badai-affiliate-rule-list{display:grid;gap:7px}
   .badai-affiliate-rule{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:start;color:#b9b9b9;font:500 10px "Nunito",Arial,sans-serif;line-height:1.4}
   .badai-affiliate-rule i{width:24px;height:24px;border-radius:8px;background:#211018;color:#ff8fc5;display:grid;place-items:center;font-style:normal;font-weight:800}
-  .badai-sales-section{display:grid;gap:9px}
+  .badai-sales-section{gap:9px}
+  .badai-affiliate-panel.badai-sales-section:not(.active){display:none!important}
+  .badai-affiliate-panel.badai-sales-section.active{display:grid!important}
   .badai-sales-section .stats{margin:0!important}
   .badai-sales-subcard{padding:13px;border-radius:16px;background:#101010;border:1px solid #262626}
   .badai-sales-subhead{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:8px}
