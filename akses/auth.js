@@ -35,11 +35,7 @@
     }
     #badaiAuthGate .status{min-height:19px;margin-top:10px;text-align:center;color:#8d8d8d;font-size:11px}
     #badaiAuthGate .status.error{color:#ff8d8d}
-    #badaiMemberLogout{
-      position:fixed;top:12px;right:12px;z-index:99998;border:1px solid #ddd;
-      background:#fff;color:#111;border-radius:11px;padding:9px 11px;font:800 10px Arial,sans-serif;
-      box-shadow:0 8px 28px rgba(0,0,0,.12);cursor:pointer
-    }
+    #badaiMemberLogout{cursor:pointer}
   `;
   document.head.appendChild(style);
   document.documentElement.classList.add('badai-auth-lock');
@@ -730,14 +726,22 @@
       logout = document.createElement('button');
       logout.id = 'badaiMemberLogout';
       logout.type = 'button';
-      logout.textContent = 'LOGOUT';
+      logout.textContent = 'KELUAR';
 
+      const logoutHost =
+        document.querySelector('#akun .account-logout-card') ||
+        document.getElementById('akun') ||
+        document.body;
+
+      logoutHost.appendChild(logout);
+    }
+
+    if(logout.dataset.bound !== '1'){
+      logout.dataset.bound = '1';
       logout.addEventListener('click', () => {
         clearSession();
         location.reload();
       });
-
-      document.body.appendChild(logout);
     }
 
     populateAccount(profile, user);
