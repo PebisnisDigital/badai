@@ -81,6 +81,72 @@ module.exports = async function handler(req, res) {
   #afiliasi .center{margin-bottom:5px!important}
   #afiliasi .center .title{font-size:20px!important;line-height:1!important}
   #afiliasi .center .subtitle{font-size:8px!important;margin:3px 0 6px!important}
+  #afiliasi .badai-affiliate-tabs{
+    gap:4px!important;
+    margin:0 0 7px!important;
+    padding:4px!important;
+    border-radius:11px!important;
+  }
+  #afiliasi .badai-affiliate-tab{
+    min-height:32px!important;
+    padding:0 5px!important;
+    border-radius:8px!important;
+    font-size:8.5px!important;
+    font-weight:700!important;
+  }
+  #afiliasi .badai-affiliate-panel.active{display:block!important}
+  #afiliasi .badai-affiliate-tutorial.active{display:grid!important}
+  #afiliasi .badai-affiliate-video-placeholder{
+    max-height:250px!important;
+    min-height:180px!important;
+    border-radius:13px!important;
+    padding:12px!important;
+  }
+  #afiliasi .badai-affiliate-video-placeholder .play{
+    width:39px!important;
+    height:39px!important;
+    margin-bottom:7px!important;
+    font-size:14px!important;
+  }
+  #afiliasi .badai-affiliate-video-placeholder b{font-size:13px!important}
+  #afiliasi .badai-affiliate-video-placeholder span{font-size:8px!important}
+  #afiliasi .badai-affiliate-rules,
+  #afiliasi .badai-sales-subcard{
+    padding:10px!important;
+    border-radius:12px!important;
+  }
+  #afiliasi .badai-affiliate-rules h3,
+  #afiliasi .badai-sales-subhead h3{
+    font-size:13px!important;
+  }
+  #afiliasi .badai-affiliate-rule{
+    grid-template-columns:21px 1fr!important;
+    gap:6px!important;
+    font-size:8.5px!important;
+  }
+  #afiliasi .badai-affiliate-rule i{
+    width:21px!important;
+    height:21px!important;
+    border-radius:7px!important;
+  }
+  #afiliasi [data-aff-panel="sales"] .stats{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  #afiliasi [data-aff-panel="sales"] .stats .stat{
+    min-width:0!important;
+    padding:10px!important;
+  }
+  #afiliasi .badai-sales-subhead span{font-size:7.5px!important}
+  #afiliasi .badai-referral-row,
+  #afiliasi .badai-payout-history-row{
+    padding:8px 9px!important;
+  }
+  #afiliasi .badai-referral-main b{font-size:10.5px!important}
+  #afiliasi .badai-referral-main span{font-size:7.5px!important}
+  #afiliasi .badai-referral-side strong{font-size:10px!important}
+  #afiliasi .badai-referral-side small{font-size:6.8px!important}
 
   #afiliasi .badai-affiliate-multilink-box{
     padding:8px!important;
@@ -217,6 +283,14 @@ module.exports = async function handler(req, res) {
   }
 
   @media(max-width:560px){
+    #afiliasi .badai-affiliate-tabs{gap:2px!important;padding:3px!important}
+    #afiliasi .badai-affiliate-tab{min-height:30px!important;font-size:7.5px!important}
+    #afiliasi [data-aff-panel="sales"] .stats{
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    }
+    #afiliasi .badai-affiliate-video-placeholder{
+      min-height:160px!important;
+    }
     #afiliasi .badai-affiliate-link-list{
       grid-template-columns:1fr!important;
       gap:3px!important;
