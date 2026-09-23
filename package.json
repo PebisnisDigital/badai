@@ -1,0 +1,11 @@
+{
+  "name": "badai-staging",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node railway-server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
