@@ -4166,24 +4166,145 @@ main section > .container > .badai-copy-kicker,
 }
 
 .badai-cuan-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:19px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px;
+  margin-top:21px;
 }
 .badai-cuan-grid article{
-  min-height:150px;padding:15px;border:1px solid #292929;border-radius:17px;background:#101010;
+  position:relative;
+  overflow:hidden;
+  min-height:180px;
+  padding:19px 18px;
+  border:1px solid #2b2b2b;
+  border-radius:18px;
+  background:linear-gradient(145deg,#111,#0d0d0d);
+  transform:translate3d(0,0,0);
+  will-change:transform,border-color,background,box-shadow;
+  animation:badaiCuanPath 7.2s ease-in-out infinite;
 }
+.badai-cuan-grid article::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:15px;
+  bottom:15px;
+  width:4px;
+  border-radius:0 999px 999px 0;
+  background:var(--pink);
+  opacity:0;
+  transform:scaleY(.35);
+  transform-origin:center;
+  box-shadow:0 0 16px rgba(255,79,163,.55);
+  animation:badaiCuanRail 7.2s ease-in-out infinite;
+}
+.badai-cuan-grid article:nth-child(1),
+.badai-cuan-grid article:nth-child(1)::before{animation-delay:0s}
+.badai-cuan-grid article:nth-child(2),
+.badai-cuan-grid article:nth-child(2)::before{animation-delay:1.8s}
+.badai-cuan-grid article:nth-child(3),
+.badai-cuan-grid article:nth-child(3)::before{animation-delay:3.6s}
+.badai-cuan-grid article:nth-child(4),
+.badai-cuan-grid article:nth-child(4)::before{animation-delay:5.4s}
+
 .badai-cuan-grid article>span{
-  display:inline-flex;align-items:center;justify-content:center;min-width:29px;height:24px;padding:0 7px;
-  border-radius:8px;background:#24101a;color:#ff8fc5;font:900 8px "Raleway",Arial,sans-serif;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:34px;
+  height:28px;
+  padding:0 9px;
+  border-radius:9px;
+  background:#24101a;
+  color:#ff8fc5;
+  font:900 10px "Raleway",Arial,sans-serif;
 }
 .badai-cuan-grid b{
-  display:block;margin-top:12px;color:#fff;font:900 12px/1.3 "Raleway",Arial,sans-serif;
+  display:block;
+  margin-top:14px;
+  color:#fff;
+  font:900 16px/1.28 "Raleway",Arial,sans-serif;
 }
-.badai-cuan-grid p{margin:7px 0 0;color:#999;font:500 10.5px/1.5 "Nunito",Arial,sans-serif}
+.badai-cuan-grid p{
+  margin:9px 0 0;
+  color:#a9a9a9;
+  font:600 13px/1.55 "Nunito",Arial,sans-serif;
+}
+@keyframes badaiCuanPath{
+  0%,20%{
+    transform:translate3d(0,-3px,0) scale(1.018);
+    border-color:#6a3150;
+    background:linear-gradient(145deg,#190e14,#100d0f);
+    box-shadow:0 13px 32px rgba(255,79,163,.13),inset 0 0 0 1px rgba(255,79,163,.10);
+  }
+  28%,100%{
+    transform:translate3d(0,0,0) scale(1);
+    border-color:#2b2b2b;
+    background:linear-gradient(145deg,#111,#0d0d0d);
+    box-shadow:none;
+  }
+}
+@keyframes badaiCuanRail{
+  0%,20%{
+    opacity:1;
+    transform:scaleY(1);
+  }
+  28%,100%{
+    opacity:0;
+    transform:scaleY(.35);
+  }
+}
+.badai-cuan-grid article:hover{
+  animation-play-state:paused;
+  transform:translate3d(0,-3px,0) scale(1.018);
+  border-color:#7c3a5e;
+  background:linear-gradient(145deg,#1b0f16,#110d10);
+  box-shadow:0 13px 34px rgba(255,79,163,.16),inset 0 0 0 1px rgba(255,79,163,.12);
+}
+.badai-cuan-grid article:hover::before{
+  animation-play-state:paused;
+  opacity:1;
+  transform:scaleY(1);
+}
 .badai-cuan-callout{
-  margin-top:11px;padding:14px;text-align:center;border:1px solid #542942;border-radius:14px;background:#160d12;
-  color:#ff89c2;font:800 10.5px "Raleway",Arial,sans-serif;
+  margin-top:13px;
+  padding:16px 14px;
+  text-align:center;
+  border:1px solid #642e4d;
+  border-radius:15px;
+  background:#160d12;
+  color:#ff8fc2;
+  font:900 13.5px/1.4 "Raleway",Arial,sans-serif;
+  box-shadow:0 10px 28px rgba(255,79,163,.06);
 }
 .badai-cuan-callout strong{color:#fff;font-weight:950}
+@media(max-width:560px){
+  .badai-cuan-grid{
+    grid-template-columns:1fr;
+    gap:9px;
+  }
+  .badai-cuan-grid article{
+    min-height:0;
+    padding:16px 15px;
+  }
+  .badai-cuan-grid article>span{
+    min-width:31px;
+    height:26px;
+    font-size:9px;
+  }
+  .badai-cuan-grid b{
+    font-size:14px;
+    line-height:1.3;
+  }
+  .badai-cuan-grid p{
+    font-size:12px;
+    line-height:1.5;
+  }
+  .badai-cuan-callout{
+    font-size:12px;
+    padding:14px 12px;
+  }
+}
 
 .decision-card.responsibility{border-color:#4a2a3d;background:linear-gradient(180deg,#151014,#0d0d0d)}
 .decision-card.responsibility .decision-badge{background:#ff4fa3;color:#090909}
