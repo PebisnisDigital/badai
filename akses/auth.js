@@ -391,14 +391,19 @@
           '/rest/v1/affiliate_sales?affiliate_user_id=eq.' + encodeURIComponent(profile.id) +
           '&status=eq.valid&select=id,sale_amount,commission_amount,sale_at&order=sale_at.desc'
         ),
+        api(
+          '/rest/v1/affiliate_payouts?affiliate_user_id=eq.' + encodeURIComponent(profile.id) +
+          '&status=eq.paid&select=id,amount,paid_at&order=paid_at.desc'
+        ),
         api('/rest/v1/affiliate_settings?id=eq.1&select=commission_type,commission_value,inactivity_months'),
         api('/rest/v1/affiliate_materials?active=eq.true&select=id,material_type,title,content,media_url,sort_order,created_at&order=sort_order.asc,created_at.desc')
       ]);
 
       const affiliate = results[0]?.[0];
       const sales = results[1] || [];
-      const settings = results[2]?.[0] || null;
-      const materials = results[3] || [];
+      const payouts = results[2] || [];
+      const settings = results[3]?.[0] || null;
+      const materials = results[4] || [];
 
       const linkEl = document.getElementById('affiliateLink');
       const codeEl = document.getElementById('affiliateCode');
@@ -417,12 +422,14 @@
         location.origin.replace(/\/$/,'') + '/' + encodeURIComponent(affiliate.affiliate_code);
 
       const commissionTotal = sales.reduce((sum,s)=>sum+Number(s.commission_amount||0),0);
+      const commissionPaid = payouts.reduce((sum,p)=>sum+Number(p.amount||0),0);
+      const commissionUnpaid = Math.max(commissionTotal - commissionPaid, 0);
 
       window.BADAI_AFFILIATE_LINK = affiliateLink;
       if(linkEl) linkEl.textContent = affiliateLink;
       if(codeEl) codeEl.textContent = affiliate.affiliate_code;
       if(salesEl) salesEl.textContent = sales.length + ' sales';
-      if(commissionEl) commissionEl.textContent = formatAffiliateRupiah(commissionTotal);
+      if(commissionEl) commissionEl.textContent = formatAffiliateRupiah(commissionUnpaid);
 
       if(rateEl && settings){
         rateEl.textContent = settings.commission_type === 'percent'
