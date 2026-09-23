@@ -2125,7 +2125,7 @@ h2{font-weight:900}
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  margin-bottom:14px;
+  margin:2px 0 0;
   padding:12px 14px;
   border:1px solid #5a2945;
   border-radius:14px;
@@ -3367,14 +3367,6 @@ body.register-modal-open{
         <p id="registrationModalDesc">Isi data di bawah ini untuk melanjutkan pendaftaran Paket Pemula.</p>
       </div>
 
-      <div class="selected-package-box">
-        <div>
-          <span>PAKET YANG DIPILIH</span>
-          <strong id="selectedPackageLabel">Paket Pemula</strong>
-        </div>
-        <b id="selectedPackagePrice">Rp99.000</b>
-      </div>
-
       <form id="badaiRegisterForm" class="register-form">
         <input type="hidden" id="selectedPackage" value="newbie">
 
@@ -3401,6 +3393,14 @@ body.register-modal-open{
             <div class="payment-method-loading">Memuat metode pembayaran...</div>
           </div>
           <div id="selectedPaymentDetail" class="selected-payment-detail"></div>
+        </div>
+
+        <div class="selected-package-box">
+          <div>
+            <span>PAKET YANG DIPILIH</span>
+            <strong id="selectedPackageLabel">Paket Pemula</strong>
+          </div>
+          <b id="selectedPackagePrice">Rp99.000</b>
         </div>
 
         <button type="submit" class="cta register-submit">KLIK DAFTAR SEKARANG →</button>
