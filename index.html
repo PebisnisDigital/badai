@@ -1723,6 +1723,15 @@ h2{font-weight:900}
   gap:8px;
   align-items:end;
   padding-top:18px;
+  padding-bottom:46px;
+}
+.package-pro-wrap{
+  position:relative;
+  min-width:0;
+  align-self:end;
+}
+.package-pro-wrap .package-card-featured{
+  width:100%;
 }
 .package-card{
   position:relative;
@@ -2024,20 +2033,22 @@ h2{font-weight:900}
   box-shadow:0 11px 28px rgba(255,79,163,.36), inset 0 1px 0 rgba(255,255,255,.3);
 }
 .package-click-hands{
-  position:relative;
-  z-index:5;
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-43px;
+  z-index:8;
   display:flex;
   align-items:flex-start;
   justify-content:center;
   gap:8px;
-  height:38px;
-  margin-top:5px;
+  height:36px;
   pointer-events:none;
 }
 .package-click-hand{
   position:relative!important;
   width:25px;
-  height:32px;
+  height:30px;
   display:grid;
   place-items:center;
   pointer-events:none;
@@ -2046,24 +2057,25 @@ h2{font-weight:900}
   line-height:1;
   text-shadow:
     0 2px 3px rgba(0,0,0,.9),
-    0 0 12px rgba(255,255,255,.30),
-    0 0 16px rgba(255,79,163,.18);
-  animation:badaiClickGuide 1.05s ease-in-out infinite;
+    0 0 12px rgba(255,255,255,.34),
+    0 0 16px rgba(255,79,163,.20);
+  will-change:transform,opacity;
+  animation:badaiClickGuide 900ms ease-in-out infinite !important;
 }
-.package-click-hand:nth-child(1){animation-delay:0s}
-.package-click-hand:nth-child(2){animation-delay:.11s}
-.package-click-hand:nth-child(3){animation-delay:.22s}
+.package-click-hand:nth-child(1){animation-delay:0ms!important}
+.package-click-hand:nth-child(2){animation-delay:120ms!important}
+.package-click-hand:nth-child(3){animation-delay:240ms!important}
 @keyframes badaiClickGuide{
   0%,100%{
-    transform:translateY(8px) scale(.93);
+    transform:translate3d(0,8px,0) scale(.92);
     opacity:.72;
   }
-  48%{
-    transform:translateY(-5px) scale(1.08);
+  45%{
+    transform:translate3d(0,-7px,0) scale(1.10);
     opacity:1;
   }
-  66%{
-    transform:translateY(-2px) scale(1.02);
+  62%{
+    transform:translate3d(0,-3px,0) scale(1.03);
     opacity:.96;
   }
 }
@@ -2114,6 +2126,7 @@ h2{font-weight:900}
     gap:5px;
     align-items:end;
     padding-top:14px;
+    padding-bottom:40px;
   }
   .package-card{padding:10px 7px 8px;border-radius:14px}
   .package-card-free{min-height:225px}
@@ -2134,14 +2147,15 @@ h2{font-weight:900}
     87%{transform:translate3d(0,0,0) rotate(0deg) scale(1.028)}
   }
   .package-click-hands{
+    bottom:-37px;
     gap:4px;
     height:31px;
-    margin-top:4px;
   }
   .package-click-hand{
     width:18px;
     height:26px;
     font-size:17px;
+    animation-duration:820ms!important;
   }
   .package-popular{top:6px;right:6px;padding:3px 4px;font-size:4.8px}
   .package-label{min-height:18px;padding:0 5px;font-size:5.3px;margin-bottom:6px}
@@ -2154,19 +2168,6 @@ h2{font-weight:900}
   .package-feature>span{width:12px;height:12px;flex-basis:12px;font-size:5.5px}
   .package-feature b{font-size:6.7px}
   .package-select-btn{min-height:31px;border-radius:8px;font-size:5.8px}
-}
-
-@media (prefers-reduced-motion:reduce){
-  .package-card-featured,
-  .package-card-featured::before,
-  .package-select-btn.hot,
-  .package-click-hand{
-    animation:none!important;
-  }
-  .package-card-featured{
-    transform:scale(1.045);
-    transform-origin:center bottom;
-  }
 }
 
 /* PRICING REGISTRATION POPUP */
@@ -3080,6 +3081,7 @@ body.register-modal-open{
       </button>
     </article>
 
+    <div class="package-pro-wrap">
     <article class="package-card package-card-featured" data-package-card="pro">
       <div class="package-popular">PALING LENGKAP</div>
 
@@ -3107,12 +3109,13 @@ body.register-modal-open{
       <button class="package-select-btn hot" type="button" data-package-select="pro">
         PILIH UNTUNG
       </button>
-      <div class="package-click-hands" aria-hidden="true">
-        <span class="package-click-hand">☝</span>
-        <span class="package-click-hand">☝</span>
-        <span class="package-click-hand">☝</span>
-      </div>
     </article>
+    <div class="package-click-hands" aria-hidden="true">
+      <span class="package-click-hand">☝</span>
+      <span class="package-click-hand">☝</span>
+      <span class="package-click-hand">☝</span>
+    </div>
+    </div>
   </div>
 
 </div>
