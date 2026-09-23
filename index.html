@@ -1583,70 +1583,79 @@ h2{font-weight:900}
 .register-benefit-ticker{
   width:min(100%,500px);
   margin:12px auto -1px;
-  padding:10px 11px 11px;
-  border:1px solid rgba(255,79,163,.30);
-  border-radius:14px;
+  padding:11px 12px 12px;
+  border:1px solid rgba(255,79,163,.34);
+  border-radius:15px;
   background:
-    radial-gradient(circle at 95% 5%,rgba(255,79,163,.10),transparent 34%),
-    linear-gradient(180deg,#161016,#0d0d0d);
-  box-shadow:0 10px 28px rgba(0,0,0,.18);
+    radial-gradient(circle at 95% 5%,rgba(255,79,163,.12),transparent 34%),
+    linear-gradient(180deg,#171016,#0d0d0d);
+  box-shadow:0 10px 28px rgba(0,0,0,.20);
   overflow:hidden;
   text-align:left;
 }
 .register-benefit-prefix{
   display:flex;
   align-items:center;
-  gap:6px;
-  margin-bottom:7px;
-  color:#ff83bf;
+  gap:7px;
+  margin-bottom:8px;
+  color:#ff8fc5;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:8px;
+  font-size:9px;
   line-height:1;
   font-weight:950;
   letter-spacing:.08em;
+  text-transform:uppercase;
 }
 .register-benefit-prefix::before{
   content:"";
-  width:5px;
-  height:5px;
+  width:6px;
+  height:6px;
   border-radius:50%;
   background:#ff4fa3;
-  box-shadow:0 0 10px rgba(255,79,163,.7);
+  box-shadow:0 0 12px rgba(255,79,163,.8);
 }
 .register-benefit-viewport{
   position:relative;
-  height:112px;
+  height:114px;
   min-width:0;
   overflow:hidden;
+  mask-image:linear-gradient(to bottom,transparent 0,#000 8%,#000 92%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 8%,#000 92%,transparent 100%);
+}
+.register-benefit-ticker.is-free .register-benefit-viewport{
+  height:38px;
+  mask-image:none;
+  -webkit-mask-image:none;
 }
 .register-benefit-track{
   position:absolute;
   inset:0 auto auto 0;
   width:100%;
-  transition:transform .52s cubic-bezier(.22,.8,.28,1);
   will-change:transform;
+  animation:badaiBenefitMarquee var(--benefit-duration,18s) linear infinite;
 }
-.register-benefit-slide{
-  height:112px;
-  display:grid;
-  grid-template-rows:repeat(3,minmax(0,1fr));
-  gap:5px;
+@keyframes badaiBenefitMarquee{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(0,calc(-1 * var(--benefit-distance,228px)),0)}
 }
 .register-benefit-item{
-  min-height:0;
+  height:38px;
+  box-sizing:border-box;
   display:grid;
-  grid-template-columns:27px minmax(0,1fr);
-  gap:8px;
+  grid-template-columns:29px minmax(0,1fr);
+  gap:9px;
   align-items:center;
-  padding:5px 8px;
-  border:1px solid #282828;
+  padding:4px 9px;
+  border:1px solid #2a2a2a;
   border-radius:9px;
-  background:rgba(5,5,5,.72);
-  color:#f4f4f4;
-  font-family:"Nunito",Arial,sans-serif;
+  background:rgba(5,5,5,.74);
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
   font-size:10.5px;
-  line-height:1.22;
-  font-weight:800;
+  line-height:1.2;
+  font-weight:900;
+  letter-spacing:.01em;
+  text-transform:uppercase;
   overflow:hidden;
 }
 .register-benefit-number{
@@ -1655,9 +1664,9 @@ h2{font-weight:900}
   display:grid;
   place-items:center;
   border-radius:8px;
-  background:#28101d;
-  border:1px solid #69304f;
-  color:#ff8fc5;
+  background:#2b101e;
+  border:1px solid #743456;
+  color:#ff9acb;
   font-family:"Raleway",Arial,sans-serif;
   font-size:8px;
   font-weight:950;
@@ -1673,16 +1682,17 @@ h2{font-weight:900}
 @media(max-width:520px){
   .register-benefit-ticker{
     margin-top:9px;
-    padding:9px;
-    border-radius:12px;
+    padding:9px 9px 10px;
+    border-radius:13px;
   }
-  .register-benefit-prefix{font-size:7px;margin-bottom:6px}
+  .register-benefit-prefix{font-size:7.5px;margin-bottom:7px}
   .register-benefit-viewport{height:108px}
-  .register-benefit-slide{height:108px;gap:4px}
+  .register-benefit-ticker.is-free .register-benefit-viewport{height:36px}
   .register-benefit-item{
-    grid-template-columns:24px minmax(0,1fr);
-    gap:6px;
-    padding:4px 6px;
+    height:36px;
+    grid-template-columns:25px minmax(0,1fr);
+    gap:7px;
+    padding:4px 7px;
     font-size:9px;
   }
   .register-benefit-number{
@@ -3727,105 +3737,82 @@ body.register-modal-open{
   const SUPABASE_URL = 'https://tlvxlekqrllkvcpgwmic.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
 
-  let benefitTickerTimer = null;
-  let benefitTickerIndex = 0;
-  let benefitTickerDirection = 1;
-  let benefitTickerSlides = [];
-
   const pemulaMaterialBenefits = [
-    'Bikin AI Educator',
-    'Bikin Geo-Spasial',
-    'Bikin Dakwah Influencer',
-    'Bikin Selebgram AI',
-    'Bikin Affiliate AI',
-    'Bikin Paper Craft',
-    'Bikin Unboxing AI',
-    'Bikin Game',
-    'Bikin Video Genjutsu Viral',
-    'Bikin Video Kloning'
+    'BIKIN AI EDUCATOR',
+    'BIKIN GEO-SPASIAL',
+    'BIKIN DAKWAH INFLUENCER',
+    'BIKIN SELEBGRAM AI',
+    'BIKIN AFFILIATE AI',
+    'BIKIN PAPER CRAFT',
+    'BIKIN UNBOXING AI',
+    'BIKIN GAME',
+    'BIKIN VIDEO GENJUTSU VIRAL',
+    'BIKIN VIDEO KLONING'
   ];
 
   const untungMaterialBenefits = [
-    'Bikin Aplikasi',
-    'Bikin Poster',
-    'Bikin Presentasi',
-    'Bikin Buku',
-    'Bikin Web App',
-    'Bikin RPP',
-    'Bikin LKPD',
-    'Bikin Komik Digital',
-    'Bikin LKPD Interaktif',
-    'Bikin Infografis',
-    'Bikin Presentasi',
-    'Bikin Game Edukasi',
-    'Web Rahasia Kumpulan Prompt Gratis',
-    'Buat Video Pendek Dibayar Lynk ID',
-    'Jualan Otomatis di Instagram dan Threads',
-    'Strategi Jago Jualan di WhatsApp',
-    'Contekan 3 Pesan Biar Kontak Baru Lebih Cepat Jadi Pembeli',
-    'Bikin Kelas Online',
-    '5 Strategi Dapat Kontak Berkualitas',
-    '9 Strategi Dapat Ribuan Kontak Non Stop',
-    'Dapat Kontak Langsung Dapat Transferan'
+    'BIKIN APLIKASI',
+    'BIKIN POSTER',
+    'BIKIN PRESENTASI',
+    'BIKIN BUKU',
+    'BIKIN WEB APP',
+    'BIKIN RPP',
+    'BIKIN LKPD',
+    'BIKIN KOMIK DIGITAL',
+    'BIKIN LKPD INTERAKTIF',
+    'BIKIN INFOGRAFIS',
+    'BIKIN PRESENTASI',
+    'BIKIN GAME EDUKASI',
+    'WEB RAHASIA KUMPULAN PROMPT GRATIS',
+    'BUAT VIDEO PENDEK DIBAYAR LYNK ID',
+    'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',
+    'STRATEGI JAGO JUALAN DI WHATSAPP',
+    'CONTEKAN 3 PESAN BIAR KONTAK BARU LEBIH CEPAT JADI PEMBELI',
+    'BIKIN KELAS ONLINE',
+    '5 STRATEGI DAPAT KONTAK BERKUALITAS',
+    '9 STRATEGI DAPAT RIBUAN KONTAK NON STOP',
+    'DAPAT KONTAK LANGSUNG DAPAT TRANSFERAN'
   ];
 
   const registrationBenefits = {
     free:[
-      'Kuliah WhatsApp Rutin Setiap Hari',
-      'Ebook AI & Bisnis',
-      'Belajar AI Gratisan',
-      'Gabung Komunitas BADAI',
-      'Mulai Belajar Tanpa Bayar',
-      'Bisa Upgrade Kapan Saja'
+      'KULIAH WHATSAPP RUTIN SETIAP HARI',
+      'EBOOK AI & BISNIS',
+      'BELAJAR AI GRATISAN',
+      'GABUNG KOMUNITAS BADAI',
+      'MULAI BELAJAR TANPA BAYAR',
+      'BISA UPGRADE KAPAN SAJA'
     ],
     newbie:[
       ...pemulaMaterialBenefits,
-      'Update Materi BADAI',
-      'Member Area BADAI'
+      'UPDATE MATERI BADAI',
+      'MEMBER AREA BADAI'
     ],
     pro:[
       ...pemulaMaterialBenefits,
       ...untungMaterialBenefits,
-      'Program Afiliasi BADAI',
-      'Bahan Promosi Siap Pakai'
+      'PROGRAM AFILIASI BADAI',
+      'LINK AFILIASI PRIBADI',
+      'BAHAN PROMOSI SIAP PAKAI',
+      'PANTAU SALES & KOMISI'
     ]
   };
 
-  function chunkBenefits(items,size=3){
-    const chunks=[];
-    for(let i=0;i<items.length;i+=size){
-      chunks.push(items.slice(i,i+size));
-    }
-    return chunks;
-  }
-
   function stopBenefitTicker(){
-    if(benefitTickerTimer){
-      clearInterval(benefitTickerTimer);
-      benefitTickerTimer = null;
-    }
-  }
-
-  function updateBenefitTickerPosition(){
     const track = document.getElementById('registrationBenefitTrack');
-    const viewport = document.querySelector('.register-benefit-viewport');
-    if(!track || !viewport) return;
-    const step = viewport.clientHeight || 112;
-    track.style.transform = 'translate3d(0,' + (-step * benefitTickerIndex) + 'px,0)';
+    if(track) track.style.animation = 'none';
   }
 
   function startBenefitTicker(plan){
-    stopBenefitTicker();
-
     const ticker = document.getElementById('registrationBenefitTicker');
     const track = document.getElementById('registrationBenefitTrack');
     const prefix = document.getElementById('registrationBenefitPrefix');
     if(!ticker || !track) return;
 
     const items = registrationBenefits[plan] || registrationBenefits.newbie;
-    benefitTickerSlides = chunkBenefits(items,3);
-    benefitTickerIndex = 0;
-    benefitTickerDirection = 1;
+    const isFree = plan === 'free';
+
+    ticker.classList.toggle('is-free',isFree);
 
     if(prefix){
       prefix.textContent = plan === 'pro'
@@ -3833,35 +3820,32 @@ body.register-modal-open{
         : (plan === 'newbie' ? '10 MATERI + BENEFIT PAKET PEMULA' : 'YANG KAMU DAPATKAN');
     }
 
-    let absoluteIndex = 0;
-    track.innerHTML = benefitTickerSlides.map(slide => {
-      const rows = slide.map(text => {
-        absoluteIndex += 1;
-        return '<div class="register-benefit-item">' +
-          '<span class="register-benefit-number">' + String(absoluteIndex).padStart(2,'0') + '</span>' +
-          '<span class="register-benefit-text">' + text + '</span>' +
-        '</div>';
-      }).join('');
-      return '<div class="register-benefit-slide">' + rows + '</div>';
-    }).join('');
+    const oneSet = items.map((text,index) =>
+      '<div class="register-benefit-item">' +
+        '<span class="register-benefit-number">' + String(index + 1).padStart(2,'0') + '</span>' +
+        '<span class="register-benefit-text">' + String(text).toUpperCase() + '</span>' +
+      '</div>'
+    ).join('');
 
-    updateBenefitTickerPosition();
+    // Duplikat set membuat loop vertikal benar-benar mulus tanpa jeda/jump.
+    track.innerHTML = oneSet + oneSet;
 
-    if(benefitTickerSlides.length < 2) return;
+    requestAnimationFrame(() => {
+      const firstItem = track.querySelector('.register-benefit-item');
+      const rowHeight = firstItem ? firstItem.getBoundingClientRect().height : (isFree ? 38 : 38);
+      const distance = rowHeight * items.length;
+      const secondsPerRow = isFree ? 1.55 : 1.35;
+      const duration = Math.max(7,items.length * secondsPerRow);
 
-    benefitTickerTimer = setInterval(() => {
-      if(benefitTickerDirection > 0 && benefitTickerIndex >= benefitTickerSlides.length - 1){
-        benefitTickerDirection = -1;
-      }else if(benefitTickerDirection < 0 && benefitTickerIndex <= 0){
-        benefitTickerDirection = 1;
-      }
+      track.style.setProperty('--benefit-distance',distance + 'px');
+      track.style.setProperty('--benefit-duration',duration + 's');
 
-      benefitTickerIndex += benefitTickerDirection;
-      updateBenefitTickerPosition();
-    }, 2300);
+      // Restart dari posisi nol setiap ganti paket, lalu bergerak terus secara linear.
+      track.style.animation = 'none';
+      void track.offsetHeight;
+      track.style.animation = 'badaiBenefitMarquee ' + duration + 's linear infinite';
+    });
   }
-
-  window.addEventListener('resize', updateBenefitTickerPosition);
 
   let marketingConfig = {
     product_price: 123000,
