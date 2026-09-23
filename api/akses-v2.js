@@ -213,12 +213,18 @@ document.addEventListener('DOMContentLoaded', function(){
     {title:'BIKIN LKPD',video:'',content:''},
     {title:'BIKIN KOMIK DIGITAL',video:'',content:''},
     {title:'BIKIN LKPD INTERAKTIF',video:'',content:''},
-    {title:'INFOGRAFIS',video:'',content:''},
-    {title:'SLIDE PRESENTASI MASA DEPAN',video:'',content:''},
+    {title:'BIKIN INFOGRAFIS',video:'',content:''},
+    {title:'BIKIN PRESENTASI',video:'',content:''},
     {title:'BIKIN GAME EDUKASI',video:'',content:''},
     {title:'WEB RAHASIA KUMPULAN PROMPT GRATIS',video:'',content:''},
-    {title:'BUAT VIDEO PENDEK SUPAYA DIBAYAR LYNK.ID',video:'',content:''},
-    {title:'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',video:'',content:''}
+    {title:'BUAT VIDEO PENDEK DIBAYAR LYNK ID',video:'',content:''},
+    {title:'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',video:'',content:''},
+    {title:'STRATEGI JAGO JUALAN DI WHATSAPP',video:'',content:''},
+    {title:'CONTEKAN 3 PESAN BIAR KONTAK BARU LEBIH CEPAT JADI PEMBELI',video:'',content:''},
+    {title:'BIKIN KELAS ONLINE',video:'',content:''},
+    {title:'5 STRATEGI DAPAT KONTAK BERKUALITAS',video:'',content:''},
+    {title:'9 STRATEGI DAPAT RIBUAN KONTAK NON STOP',video:'',content:''},
+    {title:'DAPAT KONTAK LANGSUNG DAPAT TRANSFERAN',video:'',content:''}
   ];
 
   function youtubeEmbedUrl(url){
@@ -228,9 +234,10 @@ document.addEventListener('DOMContentLoaded', function(){
     return match?'https://www.youtube.com/embed/'+match[1]:value;
   }
 
-  function renderMemberMaterials(targetId,items,label){
+  function renderMemberMaterials(targetId,items,label,startNo){
     var host=el(targetId);
     if(!host)return;
+    var firstNo=Number(startNo||1);
     host.className='badai-material-accordion';
     host.innerHTML=items.map(function(item,i){
       var embed=youtubeEmbedUrl(item.video);
@@ -242,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function(){
         : 'Materi pendamping untuk <b>'+item.title+'</b> akan ditambahkan di bagian ini.';
       return '<details class="badai-material-faq">'+
         '<summary class="badai-material-summary">'+
-          '<span class="badai-material-index">'+String(i+1).padStart(2,'0')+'</span>'+
+          '<span class="badai-material-index">'+String(firstNo+i).padStart(2,'0')+'</span>'+
           '<span class="badai-material-title">'+item.title+'</span>'+
           '<span class="badai-material-chevron">+</span>'+
         '</summary>'+
@@ -254,8 +261,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }).join('');
   }
 
-  renderMemberMaterials('chapterGrid',pemulaMaterials,'Materi Pemula');
-  renderMemberMaterials('profitRouteGrid',untungMaterials,'Materi Untung');
+  renderMemberMaterials('chapterGrid',pemulaMaterials,'Materi Pemula',1);
+  renderMemberMaterials('profitRouteGrid',untungMaterials,'Materi Untung',11);
 
   [
     ['carapakai','Gratisan','fi fi-rr-square-1'],['kelas','Pemula','fi fi-rr-square-2'],['jaluruntung','Untung','fi fi-rr-square-3'],['afiliasi','Affiliasi','fi fi-rr-square-4'],['akun','Akun','fi fi-rr-square-5']
