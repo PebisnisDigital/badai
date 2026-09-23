@@ -709,9 +709,9 @@
     gate.id = 'badaiAuthGate';
     gate.innerHTML = `
       <div class="box">
-        <span class="badge">MEMBER BADAI</span>
+        <span class="badge">PEMULA & UNTUNG</span>
         <h1>Masuk ke Member Area</h1>
-        <p>Gunakan email dan password yang dikirim admin setelah pembayaran dikonfirmasi.</p>
+        <p>Member Area khusus Paket Pemula dan Paket Untung. Gunakan akses yang diterima setelah pembayaran berhasil.</p>
 
         <form id="badaiMemberLogin">
           <div class="field">
@@ -782,6 +782,12 @@
         return;
       }
 
+      if(freshProfile.membership_plan === 'free'){
+        clearSession();
+        location.reload();
+        return;
+      }
+
       currentProfile = freshProfile;
       populateAccount(freshProfile, currentUser);
       await configureMembership(freshProfile);
@@ -814,6 +820,16 @@
         if(status){
           status.className = 'status error';
           status.textContent = 'Akses belum aktif. Hubungi admin BADAI.';
+        }
+        return;
+      }
+
+      if(profile.membership_plan === 'free'){
+        clearSession();
+
+        if(status){
+          status.className = 'status error';
+          status.textContent = 'Paket Gratisan tidak memakai Member Area. Member Area khusus Paket Pemula dan Paket Untung.';
         }
         return;
       }
