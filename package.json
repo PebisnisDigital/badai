@@ -3,9 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "start": "node railway-server.js"
+    "start": "node railway-server.js",
+    "netlify:build": "node netlify/build-public.mjs"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@netlify/functions": "latest"
   }
 }
