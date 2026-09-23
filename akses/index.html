@@ -1450,7 +1450,7 @@ html.badai-auth-lock body > .app{
   </header>
 
   <main class="main">
-    <section id="kelas" class="screen">
+    <section id="kelas" class="screen active">
       <div id="chapterGrid" class="grid"></div>
     </section>
 
@@ -1468,44 +1468,6 @@ html.badai-auth-lock body > .app{
       </div>
     </section>
 
-
-    <section id="carapakai" class="screen active">
-      <div class="guide-hero">
-        <div class="guide-icon">▶️</div>
-        <div class="guide-kicker">MULAI BELAJAR DARI SINI</div>
-        <h1>Cara Belajar</h1>
-        <p>Tonton video singkat ini dulu supaya tahu urutan belajar di Member Area Komunitas BADAI.</p>
-      </div>
-
-      <div class="guide-video">
-        <iframe
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-          title="Cara Belajar Komunitas BADAI"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
-          loading="lazy"></iframe>
-      </div>
-
-      <div class="guide-steps">
-        <h3>Cara Belajarnya Gampang</h3>
-        <div class="guide-step">
-          <div class="guide-no">1</div>
-          <div><b>Buka Menu Kelas</b><span>Pilih BAB yang mau dipelajari. Mulai dari BAB pertama kalau masih baru.</span></div>
-        </div>
-        <div class="guide-step">
-          <div class="guide-no">2</div>
-          <div><b>Tonton Videonya</b><span>Nggak perlu buru-buru. Tonton, pause, lalu ikuti langkahnya.</span></div>
-        </div>
-        <div class="guide-step">
-          <div class="guide-no">3</div>
-          <div><b>Langsung Praktek</b><span>Jangan cuma nonton. Coba bikin satu video dari materi yang baru dipelajari.</span></div>
-        </div>
-        <div class="guide-step">
-          <div class="guide-no">4</div>
-          <div><b>Buka Jalur Untung</b><span>Pilih cara menghasilkan uang dari Video AI yang paling cocok, lalu jalankan langkah 30 harinya.</span></div>
-        </div>
-      </div>
-    </section>
 
     <section id="kisahsukses" class="screen">
       <div class="comic-header">
@@ -1684,10 +1646,7 @@ html.badai-auth-lock body > .app{
   </main>
 
   <nav class="footer">
-    <button data-screen="carapakai" class="active" onclick="show('carapakai')">
-      <span class="emoji">▶️</span><span class="label">Cara Belajar</span>
-    </button>
-    <button data-screen="kelas" onclick="show('kelas')">
+    <button data-screen="kelas" class="active" onclick="show('kelas')">
       <span class="emoji">🎓</span><span class="label">Kelas</span>
     </button>
     <button data-screen="jaluruntung" onclick="show('jaluruntung')">
