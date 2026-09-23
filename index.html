@@ -3429,6 +3429,154 @@ main section > .container > .badai-copy-kicker,
   margin-right:auto;
 }
 
+
+/* MENTOR AUTHORITY + TRUST */
+.mentor-authority-section h2{
+  text-align:center !important;
+}
+.mentor-authority-lead{
+  max-width:620px;
+  margin:0 auto !important;
+  text-align:center !important;
+}
+.mentor-authority-lead strong{color:#fff}
+.mentor-authority-card{
+  margin-top:22px;
+  padding:18px;
+  background:
+    radial-gradient(circle at 88% 8%,rgba(255,79,163,.10),transparent 28%),
+    linear-gradient(180deg,#111,#0b0b0b);
+}
+.mentor-authority-photo{
+  position:relative;
+  overflow:hidden;
+}
+.mentor-photo-proof{
+  position:absolute;
+  left:50%;
+  bottom:10px;
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:calc(100% - 22px);
+  padding:7px 11px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:999px;
+  background:rgba(7,7,7,.78);
+  backdrop-filter:blur(8px);
+  color:#fff;
+  font:900 8px "Raleway",Arial,sans-serif;
+  letter-spacing:.07em;
+}
+.mentor-authority-strip{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:7px;
+  max-width:590px;
+  margin:12px auto 16px;
+}
+.mentor-authority-strip span{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid #3c2a34;
+  background:#0d0d0d;
+  color:#d6d6d6;
+  font:700 9px "Nunito",Arial,sans-serif;
+}
+.mentor-authority-copy{
+  max-width:570px;
+}
+.mentor-authority-copy strong{color:#fff}
+.mentor-proof-title{
+  margin:22px auto 11px;
+  text-align:center;
+  color:#fff;
+  font:900 12px "Raleway",Arial,sans-serif;
+  letter-spacing:.02em;
+}
+.mentor-proof-title span{color:var(--pink)}
+.mentor-proof-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.mentor-proof-item{
+  min-height:112px;
+  padding:13px;
+  text-align:left;
+  border:1px solid #292929;
+  border-radius:15px;
+  background:#0d0d0d;
+}
+.mentor-proof-item b{
+  display:block;
+  margin-bottom:6px;
+  color:#fff;
+  font:900 11px "Raleway",Arial,sans-serif;
+}
+.mentor-proof-item span{
+  display:block;
+  color:#9e9e9e;
+  font:500 10.5px/1.5 "Nunito",Arial,sans-serif;
+}
+.mentor-authority-points{
+  margin-top:10px;
+}
+.mentor-authority-points .mentor-point{
+  min-height:88px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.mentor-founder-story,
+.mentor-transparency{
+  max-width:600px;
+  margin:16px auto 0;
+  padding:17px;
+  border-radius:17px;
+  text-align:center;
+}
+.mentor-founder-story{
+  border:1px solid #4a2639;
+  background:linear-gradient(180deg,#160e13,#0e0d0e);
+}
+.mentor-story-kicker{
+  margin-bottom:8px;
+  color:var(--pink);
+  font:900 9px "Raleway",Arial,sans-serif;
+  letter-spacing:.1em;
+}
+.mentor-founder-story p,
+.mentor-transparency p{
+  margin:0;
+  color:#b7b7b7;
+  font:500 12px/1.65 "Nunito",Arial,sans-serif;
+}
+.mentor-founder-story strong,
+.mentor-transparency strong{color:#fff}
+.mentor-transparency{
+  border:1px solid #2b2b2b;
+  background:#0b0b0b;
+}
+.mentor-transparency>b{
+  display:block;
+  margin-bottom:7px;
+  color:#fff;
+  font:900 11px "Raleway",Arial,sans-serif;
+}
+@media(max-width:520px){
+  .mentor-authority-card{padding:14px}
+  .mentor-authority-strip{gap:6px}
+  .mentor-authority-strip span{font-size:8px;padding:0 8px}
+  .mentor-proof-grid{grid-template-columns:1fr}
+  .mentor-proof-item{min-height:0}
+  .mentor-authority-points{grid-template-columns:1fr}
+  .mentor-founder-story,.mentor-transparency{padding:14px}
+}
+
 /* BADAI COPY UPGRADE — keeps existing visual DNA, adds trust/conversion sections */
 .badai-copy-kicker{
   color:var(--pink);
@@ -3673,25 +3821,56 @@ main section > .container > .badai-copy-kicker,
 </div>
 </div>
 </section>
-<section>
+<section class="mentor-authority-section">
 <div class="container">
-<h2>Belajar Apa Aja Dengan AI<br/><span class="pink">Bersama Teh Vini</span></h2>
-<p class="lead">
-      Materi BADAI dibawakan dengan gaya yang sederhana, santai, dan langsung praktek supaya pemula nggak merasa ribet saat mulai belajar Video AI.
-    </p>
-<div class="mentor-card">
-<div class="mentor-photo">
+<h2>Belajar AI Bareng Orang yang Paham<br/><span class="pink">Rasanya Jadi Pemula.</span></h2>
+<p class="lead mentor-authority-lead">
+  Nggak perlu jadi anak IT. Yang penting kamu tahu <strong>apa yang perlu dicoba dulu, cara memakainya, dan skill itu bisa dimanfaatkan ke mana.</strong>
+</p>
+
+<div class="mentor-card mentor-authority-card">
+<div class="mentor-photo mentor-authority-photo">
 <img alt="Teh Vini — Mentor BADAI" loading="lazy" src="https://i.ibb.co.com/5hhZDWX9/TEH-VINI-BADAI-SEMINAR-UNDER50-KB-1.webp"/>
+<div class="mentor-photo-proof">PRAKTISI • BUKAN CUMA TEORI</div>
 </div>
-<div class="mentor-role">MENTOR BADAI</div>
+
+<div class="mentor-role">MENTOR &amp; FOUNDER BADAI</div>
 <div class="mentor-name">Teh Vini</div>
-<p class="mentor-copy">
-        Di BADAI, Teh Vini membantu “menerjemahkan” AI menjadi langkah yang lebih gampang dipahami: ini gunanya buat apa, cara pakainya gimana, dan kalau sudah bisa — bisa dimanfaatkan ke arah mana.
-      </p>
-<div class="mentor-points">
-<div class="mentor-point"><b>Bahasa Sederhana</b>Mudah diikuti pemula.</div>
-<div class="mentor-point"><b>Langsung Praktek</b>Nggak kebanyakan teori.</div>
-<div class="mentor-point"><b>Fokus Manfaat</b>Bukan hafal tools. Pahami cara pakai dan peluangnya.</div>
+
+<div class="mentor-authority-strip">
+  <span>Digital Marketer</span>
+  <span>Founder PEBISNIS.DIGITAL</span>
+  <span>Founder BADAI</span>
+  <span>Praktisi Produk Digital</span>
+</div>
+
+<p class="mentor-copy mentor-authority-copy">
+  Teh Vini membantu “menerjemahkan” AI menjadi langkah yang lebih gampang dipahami orang biasa:
+  <strong>ini gunanya buat apa, cara pakainya gimana, dan kalau sudah bisa — bisa dimanfaatkan ke arah mana.</strong>
+</p>
+
+<div class="mentor-proof-title">BUKAN CUMA DIAJARKAN. <span>DIPAKAI SENDIRI.</span></div>
+<div class="mentor-proof-grid">
+  <div class="mentor-proof-item"><b>🌐 WEBSITE</b><span>AI dipakai untuk membantu membangun dan mengembangkan website bisnis.</span></div>
+  <div class="mentor-proof-item"><b>✍️ KONTEN</b><span>AI dipakai untuk membantu ide, materi, dan kebutuhan promosi.</span></div>
+  <div class="mentor-proof-item"><b>📦 PRODUK DIGITAL</b><span>AI dipakai dari proses ide, pembuatan, sampai pengembangan produk.</span></div>
+  <div class="mentor-proof-item"><b>⚙️ OTOMASI &amp; MARKETING</b><span>AI dipakai untuk membantu sistem, workflow, dan aktivitas pemasaran.</span></div>
+</div>
+
+<div class="mentor-points mentor-authority-points">
+<div class="mentor-point"><b>NGGAK SOK TEKNIS</b>Bahasa orang biasa. Bukan bahasa programmer.</div>
+<div class="mentor-point"><b>LANGSUNG COBA</b>Yang dipelajari diarahkan untuk benar-benar dipraktikkan.</div>
+<div class="mentor-point"><b>SELALU CARI “BUAT APA?”</b>Bukan sekadar hafal tools, tapi pahami manfaat dan peluangnya.</div>
+</div>
+
+<div class="mentor-founder-story">
+  <div class="mentor-story-kicker">KENAPA BADAI DIBUAT?</div>
+  <p>“Aku melihat banyak orang beli kelas AI satu-satu, tapi beberapa bulan kemudian tools-nya berubah lagi. Ada juga yang sudah belajar AI, tapi masih bingung: <strong>‘terus ini jadi duitnya gimana?’</strong> Dari situ BADAI dibuat — biar kita punya satu tempat untuk terus belajar, update, praktik, dan mencari cara memanfaatkan AI.”</p>
+</div>
+
+<div class="mentor-transparency">
+  <b>TEH VINI JUGA MASIH BELAJAR.</b>
+  <p>AI berkembang terlalu cepat untuk ada orang yang tahu semuanya. Karena itu BADAI bukan dibangun dengan konsep “guru paling tahu”. Kalau ada hal baru yang relevan: <strong>kita pelajari → kita coba → yang bermanfaat kita bagikan ke member.</strong></p>
 </div>
 </div>
 </div>
