@@ -1,3 +1,4 @@
+# BADAI Netlify production mirror
 [build]
   command = "npm run netlify:build"
   publish = "netlify-public"
