@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BADAI Community — Belajar AI Bareng</title>
+<meta name="description" content="BADAI adalah komunitas belajar AI untuk orang biasa. Belajar, praktik, tanya, sharing, dan berkembang bareng selama 365 hari.">
+<link rel="icon" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Raleway:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070707;--card:#111;--card2:#171717;--line:#2a2a2a;--text:#fff;--muted:#aaa;--pink:#ff4fa3;--pink2:#ff83bd;--green:#89e2aa;--red:#ff717d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:"Nunito",sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% -10%,rgba(255,79,163,.17),transparent 35%),radial-gradient(circle at 10% 45%,rgba(255,79,163,.06),transparent 25%);z-index:-1}
+a{color:inherit;text-decoration:none}.wrap{width:min(700px,100%);margin:auto;padding:0 20px}.section{padding:68px 0;border-top:1px solid rgba(255,255,255,.06)}
+.eyebrow{font:900 11px/1 "Raleway";letter-spacing:.14em;color:var(--pink);text-transform:uppercase;margin:0 0 14px}
+h1,h2,h3{font-family:"Raleway",sans-serif;margin:0}h1{font-size:clamp(40px,8vw,68px);line-height:.96;letter-spacing:-.045em}h2{font-size:clamp(29px,6vw,44px);line-height:1.03;letter-spacing:-.035em}h3{font-size:18px;line-height:1.15}.muted{color:var(--muted)}p{line-height:1.65}
+.header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)}
+.header-in{height:66px;display:flex;align-items:center;justify-content:space-between;gap:12px}.logo{width:120px;display:block}.nav{display:flex;gap:8px;align-items:center}.nav a{font-size:11px;font-weight:900;padding:9px 11px;border-radius:999px;color:#bbb}.nav .join{background:var(--pink);color:#080808}
+.hero{padding:56px 0 24px}.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(255,79,163,.35);background:rgba(255,79,163,.08);border-radius:999px;font-size:10px;font-weight:900;color:#ffc4df;margin-bottom:20px}.pulse{width:7px;height:7px;background:var(--pink);border-radius:50%;box-shadow:0 0 0 7px rgba(255,79,163,.11)}
+.hero h1 span{color:var(--pink)}.hero-copy{font-size:17px;color:#c8c8c8;max-width:590px;margin:20px 0 22px}.hero-copy strong{color:#fff}
+.cta-row{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;border-radius:14px;font:900 12px/1 "Raleway";letter-spacing:.02em}.btn-primary{background:var(--pink);color:#090909;box-shadow:0 14px 35px rgba(255,79,163,.2)}.btn-ghost{border:1px solid #303030;background:#111;color:#eee}
+.hero-photo{margin:30px 0 0;border-radius:24px;overflow:hidden;border:1px solid #282828;background:#111;position:relative}.hero-photo img{width:100%;display:block}.hero-photo:after{content:"KOMUNITAS BADAI";position:absolute;left:14px;bottom:14px;background:rgba(0,0,0,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);padding:8px 12px;border-radius:999px;font:900 9px "Raleway";letter-spacing:.12em}
+.statbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 0}.stat{padding:14px 10px;background:#0f0f0f;border:1px solid #202020;border-radius:15px;text-align:center}.stat b{display:block;font:900 20px "Raleway";color:#fff}.stat small{font-size:9px;color:#888}
+.head{margin-bottom:26px}.head p{margin:10px 0 0;color:#aaa;font-size:14px}.pink{color:var(--pink)}
+.grid{display:grid;gap:10px}.grid2{grid-template-columns:repeat(2,1fr)}.card{padding:18px;border:1px solid #262626;background:linear-gradient(180deg,#141414,#0e0e0e);border-radius:19px}.card .ico{width:38px;height:38px;border-radius:12px;background:#1f1118;display:grid;place-items:center;font-size:19px;margin-bottom:13px}.card p{font-size:12px;margin:7px 0 0;color:#929292;line-height:1.5}
+.people{display:flex;gap:8px;overflow:auto;padding:2px 0 9px;scrollbar-width:none}.people::-webkit-scrollbar{display:none}.person{flex:0 0 138px;background:#111;border:1px solid #252525;border-radius:17px;padding:17px 12px}.person b{font:800 14px "Raleway";display:block}.person small{display:block;color:#858585;margin-top:6px;font-size:10px}.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2d1421,#161616);border:1px solid #3d2330;margin-bottom:13px;font-size:18px}
+.journey{position:relative;margin-top:12px}.step{display:grid;grid-template-columns:42px 1fr;gap:13px;padding:0 0 22px;position:relative}.step:not(:last-child):before{content:"";position:absolute;left:20px;top:40px;bottom:0;width:1px;background:#2b2b2b}.num{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#171717;border:1px solid #343434;color:var(--pink);font:900 12px "Raleway"}.step p{margin:5px 0 0;color:#8f8f8f;font-size:12px}
+.activity{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:15px 0;border-bottom:1px solid #202020}.activity:last-child{border:0}.activity b{font:800 14px "Raleway"}.activity span{font-size:11px;color:#888}.activity em{font-style:normal;font:900 9px "Raleway";color:#ffb8d8;background:#23121a;border:1px solid #492236;padding:7px 9px;border-radius:999px}
+.classes{display:flex;gap:10px;overflow:auto;scrollbar-width:none;padding:4px 0 10px}.classes::-webkit-scrollbar{display:none}.class-card{flex:0 0 190px;padding:16px;background:#111;border:1px solid #252525;border-radius:18px;min-height:135px}.class-card small{font:900 9px "Raleway";color:var(--pink);letter-spacing:.09em}.class-card h3{font-size:16px;margin-top:20px}.class-card p{font-size:10px;color:#888;margin:6px 0 0}
+.testi-wrap{overflow:hidden;margin-inline:-20px}.testi-track{display:flex;gap:10px;width:max-content;animation:marquee 42s linear infinite;padding:4px 10px 10px}.testi-track:hover{animation-play-state:paused}.testi{width:210px;height:300px;object-fit:cover;border-radius:16px;border:1px solid #2b2b2b;background:#111}@keyframes marquee{to{transform:translateX(-50%)}}
+.network{border:1px solid #30212a;background:linear-gradient(145deg,#160e12,#0e0e0e);border-radius:24px;padding:24px;position:relative;overflow:hidden}.network:before{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,79,163,.1);filter:blur(40px);right:-50px;top:-50px}.network h2{font-size:30px;position:relative}.network p{font-size:13px;color:#aaa;position:relative}.network ul{padding:0;margin:18px 0 0;list-style:none;display:grid;gap:9px;position:relative}.network li{font-size:12px;color:#ddd}.network li:before{content:"↗";color:var(--pink);font-weight:900;margin-right:9px}
+.member-card{width:min(430px,100%);margin:8px auto 0;background:linear-gradient(145deg,#1b1b1b,#0d0d0d);border:1px solid #383838;border-radius:24px;padding:23px;box-shadow:0 25px 65px rgba(0,0,0,.35)}.member-card-top{display:flex;justify-content:space-between;align-items:center}.member-card-top img{width:98px}.member-chip{font:900 9px "Raleway";color:#070707;background:var(--pink);padding:7px 9px;border-radius:999px}.member-name{font:900 25px "Raleway";margin-top:32px}.member-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.member-meta div{background:#151515;border:1px solid #252525;padding:11px;border-radius:13px}.member-meta small{font-size:8px;color:#777;display:block}.member-meta b{font-size:11px}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.price{border:1px solid #2b2b2b;background:#111;border-radius:22px;padding:20px;position:relative}.price.best{border-color:rgba(255,79,163,.55);background:linear-gradient(180deg,#190f14,#101010)}.ribbon{font:900 8px "Raleway";color:#080808;background:var(--pink);padding:6px 8px;border-radius:999px;position:absolute;right:13px;top:13px}.price-label{font:900 9px "Raleway";letter-spacing:.12em;color:#858585}.price h3{font-size:22px;margin-top:9px}.price-desc{font-size:11px;color:#8d8d8d;min-height:48px}.amount-label{font-size:9px;color:#777;font-weight:800;margin-top:16px}.amount{font:900 28px "Raleway";margin:2px 0 0}.amount.red{color:var(--red)}.amount.green{color:var(--green);font-size:23px}.amount small{font:700 10px "Nunito";color:#8b8b8b}.benefits{list-style:none;padding:0;margin:16px 0;display:grid;gap:8px}.benefits li{font-size:10px;color:#ccc}.benefits li:before{content:"✓";color:var(--pink);font-weight:900;margin-right:7px}.price .btn{width:100%;min-height:44px;margin-top:5px}
+.note{font-size:10px;color:#777;text-align:center;margin-top:13px}
+.faq details{border-bottom:1px solid #242424;padding:17px 0}.faq summary{cursor:pointer;list-style:none;font:800 13px "Raleway";padding-right:25px;position:relative}.faq summary:after{content:"+";position:absolute;right:2px;color:var(--pink);font-size:20px;top:-4px}.faq details[open] summary:after{content:"−"}.faq p{font-size:12px;color:#909090;margin:10px 0 0}
+.final{text-align:center;padding:74px 0 105px}.final h2{max-width:590px;margin:auto}.final p{color:#999;font-size:13px;max-width:500px;margin:14px auto 22px}.final .btn{min-width:190px}
+.footer{padding:26px 0 90px;border-top:1px solid #1d1d1d;text-align:center}.footer img{width:110px;opacity:.9}.footer p{font-size:9px;color:#666}
+.mobile-bar{display:none}
+@media(max-width:560px){.wrap{padding:0 15px}.nav a:not(.join){display:none}.hero{padding-top:38px}.hero-copy{font-size:15px}.grid2{grid-template-columns:1fr}.price-grid{grid-template-columns:1fr}.price-desc{min-height:0}.stat b{font-size:17px}.section{padding:56px 0}.mobile-bar{display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:80;background:rgba(16,16,16,.92);backdrop-filter:blur(14px);border:1px solid #303030;border-radius:16px;padding:8px;gap:8px;box-shadow:0 15px 40px #000}.mobile-bar a{flex:1;text-align:center;padding:12px;border-radius:11px;font:900 10px "Raleway"}.mobile-bar .join{background:var(--pink);color:#080808}.mobile-bar .more{background:#1b1b1b;color:#ddd}}
+</style>
+</head>
+<body>
+<header class="header"><div class="wrap header-in">
+<a href="/community"><img class="logo" src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"></a>
+<nav class="nav"><a href="#aktivitas">Aktivitas</a><a href="#kelas">Kelas</a><a class="join" href="#iuran">JADI ANGGOTA</a></nav>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+<div class="hero-badge"><i class="pulse"></i> BELAJAR AI BARENG, BUKAN SENDIRIAN</div>
+<h1>TEMPAT ORANG BIASA<br><span>BELAJAR AI BARENG.</span></h1>
+<p class="hero-copy">Belajar. Nyoba. Tanya. Salah. Ulang lagi. <strong>Bareng-bareng.</strong><br>BADAI adalah komunitas untuk siapa pun yang ingin terus belajar dan memakai AI dalam kehidupan, pekerjaan, dan usaha.</p>
+<div class="cta-row"><a class="btn btn-primary" href="#iuran">JADI ANGGOTA</a><a class="btn btn-ghost" href="#tentang">LIHAT DALAMNYA ↓</a></div>
+<div class="hero-photo"><img src="https://i.ibb.co.com/Psbkc4Hr/BADAI-HERO-KOMUNITAS-UNDER55-KB-1.webp" alt="Komunitas BADAI"></div>
+<div class="statbar"><div class="stat"><b>365</b><small>HARI KEANGGOTAAN</small></div><div class="stat"><b>30+</b><small>MATERI & STRATEGI</small></div><div class="stat"><b>∞</b><small>UPDATE & SHARING</small></div></div>
+</div></section>
+
+<section class="section" id="tentang"><div class="wrap">
+<div class="head"><p class="eyebrow">INI BUKAN CUMA KELAS</p><h2>MASUK BADAI, KAMU MASUK <span class="pink">EKOSISTEM BELAJAR.</span></h2><p>Video tutorial itu cuma salah satu bagian. Yang bikin hidup adalah orang, aktivitas, update, dan tempat buat balik lagi ketika mentok.</p></div>
+<div class="grid grid2">
+<div class="card"><div class="ico">👥</div><h3>Komunitas Aktif</h3><p>Tempat bertanya, sharing, ngobrol, dan lihat perkembangan member lain.</p></div>
+<div class="card"><div class="ico">🎓</div><h3>Kelas AI</h3><p>Materi dari dasar sampai praktik, dibuat supaya pemula nggak bingung mulai dari mana.</p></div>
+<div class="card"><div class="ico">⚡</div><h3>Update Berkala</h3><p>AI berubah cepat. Materi dan pembahasan BADAI ikut bergerak ketika ada yang relevan.</p></div>
+<div class="card"><div class="ico">🤝</div><h3>Networking</h3><p>Kenalan dengan member lain, buka peluang kolaborasi, sharing skill, dan relasi baru.</p></div>
+</div>
+</div></section>
+
+<section class="section"><div class="wrap">
+<div class="head"><p class="eyebrow">SIAPA YANG ADA DI BADAI?</p><h2>KITA BEDA LATAR.<br><span class="pink">SAMA-SAMA BELAJAR.</span></h2><p>Nggak perlu datang sebagai “orang AI”. Datang aja sebagai orang yang pengen ngerti dan mulai praktik.</p></div>
+<div class="people">
+<div class="person"><div class="avatar">🏠</div><b>Ibu Rumah Tangga</b><small>Mulai dari nol.</small></div>
+<div class="person"><div class="avatar">💼</div><b>Karyawan</b><small>Biar kerja lebih gesit.</small></div>
+<div class="person"><div class="avatar">🏪</div><b>UMKM</b><small>Bantu konten & bisnis.</small></div>
+<div class="person"><div class="avatar">📚</div><b>Guru</b><small>Belajar media baru.</small></div>
+<div class="person"><div class="avatar">🎬</div><b>Creator</b><small>Eksplor ide & visual.</small></div>
+<div class="person"><div class="avatar">🧓</div><b>Pensiunan</b><small>Tetap belajar hal baru.</small></div>
+</div>
+</div></section>
+
+<section class="section"><div class="wrap">
+<div class="head"><p class="eyebrow">SETELAH GABUNG</p><h2>NGGAK DISURUH JADI JAGO.<br><span class="pink">MULAI DULU.</span></h2></div>
+<div class="journey">
+<div class="step"><div class="num">01</div><div><h3>Masuk & Kenalan</h3><p>Lihat ekosistem, kenali member, pilih jalur belajar yang paling masuk akal buat kamu.</p></div></div>
+<div class="step"><div class="num">02</div><div><h3>Pilih Satu Materi</h3><p>Nggak perlu marathon 30 materi. Ambil satu yang paling dibutuhkan.</p></div></div>
+<div class="step"><div class="num">03</div><div><h3>Bikin Satu Hasil</h3><p>Target pertama sederhana: bukan sertifikat. Punya satu hasil jadi.</p></div></div>
+<div class="step"><div class="num">04</div><div><h3>Mentok? Tanya.</h3><p>Balik ke komunitas. Diskusi. Lihat pengalaman orang lain.</p></div></div>
+<div class="step"><div class="num">05</div><div><h3>Sudah Bisa? Sharing.</h3><p>Hari ini belajar dari member lain. Besok mungkin giliran pengalamanmu yang membantu.</p></div></div>
+</div>
+</div></section>
+
+<section class="section" id="aktivitas"><div class="wrap">
+<div class="head"><p class="eyebrow">BADAI ITU HIDUP</p><h2>BUKAN LOGIN.<br>NONTON. <span class="pink">PULANG.</span></h2><p>Komunitas perlu punya denyut. Ini tipe aktivitas yang jadi rumah BADAI.</p></div>
+<div class="card">
+<div class="activity"><div><b>KulWA BADAI</b><br><span>Belajar ringan lewat WhatsApp.</span></div><em>RUTIN</em></div>
+<div class="activity"><div><b>Ngulik AI Bareng</b><br><span>Bahas tools dan cara pakainya.</span></div><em>PRAKTIK</em></div>
+<div class="activity"><div><b>Sharing Member</b><br><span>Hasil, pengalaman, dan temuan member.</span></div><em>COMMUNITY</em></div>
+<div class="activity"><div><b>Update AI</b><br><span>Yang relevan dibahas. Yang cuma hype, lewat.</span></div><em>UPDATE</em></div>
+<div class="activity"><div><b>Challenge & Event</b><br><span>Biar belajar punya alasan untuk bergerak.</span></div><em>BERTUMBUH</em></div>
+</div>
+</div></section>
+
+<section class="section" id="kelas"><div class="wrap">
+<div class="head"><p class="eyebrow">MAU BELAJAR APA?</p><h2>KELAS ADA.<br>TAPI <span class="pink">BUKAN SATU-SATUNYA ALASAN</span> GABUNG.</h2><p>Selama keanggotaan aktif, pilih materi sesuai kebutuhan dan ikuti update sesuai paketmu.</p></div>
+<div class="classes">
+<div class="class-card"><small>VISUAL AI</small><h3>AI Educator</h3><p>Bikin konten edukasi dengan bantuan AI.</p></div>
+<div class="class-card"><small>VIDEO AI</small><h3>Video Genjutsu</h3><p>Eksplor video kreatif dengan AI.</p></div>
+<div class="class-card"><small>BUILD</small><h3>Bikin Game</h3><p>Bangun game sederhana dari ide sendiri.</p></div>
+<div class="class-card"><small>BUSINESS</small><h3>AI Affiliate</h3><p>Pakai AI untuk bantu workflow konten affiliate.</p></div>
+<div class="class-card"><small>WEB</small><h3>Bikin Web App</h3><p>Dari ide ke halaman yang bisa dipakai.</p></div>
+</div>
+</div></section>
+
+<section class="section"><div class="wrap">
+<div class="head"><p class="eyebrow">KATA MEREKA DI DALAM BADAI</p><h2>BUKAN COPYWRITING.<br><span class="pink">CHAT ASLI MEMBER.</span></h2><p>Kita biarkan mereka nyeblos sendiri. Lebih enak daripada testimoni yang bunyinya kayak brosur.</p></div>
+<div class="testi-wrap"><div class="testi-track">
+<img class="testi" src="https://i.ibb.co.com/5W93zMtN/01-Heni.webp" alt="Testimoni member BADAI">
+<img class="testi" src="https://i.ibb.co.com/G3rmLhDn/09-Aliyyah.webp" alt="Testimoni member BADAI">
+<img class="testi" src="https://i.ibb.co.com/M5tcp0tF/19-Mukromah.webp" alt="Testimoni member BADAI">
+<img class="testi" src="https://i.ibb.co.com/QjJJDfvr/14-Maria.webp" alt="Testimoni member BADAI">
+<img class="testi" src="https://i.ibb.co.com/bgv70Rzp/20-Nurul.webp" alt="Testimoni member BADAI">
+<img class="testi" src="https://i.ibb.co.com/5W93zMtN/01-Heni.webp" alt="">
+<img class="testi" src="https://i.ibb.co.com/G3rmLhDn/09-Aliyyah.webp" alt="">
+<img class="testi" src="https://i.ibb.co.com/M5tcp0tF/19-Mukromah.webp" alt="">
+<img class="testi" src="https://i.ibb.co.com/QjJJDfvr/14-Maria.webp" alt="">
+<img class="testi" src="https://i.ibb.co.com/bgv70Rzp/20-Nurul.webp" alt="">
+</div></div>
+</div></section>
+
+<section class="section"><div class="wrap">
+<div class="network">
+<p class="eyebrow">NETWORKING BADAI</p><h2>KENALAN SAMA<br><span class="pink">MEMBER LAIN.</span></h2>
+<p>AUTOKONTAK kita taruh sebagai bagian dari kehidupan komunitas—bukan bonus tempelan. Tujuannya supaya member bisa saling menemukan, komunikasi, dan membuka peluang kolaborasi.</p>
+<ul><li>Temukan sesama anggota BADAI</li><li>Bangun relasi baru</li><li>Sharing skill dan pengalaman</li><li>Buka peluang kolaborasi</li></ul>
+</div>
+</div></section>
+
+<section class="section"><div class="wrap">
+<div class="head"><p class="eyebrow">IDENTITAS ANGGOTA</p><h2>BUKAN “AKU BELI BADAI.”<br><span class="pink">“AKU ANGGOTA BADAI.”</span></h2><p>Satu perubahan kecil yang bikin rasa komunitasnya beda total.</p></div>
+<div class="member-card">
+<div class="member-card-top"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"><span class="member-chip">ANGGOTA AKTIF</span></div>
+<div class="member-name">NAMA ANGGOTA</div>
+<div class="member-meta"><div><small>BERGABUNG SEJAK</small><b>24 SEP 2026</b></div><div><small>MASA AKTIF</small><b>365 HARI</b></div><div><small>NO. ANGGOTA</small><b>BADAI-XXXX</b></div><div><small>STATUS</small><b style="color:#89e2aa">AKTIF</b></div></div>
+</div>
+</div></section>
+
+<section class="section" id="iuran"><div class="wrap">
+<div class="head"><p class="eyebrow">IURAN KEANGGOTAAN BADAI</p><h2>PILIH CARA KAMU<br><span class="pink">MASUK KOMUNITAS.</span></h2><p>Bukan “beli kelas”. Ini keanggotaan 365 hari dengan akses sesuai pilihanmu.</p></div>
+<div class="price-grid">
+<div class="price">
+<div class="price-label">KEANGGOTAAN</div><h3>PEMULA</h3>
+<p class="price-desc">Untuk anggota yang ingin fokus dulu ke materi dasar dan mulai praktik.</p>
+<div class="amount-label">IURAN ANGGOTA • 365 HARI</div><div class="amount red">Rp199.000 <small>/ tahun</small></div>
+<ul class="benefits"><li>10 materi inti Pemula</li><li>Komunitas BADAI + KulWA</li><li>Update materi Paket Pemula</li><li>Member Area</li></ul>
+<a class="btn btn-ghost" href="/#pricing">JADI ANGGOTA</a>
+</div>
+<div class="price best">
+<span class="ribbon">PALING LENGKAP</span>
+<div class="price-label">KEANGGOTAAN</div><h3>UNTUNG</h3>
+<p class="price-desc">Semua materi Pemula + materi lanjutan + jalur monetisasi + afiliasi.</p>
+<div class="amount-label">IURAN ANGGOTA • 365 HARI</div><div class="amount green">Rp99.000 <small>/ tahun</small></div>
+<ul class="benefits"><li>Semua materi Pemula</li><li>Materi khusus Paket Untung</li><li>Jalur Cuan + Afiliasi BADAI</li><li>Bahan promosi + dashboard komisi</li></ul>
+<a class="btn btn-primary" href="/#pricing">JADI ANGGOTA</a>
+</div>
+</div>
+<p class="note">Keanggotaan aktif selama 365 hari sejak aktivasi dan dapat diperpanjang untuk periode berikutnya.</p>
+</div></section>
+
+<section class="section"><div class="wrap faq">
+<div class="head"><p class="eyebrow">FAQ</p><h2>MASIH ADA YANG<br><span class="pink">GANJEL?</span></h2></div>
+<details open><summary>BADAI ini kelas online atau komunitas?</summary><p>BADAI diposisikan sebagai komunitas belajar AI. Kelas adalah salah satu fasilitas anggota, bersama aktivitas komunitas, update materi, networking, dan benefit lainnya.</p></details>
+<details><summary>Berapa lama masa keanggotaan?</summary><p>365 hari sejak akun diaktifkan. Setelah itu keanggotaan dapat diperpanjang dengan iuran yang berlaku pada saat perpanjangan.</p></details>
+<details><summary>Kalau saya gaptek, bisa ikut?</summary><p>Bisa. BADAI dibuat untuk orang biasa dan pemula. Nggak perlu belajar semuanya sekaligus—mulai dari satu materi yang paling dibutuhkan.</p></details>
+<details><summary>AI berubah terus, materinya bagaimana?</summary><p>Justru itu alasan BADAI dibangun sebagai komunitas. Materi dan pembahasan dapat terus berkembang mengikuti hal yang relevan untuk anggota.</p></details>
+<details><summary>Apa BADAI menjamin saya menghasilkan uang?</summary><p>Tidak. BADAI memberi pembelajaran, ide, tools, dan jalur praktik. Hasil tetap bergantung pada proses, kemampuan, konsistensi, dan kondisi masing-masing anggota.</p></details>
+</div></section>
+
+<section class="final"><div class="wrap">
+<p class="eyebrow">BELAJAR AI NGGAK HARUS SENDIRIAN</p>
+<h2>AI BERUBAH TERUS.<br><span class="pink">PUNYA TEMPAT BUAT BALIK.</span></h2>
+<p>Masuk. Belajar satu hal. Coba. Tanya. Sharing. Besok belajar lagi. Itu BADAI.</p>
+<a class="btn btn-primary" href="#iuran">JADI ANGGOTA</a>
+</div></section>
+</main>
+
+<footer class="footer"><div class="wrap"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"><p>Belajar Apa Aja Dengan Artificial Intelligence • Komunitas BADAI</p></div></footer>
+<div class="mobile-bar"><a class="more" href="#tentang">LIHAT BADAI</a><a class="join" href="#iuran">JADI ANGGOTA</a></div>
+</body>
+</html>
