@@ -1190,7 +1190,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   var pemulaMaterials=[
-    {title:'AI VIDEO GENERATOR',video:'',description:'Bikin video AI dari ide atau materi sederhana supaya lebih cepat jadi konten visual.',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/T3aDuFAhgGVr'},
+    {title:'BIKIN AI EDUKATOR',video:'',description:'Bikin karakter AI edukator yang bisa menyampaikan materi, tips, atau penjelasan secara menarik dalam bentuk konten.',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/T3aDuFAhgGVr'},
     {title:'BIKIN GEO-SPASIAL',video:'',description:'Bikin konten peta, lokasi, dan visual geospasial yang menarik dengan bantuan AI.',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS GEO-SPASIAL',toolUrl:'https://share.gemini.google/uIo6f8B4PaZh'},
     {title:'BIKIN DAKWAH INFLUENCER',video:'',description:'Bikin karakter dan konten dakwah digital yang konsisten untuk media sosial.',content:''},
     {title:'BIKIN SELEBGRAM AI',video:'',description:'Bikin karakter selebgram AI lengkap dengan konsep konten dan tampilan yang konsisten.',content:''},
