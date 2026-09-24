@@ -456,7 +456,7 @@ module.exports = async function handler(req, res) {
   .affiliate-payout-meta,.affiliate-overview-row{font-size:12.5px!important}
 
   /* BADAI SALES FINAL FIT — fill 5th stat + compact invoice rows */
-  .stats{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}
   .stat{min-width:0!important}
   .stat-revenue strong{
     font-size:18px!important;
@@ -520,7 +520,7 @@ module.exports = async function handler(req, res) {
   .sales-action-row .sales-row-actions{margin-top:0!important}
 
   @media(max-width:760px){
-    .stats{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+    .stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}
     .stat{padding:8px 7px!important}
     .stat span{font-size:7px!important}
     .stat strong{font-size:16px!important}
@@ -556,6 +556,61 @@ module.exports = async function handler(req, res) {
     th,td{padding:12px 10px!important}
     .card-head h3,.marketing-card-head h3,.team-panel h3,
     .statement-title,.affiliate-admin-title b{font-size:17px!important}
+  }
+
+
+  /* FINAL SALES SUMMARY — 3 equal cards, no empty slots */
+  #pageSales .stats{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:9px!important;
+    width:100%!important;
+    margin:0 0 10px!important;
+  }
+  #pageSales .stat{
+    min-width:0!important;
+    min-height:88px!important;
+    padding:13px 15px!important;
+    border-radius:16px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    align-items:flex-start!important;
+  }
+  #pageSales .stat span{
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    line-height:1.2!important;
+    letter-spacing:.02em!important;
+  }
+  #pageSales .stat strong{
+    margin-top:8px!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:29px!important;
+    font-weight:900!important;
+    line-height:1!important;
+  }
+  @media(max-width:760px){
+    #pageSales .stats{
+      grid-template-columns:repeat(3,minmax(0,1fr))!important;
+      gap:7px!important;
+    }
+    #pageSales .stat{
+      min-height:82px!important;
+      padding:11px 12px!important;
+    }
+    #pageSales .stat span{font-size:11px!important}
+    #pageSales .stat strong{font-size:27px!important}
+  }
+  @media(max-width:430px){
+    #pageSales .stats{gap:5px!important}
+    #pageSales .stat{
+      min-height:76px!important;
+      padding:9px!important;
+    }
+    #pageSales .stat span{font-size:9.5px!important}
+    #pageSales .stat strong{font-size:24px!important}
   }
 </style>`;
 
