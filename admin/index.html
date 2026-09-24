@@ -2678,6 +2678,44 @@ th,td{padding:14px 12px!important}
 }
 /* END BADAI SALES ACTION ALIGNMENT FINAL */
 
+
+/* BADAI SALES HERO HEADER FINAL */
+#dashboardView .dashboard-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  margin:12px 0 18px!important;
+}
+
+#dashboardView .dashboard-head > div{
+  width:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+#dashboardView .dashboard-head h1{
+  margin:0!important;
+  text-align:center!important;
+}
+
+#dashboardView #adminIdentity{
+  margin:6px 0 0!important;
+  text-align:center!important;
+}
+
+#dashboardView .live-sync-badge{
+  margin-top:6px!important;
+  justify-content:center!important;
+}
+
+#pageSales > .stats{
+  margin-top:0!important;
+}
+/* END BADAI SALES HERO HEADER FINAL */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -2723,7 +2761,7 @@ th,td{padding:14px 12px!important}
   <section id="dashboardView" class="hidden">
     <div class="dashboard-head">
       <div>
-        <h1>Dashboard BADAI</h1>
+        <h1>Penjualan BADAI</h1>
         <p id="adminIdentity">Memuat akun...</p>
         <div class="live-sync-badge"><span></span> AUTO SYNC</div>
       </div>
@@ -2749,13 +2787,6 @@ th,td{padding:14px 12px!important}
     </nav>
 
     <section id="pageSales" class="admin-page">
-      <div class="page-title">
-        <div>
-          <h2>Penjualan</h2>
-          <p>Kelola pendaftar, pembayaran, akses member, dan follow-up.</p>
-        </div>
-      </div>
-
       <div class="stats">
         <div class="stat"><span>TOTAL PENDAFTAR</span><strong id="statTotal">0</strong></div>
         <div class="stat"><span>PENDING</span><strong id="statPending">0</strong></div>
