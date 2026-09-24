@@ -1806,6 +1806,61 @@ th,td{padding:14px 12px!important}
   .card-head h3,.marketing-card-head h3,.team-panel h3,
   .statement-title,.affiliate-admin-title b{font-size:17px!important}
 }
+
+/* BADAI SALES SUMMARY FINAL — 3 cards, full width, bigger text */
+#pageSales .stats{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:9px!important;
+  width:100%!important;
+  margin:0 0 10px!important;
+}
+#pageSales .stat{
+  min-width:0!important;
+  min-height:88px!important;
+  padding:13px 15px!important;
+  border-radius:16px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:flex-start!important;
+}
+#pageSales .stat span{
+  font-family:"Nunito",Arial,sans-serif!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  line-height:1.2!important;
+  letter-spacing:.02em!important;
+}
+#pageSales .stat strong{
+  margin-top:8px!important;
+  font-family:"Raleway",Arial,sans-serif!important;
+  font-size:29px!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+@media(max-width:760px){
+  #pageSales .stats{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  #pageSales .stat{
+    min-height:82px!important;
+    padding:11px 12px!important;
+  }
+  #pageSales .stat span{font-size:11px!important}
+  #pageSales .stat strong{font-size:27px!important}
+}
+@media(max-width:430px){
+  #pageSales .stats{gap:5px!important}
+  #pageSales .stat{
+    min-height:76px!important;
+    padding:9px!important;
+  }
+  #pageSales .stat span{font-size:9.5px!important}
+  #pageSales .stat strong{font-size:24px!important}
+}
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -1888,8 +1943,6 @@ th,td{padding:14px 12px!important}
         <div class="stat"><span>TOTAL PENDAFTAR</span><strong id="statTotal">0</strong></div>
         <div class="stat"><span>PENDING</span><strong id="statPending">0</strong></div>
         <div class="stat"><span>AKTIF</span><strong id="statActive">0</strong></div>
-        <div class="stat"><span>DAFTAR HARI INI</span><strong id="statToday">0</strong></div>
-        <div class="stat stat-revenue"><span>OMZET</span><strong id="statRevenue">Rp0</strong></div>
       </div>
 
       <div class="toolbar">
@@ -3403,22 +3456,6 @@ th,td{padding:14px 12px!important}
     $('statTotal').textContent = registrations.length;
     $('statPending').textContent = registrations.filter(r => r.member_status === 'pending').length;
     $('statActive').textContent = registrations.filter(r => r.member_status === 'active').length;
-
-    const today = new Date();
-    $('statToday').textContent = registrations.filter(r => {
-      const d = new Date(r.created_at);
-      return d.getFullYear()===today.getFullYear()
-        && d.getMonth()===today.getMonth()
-        && d.getDate()===today.getDate();
-    }).length;
-
-    const salesRevenue = registrations
-      .filter(r => r.payment_status === 'paid')
-      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
-    if($('statRevenue')){
-      $('statRevenue').textContent = compactRupiah(salesRevenue);
-      $('statRevenue').title = rupiah(salesRevenue);
-    }
   }
 
   function waMessageLink(r, msg){
