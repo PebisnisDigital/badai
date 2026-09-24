@@ -1009,9 +1009,9 @@ module.exports = async function handler(req, res) {
     min-width:0!important;
     min-height:300px!important;
     padding:17px!important;
-    border:1px solid #2d3342!important;
+    border:1px solid #3b2231!important;
     border-radius:20px!important;
-    background:linear-gradient(180deg,#151922 0%,#11151d 100%)!important;
+    background:linear-gradient(180deg,#171015 0%,#0f0d0f 100%)!important;
     box-shadow:0 14px 30px rgba(0,0,0,.20)!important;
     display:flex!important;
     flex-direction:column!important;
@@ -1041,14 +1041,14 @@ module.exports = async function handler(req, res) {
     line-height:1!important;
   }
   .badai-material-card-category{
-    background:#211b49!important;
-    color:#9e93ff!important;
-    border:1px solid #332a6a!important;
+    background:#26101b!important;
+    color:#ff91c6!important;
+    border:1px solid #65304d!important;
   }
   .badai-material-card-status{
-    background:#6a5cff!important;
+    background:#ff4fa3!important;
     color:#fff!important;
-    border:1px solid #7b70ff!important;
+    border:1px solid #ff73b7!important;
   }
   .badai-material-card.is-coming-soon .badai-material-card-status{
     background:#211018!important;
@@ -1057,7 +1057,7 @@ module.exports = async function handler(req, res) {
   }
   .badai-material-card-number{
     margin-top:10px!important;
-    color:#7f899c!important;
+    color:#9c8490!important;
     font-family:"Nunito",Arial,sans-serif!important;
     font-size:11px!important;
     font-weight:800!important;
@@ -1073,7 +1073,7 @@ module.exports = async function handler(req, res) {
   }
   .badai-material-card-desc{
     margin:0!important;
-    color:#aeb6c8!important;
+    color:#c2afb8!important;
     font-family:"Nunito",Arial,sans-serif!important;
     font-size:14px!important;
     font-weight:650!important;
@@ -1082,7 +1082,7 @@ module.exports = async function handler(req, res) {
   .badai-material-card-divider{
     height:1px!important;
     margin:16px 0 13px!important;
-    background:#343b4b!important;
+    background:#402532!important;
   }
   .badai-material-card-actions{
     margin-top:auto!important;
@@ -1107,19 +1107,19 @@ module.exports = async function handler(req, res) {
     box-sizing:border-box!important;
   }
   .badai-card-action-tool{
-    border:1px solid #765dff!important;
-    background:linear-gradient(90deg,#6359f6,#8f32ed)!important;
+    border:1px solid #ff6fb6!important;
+    background:linear-gradient(90deg,#ff4fa3,#ff79bd)!important;
     color:#fff!important;
   }
   .badai-card-action-video{
-    border:1px solid #e74956!important;
-    background:#0c0f15!important;
-    color:#ff606d!important;
+    border:1px solid #ff4fa3!important;
+    background:#120b0f!important;
+    color:#ff8fc5!important;
   }
   .badai-card-action.is-disabled{
-    background:#151820!important;
-    border-color:#353b48!important;
-    color:#737b8b!important;
+    background:#151113!important;
+    border-color:#3b2b33!important;
+    color:#89737d!important;
     cursor:not-allowed!important;
     box-shadow:none!important;
   }
