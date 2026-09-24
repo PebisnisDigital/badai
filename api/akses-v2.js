@@ -1021,42 +1021,8 @@ module.exports = async function handler(req, res) {
     opacity:.76!important;
     filter:saturate(.72)!important;
   }
-  .badai-material-card-top{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    gap:10px!important;
-  }
-  .badai-material-card-category,
-  .badai-material-card-status{
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    min-height:24px!important;
-    padding:0 9px!important;
-    border-radius:999px!important;
-    font-family:"Nunito",Arial,sans-serif!important;
-    font-size:10px!important;
-    font-weight:900!important;
-    line-height:1!important;
-  }
-  .badai-material-card-category{
-    background:#26101b!important;
-    color:#ff91c6!important;
-    border:1px solid #65304d!important;
-  }
-  .badai-material-card-status{
-    background:#ff4fa3!important;
-    color:#fff!important;
-    border:1px solid #ff73b7!important;
-  }
-  .badai-material-card.is-coming-soon .badai-material-card-status{
-    background:#211018!important;
-    color:#ff8fc5!important;
-    border-color:#573047!important;
-  }
   .badai-material-card-number{
-    margin-top:10px!important;
+    margin-top:0!important;
     color:#9c8490!important;
     font-family:"Nunito",Arial,sans-serif!important;
     font-size:11px!important;
@@ -1230,7 +1196,6 @@ document.addEventListener('DOMContentLoaded', function(){
       var hasTool=!!String(item.toolUrl||'').trim();
       var hasVideo=!!String(item.video||'').trim();
       var ready=item.ready===true || hasTool || hasVideo;
-      var category=label==='Materi Pemula'?'PEMULA':'UNTUNG';
       var description=item.content
         ? item.content
         : 'Materi ini sedang disiapkan dan akan dibuka setelah tools atau video tutorialnya tersedia.';
@@ -1244,10 +1209,6 @@ document.addEventListener('DOMContentLoaded', function(){
         : '<button class="badai-card-action badai-card-action-video is-disabled" type="button" disabled>▶ VIDEO TUTORIAL • SEGERA HADIR</button>';
 
       return '<article class="badai-material-card'+(ready?' is-ready':' is-coming-soon')+'">'+
-        '<div class="badai-material-card-top">'+
-          '<span class="badai-material-card-category">'+category+'</span>'+
-          '<span class="badai-material-card-status">'+(ready?'AKTIF':'SEGERA HADIR')+'</span>'+
-        '</div>'+
         '<div class="badai-material-card-number">#'+number+'</div>'+
         '<h3 class="badai-material-card-title">'+item.title+'</h3>'+
         '<p class="badai-material-card-desc">'+description+'</p>'+
