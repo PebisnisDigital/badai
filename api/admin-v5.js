@@ -904,6 +904,41 @@ module.exports = async function handler(req, res) {
     }
   }
 
+
+  /* FINAL SALES PACKAGE RESTORED — after Member */
+  #pageSales .sales-compact-head,
+  #pageSales .sales-compact-row{
+    grid-template-columns:30px minmax(205px,1.8fr) minmax(78px,.72fr) minmax(120px,1fr) 76px 92px!important;
+    gap:8px!important;
+    align-items:center!important;
+  }
+  #pageSales .sales-package-stack{
+    min-width:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:3px!important;
+  }
+  #pageSales .sales-package-stack strong{
+    color:#ff7fbd!important;
+    font-size:9px!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+  }
+  #pageSales .sales-package-stack span{
+    color:#c8c8c8!important;
+    font-size:8px!important;
+    white-space:nowrap!important;
+  }
+  @media(max-width:560px){
+    #pageSales .sales-compact-head,
+    #pageSales .sales-compact-row{
+      grid-template-columns:24px minmax(150px,1.65fr) minmax(66px,.72fr) minmax(86px,.9fr) 60px 70px!important;
+      gap:4px!important;
+    }
+    #pageSales .sales-package-stack strong{font-size:8px!important}
+    #pageSales .sales-package-stack span{font-size:7px!important}
+  }
+
 </style>`;
 
     body = body.replace('</head>', typographyUi + '\n</head>');
