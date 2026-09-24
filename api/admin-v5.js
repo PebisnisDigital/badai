@@ -405,6 +405,74 @@ module.exports = async function handler(req, res) {
     font-family:"Raleway",Arial,sans-serif!important;
   }
   code,pre,kbd,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important}
+
+  body{font-size:14px!important;line-height:1.52!important}
+  .dashboard-head h1{font-size:36px!important;line-height:1.05!important}
+  .dashboard-head p{font-size:14px!important;line-height:1.45!important}
+  .page-title h2{font-size:30px!important;line-height:1.08!important}
+  .page-title p{font-size:14px!important;line-height:1.45!important}
+  .admin-tab{font-size:13px!important;min-height:44px!important;padding:0 17px!important}
+  .nav-label{font-size:13px!important;font-weight:800!important}
+
+  .stat{padding:17px!important}
+  .stat span{font-size:12.5px!important;line-height:1.35!important}
+  .stat strong{font-family:"Raleway",Arial,sans-serif!important;font-size:30px!important;line-height:1.05!important}
+
+  .field label,.manage-field label{font-size:13px!important;line-height:1.35!important;font-weight:800!important}
+  .field input,.manage-field input,.manage-field select,.manage-field textarea,
+  .toolbar input,.toolbar select,.team-form input,.team-form select,
+  .finance-report-toolbar select{font-size:14px!important;line-height:1.35!important}
+  .field input,.manage-field input,.manage-field select,
+  .toolbar input,.toolbar select,.team-form input,.team-form select,
+  .finance-report-toolbar select{min-height:46px!important}
+  .manage-field textarea{font-size:14px!important;line-height:1.5!important}
+
+  .primary,.secondary,.small-btn,.marketing-save,.payment-add-btn,.finance-add-btn,
+  .payment-test-btn,.affiliate-payout-wa,.affiliate-payout-paid,
+  .affiliate-material-actions button,.affiliate-material-actions a{
+    font-size:13px!important;
+    font-weight:800!important;
+  }
+  .small-btn{min-height:40px!important}
+
+  th{font-size:11.5px!important;line-height:1.35!important}
+  td{font-size:13px!important;line-height:1.45!important}
+  th,td{padding:14px 12px!important}
+
+  .card-head h3,.marketing-card-head h3,.team-panel h3,
+  .statement-title,.affiliate-admin-title b{
+    font-size:18px!important;
+    line-height:1.2!important;
+  }
+  .card-head p,.marketing-card-head p,.team-panel>p,
+  .statement-note,.manage-note,.price-plan-note,.team-status-note,
+  .payment-managed-note,.buatqris-security-note{
+    font-size:12.5px!important;
+    line-height:1.55!important;
+  }
+
+  .coupon-code{font-size:14px!important}
+  .coupon-meta,.coupon-row,.affiliate-material-info,
+  .affiliate-payout-meta,.affiliate-overview-row{font-size:12.5px!important}
+
+  @media(max-width:760px){
+    body{font-size:13.5px!important}
+    .dashboard-head h1{font-size:32px!important}
+    .page-title h2{font-size:27px!important}
+    .dashboard-head p,.page-title p{font-size:13px!important}
+    .admin-tab{font-size:12px!important;min-height:42px!important;padding:0 13px!important}
+    .nav-label{font-size:12px!important}
+    .stat strong{font-size:27px!important}
+    .field label,.manage-field label{font-size:12.5px!important}
+    .field input,.manage-field input,.manage-field select,.manage-field textarea,
+    .toolbar input,.toolbar select,.team-form input,.team-form select,
+    .finance-report-toolbar select{font-size:13.5px!important}
+    th{font-size:10.5px!important}
+    td{font-size:12.5px!important}
+    th,td{padding:12px 10px!important}
+    .card-head h3,.marketing-card-head h3,.team-panel h3,
+    .statement-title,.affiliate-admin-title b{font-size:17px!important}
+  }
 </style>`;
 
     body = body.replace('</head>', typographyUi + '\n</head>');
