@@ -1482,6 +1482,30 @@ h1,h2,h3,h4,h5,h6,
 .title,.logo{
   font-family:"Raleway",Arial,sans-serif!important;
 }
+
+.card.is-coming-soon,
+.profit-route.is-coming-soon{
+  cursor:not-allowed!important;
+  opacity:.72;
+}
+.card.is-coming-soon:disabled,
+.profit-route.is-coming-soon:disabled{
+  color:inherit;
+}
+.coming-soon-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:8px;
+  min-height:24px;
+  padding:0 8px;
+  border-radius:999px;
+  background:#211018;
+  border:1px solid #573047;
+  color:#ff4fa3;
+  font:900 8px "Raleway";
+  letter-spacing:.02em;
+}
 </style>
 <script src="/akses/auth.js?v=20260921-2" defer></script>
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -1962,12 +1986,12 @@ function renderProfitRoutes(){
   const el=document.getElementById("profitRouteGrid");
   if(!el) return;
   el.innerHTML=profitRoutes30.map((r,i)=>`
-    <button class="profit-route" onclick="openProfitRoute(${i})">
+    <button class="profit-route is-coming-soon" type="button" disabled aria-disabled="true">
       <div class="route-emoji">${r.emoji}</div>
       <div class="route-no">JALUR ${i+1}</div>
       <h3>${r.title}</h3>
       <p>${r.short}</p>
-      <span class="route-cta">LIHAT RENCANA 30 HARI ›</span>
+      <span class="route-cta">SEGERA HADIR</span>
     </button>
   `).join("");
 }
@@ -2144,12 +2168,12 @@ function openComic(i){
 function renderGrid(){
   const el=document.getElementById("chapterGrid");
   el.innerHTML=chapters.map((c,i)=>`
-    <button class="card" onclick="openChapter(${i})">
+    <button class="card is-coming-soon" type="button" disabled aria-disabled="true">
       <div class="cover"><span class="bab">BAB ${i+1}</span>${c.icon}</div>
-      <div class="meta">VIDEO TUTORIAL</div>
+      <div class="meta">SEGERA HADIR</div>
       <h3>${c.title}</h3>
       <p>${c.desc}</p>
-      <div class="arrow">›</div>
+      <div class="coming-soon-pill">SEGERA HADIR</div>
     </button>
   `).join("");
 }
