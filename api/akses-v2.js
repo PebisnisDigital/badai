@@ -1030,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   var pemulaMaterials=[
     {title:'AI VIDEO GENERATOR',video:'',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/T3aDuFAhgGVr'},
-    {title:'BIKIN GEO-SPASIAL',video:'',content:''},
+    {title:'BIKIN GEO-SPASIAL',video:'',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS GEO-SPASIAL',toolUrl:'https://share.gemini.google/uIo6f8B4PaZh'},
     {title:'BIKIN DAKWAH INFLUENCER',video:'',content:''},
     {title:'BIKIN SELEBGRAM AI',video:'',content:''},
     {title:'BIKIN AFFILIATE AI',video:'',content:''},
