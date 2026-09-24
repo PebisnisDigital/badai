@@ -715,6 +715,103 @@ module.exports = async function handler(req, res) {
     .sales-action-summary{grid-template-columns:1fr!important}
   }
 
+
+  /* FINAL SALES ROW DATA LAYOUT — Member / Afiliasi / Paket / Status */
+  .sales-compact-head,
+  .sales-compact-row{
+    grid-template-columns:30px minmax(165px,1.65fr) minmax(90px,.9fr) minmax(85px,.8fr) 66px 86px 78px!important;
+    gap:7px!important;
+    align-items:center!important;
+  }
+  .sales-data-row td{vertical-align:middle!important}
+  .sales-member-stack,
+  .sales-affiliate-stack,
+  .sales-package-stack{
+    min-width:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+  }
+  .sales-member-stack{gap:3px!important;padding:2px 0!important}
+  .sales-member-stack strong{
+    color:#fff!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:11px!important;
+    font-weight:900!important;
+    line-height:1.15!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .sales-member-contact{
+    color:#b9b9b9!important;
+    font-size:8.5px!important;
+    font-weight:700!important;
+    line-height:1.2!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .sales-affiliate-stack{gap:3px!important}
+  .sales-affiliate-stack strong{
+    color:#fff!important;
+    font-size:9.5px!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .sales-affiliate-stack span{
+    color:#8b8b8b!important;
+    font-size:7.5px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .sales-package-stack{gap:3px!important}
+  .sales-package-stack strong{
+    color:#ff7fbd!important;
+    font-size:9px!important;
+    font-weight:900!important;
+  }
+  .sales-package-stack span{
+    color:#c8c8c8!important;
+    font-size:8px!important;
+    white-space:nowrap!important;
+  }
+  .sales-status-pill{
+    width:max-content!important;
+    max-width:100%!important;
+    min-height:22px!important;
+    padding:0 7px!important;
+    border-radius:999px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:7.5px!important;
+    font-weight:900!important;
+    line-height:1!important;
+  }
+  .sales-status-pill.active{background:#10301c!important;color:#71e49a!important}
+  .sales-status-pill.pending{background:#30270e!important;color:#f2cf62!important}
+  .sales-status-pill.suspended{background:#321414!important;color:#ff8d8d!important}
+  .sales-data-row td{padding-top:10px!important;padding-bottom:10px!important}
+  .sales-action-cell{align-self:center!important}
+  @media(max-width:560px){
+    .sales-compact-head,
+    .sales-compact-row{
+      grid-template-columns:24px minmax(135px,1.55fr) minmax(74px,.85fr) minmax(72px,.78fr) 58px 72px 68px!important;
+      gap:4px!important;
+    }
+    .sales-member-stack strong{font-size:10px!important}
+    .sales-member-contact{font-size:7.5px!important}
+    .sales-affiliate-stack strong{font-size:8.5px!important}
+    .sales-affiliate-stack span{font-size:6.8px!important}
+    .sales-package-stack strong{font-size:8px!important}
+    .sales-package-stack span{font-size:7px!important}
+    .sales-status-pill{font-size:6.8px!important;min-height:20px!important;padding:0 6px!important}
+  }
+
 </style>`;
 
     body = body.replace('</head>', typographyUi + '\n</head>');
