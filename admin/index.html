@@ -2716,6 +2716,42 @@ th,td{padding:14px 12px!important}
 }
 /* END BADAI SALES HERO HEADER FINAL */
 
+
+/* BADAI HEADER ADMIN IDENTITY FINAL */
+.header-admin-identity{
+  display:inline-flex!important;
+  align-items:center!important;
+  min-width:0!important;
+  max-width:240px!important;
+  color:#bdbdbd!important;
+  font-family:"Nunito",Arial,sans-serif!important;
+  font-size:10.5px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#dashboardView .dashboard-head{
+  margin:12px 0 16px!important;
+}
+@media(max-width:560px){
+  .header-admin-identity{
+    max-width:165px!important;
+    font-size:9px!important;
+  }
+  .admin-brand-wrap{
+    gap:7px!important;
+  }
+}
+@media(max-width:430px){
+  .header-admin-identity{
+    max-width:120px!important;
+    font-size:8px!important;
+  }
+}
+/* END BADAI HEADER ADMIN IDENTITY FINAL */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -2727,6 +2763,7 @@ th,td{padding:14px 12px!important}
     <div class="admin-brand-wrap">
       <div class="admin-brand-logo"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="Komunitas BADAI"></div>
       <span class="admin-brand-pill">ADMIN</span>
+      <span id="adminIdentity" class="header-admin-identity hidden">Memuat akun...</span>
     </div>
     <div class="top-actions">
       <button id="logoutBtn" class="small-btn danger hidden" type="button">LOGOUT</button>
@@ -2762,7 +2799,6 @@ th,td{padding:14px 12px!important}
     <div class="dashboard-head">
       <div>
         <h1>Penjualan BADAI</h1>
-        <p id="adminIdentity">Memuat akun...</p>
         <div class="live-sync-badge"><span></span> AUTO SYNC</div>
       </div>
     </div>
@@ -3612,6 +3648,7 @@ th,td{padding:14px 12px!important}
       authView.classList.add('hidden');
       dashboardView.classList.remove('hidden');
       logoutBtn.classList.remove('hidden');
+      $('adminIdentity').classList.remove('hidden');
       $('adminIdentity').textContent =
         currentTeam.email + ' • ' + currentTeam.role.toUpperCase();
 
@@ -3634,6 +3671,7 @@ th,td{padding:14px 12px!important}
       authView.classList.remove('hidden');
       dashboardView.classList.add('hidden');
       logoutBtn.classList.add('hidden');
+      $('adminIdentity').classList.add('hidden');
       setAuthStatus(err.message || 'Gagal membuka dashboard.', 'error');
     }
   }
@@ -5208,6 +5246,7 @@ th,td{padding:14px 12px!important}
     authView.classList.remove('hidden');
     dashboardView.classList.add('hidden');
     logoutBtn.classList.add('hidden');
+    $('adminIdentity').classList.add('hidden');
   }
 
   $('loginForm').addEventListener('submit', async (e) => {
