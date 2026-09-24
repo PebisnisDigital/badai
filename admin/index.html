@@ -2979,6 +2979,70 @@ th,td{padding:14px 12px!important}
 }
 /* END BADAI SALES MANUAL + EXPORT FINAL */
 
+
+/* BADAI SALES CASH CARD FINAL */
+#pageSales > .sales-revenue-stats{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+
+#pageSales .sales-revenue-card.cash{
+  position:relative!important;
+  overflow:hidden!important;
+  border-color:#25493a!important;
+  background:
+    radial-gradient(circle at 90% 15%,rgba(112,212,155,.10),transparent 34%),
+    linear-gradient(180deg,#111713,#0c100e)!important;
+}
+
+#pageSales .sales-revenue-card.cash:after{
+  content:"";
+  position:absolute;
+  width:72px;
+  height:72px;
+  right:-28px;
+  bottom:-35px;
+  border-radius:50%;
+  background:rgba(112,212,155,.07);
+  pointer-events:none;
+}
+
+#pageSales .sales-revenue-card.cash strong{
+  color:#8ee0ae!important;
+}
+
+#pageSales .sales-revenue-card.cash small{
+  display:block!important;
+  margin-top:4px!important;
+  color:#718078!important;
+  font-size:8px!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+}
+
+@media(max-width:560px){
+  #pageSales > .sales-revenue-stats{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+
+  #pageSales .sales-revenue-card{
+    padding:10px!important;
+  }
+
+  #pageSales .sales-revenue-card span{
+    font-size:8px!important;
+  }
+
+  #pageSales .sales-revenue-card strong{
+    font-size:17px!important;
+  }
+
+  #pageSales .sales-revenue-card.cash small{
+    font-size:6.8px!important;
+  }
+}
+/* END BADAI SALES CASH CARD FINAL */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -3055,6 +3119,11 @@ th,td{padding:14px 12px!important}
         <div class="stat sales-revenue-card pending">
           <span>OMSET DAFTAR PENDING</span>
           <strong id="statPendingRevenue">Rp0</strong>
+        </div>
+        <div class="stat sales-revenue-card cash">
+          <span>KAS SEKARANG</span>
+          <strong id="statCurrentCash">Rp0</strong>
+          <small>Saldo bersih tim keuangan</small>
         </div>
       </div>
 
@@ -4035,11 +4104,13 @@ th,td{padding:14px 12px!important}
     const results = await Promise.all([
       api('/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,admin_note,created_at,activated_at&order=created_at.desc'),
       api('/rest/v1/profiles?select=id,full_name,email'),
-      api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc')
+      api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
+      api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc')
     ]);
     registrations = results[0] || [];
     salesAffiliateProfiles = results[1] || [];
     salesAffiliateAccounts = results[2] || [];
+    financeTransactions = results[3] || [];
     populateManualAffiliateOptions();
     renderSales();
     renderFinance();
@@ -5061,8 +5132,23 @@ th,td{padding:14px 12px!important}
       .filter(r => r.member_status === 'pending')
       .reduce((sum,r) => sum + Number(r.amount || 0), 0);
 
+    const salesRevenue = registrations
+      .filter(r => r.payment_status === 'paid')
+      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+
+    const manualIn = financeTransactions
+      .filter(t => t.flow_type === 'in')
+      .reduce((sum,t) => sum + Number(t.amount || 0), 0);
+
+    const manualOut = financeTransactions
+      .filter(t => t.flow_type === 'out')
+      .reduce((sum,t) => sum + Number(t.amount || 0), 0);
+
+    const currentCash = salesRevenue + manualIn - manualOut;
+
     $('statActiveRevenue').textContent = rupiah(activeRevenue);
     $('statPendingRevenue').textContent = rupiah(pendingRevenue);
+    $('statCurrentCash').textContent = rupiah(currentCash);
   }
 
   function waMessageLink(r, msg){
