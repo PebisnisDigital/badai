@@ -5846,6 +5846,41 @@ main section > .container > .badai-copy-kicker,
 }
 /* END BADAI PRICING COPY + SIZE FINAL */
 
+
+/* BADAI ANNUAL ACCESS PRICING FINAL */
+#pricing .package-price-line{
+  display:flex;
+  align-items:flex-end;
+  gap:7px;
+  flex-wrap:wrap;
+}
+#pricing .package-period{
+  padding-bottom:3px;
+  color:#8a8a8a;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+  white-space:nowrap;
+}
+#pricing .package-period.green{
+  color:#79bd91;
+}
+#pricing .package-access-note b{
+  color:#d8d8d8;
+  font-weight:900;
+}
+#pricing .package-card-featured .package-access-note b{
+  color:#e3c7d5;
+}
+@media(max-width:560px){
+  #pricing .package-period{
+    font-size:9px;
+    padding-bottom:2px;
+  }
+}
+/* END BADAI ANNUAL ACCESS PRICING FINAL */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -5881,7 +5916,7 @@ main section > .container > .badai-copy-kicker,
 <img alt="Komunitas BADAI" loading="eager" src="https://i.ibb.co.com/Psbkc4Hr/BADAI-HERO-KOMUNITAS-UNDER55-KB-1.webp"/>
 </div>
 <a class="cta" href="#pricing">LIHAT PAKET BADAI →</a>
-<div class="micro">Pemula friendly • 30 materi &amp; strategi • Update selama akun aktif</div>
+<div class="micro">Pemula friendly • 30 materi &amp; strategi • Akses 1 tahun</div>
 <div class="hero-proof-strip" aria-label="Ringkasan keunggulan BADAI">
   <div><b>30</b><span>Materi &amp; Strategi</span></div>
   <div><b>22+</b><span>Chat Member</span></div>
@@ -6386,11 +6421,11 @@ main section > .container > .badai-copy-kicker,
       </div>
 
       <div class="package-price-wrap">
-        <div class="package-price-label">Akses Paket Pemula</div>
-        <div class="package-price" id="dynamicNewbiePrice">Rp199.000</div>
+        <div class="package-price-label">Biaya akses 1 tahun</div>
+        <div class="package-price-line"><div class="package-price" id="dynamicNewbiePrice">Rp199.000</div><span class="package-period">/ tahun</span></div>
       </div>
 
-      <div class="package-access-note">Akses member aktif • Update mengikuti materi di Paket Pemula</div>
+      <div class="package-access-note"><b>Masa akses 1 tahun sejak aktivasi.</b> Selama periode aktif, kamu mendapat update sesuai Paket Pemula.</div>
       <div class="package-material-count">10 MATERI INTI</div>
       <div class="package-feature-list">
         <div class="package-feature"><span>✓</span><div><b>10 Materi AI untuk Mulai Praktik</b></div></div>
@@ -6416,12 +6451,12 @@ main section > .container > .badai-copy-kicker,
       </div>
 
       <div class="package-price-wrap">
-        <div class="package-price-label">Akses Paket Untung</div>
-        <div class="package-price" id="dynamicProPrice">Rp99.000</div>
+        <div class="package-price-label">Biaya akses 1 tahun</div>
+        <div class="package-price-line"><div class="package-price" id="dynamicProPrice">Rp99.000</div><span class="package-period green">/ tahun</span></div>
         <div class="package-price-advantage" id="proPriceAdvantageCopy">Lebih lengkap • Harga lebih ringan dari Paket Pemula</div>
       </div>
 
-      <div class="package-access-note">Akses member aktif • Update mengikuti materi Paket Untung + Pemula</div>
+      <div class="package-access-note"><b>Masa akses 1 tahun sejak aktivasi.</b> Selama periode aktif, kamu mendapat update Paket Untung + Pemula.</div>
       <div class="package-material-count">30 MATERI • 3× ISI PEMULA</div>
       <div class="package-feature-list">
         <div class="package-feature"><span>✓</span><div><b>20 Materi Kelas Untung</b></div></div>
@@ -6456,7 +6491,7 @@ main section > .container > .badai-copy-kicker,
 <div class="container">
 <h2>Masih Ada yang<br/><span class="pink">Bikin Ragu?</span></h2>
 <div class="faq">
-<details><summary>Berapa lama akses member BADAI?</summary><p>Setelah pembayaran terverifikasi, akun member aktif dan akses berjalan selama status member aktif. Saat ini sistem BADAI tidak memakai tanggal kedaluwarsa otomatis. Update materi mengikuti paket yang kamu miliki.</p></details>
+<details><summary>Berapa lama akses member BADAI?</summary><p>Masa akses BADAI adalah <strong>1 tahun sejak akun diaktifkan</strong>. Selama periode tersebut kamu bisa mengakses materi dan update sesuai paket yang dipilih. Setelah masa akses berakhir, akses dapat dilanjutkan dengan perpanjangan untuk periode berikutnya.</p></details>
 <details><summary>BADAI cocok untuk pemula atau yang merasa gaptek?</summary><p>Iya. BADAI dibuat dengan bahasa yang lebih sederhana dan fokus praktik. Kamu juga nggak perlu belajar semua materi sekaligus — mulai dari satu yang paling kamu butuhkan.</p></details>
 <details><summary>Kalau AI terus berubah, materinya bagaimana?</summary><p>BADAI dirancang sebagai komunitas belajar yang terus berkembang. Materi baru atau update dapat ditambahkan mengikuti perkembangan AI yang relevan dan kebutuhan member. Kami tidak menjanjikan semua tools AI di dunia akan selalu dibahas.</p></details>
 <details><summary>Berarti saya nggak perlu beli kelas AI lain lagi?</summary><p>Tujuan BADAI adalah menjadi salah satu tempat utama kamu untuk terus belajar AI, supaya nggak perlu buru-buru membeli kelas baru setiap muncul topik baru. Namun kebutuhan setiap orang bisa berbeda, jadi tetap sesuaikan dengan kebutuhanmu.</p></details>
@@ -6476,7 +6511,7 @@ main section > .container > .badai-copy-kicker,
       <h2>Sekarang Tinggal Pilih:<br/><span class="pink">Mulai Belajar atau Tetap Menunda.</span></h2>
       <p>Kamu nggak perlu menguasai semuanya. Masuk, pilih satu materi, lalu bikin satu hasil jadi dulu.</p>
       <a class="cta badai-final-button" href="#pricing">LIHAT PAKET UNTUNG →</a>
-      <small>30 materi • Jalur Untung • Program afiliasi • Update selama akun aktif</small>
+      <small>30 materi • Jalur Untung • Program afiliasi • Akses 1 tahun</small>
     </div>
   </div>
 </section>
@@ -6550,7 +6585,7 @@ main section > .container > .badai-copy-kicker,
 
         <div class="selected-package-box">
           <div>
-            <span>PAKET YANG DIPILIH</span>
+            <span>PAKET YANG DIPILIH • AKSES 1 TAHUN</span>
             <strong id="selectedPackageLabel">Paket Pemula</strong>
           </div>
           <b id="selectedPackagePrice">Rp199.000</b>
