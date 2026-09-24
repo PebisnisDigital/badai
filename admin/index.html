@@ -2451,6 +2451,58 @@ th,td{padding:14px 12px!important}
     min-width:24px!important;
   }
 }
+
+/* BADAI SALES SPACING POLISH — tighter balanced columns */
+#pageSales .sales-compact-head,
+#pageSales .sales-compact-row{
+  grid-template-columns:24px minmax(0,1.2fr) minmax(0,.5fr) minmax(0,.6fr) minmax(0,.55fr) minmax(0,.6fr)!important;
+  gap:3px!important;
+  column-gap:3px!important;
+}
+#pageSales .sales-compact-head{
+  padding:6px 7px!important;
+}
+#pageSales .sales-compact-record{
+  padding:6px 7px!important;
+}
+#pageSales .sales-member-stack{
+  padding-right:3px!important;
+}
+#pageSales .sales-package-stack,
+#pageSales .sales-affiliate-stack{
+  padding:0 2px!important;
+}
+#pageSales .sales-status-pill{
+  margin:0!important;
+}
+#pageSales .sales-action-cell{
+  padding-left:1px!important;
+}
+#pageSales .sales-inline-actions{
+  gap:3px!important;
+}
+#pageSales .sales-action-open{
+  min-height:25px!important;
+  padding:0 5px!important;
+}
+#pageSales .sales-action-delete{
+  width:25px!important;
+  min-width:25px!important;
+  min-height:25px!important;
+}
+@media(max-width:560px){
+  #pageSales .sales-compact-head,
+  #pageSales .sales-compact-row{
+    grid-template-columns:20px minmax(0,1.25fr) minmax(0,.48fr) minmax(0,.58fr) minmax(0,.52fr) minmax(0,.58fr)!important;
+    gap:2px!important;
+    column-gap:2px!important;
+  }
+  #pageSales .sales-compact-head,
+  #pageSales .sales-compact-record{
+    padding-left:5px!important;
+    padding-right:5px!important;
+  }
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
