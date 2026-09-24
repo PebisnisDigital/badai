@@ -997,6 +997,154 @@ module.exports = async function handler(req, res) {
     }
   }
 
+
+  /* BADAI MATERIAL CARDS — card layout, no accordion */
+  .badai-material-card-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:16px!important;
+    align-items:stretch!important;
+  }
+  .badai-material-card{
+    min-width:0!important;
+    min-height:300px!important;
+    padding:17px!important;
+    border:1px solid #2d3342!important;
+    border-radius:20px!important;
+    background:linear-gradient(180deg,#151922 0%,#11151d 100%)!important;
+    box-shadow:0 14px 30px rgba(0,0,0,.20)!important;
+    display:flex!important;
+    flex-direction:column!important;
+    color:#fff!important;
+  }
+  .badai-material-card.is-coming-soon{
+    opacity:.76!important;
+    filter:saturate(.72)!important;
+  }
+  .badai-material-card-top{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+  }
+  .badai-material-card-category,
+  .badai-material-card-status{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:24px!important;
+    padding:0 9px!important;
+    border-radius:999px!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:10px!important;
+    font-weight:900!important;
+    line-height:1!important;
+  }
+  .badai-material-card-category{
+    background:#211b49!important;
+    color:#9e93ff!important;
+    border:1px solid #332a6a!important;
+  }
+  .badai-material-card-status{
+    background:#6a5cff!important;
+    color:#fff!important;
+    border:1px solid #7b70ff!important;
+  }
+  .badai-material-card.is-coming-soon .badai-material-card-status{
+    background:#211018!important;
+    color:#ff8fc5!important;
+    border-color:#573047!important;
+  }
+  .badai-material-card-number{
+    margin-top:10px!important;
+    color:#7f899c!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:11px!important;
+    font-weight:800!important;
+  }
+  .badai-material-card-title{
+    margin:10px 0 6px!important;
+    color:#fff!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:18px!important;
+    font-weight:900!important;
+    line-height:1.2!important;
+    letter-spacing:-.02em!important;
+  }
+  .badai-material-card-desc{
+    margin:0!important;
+    color:#aeb6c8!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:14px!important;
+    font-weight:650!important;
+    line-height:1.45!important;
+  }
+  .badai-material-card-divider{
+    height:1px!important;
+    margin:16px 0 13px!important;
+    background:#343b4b!important;
+  }
+  .badai-material-card-actions{
+    margin-top:auto!important;
+    display:grid!important;
+    gap:9px!important;
+  }
+  .badai-card-action{
+    width:100%!important;
+    min-height:44px!important;
+    border-radius:12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    text-decoration:none!important;
+    text-align:center!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:13px!important;
+    font-weight:900!important;
+    line-height:1.15!important;
+    cursor:pointer!important;
+    box-sizing:border-box!important;
+  }
+  .badai-card-action-tool{
+    border:1px solid #765dff!important;
+    background:linear-gradient(90deg,#6359f6,#8f32ed)!important;
+    color:#fff!important;
+  }
+  .badai-card-action-video{
+    border:1px solid #e74956!important;
+    background:#0c0f15!important;
+    color:#ff606d!important;
+  }
+  .badai-card-action.is-disabled{
+    background:#151820!important;
+    border-color:#353b48!important;
+    color:#737b8b!important;
+    cursor:not-allowed!important;
+    box-shadow:none!important;
+  }
+  @media(max-width:560px){
+    .badai-material-card-grid{
+      grid-template-columns:1fr!important;
+      gap:13px!important;
+    }
+    .badai-material-card{
+      min-height:270px!important;
+      padding:16px!important;
+      border-radius:18px!important;
+    }
+    .badai-material-card-title{
+      font-size:18px!important;
+    }
+    .badai-material-card-desc{
+      font-size:14px!important;
+    }
+    .badai-card-action{
+      min-height:46px!important;
+      font-size:13px!important;
+    }
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -1076,40 +1224,36 @@ document.addEventListener('DOMContentLoaded', function(){
     var host=el(targetId);
     if(!host)return;
     var firstNo=Number(startNo||1);
-    host.className='badai-material-accordion';
+    host.className='badai-material-card-grid';
     host.innerHTML=items.map(function(item,i){
-      var number=String(firstNo+i).padStart(2,'0');
-      var ready=item.ready===true;
-
-      if(!ready){
-        return '<div class="badai-material-faq is-coming-soon" aria-disabled="true">'+
-          '<div class="badai-material-summary">'+
-            '<span class="badai-material-index">'+number+'</span>'+
-            '<span class="badai-material-title">'+item.title+'</span>'+
-            '<span class="badai-material-coming">SEGERA HADIR</span>'+
-          '</div>'+
-        '</div>';
-      }
-
-      var embed=youtubeEmbedUrl(item.video);
-      var video=embed
-        ? '<iframe src="'+embed+'" title="'+item.title+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>'
-        : '<div class="badai-material-video-empty"><b>VIDEO TUTORIAL</b><span>Video materi ini sedang disiapkan.</span></div>';
-      var copy=item.content
+      var number=String(firstNo+i).padStart(3,'0');
+      var hasTool=!!String(item.toolUrl||'').trim();
+      var hasVideo=!!String(item.video||'').trim();
+      var ready=item.ready===true || hasTool || hasVideo;
+      var category=label==='Materi Pemula'?'PEMULA':'UNTUNG';
+      var description=item.content
         ? item.content
-        : 'Materi pendamping untuk <b>'+item.title+'</b> sedang disiapkan.';
-      return '<details class="badai-material-faq is-ready">'+
-        '<summary class="badai-material-summary">'+
-          '<span class="badai-material-index">'+number+'</span>'+
-          '<span class="badai-material-title">'+item.title+'</span>'+
-          '<span class="badai-material-chevron">+</span>'+
-        '</summary>'+
-        '<div class="badai-material-content">'+
-          '<div class="badai-material-video">'+video+'</div>'+
-          (item.toolUrl ? '<a class="badai-material-tool" href="'+item.toolUrl+'" target="_blank" rel="noopener noreferrer">'+(item.toolLabel||'BUKA TOOLS')+'</a>' : '')+
-          '<div class="badai-material-copy'+(item.guide?' is-learning-guide':'')+'"><b>'+(item.copyLabel||label)+'</b>'+copy+'</div>'+
+        : 'Materi ini sedang disiapkan dan akan dibuka setelah tools atau video tutorialnya tersedia.';
+
+      var toolButton=hasTool
+        ? '<a class="badai-card-action badai-card-action-tool" href="'+item.toolUrl+'" target="_blank" rel="noopener noreferrer">BUKA TOOLS <span>↗</span></a>'
+        : '<button class="badai-card-action badai-card-action-tool is-disabled" type="button" disabled>TOOLS • SEGERA HADIR</button>';
+
+      var videoButton=hasVideo
+        ? '<a class="badai-card-action badai-card-action-video" href="'+item.video+'" target="_blank" rel="noopener noreferrer">▶ VIDEO TUTORIAL</a>'
+        : '<button class="badai-card-action badai-card-action-video is-disabled" type="button" disabled>▶ VIDEO TUTORIAL • SEGERA HADIR</button>';
+
+      return '<article class="badai-material-card'+(ready?' is-ready':' is-coming-soon')+'">'+
+        '<div class="badai-material-card-top">'+
+          '<span class="badai-material-card-category">'+category+'</span>'+
+          '<span class="badai-material-card-status">'+(ready?'AKTIF':'SEGERA HADIR')+'</span>'+
         '</div>'+
-      '</details>';
+        '<div class="badai-material-card-number">#'+number+'</div>'+
+        '<h3 class="badai-material-card-title">'+item.title+'</h3>'+
+        '<p class="badai-material-card-desc">'+description+'</p>'+
+        '<div class="badai-material-card-divider"></div>'+
+        '<div class="badai-material-card-actions">'+toolButton+videoButton+'</div>'+
+      '</article>';
     }).join('');
   }
 
