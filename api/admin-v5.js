@@ -831,6 +831,79 @@ module.exports = async function handler(req, res) {
     }
   }
 
+
+  /* FINAL SALES FIVE-COLUMN LIST + PENDING FOLLOW-UP */
+  #pageSales .sales-compact-head,
+  #pageSales .sales-compact-row{
+    grid-template-columns:30px minmax(230px,2fr) minmax(130px,1fr) 80px 92px!important;
+    gap:9px!important;
+    align-items:center!important;
+  }
+  #pageSales .sales-action-cell{justify-content:flex-end!important}
+
+  .manage-pending-followup{
+    width:100%!important;
+    box-sizing:border-box!important;
+    margin-top:2px!important;
+    padding:12px!important;
+    border:1px solid #5a4620!important;
+    border-radius:12px!important;
+    background:#171307!important;
+  }
+  .manage-pending-followup.hidden{display:none!important}
+  .manage-pending-followup-head b{
+    display:block!important;
+    color:#f4d36d!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:12px!important;
+    font-weight:900!important;
+  }
+  .manage-pending-followup-head span{
+    display:block!important;
+    margin-top:3px!important;
+    color:#a89a6a!important;
+    font-size:10.5px!important;
+    line-height:1.35!important;
+  }
+  .manage-pending-followup-actions{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+    margin-top:10px!important;
+  }
+  .manage-pending-followup-actions a{
+    min-height:36px!important;
+    padding:0 7px!important;
+    border:1px solid #6a5426!important;
+    border-radius:9px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    background:#0f0d07!important;
+    color:#f4d36d!important;
+    text-decoration:none!important;
+    text-align:center!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:9px!important;
+    font-weight:900!important;
+  }
+  @media(max-width:560px){
+    #pageSales .sales-compact-head,
+    #pageSales .sales-compact-row{
+      grid-template-columns:24px minmax(165px,1.8fr) minmax(92px,.95fr) 62px 70px!important;
+      gap:4px!important;
+    }
+    .manage-pending-followup-actions{
+      grid-template-columns:repeat(3,minmax(0,1fr))!important;
+      gap:5px!important;
+    }
+    .manage-pending-followup-actions a{
+      min-height:34px!important;
+      padding:0 4px!important;
+      font-size:8px!important;
+    }
+  }
+
 </style>`;
 
     body = body.replace('</head>', typographyUi + '\n</head>');
