@@ -5931,6 +5931,94 @@ main section > .container > .badai-copy-kicker,
 }
 /* END BADAI NEWBIE PRICE EMPHASIS FINAL */
 
+
+/* BADAI PRICING MATERIAL NAMES FINAL */
+#pricing .package-material-list{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0;
+  margin:0 0 10px;
+  border:1px solid #252525;
+  border-radius:12px;
+  overflow:hidden;
+  background:#0a0a0a;
+}
+#pricing .package-material-list>div{
+  position:relative;
+  padding:7px 8px 7px 24px;
+  border-bottom:1px solid #1d1d1d;
+  color:#cfcfcf;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:9.2px;
+  font-weight:800;
+  line-height:1.3;
+}
+#pricing .package-material-list>div:last-child{
+  border-bottom:0;
+}
+#pricing .package-material-list>div::before{
+  content:"✓";
+  position:absolute;
+  left:8px;
+  top:7px;
+  color:#74d897;
+  font-size:8px;
+  font-weight:950;
+}
+#pricing .package-card-featured .package-material-list{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  border-color:#3b2632;
+  background:#0f0a0d;
+}
+#pricing .package-card-featured .package-material-list>div{
+  border-color:#241820;
+  color:#f0e9ed;
+  font-size:9.6px;
+}
+#pricing .package-card-featured .package-material-list>div:nth-child(odd){
+  border-right:1px solid #241820;
+}
+#pricing .package-card-featured .package-material-list>div::before{
+  color:#7fe2a3;
+}
+#pricing .pro-material-heading{
+  margin-top:11px!important;
+  background:#2a101e!important;
+  border-color:#5f2b48!important;
+  color:#ff9acb!important;
+}
+#pricing .pro-base-materials{
+  opacity:.88;
+}
+#pricing .package-extra-list{
+  margin-top:8px;
+}
+#pricing .package-extra-list-pro{
+  margin-top:10px;
+  padding-top:4px;
+  border-top:1px dashed #3a2531;
+}
+#pricing .package-card[data-package-card="newbie"]{
+  min-height:auto!important;
+}
+#pricing .package-card-featured{
+  min-height:auto!important;
+}
+@media(max-width:700px){
+  #pricing .package-card-featured .package-material-list{
+    grid-template-columns:1fr;
+  }
+  #pricing .package-card-featured .package-material-list>div:nth-child(odd){
+    border-right:0;
+  }
+  #pricing .package-material-list>div{
+    font-size:9px;
+    padding-top:8px;
+    padding-bottom:8px;
+  }
+}
+/* END BADAI PRICING MATERIAL NAMES FINAL */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -6454,11 +6542,11 @@ main section > .container > .badai-copy-kicker,
   <div class="package-pricing-head">
     <div class="package-kicker">BANDINGKAN SEBELUM PILIH</div>
     <h2>PILIH PAKET YANG<br/><span class="pink">PALING MASUK AKAL BUAT KAMU.</span></h2>
-    <p>Pemula fokus ke 10 materi inti. Paket Untung membuka total 30 materi sekaligus, plus jalur cuan dan program afiliasi.</p>
+    <p>Pemula fokus ke materi dasar untuk mulai praktik. Paket Untung membuka seluruh materi Pemula, materi lanjutan, jalur cuan, dan program afiliasi.</p>
     <div class="pricing-compare-hint">
-      <span><b>PEMULA</b> 10 Materi</span>
+      <span><b>PEMULA</b> Materi Dasar</span>
       <i>VS</i>
-      <span class="hot"><b>UNTUNG</b> 30 Materi + Jalur Cuan</span>
+      <span class="hot"><b>UNTUNG</b> Semua Materi + Jalur Cuan</span>
     </div>
   </div>
 
@@ -6476,9 +6564,20 @@ main section > .container > .badai-copy-kicker,
       </div>
 
       <div class="package-access-note"><b>Masa akses 1 tahun sejak aktivasi.</b> Selama periode aktif, kamu mendapat update sesuai Paket Pemula.</div>
-      <div class="package-material-count">10 MATERI INTI</div>
-      <div class="package-feature-list">
-        <div class="package-feature"><span>✓</span><div><b>10 Materi AI untuk Mulai Praktik</b></div></div>
+      <div class="package-material-count">MATERI YANG KAMU DAPAT</div>
+      <div class="package-material-list newbie-material-list">
+        <div>AI Educator</div>
+        <div>Geo-Spasial</div>
+        <div>Dakwah Influencer</div>
+        <div>Selebgram AI</div>
+        <div>Affiliate AI</div>
+        <div>Paper Craft</div>
+        <div>Unboxing AI</div>
+        <div>Bikin Game</div>
+        <div>Video Genjutsu Viral</div>
+        <div>Video Kloning</div>
+      </div>
+      <div class="package-extra-list">
         <div class="package-feature"><span>✓</span><div><b>Komunitas BADAI + KulWA</b></div></div>
         <div class="package-feature"><span>✓</span><div><b>Update untuk Materi Paket Pemula</b></div></div>
         <div class="package-feature"><span>✓</span><div><b>Member Area</b></div></div>
@@ -6492,7 +6591,7 @@ main section > .container > .badai-copy-kicker,
     <div class="package-pro-wrap">
     <article class="package-card package-card-featured" data-package-card="pro">
       <div class="package-popular">PAKET PALING LENGKAP</div>
-      <div class="package-smart-deal" id="proSmartSaving">30 MATERI • HARGA LEBIH RINGAN</div>
+      <div class="package-smart-deal" id="proSmartSaving">PALING LENGKAP • HARGA LEBIH RINGAN</div>
 
       <div class="package-card-top">
         <div class="package-label hot">BELAJAR + JALUR UNTUNG</div>
@@ -6507,10 +6606,46 @@ main section > .container > .badai-copy-kicker,
       </div>
 
       <div class="package-access-note"><b>Masa akses 1 tahun sejak aktivasi.</b> Selama periode aktif, kamu mendapat update Paket Untung + Pemula.</div>
-      <div class="package-material-count">30 MATERI • 3× ISI PEMULA</div>
-      <div class="package-feature-list">
-        <div class="package-feature"><span>✓</span><div><b>20 Materi Kelas Untung</b></div></div>
-        <div class="package-feature"><span>✓</span><div><b>+ Semua 10 Materi Pemula</b></div></div>
+
+      <div class="package-material-count">SEMUA MATERI PEMULA</div>
+      <div class="package-material-list pro-base-materials">
+        <div>AI Educator</div>
+        <div>Geo-Spasial</div>
+        <div>Dakwah Influencer</div>
+        <div>Selebgram AI</div>
+        <div>Affiliate AI</div>
+        <div>Paper Craft</div>
+        <div>Unboxing AI</div>
+        <div>Bikin Game</div>
+        <div>Video Genjutsu Viral</div>
+        <div>Video Kloning</div>
+      </div>
+
+      <div class="package-material-count pro-material-heading">MATERI KHUSUS PAKET UNTUNG</div>
+      <div class="package-material-list pro-material-list">
+        <div>Bikin Aplikasi</div>
+        <div>Bikin Poster</div>
+        <div>Bikin Presentasi</div>
+        <div>Bikin Buku</div>
+        <div>Bikin Web App</div>
+        <div>Bikin RPP</div>
+        <div>Bikin LKPD</div>
+        <div>Bikin Komik Digital</div>
+        <div>Bikin LKPD Interaktif</div>
+        <div>Bikin Infografis</div>
+        <div>Bikin Game Edukasi</div>
+        <div>Web Rahasia Kumpulan Prompt Gratis</div>
+        <div>Buat Video Pendek Dibayar Lynk.id</div>
+        <div>Jualan Otomatis di Instagram &amp; Threads</div>
+        <div>Strategi Jago Jualan di WhatsApp</div>
+        <div>Contekan Pesan agar Kontak Baru Lebih Cepat Jadi Pembeli</div>
+        <div>Bikin Kelas Online</div>
+        <div>Strategi Dapat Kontak Berkualitas</div>
+        <div>Strategi Dapat Ribuan Kontak Nonstop</div>
+        <div>Dapat Kontak Langsung Dapat Transferan</div>
+      </div>
+
+      <div class="package-extra-list package-extra-list-pro">
         <div class="package-feature"><span>✓</span><div><b>Jalur Cuan: Konten, Jasa &amp; Produk Digital</b></div></div>
         <div class="package-feature"><span>✓</span><div><b>Program Afiliasi BADAI</b></div></div>
         <div class="package-feature"><span>✓</span><div><b>Bahan Promosi Siap Pakai</b></div></div>
@@ -6561,7 +6696,7 @@ main section > .container > .badai-copy-kicker,
       <h2>Sekarang Tinggal Pilih:<br/><span class="pink">Mulai Belajar atau Tetap Menunda.</span></h2>
       <p>Kamu nggak perlu menguasai semuanya. Masuk, pilih satu materi, lalu bikin satu hasil jadi dulu.</p>
       <a class="cta badai-final-button" href="#pricing">LIHAT PAKET UNTUNG →</a>
-      <small>30 materi • Jalur Untung • Program afiliasi • Akses 1 tahun</small>
+      <small>Semua materi • Jalur Untung • Program afiliasi • Akses 1 tahun</small>
     </div>
   </div>
 </section>
@@ -6582,7 +6717,7 @@ main section > .container > .badai-copy-kicker,
 <div id="mobileConversionBar" class="mobile-conversion-bar" aria-hidden="true">
   <div>
     <span>PAKET UNTUNG</span>
-    <b>30 Materi • Lebih Lengkap</b>
+    <b>Semua Materi • Lebih Lengkap</b>
   </div>
   <a href="#pricing">LIHAT PAKET</a>
 </div>
@@ -6954,7 +7089,6 @@ main section > .container > .badai-copy-kicker,
     'BIKIN KOMIK DIGITAL',
     'BIKIN LKPD INTERAKTIF',
     'BIKIN INFOGRAFIS',
-    'BIKIN PRESENTASI',
     'BIKIN GAME EDUKASI',
     'WEB RAHASIA KUMPULAN PROMPT GRATIS',
     'BUAT VIDEO PENDEK DIBAYAR LYNK ID',
@@ -7009,8 +7143,8 @@ main section > .container > .badai-copy-kicker,
 
     if(prefix){
       prefix.textContent = plan === 'pro'
-        ? '30 MATERI + BENEFIT PAKET UNTUNG'
-        : (plan === 'newbie' ? '10 MATERI + BENEFIT PAKET PEMULA' : 'YANG KAMU DAPATKAN');
+        ? 'MATERI + BENEFIT PAKET UNTUNG'
+        : (plan === 'newbie' ? 'MATERI + BENEFIT PAKET PEMULA' : 'YANG KAMU DAPATKAN');
     }
 
     const oneSet = items.map((text,index) =>
@@ -7477,13 +7611,13 @@ Mohon dibantu proses pendaftarannya ya.`
 
     if(newbie > pro){
       const saving = formatRupiah(newbie - pro);
-      badge.textContent = '30 MATERI • HEMAT ' + saving + ' vs PEMULA';
+      badge.textContent = 'PALING LENGKAP • HEMAT ' + saving + ' vs PEMULA';
       badge.classList.add('is-saving');
       if(copy) copy.textContent = 'Lebih lengkap • Hemat ' + saving + ' dibanding Paket Pemula';
     }else{
-      badge.textContent = '30 MATERI • PAKET PALING LENGKAP';
+      badge.textContent = 'PAKET PALING LENGKAP';
       badge.classList.remove('is-saving');
-      if(copy) copy.textContent = '30 materi + jalur cuan + program afiliasi';
+      if(copy) copy.textContent = 'Semua materi + jalur cuan + program afiliasi';
     }
   }
 
