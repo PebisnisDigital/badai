@@ -880,6 +880,54 @@ module.exports = async function handler(req, res) {
     }
   }
 
+
+  /* BADAI MATERIAL RELEASE STATE — locked until each lesson is ready */
+  .badai-material-faq.is-coming-soon{
+    border-color:#2b2b2b!important;
+    background:#0d0d0d!important;
+    opacity:.78!important;
+    cursor:not-allowed!important;
+  }
+  .badai-material-faq.is-coming-soon .badai-material-summary{
+    grid-template-columns:42px minmax(0,1fr) auto!important;
+    cursor:not-allowed!important;
+  }
+  .badai-material-faq.is-coming-soon .badai-material-index{
+    background:#141414!important;
+    border-color:#303030!important;
+    color:#8c8c8c!important;
+  }
+  .badai-material-faq.is-coming-soon .badai-material-title{
+    color:#b9b9b9!important;
+  }
+  .badai-material-coming{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:30px!important;
+    padding:0 10px!important;
+    border-radius:999px!important;
+    border:1px solid #573047!important;
+    background:#211018!important;
+    color:#ff8fc5!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:10px!important;
+    font-weight:900!important;
+    line-height:1!important;
+    letter-spacing:.02em!important;
+    white-space:nowrap!important;
+  }
+  @media(max-width:560px){
+    .badai-material-faq.is-coming-soon .badai-material-summary{
+      grid-template-columns:40px minmax(0,1fr) auto!important;
+    }
+    .badai-material-coming{
+      min-height:28px!important;
+      padding:0 8px!important;
+      font-size:9px!important;
+    }
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -961,16 +1009,29 @@ document.addEventListener('DOMContentLoaded', function(){
     var firstNo=Number(startNo||1);
     host.className='badai-material-accordion';
     host.innerHTML=items.map(function(item,i){
+      var number=String(firstNo+i).padStart(2,'0');
+      var ready=item.ready===true;
+
+      if(!ready){
+        return '<div class="badai-material-faq is-coming-soon" aria-disabled="true">'+
+          '<div class="badai-material-summary">'+
+            '<span class="badai-material-index">'+number+'</span>'+
+            '<span class="badai-material-title">'+item.title+'</span>'+
+            '<span class="badai-material-coming">SEGERA HADIR</span>'+
+          '</div>'+
+        '</div>';
+      }
+
       var embed=youtubeEmbedUrl(item.video);
       var video=embed
         ? '<iframe src="'+embed+'" title="'+item.title+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>'
-        : '<div class="badai-material-video-empty"><b>VIDEO TUTORIAL</b><span>Link YouTube materi ini belum dipasang.</span></div>';
+        : '<div class="badai-material-video-empty"><b>VIDEO TUTORIAL</b><span>Video materi ini sedang disiapkan.</span></div>';
       var copy=item.content
         ? item.content
-        : 'Materi pendamping untuk <b>'+item.title+'</b> akan ditambahkan di bagian ini.';
-      return '<details class="badai-material-faq">'+
+        : 'Materi pendamping untuk <b>'+item.title+'</b> sedang disiapkan.';
+      return '<details class="badai-material-faq is-ready">'+
         '<summary class="badai-material-summary">'+
-          '<span class="badai-material-index">'+String(firstNo+i).padStart(2,'0')+'</span>'+
+          '<span class="badai-material-index">'+number+'</span>'+
           '<span class="badai-material-title">'+item.title+'</span>'+
           '<span class="badai-material-chevron">+</span>'+
         '</summary>'+
