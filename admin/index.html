@@ -2027,6 +2027,124 @@ th,td{padding:14px 12px!important}
     grid-template-columns:1fr!important;
   }
 }
+
+/* BADAI SALES ROW FINAL — member stacked, affiliate/package/status inline */
+.sales-compact-head,
+.sales-compact-row{
+  grid-template-columns:30px minmax(165px,1.65fr) minmax(90px,.9fr) minmax(85px,.8fr) 66px 86px 78px!important;
+  gap:7px!important;
+  align-items:center!important;
+}
+.sales-data-row td{
+  vertical-align:middle!important;
+}
+.sales-member-stack,
+.sales-affiliate-stack,
+.sales-package-stack{
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+.sales-member-stack{
+  gap:3px!important;
+  padding:2px 0!important;
+}
+.sales-member-stack strong{
+  color:#fff!important;
+  font-family:"Raleway",Arial,sans-serif!important;
+  font-size:11px!important;
+  font-weight:900!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.sales-member-contact{
+  color:#b9b9b9!important;
+  font-size:8.5px!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.sales-affiliate-stack{gap:3px!important}
+.sales-affiliate-stack strong{
+  color:#fff!important;
+  font-size:9.5px!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.sales-affiliate-stack span{
+  color:#8b8b8b!important;
+  font-size:7.5px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.sales-package-stack{gap:3px!important}
+.sales-package-stack strong{
+  color:#ff7fbd!important;
+  font-size:9px!important;
+  font-weight:900!important;
+}
+.sales-package-stack span{
+  color:#c8c8c8!important;
+  font-size:8px!important;
+  white-space:nowrap!important;
+}
+.sales-status-pill{
+  width:max-content!important;
+  max-width:100%!important;
+  min-height:22px!important;
+  padding:0 7px!important;
+  border-radius:999px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-family:"Nunito",Arial,sans-serif!important;
+  font-size:7.5px!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.sales-status-pill.active{
+  background:#10301c!important;
+  color:#71e49a!important;
+}
+.sales-status-pill.pending{
+  background:#30270e!important;
+  color:#f2cf62!important;
+}
+.sales-status-pill.suspended{
+  background:#321414!important;
+  color:#ff8d8d!important;
+}
+.sales-data-row{
+  min-height:58px!important;
+}
+.sales-data-row td{
+  padding-top:10px!important;
+  padding-bottom:10px!important;
+}
+.sales-action-cell{
+  align-self:center!important;
+}
+@media(max-width:560px){
+  .sales-compact-head,
+  .sales-compact-row{
+    grid-template-columns:24px minmax(135px,1.55fr) minmax(74px,.85fr) minmax(72px,.78fr) 58px 72px 68px!important;
+    gap:4px!important;
+  }
+  .sales-member-stack strong{font-size:10px!important}
+  .sales-member-contact{font-size:7.5px!important}
+  .sales-affiliate-stack strong{font-size:8.5px!important}
+  .sales-affiliate-stack span{font-size:6.8px!important}
+  .sales-package-stack strong{font-size:8px!important}
+  .sales-package-stack span{font-size:7px!important}
+  .sales-status-pill{font-size:6.8px!important;min-height:20px!important;padding:0 6px!important}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -2127,7 +2245,7 @@ th,td{padding:14px 12px!important}
         <table>
           <thead>
             <tr>
-              <th>No</th><th>Member</th><th>Email</th><th>WA</th><th>Paket</th><th>Tanggal Daftar</th><th>Aksi</th>
+              <th>No</th><th>Member</th><th>Afiliasi</th><th>Paket</th><th>Status</th><th>Tanggal Daftar</th><th>Aksi</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -2796,6 +2914,7 @@ th,td{padding:14px 12px!important}
   let affiliateSales = [];
   let affiliatePayouts = [];
   let affiliateProfiles = [];
+  let salesAffiliateProfiles = [];
   let affiliateMaterials = [];
   let paymentMethods = [];
   let buatQrisSettings = {
@@ -2968,9 +3087,12 @@ th,td{padding:14px 12px!important}
   }
 
   async function loadRegistrations(){
-    registrations = await api(
-      '/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,payment_method_id,payment_method_type,payment_method_name,payment_method_details,admin_note,created_at,activated_at&order=created_at.desc'
-    ) || [];
+    const results = await Promise.all([
+      api('/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,admin_note,created_at,activated_at&order=created_at.desc'),
+      api('/rest/v1/profiles?select=id,full_name,email')
+    ]);
+    registrations = results[0] || [];
+    salesAffiliateProfiles = results[1] || [];
     renderSales();
     renderFinance();
   }
@@ -3631,6 +3753,29 @@ th,td{padding:14px 12px!important}
     return 'PEMULA';
   }
 
+  function salesAffiliateInfo(row){
+    if(!row.affiliate_user_id && !row.referred_by_code){
+      return {name:'Langsung',code:''};
+    }
+    const profile = salesAffiliateProfiles.find(p => p.id === row.affiliate_user_id) || {};
+    return {
+      name:profile.full_name || profile.email || row.referred_by_code || 'Afiliasi',
+      code:row.referred_by_code || ''
+    };
+  }
+
+  function salesStatusText(row){
+    if(row.member_status === 'active') return 'AKTIF';
+    if(row.member_status === 'suspended') return 'SUSPEND';
+    return 'PENDING';
+  }
+
+  function salesStatusClass(row){
+    if(row.member_status === 'active') return 'active';
+    if(row.member_status === 'suspended') return 'suspended';
+    return 'pending';
+  }
+
   function registrationNumber(row){
     const position = registrations.indexOf(row);
     const sequence = position >= 0 ? registrations.length - position : 1;
@@ -3720,36 +3865,68 @@ th,td{padding:14px 12px!important}
     $('emptyDesktop').classList.toggle('hidden', rows.length !== 0);
     $('emptyMobile').classList.toggle('hidden', rows.length !== 0);
 
-    $('tableBody').innerHTML = rows.map(r => `
-      <tr class="sales-data-row">
-        <td><span class="sales-number">${registrationNumber(r)}</span></td>
-        <td><span class="sales-member-name" title="${esc(r.full_name)}">${esc(r.full_name)}</span></td>
-        <td><span class="sales-clip" title="${esc(r.email)}">${esc(r.email)}</span></td>
-        <td><span class="sales-clip" title="${esc(r.whatsapp)}">${esc(r.whatsapp)}</span></td>
-        <td><span class="sales-plan">${planText(r.membership_plan)}</span></td>
-        <td><span class="sales-date">${dateOnly(r.created_at)}</span></td>
-        <td class="sales-action-cell">${actionHtml(r,false)}</td>
-      </tr>
-    `).join('');
+    $('tableBody').innerHTML = rows.map(r => {
+      const aff = salesAffiliateInfo(r);
+      return `
+        <tr class="sales-data-row">
+          <td><span class="sales-number">${registrationNumber(r)}</span></td>
+          <td>
+            <div class="sales-member-stack">
+              <strong title="${esc(r.full_name)}">${esc(r.full_name)}</strong>
+              <span class="sales-member-contact">✉ ${esc(r.email)}</span>
+              <span class="sales-member-contact">◧ ${esc(r.whatsapp)}</span>
+            </div>
+          </td>
+          <td>
+            <div class="sales-affiliate-stack">
+              <strong title="${esc(aff.name)}">${esc(aff.name)}</strong>
+              ${aff.code ? '<span>'+esc(aff.code)+'</span>' : '<span>Tanpa afiliasi</span>'}
+            </div>
+          </td>
+          <td>
+            <div class="sales-package-stack">
+              <strong>${planText(r.membership_plan)}</strong>
+              <span>${rupiah(r.amount)}</span>
+            </div>
+          </td>
+          <td><span class="sales-status-pill ${salesStatusClass(r)}">${salesStatusText(r)}</span></td>
+          <td><span class="sales-date">${dateOnly(r.created_at)}</span></td>
+          <td class="sales-action-cell">${actionHtml(r,false)}</td>
+        </tr>
+      `;
+    }).join('');
 
     const salesHead = rows.length ? `
       <div class="sales-compact-head">
-        <span>No</span><span>Member</span><span>Email</span><span>WA</span><span>Paket</span><span>Tanggal Daftar</span><span>Aksi</span>
+        <span>No</span><span>Member</span><span>Afiliasi</span><span>Paket</span><span>Status</span><span>Tanggal Daftar</span><span>Aksi</span>
       </div>` : '';
 
-    $('mobileList').innerHTML = salesHead + rows.map(r => `
-      <div class="sales-compact-record">
-        <div class="sales-compact-row">
-          <span class="sales-number">${registrationNumber(r)}</span>
-          <span class="sales-member-name" title="${esc(r.full_name)}">${esc(r.full_name)}</span>
-          <span class="sales-clip" title="${esc(r.email)}">${esc(r.email)}</span>
-          <span class="sales-clip" title="${esc(r.whatsapp)}">${esc(r.whatsapp)}</span>
-          <span class="sales-plan">${planText(r.membership_plan)}</span>
-          <span class="sales-date">${dateOnly(r.created_at)}</span>
-          <span class="sales-action-cell">${actionHtml(r,true)}</span>
+    $('mobileList').innerHTML = salesHead + rows.map(r => {
+      const aff = salesAffiliateInfo(r);
+      return `
+        <div class="sales-compact-record">
+          <div class="sales-compact-row">
+            <span class="sales-number">${registrationNumber(r)}</span>
+            <div class="sales-member-stack">
+              <strong title="${esc(r.full_name)}">${esc(r.full_name)}</strong>
+              <span class="sales-member-contact">✉ ${esc(r.email)}</span>
+              <span class="sales-member-contact">◧ ${esc(r.whatsapp)}</span>
+            </div>
+            <div class="sales-affiliate-stack">
+              <strong title="${esc(aff.name)}">${esc(aff.name)}</strong>
+              ${aff.code ? '<span>'+esc(aff.code)+'</span>' : '<span>Tanpa afiliasi</span>'}
+            </div>
+            <div class="sales-package-stack">
+              <strong>${planText(r.membership_plan)}</strong>
+              <span>${rupiah(r.amount)}</span>
+            </div>
+            <span class="sales-status-pill ${salesStatusClass(r)}">${salesStatusText(r)}</span>
+            <span class="sales-date">${dateOnly(r.created_at)}</span>
+            <span class="sales-action-cell">${actionHtml(r,true)}</span>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   function paidRows(){
