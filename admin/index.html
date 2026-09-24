@@ -2163,6 +2163,92 @@ th,td{padding:14px 12px!important}
     gap:4px!important;
   }
 }
+
+/* BADAI UNIFIED MEMBER EDIT */
+.sales-action-open b{letter-spacing:.02em!important}
+.manage-member-box{
+  width:min(100%,520px)!important;
+}
+.manage-member-summary{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+  margin:15px 0 12px!important;
+}
+.manage-member-summary>div{
+  padding:10px 11px!important;
+  border:1px solid #292929!important;
+  border-radius:11px!important;
+  background:#0a0a0a!important;
+}
+.manage-member-summary span{
+  display:block!important;
+  margin-bottom:3px!important;
+  color:#777!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  text-transform:uppercase!important;
+}
+.manage-member-summary strong{
+  display:block!important;
+  color:#fff!important;
+  font-family:"Nunito",Arial,sans-serif!important;
+  font-size:12px!important;
+  font-weight:900!important;
+}
+.manage-status-help{
+  margin-top:6px!important;
+  color:#8f8f8f!important;
+  font-size:10.5px!important;
+  line-height:1.4!important;
+}
+.manage-reset-card{
+  width:100%!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  gap:10px!important;
+  padding:12px!important;
+  border:1px solid #5a2944!important;
+  border-radius:12px!important;
+  background:#170e14!important;
+  cursor:pointer!important;
+}
+.manage-reset-card.hidden{display:none!important}
+.manage-reset-card input{
+  width:17px!important;
+  height:17px!important;
+  margin:1px 0 0!important;
+  accent-color:#ff4fa3!important;
+}
+.manage-reset-card span{
+  display:block!important;
+  min-width:0!important;
+}
+.manage-reset-card b{
+  display:block!important;
+  color:#ff8fc5!important;
+  font-family:"Raleway",Arial,sans-serif!important;
+  font-size:12px!important;
+  font-weight:900!important;
+}
+.manage-reset-card small{
+  display:block!important;
+  margin-top:3px!important;
+  color:#a7a7a7!important;
+  font-size:10.5px!important;
+  line-height:1.35!important;
+}
+.manage-member-actions{
+  margin-top:15px!important;
+}
+@media(max-width:560px){
+  .manage-member-summary{
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+  }
+  .manage-status-help{font-size:10px!important}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -2799,62 +2885,26 @@ th,td{padding:14px 12px!important}
   </div>
 </div>
 
-<div id="salesActionModal" class="cred-modal hidden">
-  <div class="cred-box sales-action-modal-box">
+<div id="manageModal" class="cred-modal hidden">
+  <div class="cred-box manage-member-box">
     <div class="sales-action-modal-head">
       <div>
-        <h2>Aksi Member</h2>
-        <p>Pilih tindakan untuk data pendaftaran ini.</p>
+        <h2>Edit Member</h2>
+        <p>Edit data, paket, status/ACC, dan akses member dari satu tempat.</p>
       </div>
-      <button id="closeSalesActionIcon" class="sales-modal-close" type="button" aria-label="Tutup">×</button>
+      <button id="closeManageIcon" class="sales-modal-close" type="button" aria-label="Tutup">×</button>
     </div>
 
-    <input id="salesActionId" type="hidden"/>
-
-    <div class="sales-action-summary">
-      <div><span>No</span><strong id="salesActionNo">-</strong></div>
-      <div><span>Member</span><strong id="salesActionName">-</strong></div>
-      <div><span>Email</span><strong id="salesActionEmail">-</strong></div>
-      <div><span>WhatsApp</span><strong id="salesActionWa">-</strong></div>
-      <div><span>Paket</span><strong id="salesActionPlan">-</strong></div>
-      <div><span>Tanggal Daftar</span><strong id="salesActionDate">-</strong></div>
-    </div>
-
-    <div class="manage-field full sales-action-select-wrap">
-      <label>Pilih Aksi</label>
-      <select id="salesActionSelect">
-        <option value="manage">Kelola Data Member</option>
-        <option value="activate">Aktifkan / ACC Member</option>
-        <option value="reset">Reset Akses</option>
-        <option value="suspend">Suspend</option>
-        <option value="pending">Jadikan Pending</option>
-      </select>
-    </div>
-
-    <div id="salesPendingTools" class="sales-pending-tools hidden">
-      <span>Follow-up Pending</span>
-      <div>
-        <a id="salesFu1" href="#" target="_blank" rel="noopener">FU 1</a>
-        <a id="salesFu2" href="#" target="_blank" rel="noopener">FU 2</a>
-        <a id="salesFu3" href="#" target="_blank" rel="noopener">FU 3</a>
-      </div>
-    </div>
-
-    <div class="cred-actions sales-action-modal-actions">
-      <button id="applySalesActionBtn" class="primary-act" type="button">UPDATE</button>
-      <button id="closeSalesActionBtn" type="button">TUTUP</button>
-    </div>
-  </div>
-</div>
-
-<div id="manageModal" class="cred-modal hidden">
-  <div class="cred-box">
-    <h2>Kelola Member</h2>
-    <p>Ubah data akun dan akses login member.</p>
     <input id="manageId" type="hidden"/>
+
+    <div class="manage-member-summary">
+      <div><span>No</span><strong id="manageNumber">-</strong></div>
+      <div><span>Tanggal Daftar</span><strong id="manageDate">-</strong></div>
+    </div>
+
     <div class="manage-grid">
       <div class="manage-field full">
-        <label>Nama</label>
+        <label>Nama Member</label>
         <input id="manageName" type="text"/>
       </div>
       <div class="manage-field full">
@@ -2868,17 +2918,30 @@ th,td{padding:14px 12px!important}
       <div class="manage-field full">
         <label>Paket Member</label>
         <select id="managePlan">
-          <option value="newbie">Paket Pemula — Belajar AI + Update</option>
-          <option value="pro">Paket Untung — Belajar AI + Program Afiliasi</option>
+          <option value="newbie">Paket Pemula</option>
+          <option value="pro">Paket Untung</option>
         </select>
       </div>
       <div class="manage-field full">
-        <label>Password Baru</label>
-        <input id="managePassword" type="password" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti — bebas jumlah karakter"/>
+        <label>Status Member</label>
+        <select id="manageStatus">
+          <option value="pending">PENDING</option>
+          <option value="active">AKTIF / ACC</option>
+        </select>
+        <div id="manageStatusHelp" class="manage-status-help"></div>
       </div>
+
+      <label id="manageResetWrap" class="manage-reset-card hidden">
+        <input id="manageResetAccess" type="checkbox"/>
+        <span>
+          <b>Reset Akses</b>
+          <small>Buat password akses baru untuk member aktif.</small>
+        </span>
+      </label>
     </div>
-    <div class="cred-actions">
-      <button id="saveManageBtn" class="primary-act" type="button">SIMPAN PERUBAHAN</button>
+
+    <div class="cred-actions manage-member-actions">
+      <button id="saveManageBtn" class="primary-act" type="button">UPDATE MEMBER</button>
       <button id="closeManageBtn" type="button">TUTUP</button>
     </div>
   </div>
@@ -3871,7 +3934,7 @@ th,td{padding:14px 12px!important}
   function actionHtml(r, mobile){
     if(!canManageSales()) return '<span class="meta">READ ONLY</span>';
     return '<div class="sales-inline-actions">' +
-      '<button class="sales-action-open" type="button" data-action="sales-menu" data-id="' + r.id + '"><span aria-hidden="true">✎</span><b>AKSI</b></button>' +
+      '<button class="sales-action-open" type="button" data-action="manage" data-id="' + r.id + '" title="Edit member"><span aria-hidden="true">✎</span><b>EDIT</b></button>' +
       '<button class="sales-action-delete" type="button" data-action="delete" data-id="' + r.id + '" aria-label="Hapus member" title="Hapus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5"/></svg></button>' +
     '</div>';
   }
@@ -4219,84 +4282,69 @@ th,td{padding:14px 12px!important}
     $('credentialModal').classList.remove('hidden');
   }
 
-  function openSalesActionModal(row){
-    $('salesActionId').value = row.id;
-    $('salesActionNo').textContent = registrationNumber(row);
-    $('salesActionName').textContent = row.full_name || '-';
-    $('salesActionEmail').textContent = row.email || '-';
-    $('salesActionWa').textContent = row.whatsapp || '-';
-    $('salesActionPlan').textContent = planText(row.membership_plan);
-    $('salesActionDate').textContent = dateOnly(row.created_at);
-
-    const select = $('salesActionSelect');
-    select.value = 'manage';
-
-    const activateOption = select.querySelector('option[value="activate"]');
-    if(activateOption){
-      activateOption.textContent = row.user_id ? 'Aktifkan / ACC Member' : 'ACC + Buat Akun Member';
-    }
-
-    const resetOption = select.querySelector('option[value="reset"]');
-    const suspendOption = select.querySelector('option[value="suspend"]');
-    if(resetOption) resetOption.disabled = !row.user_id;
-    if(suspendOption) suspendOption.disabled = !row.user_id;
-
-    const pending = row.payment_status === 'pending' || row.payment_status === 'waiting_verification';
-    $('salesPendingTools').classList.toggle('hidden', !pending);
-    if(pending){
-      $('salesFu1').href = followUpLink(row,1);
-      $('salesFu2').href = followUpLink(row,2);
-      $('salesFu3').href = followUpLink(row,3);
-    }
-
-    $('salesActionModal').classList.remove('hidden');
-  }
-
-  async function applySalesAction(){
-    const id = $('salesActionId').value;
-    const row = registrations.find(r => r.id === id);
+  function toggleManageResetOption(){
+    const row = registrations.find(r => r.id === $('manageId').value);
     if(!row) return;
 
-    const selected = $('salesActionSelect').value;
-    $('salesActionModal').classList.add('hidden');
+    const targetStatus = $('manageStatus').value;
+    const canReset = row.member_status === 'active' && targetStatus === 'active';
 
-    if(selected === 'manage'){
-      openManageModal(row);
-      return;
-    }
+    $('manageResetWrap').classList.toggle('hidden', !canReset);
+    $('manageResetAccess').disabled = !canReset;
+    if(!canReset) $('manageResetAccess').checked = false;
 
-    if(selected === 'activate'){
-      await updateRegistration(id, row.user_id ? 'approve-existing' : 'approve');
-      return;
-    }
-
-    if(selected === 'reset'){
-      await updateRegistration(id, 'reset-access');
-      return;
-    }
-
-    if(selected === 'suspend'){
-      await updateRegistration(id, 'suspend');
-      return;
-    }
-
-    if(selected === 'pending'){
-      await updateRegistration(id, 'pending');
+    const help = $('manageStatusHelp');
+    if(row.member_status === 'active'){
+      help.textContent = targetStatus === 'pending'
+        ? 'Member aktif akan diubah menjadi PENDING dan akses member dinonaktifkan.'
+        : 'Member tetap AKTIF. Reset akses tersedia jika ingin membuat password baru.';
+    }else{
+      help.textContent = targetStatus === 'active'
+        ? 'UPDATE akan sekaligus ACC member. Jika belum punya akun, sistem akan membuat akses baru.'
+        : 'Data tetap berstatus PENDING. Reset akses tidak tersedia sebelum member aktif.';
     }
   }
 
   function openManageModal(row){
     $('manageId').value = row.id;
+    $('manageNumber').textContent = registrationNumber(row);
+    $('manageDate').textContent = dateOnly(row.created_at);
     $('manageName').value = row.full_name || '';
     $('manageEmail').value = row.email || '';
     $('manageWhatsapp').value = row.whatsapp || '';
-    $('managePlan').value = row.membership_plan || 'newbie';
-    $('managePassword').value = '';
-    $('managePassword').disabled = !row.user_id;
-    $('managePassword').placeholder = row.user_id
-      ? 'Kosongkan jika tidak diganti'
-      : 'Belum ada akun member';
+    $('managePlan').value = row.membership_plan === 'pro' ? 'pro' : 'newbie';
+    $('manageStatus').value = row.member_status === 'active' ? 'active' : 'pending';
+    $('manageResetAccess').checked = false;
+
+    toggleManageResetOption();
     $('manageModal').classList.remove('hidden');
+  }
+
+  async function syncPaymentStatus(registrationId, status, amount){
+    if(status === 'paid'){
+      await api('/rest/v1/payments?on_conflict=registration_id', {
+        method:'POST',
+        headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+        body:JSON.stringify({
+          registration_id:registrationId,
+          amount:Number(amount || 0),
+          status:'paid',
+          verified_at:new Date().toISOString(),
+          verified_by:session.user.id
+        })
+      });
+      return;
+    }
+
+    await api('/rest/v1/payments?registration_id=eq.' + encodeURIComponent(registrationId), {
+      method:'PATCH',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        status:'pending',
+        verified_at:null,
+        verified_by:null
+      })
+    });
   }
 
   async function saveManage(){
@@ -4308,7 +4356,10 @@ th,td{padding:14px 12px!important}
     const email = $('manageEmail').value.trim().toLowerCase();
     const whatsapp = $('manageWhatsapp').value.trim();
     const membershipPlan = $('managePlan').value;
-    const password = $('managePassword').value.trim();
+    const targetStatus = $('manageStatus').value;
+    const resetAccess = row.member_status === 'active'
+      && targetStatus === 'active'
+      && $('manageResetAccess').checked;
 
     if(!fullName || !email || !whatsapp){
       throw new Error('Nama, email, dan WhatsApp wajib diisi.');
@@ -4318,26 +4369,25 @@ th,td{padding:14px 12px!important}
       throw new Error('Format email belum valid.');
     }
 
-    if(password && !row.user_id){
-      throw new Error('Pendaftar ini belum punya akun member. ACC dulu untuk membuat akun.');
+    if(!['newbie','pro'].includes(membershipPlan)){
+      throw new Error('Paket member belum valid.');
+    }
+
+    if(!['pending','active'].includes(targetStatus)){
+      throw new Error('Status member belum valid.');
     }
 
     const emailChanged = String(row.email || '').toLowerCase() !== email;
-    const passwordChanged = Boolean(password);
-
     if(row.user_id && emailChanged && !confirm(
       'Email login member akan diganti dari ' + row.email + ' menjadi ' + email + '. Lanjutkan?'
     )) return;
 
-    if(passwordChanged && !confirm(
-      'Password login member akan diganti. Password lama tidak bisa dipakai lagi. Lanjutkan?'
-    )) return;
-
     const oldText = $('saveManageBtn').textContent;
     $('saveManageBtn').disabled = true;
-    $('saveManageBtn').textContent = 'MENYIMPAN...';
+    $('saveManageBtn').textContent = 'MEMPROSES...';
 
     try{
+      // 1. Sinkronkan identitas member ke registration + Auth + profile (jika akun sudah ada).
       const res = await fetch(SUPABASE_URL + '/functions/v1/admin-update-member', {
         method:'POST',
         headers:{
@@ -4350,27 +4400,65 @@ th,td{padding:14px 12px!important}
           full_name:fullName,
           email,
           whatsapp,
-          password:password || null
+          password:null
         })
       });
 
-      const data = await res.json().catch(()=>null);
+      const baseData = await res.json().catch(()=>null);
       if(!res.ok){
-        throw new Error(data?.error || 'Gagal menyinkronkan data member.');
+        throw new Error(baseData?.error || 'Gagal menyinkronkan data member.');
       }
 
+      // 2. Pending yang belum punya akun: simpan paket dulu, lalu ACC akan membuat akun.
+      if(targetStatus === 'active' && !row.user_id){
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({membership_plan:membershipPlan})
+        });
+
+        const access = await approveOrResetAccess(row);
+        $('manageModal').classList.add('hidden');
+        await loadRegistrations();
+
+        const refreshed = registrations.find(r => r.id === id) || Object.assign({},row,{
+          full_name:fullName,email,whatsapp,membership_plan:membershipPlan,member_status:'active'
+        });
+        openCredentialModal(refreshed, access.password);
+        return;
+      }
+
+      // 3. Semua akun yang sudah ada disinkronkan lewat registration.
+      // Trigger database BADAI ikut menyinkronkan profile, paket, status, dan afiliasi.
+      const active = targetStatus === 'active';
       await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
         method:'PATCH',
         headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({membership_plan:membershipPlan})
+        body:JSON.stringify({
+          membership_plan:membershipPlan,
+          payment_status:active ? 'paid' : 'pending',
+          member_status:active ? 'active' : 'pending',
+          activated_at:active ? (row.activated_at || new Date().toISOString()) : row.activated_at
+        })
       });
+
+      await syncPaymentStatus(id, active ? 'paid' : 'pending', row.amount);
+
+      // 4. Reset akses hanya tersedia untuk member yang memang sudah AKTIF.
+      if(resetAccess){
+        const access = await approveOrResetAccess(row);
+        $('manageModal').classList.add('hidden');
+        await loadRegistrations();
+
+        const refreshed = registrations.find(r => r.id === id) || Object.assign({},row,{
+          full_name:fullName,email,whatsapp,membership_plan:membershipPlan,member_status:'active'
+        });
+        openCredentialModal(refreshed, access.password);
+        return;
+      }
 
       $('manageModal').classList.add('hidden');
       await loadRegistrations();
-
-      if(data?.password_updated){
-        alert('Data member berhasil disimpan dan password login sudah diganti.');
-      }
     }finally{
       $('saveManageBtn').disabled = false;
       $('saveManageBtn').textContent = oldText;
@@ -4397,7 +4485,6 @@ th,td{padding:14px 12px!important}
     if(!row) return;
     if(!canManageSales()) throw new Error('Role ini tidak punya izin mengubah penjualan.');
 
-    if(action === 'sales-menu'){ openSalesActionModal(row); return; }
     if(action === 'manage'){ openManageModal(row); return; }
 
     if(action === 'approve'){
@@ -4753,22 +4840,9 @@ th,td{padding:14px 12px!important}
     catch(err){ $('teamStatus').textContent = err.message; }
   });
 
-  $('closeSalesActionBtn').addEventListener('click', () => $('salesActionModal').classList.add('hidden'));
-  $('closeSalesActionIcon').addEventListener('click', () => $('salesActionModal').classList.add('hidden'));
-  $('applySalesActionBtn').addEventListener('click', async () => {
-    const btn = $('applySalesActionBtn');
-    const oldText = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = 'MEMPROSES...';
-    try{ await applySalesAction(); }
-    catch(err){ alert('Aksi gagal: ' + err.message); }
-    finally{ btn.disabled = false; btn.textContent = oldText; }
-  });
-  $('salesActionModal').addEventListener('click', (e) => {
-    if(e.target === $('salesActionModal')) $('salesActionModal').classList.add('hidden');
-  });
-
   $('closeManageBtn').addEventListener('click', () => $('manageModal').classList.add('hidden'));
+  $('closeManageIcon').addEventListener('click', () => $('manageModal').classList.add('hidden'));
+  $('manageStatus').addEventListener('change', toggleManageResetOption);
   $('saveManageBtn').addEventListener('click', async () => {
     try{ await saveManage(); }catch(err){ alert('Gagal menyimpan: ' + err.message); }
   });
