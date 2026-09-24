@@ -1718,7 +1718,7 @@ th,td{padding:14px 12px!important}
 }
 .sales-compact-row>span,
 .sales-data-row td{min-width:0!important}
-.sales-invoice{
+.sales-number{
   color:#ff91c6!important;
   font-weight:900!important;
   white-space:nowrap!important;
@@ -3417,10 +3417,10 @@ th,td{padding:14px 12px!important}
     return 'PEMULA';
   }
 
-  function invoiceNumber(row){
+  function registrationNumber(row){
     const position = registrations.indexOf(row);
     const sequence = position >= 0 ? registrations.length - position : 1;
-    return 'INV-' + String(sequence).padStart(4,'0');
+    return String(sequence);
   }
 
   function compactRupiah(value){
@@ -3539,7 +3539,7 @@ th,td{padding:14px 12px!important}
 
     $('tableBody').innerHTML = rows.map(r => `
       <tr class="sales-data-row">
-        <td><span class="sales-invoice">${invoiceNumber(r)}</span></td>
+        <td><span class="sales-number">${registrationNumber(r)}</span></td>
         <td><span class="sales-member-name" title="${esc(r.full_name)}">${esc(r.full_name)}</span></td>
         <td><span class="sales-clip" title="${esc(r.email)}">${esc(r.email)}</span></td>
         <td><span class="sales-clip" title="${esc(r.whatsapp)}">${esc(r.whatsapp)}</span></td>
@@ -3559,7 +3559,7 @@ th,td{padding:14px 12px!important}
     $('mobileList').innerHTML = salesHead + rows.map(r => `
       <div class="sales-compact-record">
         <div class="sales-compact-row">
-          <span class="sales-invoice">${invoiceNumber(r)}</span>
+          <span class="sales-number">${registrationNumber(r)}</span>
           <span class="sales-member-name" title="${esc(r.full_name)}">${esc(r.full_name)}</span>
           <span class="sales-clip" title="${esc(r.email)}">${esc(r.email)}</span>
           <span class="sales-clip" title="${esc(r.whatsapp)}">${esc(r.whatsapp)}</span>
