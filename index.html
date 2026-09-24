@@ -4338,6 +4338,281 @@ main section > .container > .badai-copy-kicker,
   .badai-update-lines>div{grid-template-columns:74px 1fr}
 }
 
+
+/* BADAI PREMIUM 3D DEMO SHOWCASE */
+.badai-demo-showcase{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(255,79,163,.105),transparent 31%),
+    radial-gradient(circle at 18% 68%,rgba(126,92,255,.055),transparent 24%);
+}
+.badai-demo-showcase::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:190px;
+  width:460px;
+  height:460px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.025);
+  box-shadow:
+    0 0 0 80px rgba(255,255,255,.008),
+    0 0 0 160px rgba(255,255,255,.005);
+  pointer-events:none;
+}
+.badai-demo-head{
+  position:relative;
+  z-index:2;
+  max-width:620px;
+  margin:0 auto;
+  text-align:center;
+}
+.badai-demo-kicker{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:26px;
+  padding:0 10px;
+  margin-bottom:11px;
+  border:1px solid rgba(255,79,163,.3);
+  border-radius:999px;
+  background:rgba(255,79,163,.075);
+  color:#ff7fbd;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+.badai-demo-head h2{
+  margin:0;
+}
+.badai-demo-head p{
+  max-width:550px;
+  margin:13px auto 0;
+  color:#9d9d9d;
+  font-size:14px;
+  line-height:1.65;
+}
+.badai-demo-stage{
+  position:relative;
+  width:100%;
+  height:610px;
+  margin-top:28px;
+  perspective:1500px;
+  transform-style:preserve-3d;
+}
+.badai-demo-card{
+  position:absolute;
+  top:0;
+  left:50%;
+  width:min(68vw,286px);
+  padding:10px;
+  border:1px solid rgba(255,255,255,.105);
+  border-radius:30px;
+  background:
+    linear-gradient(180deg,rgba(30,30,30,.88),rgba(13,13,13,.96));
+  box-shadow:
+    0 30px 70px rgba(0,0,0,.52),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  transform-style:preserve-3d;
+  transition:
+    transform .9s cubic-bezier(.2,.75,.2,1),
+    opacity .65s ease,
+    filter .65s ease,
+    box-shadow .65s ease;
+  will-change:transform,opacity;
+}
+.badai-demo-card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:30px;
+  padding:1px;
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,79,163,.16),rgba(255,255,255,.015));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+}
+.badai-demo-card-top{
+  min-height:49px;
+  padding:3px 6px 8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.badai-demo-card-top div{
+  min-width:0;
+}
+.badai-demo-card-top span{
+  display:block;
+  color:#737373;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.13em;
+}
+.badai-demo-card-top b{
+  display:block;
+  margin-top:2px;
+  color:#f5f5f5;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:13px;
+  font-weight:800;
+}
+.badai-demo-card-top i{
+  display:inline-flex;
+  align-items:center;
+  min-height:20px;
+  padding:0 7px;
+  border:1px solid #3d2634;
+  border-radius:999px;
+  color:#ff8cc4;
+  background:#1b1016;
+  font-size:7px;
+  font-style:normal;
+  font-weight:900;
+  letter-spacing:.07em;
+}
+.badai-demo-device{
+  position:relative;
+  width:100%;
+  aspect-ratio:9/16;
+  overflow:hidden;
+  border-radius:22px;
+  background:#000;
+  border:1px solid rgba(255,255,255,.11);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.025),
+    0 16px 38px rgba(0,0,0,.38);
+}
+.badai-demo-device::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09);
+  pointer-events:none;
+}
+.badai-demo-device iframe{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block;
+}
+.badai-demo-card-foot{
+  padding:10px 7px 5px;
+}
+.badai-demo-card-foot strong{
+  display:block;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:12px;
+  font-weight:800;
+}
+.badai-demo-card-foot span{
+  display:block;
+  margin-top:2px;
+  color:#777;
+  font-size:9px;
+  line-height:1.35;
+}
+.badai-demo-card.demo-center{
+  z-index:5;
+  opacity:1;
+  filter:none;
+  transform:translateX(-50%) translateZ(40px) rotateY(0deg) scale(1);
+  box-shadow:
+    0 34px 82px rgba(0,0,0,.58),
+    0 0 46px rgba(255,79,163,.075),
+    inset 0 1px 0 rgba(255,255,255,.07);
+}
+.badai-demo-card.demo-left{
+  z-index:3;
+  opacity:.62;
+  filter:saturate(.72) brightness(.72);
+  transform:translateX(-112%) translateZ(-180px) rotateY(43deg) scale(.84);
+}
+.badai-demo-card.demo-right{
+  z-index:3;
+  opacity:.62;
+  filter:saturate(.72) brightness(.72);
+  transform:translateX(12%) translateZ(-180px) rotateY(-43deg) scale(.84);
+}
+.badai-demo-card:not(.demo-center) .badai-demo-device{
+  pointer-events:none;
+}
+.badai-demo-dots{
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  margin-top:-2px;
+}
+.badai-demo-dots span{
+  width:5px;
+  height:5px;
+  border-radius:999px;
+  background:#343434;
+  transition:width .35s ease,background .35s ease;
+}
+.badai-demo-dots span.active{
+  width:20px;
+  background:#ff4fa3;
+}
+.badai-demo-note{
+  margin-top:10px;
+  text-align:center;
+  color:#686868;
+  font-size:9px;
+}
+@media(max-width:560px){
+  .badai-demo-head{
+    text-align:left;
+  }
+  .badai-demo-head p{
+    margin-left:0;
+  }
+  .badai-demo-stage{
+    height:560px;
+    margin-top:22px;
+  }
+  .badai-demo-card{
+    width:min(68vw,250px);
+    border-radius:25px;
+    padding:8px;
+  }
+  .badai-demo-card::before{
+    border-radius:25px;
+  }
+  .badai-demo-device{
+    border-radius:18px;
+  }
+  .badai-demo-card.demo-left{
+    opacity:.42;
+    transform:translateX(-104%) translateZ(-140px) rotateY(38deg) scale(.80);
+  }
+  .badai-demo-card.demo-right{
+    opacity:.42;
+    transform:translateX(4%) translateZ(-140px) rotateY(-38deg) scale(.80);
+  }
+  .badai-demo-card-top{
+    min-height:42px;
+  }
+  .badai-demo-card-foot{
+    padding-top:8px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .badai-demo-card{
+    transition:none!important;
+  }
+}
+/* END BADAI PREMIUM 3D DEMO SHOWCASE */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -4537,85 +4812,86 @@ main section > .container > .badai-copy-kicker,
 </div>
 </div>
 </section>
-<section>
+<section class="badai-demo-showcase" id="contoh-hasil">
 <div class="container">
-<h2>Mulai dari yang Seru Dulu.<br/><span class="pink">Yang Penting: 1 Karya Jadi.</span></h2>
-<p class="lead">Video AI adalah salah satu pintu masuk yang gampang bikin semangat praktik. Pilih satu contoh, ikuti langkahnya, dan fokus bikin hasil pertamamu dulu. Setelah itu baru lanjut ke skill AI lainnya.</p>
-<div class="use-grid">
-<div class="use">
-<div class="use-head">
-<div class="emo">💃</div>
-<div class="use-copy">
-<b>Dance AI</b>
-<span>Bikin karakter mengikuti gerakan.</span>
-</div>
-</div>
-<div class="use-video">
-<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_1" title="Contoh Video Dance AI"></iframe>
-</div>
-</div>
-<div class="use">
-<div class="use-head">
-<div class="emo">🧑‍🎤</div>
-<div class="use-copy">
-<b>Bareng Idola</b>
-<span>Bikin adegan dengan karakter pilihan.</span>
-</div>
-</div>
-<div class="use-video">
-<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_2" title="Contoh Video Bareng Idola"></iframe>
-</div>
-</div>
-<div class="use">
-<div class="use-head">
-<div class="emo">🪄</div>
-<div class="use-copy">
-<b>Ganti Karakter</b>
-<span>Ganti orang tapi gerakannya tetap.</span>
-</div>
-</div>
-<div class="use-video">
-<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_3" title="Contoh Video Ganti Karakter"></iframe>
-</div>
-</div>
-<div class="use">
-<div class="use-head">
-<div class="emo">👗</div>
-<div class="use-copy">
-<b>Ganti Outfit</b>
-<span>Ubah baju dan penampilan.</span>
-</div>
-</div>
-<div class="use-video">
-<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_4" title="Contoh Video Ganti Outfit"></iframe>
-</div>
-</div>
-<div class="use">
-<div class="use-head">
-<div class="emo">🌍</div>
-<div class="use-copy">
-<b>Pindah Dunia</b>
-<span>Ubah lokasi dan suasana video.</span>
-</div>
-</div>
-<div class="use-video">
-<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_5" title="Contoh Video Pindah Dunia"></iframe>
-</div>
-</div>
-<div class="use">
-<div class="use-head">
-<div class="emo">📦</div>
-<div class="use-copy">
-<b>Video Produk</b>
-<span>Bikin bahan promosi yang lebih menarik dan lebih mudah dilirik.</span>
-</div>
-</div>
-<div class="use-video">
-<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube.com/embed/VIDEO_ID_6" title="Contoh Video Produk"></iframe>
-</div>
-</div>
-</div>
-<div class="youtube-note">Nggak perlu bisa semuanya hari ini. Satu karya selesai lebih berharga daripada sepuluh materi yang cuma disimpan.</div>
+  <div class="badai-demo-head">
+    <div class="badai-demo-kicker">CONTOH HASIL MEMBER</div>
+    <h2>Beberapa Contoh Hasil<br/><span class="pink">yang Akan Kita Buat.</span></h2>
+    <p>Baru 3 demo dulu. Fokusnya bukan nonton doang — nanti kita bedah cara bikinnya sampai kamu punya hasil sendiri.</p>
+  </div>
+
+  <div class="badai-demo-stage" id="badaiDemoStage" aria-label="Contoh hasil video AI BADAI">
+    <article class="badai-demo-card">
+      <div class="badai-demo-card-top">
+        <div>
+          <span>DEMO 01</span>
+          <b>Video AI</b>
+        </div>
+        <i>SHORTS</i>
+      </div>
+      <div class="badai-demo-device">
+        <iframe
+          src="https://www.youtube.com/embed/Z9cAgG3RvEw?rel=0&modestbranding=1&playsinline=1"
+          title="Demo Video AI BADAI 1"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>
+      <div class="badai-demo-card-foot">
+        <strong>Contoh Hasil #01</strong>
+        <span>Pelajari prosesnya di BADAI.</span>
+      </div>
+    </article>
+
+    <article class="badai-demo-card">
+      <div class="badai-demo-card-top">
+        <div>
+          <span>DEMO 02</span>
+          <b>Video AI</b>
+        </div>
+        <i>SHORTS</i>
+      </div>
+      <div class="badai-demo-device">
+        <iframe
+          src="https://www.youtube.com/embed/GNdqcDyZ9fw?rel=0&modestbranding=1&playsinline=1"
+          title="Demo Video AI BADAI 2"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>
+      <div class="badai-demo-card-foot">
+        <strong>Contoh Hasil #02</strong>
+        <span>Bukan teori. Kita bikin.</span>
+      </div>
+    </article>
+
+    <article class="badai-demo-card">
+      <div class="badai-demo-card-top">
+        <div>
+          <span>DEMO 03</span>
+          <b>Video AI</b>
+        </div>
+        <i>SHORTS</i>
+      </div>
+      <div class="badai-demo-device">
+        <iframe
+          src="https://www.youtube.com/embed/k8KnLPwr594?rel=0&modestbranding=1&playsinline=1"
+          title="Demo Video AI BADAI 3"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>
+      <div class="badai-demo-card-foot">
+        <strong>Contoh Hasil #03</strong>
+        <span>Mulai dari satu hasil jadi.</span>
+      </div>
+    </article>
+  </div>
+
+  <div class="badai-demo-dots" aria-hidden="true">
+    <span class="active"></span><span></span><span></span>
+  </div>
+  <div class="badai-demo-note">3 demo berputar otomatis. Arahkan kursor ke kartu untuk berhenti sejenak.</div>
 </div>
 </section>
 <section id="materi">
@@ -5111,6 +5387,91 @@ main section > .container > .badai-copy-kicker,
   </div>
 </div>
 
+<script id="badai-demo-3d-loop">
+(function(){
+  const stage = document.getElementById('badaiDemoStage');
+  if(!stage) return;
+
+  const cards = Array.from(stage.querySelectorAll('.badai-demo-card'));
+  const dots = Array.from(document.querySelectorAll('.badai-demo-dots span'));
+  if(cards.length < 2) return;
+
+  let current = 0;
+  let timer = null;
+  let touchStartX = 0;
+
+  function render(){
+    const total = cards.length;
+    const left = (current - 1 + total) % total;
+    const right = (current + 1) % total;
+
+    cards.forEach((card,index) => {
+      card.classList.remove('demo-center','demo-left','demo-right');
+      if(index === current) card.classList.add('demo-center');
+      else if(index === left) card.classList.add('demo-left');
+      else if(index === right) card.classList.add('demo-right');
+    });
+
+    dots.forEach((dot,index) => dot.classList.toggle('active',index === current));
+  }
+
+  function next(){
+    current = (current + 1) % cards.length;
+    render();
+  }
+
+  function prev(){
+    current = (current - 1 + cards.length) % cards.length;
+    render();
+  }
+
+  function stop(){
+    if(timer){
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  function start(){
+    stop();
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timer = setInterval(next,4800);
+  }
+
+  stage.addEventListener('mouseenter',stop);
+  stage.addEventListener('mouseleave',start);
+
+  stage.addEventListener('touchstart',e => {
+    touchStartX = e.touches[0].clientX;
+    stop();
+  },{passive:true});
+
+  stage.addEventListener('touchend',e => {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if(diff < -35) next();
+    else if(diff > 35) prev();
+    start();
+  },{passive:true});
+
+  cards.forEach((card,index) => {
+    card.addEventListener('click',e => {
+      if(index === current) return;
+      if(e.target.closest('iframe')) return;
+      current = index;
+      render();
+      start();
+    });
+  });
+
+  document.addEventListener('visibilitychange',() => {
+    if(document.hidden) stop();
+    else start();
+  });
+
+  render();
+  start();
+})();
+</script>
 <script>
 (function(){
   const slider = document.getElementById('chapterSlider');
