@@ -1,11 +1,21 @@
+const fs = require('fs');
+const path = require('path');
+
 module.exports = async function handler(req, res) {
   try {
-    const ref = process.env.VERCEL_GIT_COMMIT_SHA || 'main';
-    const sourceUrl = `https://raw.githubusercontent.com/PebisnisDigital/badai/${encodeURIComponent(ref)}/admin/index.html`;
-    const source = await fetch(sourceUrl, { headers: { 'User-Agent': 'BADAI-Admin/1.0' } });
-    if (!source.ok) throw new Error(`Gagal memuat admin (${source.status})`);
+    let html = '';
 
-    let html = await source.text();
+    // Railway harus membaca file admin dari source yang sedang dideploy.
+    // Sebelumnya handler memakai VERCEL_GIT_COMMIT_SHA sehingga bisa tertahan di commit lama.
+    if (process.env.RAILWAY_PROJECT_ID || process.env.BADAI_ENV === 'staging') {
+      html = fs.readFileSync(path.join(process.cwd(), 'admin', 'index.html'), 'utf8');
+    } else {
+      const ref = process.env.VERCEL_GIT_COMMIT_SHA || 'main';
+      const sourceUrl = `https://raw.githubusercontent.com/PebisnisDigital/badai/${encodeURIComponent(ref)}/admin/index.html`;
+      const source = await fetch(sourceUrl, { headers: { 'User-Agent': 'BADAI-Admin/1.0' } });
+      if (!source.ok) throw new Error(`Gagal memuat admin (${source.status})`);
+      html = await source.text();
+    }
 
     const style = String.raw`
 <style id="badai-social-proof-admin-style">
