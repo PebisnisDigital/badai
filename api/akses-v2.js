@@ -1016,10 +1016,31 @@ module.exports = async function handler(req, res) {
     display:flex!important;
     flex-direction:column!important;
     color:#fff!important;
+    position:relative!important;
   }
   .badai-material-card.is-coming-soon{
     opacity:.76!important;
     filter:saturate(.72)!important;
+  }
+  .badai-material-card-coming{
+    position:absolute!important;
+    top:13px!important;
+    right:13px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:22px!important;
+    padding:0 8px!important;
+    border-radius:999px!important;
+    border:1px solid #573047!important;
+    background:#211018!important;
+    color:#ff8fc5!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:8px!important;
+    font-weight:900!important;
+    line-height:1!important;
+    letter-spacing:.02em!important;
+    white-space:nowrap!important;
   }
   .badai-material-card-number{
     margin-top:0!important;
@@ -1101,6 +1122,13 @@ module.exports = async function handler(req, res) {
       min-height:228px!important;
       padding:10px!important;
       border-radius:15px!important;
+    }
+    .badai-material-card-coming{
+      top:9px!important;
+      right:9px!important;
+      min-height:19px!important;
+      padding:0 6px!important;
+      font-size:6.8px!important;
     }
     .badai-material-card-number{
       font-size:9.5px!important;
@@ -1221,13 +1249,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
       var toolButton=hasTool
         ? '<a class="badai-card-action badai-card-action-tool" href="'+item.toolUrl+'" target="_blank" rel="noopener noreferrer">BUKA TOOLS <span>↗</span></a>'
-        : '<button class="badai-card-action badai-card-action-tool is-disabled" type="button" disabled>TOOLS • SEGERA HADIR</button>';
+        : '<button class="badai-card-action badai-card-action-tool is-disabled" type="button" disabled>TOOLS</button>';
 
       var videoButton=hasVideo
-        ? '<a class="badai-card-action badai-card-action-video" href="'+item.video+'" target="_blank" rel="noopener noreferrer">▶ VIDEO TUTORIAL</a>'
-        : '<button class="badai-card-action badai-card-action-video is-disabled" type="button" disabled>▶ VIDEO TUTORIAL • SEGERA HADIR</button>';
+        ? '<a class="badai-card-action badai-card-action-video" href="'+item.video+'" target="_blank" rel="noopener noreferrer">▶ TUTORIAL</a>'
+        : '<button class="badai-card-action badai-card-action-video is-disabled" type="button" disabled>▶ TUTORIAL</button>';
 
       return '<article class="badai-material-card'+(ready?' is-ready':' is-coming-soon')+'">'+
+        (!ready?'<span class="badai-material-card-coming">SEGERA HADIR</span>':'')+
         '<div class="badai-material-card-number">#'+number+'</div>'+
         '<h3 class="badai-material-card-title">'+item.title+'</h3>'+
         '<p class="badai-material-card-desc">'+description+'</p>'+
