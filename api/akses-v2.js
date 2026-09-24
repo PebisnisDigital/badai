@@ -928,6 +928,42 @@ module.exports = async function handler(req, res) {
     }
   }
 
+
+  .badai-material-tool{
+    width:100%!important;
+    min-height:48px!important;
+    margin-top:11px!important;
+    border:1px solid #ff4fa3!important;
+    border-radius:13px!important;
+    background:#ff4fa3!important;
+    color:#101010!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    text-decoration:none!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:14px!important;
+    font-weight:900!important;
+    line-height:1.15!important;
+    letter-spacing:.01em!important;
+    box-shadow:0 10px 24px rgba(255,79,163,.18)!important;
+    transition:transform .18s ease,box-shadow .18s ease!important;
+  }
+  .badai-material-tool:hover{
+    transform:translateY(-1px)!important;
+    box-shadow:0 14px 28px rgba(255,79,163,.25)!important;
+  }
+  .badai-material-tool:active{
+    transform:scale(.985)!important;
+  }
+  @media(max-width:560px){
+    .badai-material-tool{
+      min-height:46px!important;
+      font-size:13px!important;
+    }
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -960,7 +996,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   var pemulaMaterials=[
-    {title:'BIKIN AI EDUCATOR',video:'',content:''},
+    {title:'AI VIDEO GENERATOR',video:'',content:'',ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/T3aDuFAhgGVr'},
     {title:'BIKIN GEO-SPASIAL',video:'',content:''},
     {title:'BIKIN DAKWAH INFLUENCER',video:'',content:''},
     {title:'BIKIN SELEBGRAM AI',video:'',content:''},
@@ -1037,6 +1073,7 @@ document.addEventListener('DOMContentLoaded', function(){
         '</summary>'+
         '<div class="badai-material-content">'+
           '<div class="badai-material-video">'+video+'</div>'+
+          (item.toolUrl ? '<a class="badai-material-tool" href="'+item.toolUrl+'" target="_blank" rel="noopener noreferrer">'+(item.toolLabel||'BUKA TOOLS')+'</a>' : '')+
           '<div class="badai-material-copy"><b>'+label+'</b>'+copy+'</div>'+
         '</div>'+
       '</details>';
