@@ -939,6 +939,102 @@ module.exports = async function handler(req, res) {
     #pageSales .sales-package-stack span{font-size:7px!important}
   }
 
+
+  /* FINAL SALES ONE-LINE OVERRIDE */
+  #pageSales .sales-compact-head,
+  #pageSales .sales-compact-row{
+    display:grid!important;
+    grid-template-columns:24px minmax(145px,2fr) 64px minmax(82px,.95fr) 60px 72px!important;
+    gap:5px!important;
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+    align-items:center!important;
+    grid-auto-flow:column!important;
+  }
+  #pageSales .sales-compact-head > *,
+  #pageSales .sales-compact-row > *{
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+  #pageSales .sales-compact-head{
+    white-space:nowrap!important;
+    overflow:hidden!important;
+  }
+  #pageSales .sales-compact-head span{
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  #pageSales .sales-compact-record{
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+  #pageSales .sales-member-stack,
+  #pageSales .sales-package-stack,
+  #pageSales .sales-affiliate-stack{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  #pageSales .sales-member-stack strong,
+  #pageSales .sales-member-contact,
+  #pageSales .sales-package-stack strong,
+  #pageSales .sales-package-stack span,
+  #pageSales .sales-affiliate-stack strong,
+  #pageSales .sales-affiliate-stack span{
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  #pageSales .sales-action-cell{
+    min-width:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    white-space:nowrap!important;
+  }
+  #pageSales .sales-inline-actions{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:4px!important;
+    width:auto!important;
+    min-width:0!important;
+  }
+  #pageSales .sales-action-open{
+    min-height:26px!important;
+    padding:0 6px!important;
+    font-size:7px!important;
+  }
+  #pageSales .sales-action-delete{
+    width:26px!important;
+    min-width:26px!important;
+    min-height:26px!important;
+  }
+  #pageSales .sales-data-row td{
+    padding-top:8px!important;
+    padding-bottom:8px!important;
+    vertical-align:middle!important;
+  }
+  @media(max-width:560px){
+    #pageSales .sales-compact-head,
+    #pageSales .sales-compact-row{
+      grid-template-columns:20px minmax(120px,1.75fr) 56px minmax(70px,.9fr) 54px 64px!important;
+      gap:3px!important;
+    }
+    #pageSales .sales-action-open{
+      padding:0 4px!important;
+      font-size:6.4px!important;
+    }
+    #pageSales .sales-action-delete{
+      width:24px!important;
+      min-width:24px!important;
+    }
+  }
+
 </style>`;
 
     body = body.replace('</head>', typographyUi + '\n</head>');
