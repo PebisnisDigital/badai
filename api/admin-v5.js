@@ -812,6 +812,25 @@ module.exports = async function handler(req, res) {
     .sales-status-pill{font-size:6.8px!important;min-height:20px!important;padding:0 6px!important}
   }
 
+
+  /* FINAL SALES SIX-COLUMN LIST — date remains only inside action modal */
+  #pageSales .sales-compact-head,
+  #pageSales .sales-compact-row{
+    grid-template-columns:30px minmax(185px,1.8fr) minmax(100px,.95fr) minmax(90px,.85fr) 72px 90px!important;
+    gap:8px!important;
+    align-items:center!important;
+  }
+  #pageSales .sales-action-cell{
+    justify-content:flex-end!important;
+  }
+  @media(max-width:560px){
+    #pageSales .sales-compact-head,
+    #pageSales .sales-compact-row{
+      grid-template-columns:24px minmax(145px,1.6fr) minmax(80px,.9fr) minmax(76px,.82fr) 60px 70px!important;
+      gap:4px!important;
+    }
+  }
+
 </style>`;
 
     body = body.replace('</head>', typographyUi + '\n</head>');
