@@ -4664,6 +4664,333 @@ main section > .container > .badai-copy-kicker,
 }
 /* END BADAI PREMIUM 3D DEMO SHOWCASE */
 
+
+/* BADAI SUPER MATERIAL MARQUEE FINAL */
+.badai-super-materials{
+  position:relative;
+  overflow:hidden;
+  padding:54px 0 36px;
+  background:
+    radial-gradient(circle at 50% 4%,rgba(255,79,163,.15),transparent 23%),
+    radial-gradient(circle at 8% 78%,rgba(112,212,155,.07),transparent 24%),
+    radial-gradient(circle at 92% 68%,rgba(121,88,255,.07),transparent 22%),
+    #070707;
+}
+.badai-super-materials::before{
+  content:"30+";
+  position:absolute;
+  top:110px;
+  left:50%;
+  transform:translateX(-50%);
+  color:rgba(255,255,255,.018);
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:clamp(180px,38vw,420px);
+  font-weight:900;
+  line-height:.72;
+  letter-spacing:-.09em;
+  pointer-events:none;
+}
+.badai-super-materials::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.65) 25%,rgba(0,0,0,.65) 80%,transparent);
+  -webkit-mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.65) 25%,rgba(0,0,0,.65) 80%,transparent);
+  pointer-events:none;
+}
+.badai-super-head{
+  position:relative;
+  z-index:3;
+  max-width:650px;
+  margin:0 auto 30px;
+  text-align:center;
+}
+.badai-super-kicker{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:28px;
+  padding:0 12px;
+  margin-bottom:12px;
+  border:1px solid rgba(255,79,163,.28);
+  border-radius:999px;
+  background:rgba(255,79,163,.08);
+  color:#ff86c1;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.14em;
+  box-shadow:0 0 24px rgba(255,79,163,.08);
+}
+.badai-super-head h2{
+  margin:0;
+}
+.badai-super-head p{
+  max-width:560px;
+  margin:13px auto 0;
+  color:#9a9a9a;
+  font-size:14px;
+  line-height:1.65;
+}
+.badai-super-counter{
+  width:max-content;
+  max-width:100%;
+  margin:17px auto 0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 13px 8px 10px;
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:14px;
+  background:rgba(255,255,255,.025);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.badai-super-counter strong{
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:23px;
+  font-weight:900;
+  letter-spacing:-.05em;
+}
+.badai-super-counter span{
+  padding-left:10px;
+  border-left:1px solid #2a2a2a;
+  color:#777;
+  text-align:left;
+  font-size:9px;
+  line-height:1.3;
+}
+.badai-super-stage{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+  width:100%;
+}
+.badai-super-row{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  padding:5px 0;
+  mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);
+}
+.badai-super-track{
+  display:flex;
+  width:max-content;
+  will-change:transform;
+}
+.badai-super-set{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding-right:12px;
+  flex:none;
+}
+.badai-super-row.row-1 .badai-super-track{animation:badaiSuperLeft 25s linear infinite}
+.badai-super-row.row-2 .badai-super-track{animation:badaiSuperRight 28s linear infinite}
+.badai-super-row.row-3 .badai-super-track{animation:badaiSuperLeft 27s linear infinite}
+.badai-super-row.row-4 .badai-super-track{animation:badaiSuperRight 30s linear infinite}
+.badai-super-row.row-5 .badai-super-track{animation:badaiSuperLeft 26s linear infinite}
+@keyframes badaiSuperLeft{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-50%,0,0)}
+}
+@keyframes badaiSuperRight{
+  from{transform:translate3d(-50%,0,0)}
+  to{transform:translate3d(0,0,0)}
+}
+.badai-super-card{
+  --accent:#ff4fa3;
+  --glow:rgba(255,79,163,.14);
+  position:relative;
+  flex:0 0 auto;
+  min-height:84px;
+  padding:11px 14px 12px;
+  border:1px solid rgba(255,255,255,.095);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 90% 15%,var(--glow),transparent 35%),
+    linear-gradient(165deg,rgba(25,25,25,.96),rgba(10,10,10,.98));
+  box-shadow:
+    0 11px 24px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 0 24px var(--glow);
+  transform:perspective(800px) rotateX(var(--rx,4deg)) rotateY(var(--ry,-4deg)) translateY(0);
+  transform-style:preserve-3d;
+  animation:badaiSuperFloat 5.4s ease-in-out infinite;
+  animation-delay:var(--delay,0s);
+  overflow:hidden;
+}
+.badai-super-card.size-s{width:190px}
+.badai-super-card.size-m{width:230px}
+.badai-super-card.size-l{width:285px}
+.badai-super-card.plan-untung{
+  --accent:#85dfa9;
+  --glow:rgba(112,212,155,.11);
+}
+.badai-super-card.is-hot{
+  --accent:#ffd35a;
+  --glow:rgba(255,196,75,.14);
+  border-color:rgba(255,196,75,.18);
+}
+.badai-super-card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(125deg,rgba(255,255,255,.16),color-mix(in srgb,var(--accent) 38%,transparent),rgba(255,255,255,.015));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+}
+.badai-super-card::after{
+  content:"";
+  position:absolute;
+  top:-65%;
+  left:-42%;
+  width:30%;
+  height:240%;
+  transform:rotate(18deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);
+  animation:badaiSuperShine 6.3s linear infinite;
+  animation-delay:var(--shine,0s);
+  pointer-events:none;
+}
+@keyframes badaiSuperFloat{
+  0%,100%{transform:perspective(800px) rotateX(var(--rx,4deg)) rotateY(var(--ry,-4deg)) translateY(0)}
+  50%{transform:perspective(800px) rotateX(calc(var(--rx,4deg) + 1deg)) rotateY(calc(var(--ry,-4deg) * .7)) translateY(-4px)}
+}
+@keyframes badaiSuperShine{
+  0%,62%{left:-42%}
+  100%{left:135%}
+}
+.badai-super-card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:9px;
+  margin-bottom:7px;
+}
+.badai-super-icon{
+  width:27px;
+  height:27px;
+  flex:0 0 27px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:9px;
+  background:rgba(255,255,255,.035);
+  font-size:13px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.badai-super-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:19px;
+  padding:0 7px;
+  border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);
+  border-radius:999px;
+  background:color-mix(in srgb,var(--accent) 8%,transparent);
+  color:var(--accent);
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:6.8px;
+  font-weight:900;
+  letter-spacing:.08em;
+  white-space:nowrap;
+}
+.badai-super-hot{
+  margin-left:auto;
+  color:#ffd35a;
+  font-size:8px;
+  font-weight:900;
+}
+.badai-super-title{
+  position:relative;
+  z-index:2;
+  color:#fff;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:15px;
+  font-weight:900;
+  line-height:1.12;
+  letter-spacing:-.025em;
+  text-shadow:
+    0 1px 0 #222,
+    0 2px 0 #171717,
+    0 3px 0 #111,
+    0 8px 18px var(--glow);
+}
+.badai-super-title.long{font-size:13px;line-height:1.18}
+.badai-super-meta{
+  position:relative;
+  z-index:2;
+  margin-top:5px;
+  color:#656565;
+  font-size:7.5px;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.badai-super-bottom{
+  position:relative;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  margin-top:15px;
+  color:#626262;
+  font-size:9px;
+  text-align:center;
+}
+.badai-super-pulse{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#ff4fa3;
+  box-shadow:0 0 0 0 rgba(255,79,163,.32);
+  animation:badaiSuperPulse 1.7s ease-out infinite;
+}
+@keyframes badaiSuperPulse{
+  0%{box-shadow:0 0 0 0 rgba(255,79,163,.32)}
+  100%{box-shadow:0 0 0 8px rgba(255,79,163,0)}
+}
+@media(hover:hover){
+  .badai-super-row:hover .badai-super-track{animation-play-state:paused}
+  .badai-super-card:hover{
+    border-color:color-mix(in srgb,var(--accent) 35%,transparent);
+    filter:brightness(1.08);
+  }
+}
+@media(max-width:560px){
+  .badai-super-materials{padding:42px 0 28px}
+  .badai-super-head{text-align:left;margin-bottom:24px}
+  .badai-super-head p{margin-left:0}
+  .badai-super-counter{margin-left:0}
+  .badai-super-stage{gap:9px}
+  .badai-super-row{padding:3px 0}
+  .badai-super-set{gap:9px;padding-right:9px}
+  .badai-super-card{min-height:74px;padding:9px 11px 10px;border-radius:15px}
+  .badai-super-card.size-s{width:160px}
+  .badai-super-card.size-m{width:195px}
+  .badai-super-card.size-l{width:238px}
+  .badai-super-title{font-size:12.5px}
+  .badai-super-title.long{font-size:11px}
+  .badai-super-icon{width:23px;height:23px;flex-basis:23px;font-size:11px}
+  .badai-super-badge{font-size:5.8px;min-height:17px;padding:0 6px}
+  .badai-super-meta{font-size:6.5px}
+  .badai-super-bottom{font-size:8px}
+}
+/* END BADAI SUPER MATERIAL MARQUEE FINAL */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -4960,71 +5287,30 @@ main section > .container > .badai-copy-kicker,
   <div class="badai-demo-note">Demo auto-swipe terus. Klik video yang mau ditonton — animasi berhenti dan video langsung diputar.</div>
 </div>
 </section>
-<section id="materi">
+<section id="materi" class="badai-super-materials">
 <div class="container">
-<h2>Mulai dari 1 Jalur Dulu.<br/><span class="pink">Video AI, Misalnya.</span></h2>
-<p class="lead">Ini salah satu contoh jalur belajar di BADAI. Kamu nggak wajib menamatkan semua materi sekaligus — pilih yang paling kamu butuhkan, praktikkan, lalu lanjut.</p>
-<div class="chapter-slider" id="chapterSlider">
-<div class="chapter-stage">
-<article class="chapter-card">
-<div class="chapter-thumb">
-<img alt="BADAI BAB 01" loading="lazy" src="https://drive.google.com/thumbnail?id=1h90n0FsbXb6oXUt2ju5or_0Ljx_Q-zid&sz=w1200"/>
-</div>
-<small>BAB 01</small>
-<h3>Mulai Bikin Video AI</h3>
-<p>Kenalan dengan workflow dasar, bahan yang disiapkan, dan cara generate video pertamamu tanpa bingung.</p>
-</article>
-<article class="chapter-card">
-<div class="chapter-thumb">
-<img alt="BADAI BAB 02" loading="lazy" src="https://drive.google.com/thumbnail?id=1bXD8kI9jBfHUB1TVrLfN2cp-cpf2l0hk&sz=w1200"/>
-</div>
-<small>BAB 02</small>
-<h3>Dance &amp; Gerakan AI</h3>
-<p>Bikin karakter mengikuti motion dari video sumber, supaya hasilnya terasa hidup dan enak ditonton.</p>
-</article>
-<article class="chapter-card">
-<div class="chapter-thumb">
-<img alt="BADAI BAB 03" loading="lazy" src="https://drive.google.com/thumbnail?id=1vYKYnDWTEGRKCjk79tCsqr1aEOCk9JCQ&sz=w1200"/>
-</div>
-<small>BAB 03</small>
-<h3>Ganti Orang &amp; Karakter</h3>
-<p>Ubah pemeran, ganti wajah atau karakter, tapi tetap jaga gerakannya supaya hasil videonya tetap rapi.</p>
-</article>
-<article class="chapter-card">
-<div class="chapter-thumb">
-<img alt="BADAI BAB 04" loading="lazy" src="https://drive.google.com/thumbnail?id=1dvQQlGyPOMB5HYkyTN_M9Ex7xsafz9yr&sz=w1200"/>
-</div>
-<small>BAB 04</small>
-<h3>Ganti Baju, Benda &amp; Produk</h3>
-<p>Belajar mengubah elemen tertentu di video untuk kebutuhan konten, branding, maupun promosi produk.</p>
-</article>
-<article class="chapter-card">
-<div class="chapter-thumb">
-<img alt="BADAI BAB 05" loading="lazy" src="https://drive.google.com/thumbnail?id=1ccL6ghOKnh5-NDOKg0y725sEqHAWLBr_&sz=w1200"/>
-</div>
-<small>BAB 05</small>
-<h3>Pindah Dunia</h3>
-<p>Ubah lokasi, latar, dan suasana video supaya ide kontenmu terasa lebih unik, seru, dan nggak monoton.</p>
-</article>
-<article class="chapter-card">
-<div class="chapter-thumb">
-<img alt="BADAI BAB 06" loading="lazy" src="https://drive.google.com/thumbnail?id=1LLiNlDyausJIlvs2sb1dvRSi03bEnTUs&sz=w1200"/>
-</div>
-<small>BAB 06</small>
-<h3>Konten Viral &amp; Iklan</h3>
-<p>Gunakan Video AI untuk bikin konten perhatian, bahan promosi, dan ide video yang lebih menjual.</p>
-</article>
-<article class="chapter-card">
-<div class="chapter-thumb">
-<img alt="BADAI BAB 07" loading="lazy" src="https://drive.google.com/thumbnail?id=1mWEFOOZnoUouK5C1sZgtRiH04DvGhAxR&sz=w1200"/>
-</div>
-<small>BAB 07</small>
-<h3>Anti Gagal</h3>
-<p>Pilih bahan yang tepat, hindari kesalahan umum, dan kurangi buang kredit biar hasilmu lebih efisien.</p>
-</article>
-</div>
-<div class="chapter-tip">Kartu BAB berputar otomatis.</div>
-</div>
+  <div class="badai-super-head">
+    <span class="badai-super-kicker">KELAS PEMULA + KELAS UNTUNG</span>
+    <h2>Bukan Cuma Video AI.<br/><span class="pink">Isi BADAI Segini Banyaknya.</span></h2>
+    <p>Nggak harus dipelajari sekaligus. Pilih yang paling kamu butuhkan, praktikkan, lalu lanjut ke materi berikutnya.</p>
+    <div class="badai-super-counter">
+      <strong>30+</strong>
+      <span>materi & strategi<br/>dalam satu ekosistem belajar</span>
+    </div>
+  </div>
+
+  <div class="badai-super-stage" id="badaiSuperMaterials">
+    <div class="badai-super-row row-1"><div class="badai-super-track" id="badaiMaterialRow1"></div></div>
+    <div class="badai-super-row row-2"><div class="badai-super-track" id="badaiMaterialRow2"></div></div>
+    <div class="badai-super-row row-3"><div class="badai-super-track" id="badaiMaterialRow3"></div></div>
+    <div class="badai-super-row row-4"><div class="badai-super-track" id="badaiMaterialRow4"></div></div>
+    <div class="badai-super-row row-5"><div class="badai-super-track" id="badaiMaterialRow5"></div></div>
+  </div>
+
+  <div class="badai-super-bottom">
+    <span class="badai-super-pulse"></span>
+    Materi bergerak otomatis • Arahkan kursor untuk membaca lebih lama
+  </div>
 </div>
 </section>
 
@@ -5581,55 +5867,7 @@ main section > .container > .badai-copy-kicker,
   start();
 })();
 </script>
-<script>
-(function(){
-  const slider = document.getElementById('chapterSlider');
-  if(!slider) return;
 
-  const cards = Array.from(slider.querySelectorAll('.chapter-card'));
-  let current = 0;
-  let auto;
-
-  function posClass(i){
-    const len = cards.length;
-    const prev = (current - 1 + len) % len;
-    const next = (current + 1) % len;
-
-    if(i === current) return 'pos-center';
-    if(i === prev) return 'pos-left';
-    if(i === next) return 'pos-right';
-
-    const distance = (i - current + len) % len;
-    return distance < len / 2 ? 'pos-hidden-right' : 'pos-hidden-left';
-  }
-
-  function render(){
-    cards.forEach((card, i) => {
-      card.classList.remove('pos-center','pos-left','pos-right','pos-hidden-left','pos-hidden-right');
-      card.classList.add(posClass(i));
-    });
-  }
-
-  function next(){
-    current = (current + 1) % cards.length;
-    render();
-  }
-
-  function start(){
-    auto = setInterval(next, 3200);
-  }
-
-  function stop(){
-    clearInterval(auto);
-  }
-
-  slider.addEventListener('mouseenter', stop);
-  slider.addEventListener('mouseleave', start);
-
-  render();
-  start();
-})();
-</script>
 <script>
 (function(){
   const stage = document.getElementById('memberTestiStage');
@@ -6666,6 +6904,130 @@ Mohon dibantu proses pendaftarannya ya.`
   }else{
     initHeroStamp();
   }
+})();
+</script>
+
+<script id="badai-super-materials-script">
+(function(){
+  const pemula = [
+    'BIKIN AI EDUCATOR',
+    'BIKIN GEO-SPASIAL',
+    'BIKIN DAKWAH INFLUENCER',
+    'BIKIN SELEBGRAM AI',
+    'BIKIN AFFILIATE AI',
+    'BIKIN PAPER CRAFT',
+    'BIKIN UNBOXING AI',
+    'BIKIN GAME',
+    'BIKIN VIDEO GENJUTSU VIRAL',
+    'BIKIN VIDEO KLONING'
+  ];
+
+  const untungRaw = [
+    'BIKIN APLIKASI',
+    'BIKIN POSTER',
+    'BIKIN PRESENTASI',
+    'BIKIN BUKU',
+    'BIKIN WEB APP',
+    'BIKIN RPP',
+    'BIKIN LKPD',
+    'BIKIN KOMIK DIGITAL',
+    'BIKIN LKPD INTERAKTIF',
+    'BIKIN INFOGRAFIS',
+    'BIKIN PRESENTASI',
+    'BIKIN GAME EDUKASI',
+    'WEB RAHASIA KUMPULAN PROMPT GRATIS',
+    'BUAT VIDEO PENDEK DIBAYAR LYNK ID',
+    'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',
+    'STRATEGI JAGO JUALAN DI WHATSAPP',
+    'CONTEKAN 3 PESAN BIAR KONTAK BARU LEBIH CEPAT JADI PEMBELI',
+    'BIKIN KELAS ONLINE',
+    '5 STRATEGI DAPAT KONTAK BERKUALITAS',
+    '9 STRATEGI DAPAT RIBUAN KONTAK NON STOP',
+    'DAPAT KONTAK LANGSUNG DAPAT TRANSFERAN'
+  ];
+
+  const untung = [...new Set(untungRaw)];
+
+  function iconFor(title){
+    const t = title.toUpperCase();
+    if(t.includes('GAME')) return '🎮';
+    if(t.includes('VIDEO')) return '🎬';
+    if(t.includes('WEB')) return '🌐';
+    if(t.includes('APLIKASI')) return '📱';
+    if(t.includes('POSTER') || t.includes('INFOGRAFIS')) return '🎨';
+    if(t.includes('BUKU')) return '📚';
+    if(t.includes('PRESENTASI')) return '🖥️';
+    if(t.includes('RPP') || t.includes('LKPD')) return '📝';
+    if(t.includes('KOMIK')) return '💬';
+    if(t.includes('AFFILIATE')) return '🔗';
+    if(t.includes('INSTAGRAM') || t.includes('THREADS')) return '📣';
+    if(t.includes('WHATSAPP')) return '💬';
+    if(t.includes('KONTAK')) return '📇';
+    if(t.includes('TRANSFERAN') || t.includes('DIBAYAR')) return '💰';
+    if(t.includes('DAKWAH')) return '🕌';
+    if(t.includes('SELEBGRAM')) return '📸';
+    if(t.includes('PAPER')) return '✂️';
+    if(t.includes('UNBOXING')) return '📦';
+    if(t.includes('EDUCATOR') || t.includes('KELAS')) return '🎓';
+    if(t.includes('GEO')) return '🌍';
+    if(t.includes('KLONING')) return '👥';
+    return '✨';
+  }
+
+  const hotTitles = new Set([
+    'BIKIN VIDEO GENJUTSU VIRAL',
+    'BIKIN APLIKASI',
+    'BIKIN WEB APP',
+    'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',
+    'STRATEGI JAGO JUALAN DI WHATSAPP',
+    'DAPAT KONTAK LANGSUNG DAPAT TRANSFERAN'
+  ]);
+
+  const mixed = [];
+  const max = Math.max(pemula.length,untung.length);
+  for(let i=0;i<max;i++){
+    if(i<pemula.length) mixed.push({title:pemula[i],plan:'pemula'});
+    if(i<untung.length) mixed.push({title:untung[i],plan:'untung'});
+  }
+
+  const rows = [[],[],[],[],[]];
+  mixed.forEach((item,index) => rows[index % 5].push(item));
+
+  function sizeFor(title,index){
+    if(title.length > 42) return 'size-l';
+    if(title.length > 24) return 'size-m';
+    return index % 4 === 0 ? 'size-m' : 'size-s';
+  }
+
+  function card(item,index,rowIndex){
+    const isHot = hotTitles.has(item.title);
+    const long = item.title.length > 34 ? ' long' : '';
+    const rx = ((index + rowIndex) % 2 === 0 ? 4 : -3);
+    const ry = ((index + rowIndex) % 3 === 0 ? -5 : 4);
+    const delay = ((index + rowIndex) % 6) * .34;
+    const shine = ((index * 2 + rowIndex) % 7) * .48;
+
+    return '<article class="badai-super-card plan-' + item.plan + ' ' + sizeFor(item.title,index) + (isHot ? ' is-hot' : '') + '"' +
+      ' style="--rx:' + rx + 'deg;--ry:' + ry + 'deg;--delay:' + delay + 's;--shine:' + shine + 's">' +
+      '<div class="badai-super-card-top">' +
+        '<span class="badai-super-icon">' + iconFor(item.title) + '</span>' +
+        '<span class="badai-super-badge">' + (item.plan === 'pemula' ? 'KELAS PEMULA' : 'KELAS UNTUNG') + '</span>' +
+        (isHot ? '<span class="badai-super-hot">★</span>' : '') +
+      '</div>' +
+      '<div class="badai-super-title' + long + '">' + item.title + '</div>' +
+      '<div class="badai-super-meta">' + (isHot ? 'MATERI PILIHAN • BADAI' : 'MATERI BADAI') + '</div>' +
+    '</article>';
+  }
+
+  rows.forEach((items,rowIndex) => {
+    const track = document.getElementById('badaiMaterialRow' + (rowIndex + 1));
+    if(!track) return;
+
+    const oneSet = items.map((item,index) => card(item,index,rowIndex)).join('');
+    track.innerHTML =
+      '<div class="badai-super-set">' + oneSet + '</div>' +
+      '<div class="badai-super-set" aria-hidden="true">' + oneSet + '</div>';
+  });
 })();
 </script>
 
