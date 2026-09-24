@@ -2848,10 +2848,144 @@ th,td{padding:14px 12px!important}
 }
 /* END BADAI SALES REVENUE CARDS FINAL */
 
+
+/* BADAI SALES MANUAL + EXPORT FINAL */
+#pageSales .sales-toolbar{
+  grid-template-columns:minmax(0,1fr) 122px auto!important;
+  gap:6px!important;
+  align-items:stretch!important;
+}
+
+.sales-toolbar-actions{
+  display:flex;
+  align-items:stretch;
+  gap:5px;
+  min-width:0;
+}
+
+.sales-tool-btn{
+  min-height:46px;
+  padding:0 9px;
+  border-radius:11px;
+  border:1px solid #343434;
+  background:#111;
+  color:#fff;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:9px;
+  font-weight:900;
+  line-height:1.05;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.sales-tool-btn span{
+  font-size:13px;
+  vertical-align:-1px;
+}
+
+.sales-tool-btn.manual{
+  border-color:#5e2b48;
+  background:#1a0e15;
+  color:#ff91c5;
+}
+
+.sales-tool-btn.export{
+  border-color:#33414b;
+  background:#0e1418;
+  color:#b8d7ea;
+}
+
+.sales-tool-btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.12);
+}
+
+.sales-tool-modal{
+  width:min(100%,520px)!important;
+}
+
+.sales-tool-modal form{
+  margin-top:12px;
+}
+
+.sales-tool-help{
+  margin-top:4px;
+  color:#777;
+  font-size:9px;
+  line-height:1.4;
+}
+
+.manual-reg-price-card,
+.export-match-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:58px;
+  padding:11px 13px;
+  border:1px solid #333;
+  border-radius:12px;
+  background:#0b0b0b;
+}
+
+.manual-reg-price-card span,
+.export-match-card span{
+  color:#888;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.04em;
+}
+
+.manual-reg-price-card strong{
+  color:#ff91c5;
+  font-size:18px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.export-match-card strong{
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+@media(max-width:620px){
+  #pageSales .sales-toolbar{
+    grid-template-columns:minmax(0,1fr) 112px!important;
+  }
+
+  #pageSales .sales-toolbar-actions{
+    grid-column:1/-1;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .sales-tool-btn{
+    width:100%;
+    min-height:40px;
+    font-size:8.5px;
+  }
+}
+
+@media(max-width:430px){
+  #pageSales .sales-toolbar{
+    grid-template-columns:1fr!important;
+  }
+
+  #pageSales .sales-toolbar-actions{
+    grid-column:auto;
+  }
+}
+/* END BADAI SALES MANUAL + EXPORT FINAL */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="apple-touch-icon" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -2924,7 +3058,7 @@ th,td{padding:14px 12px!important}
         </div>
       </div>
 
-      <div class="toolbar">
+      <div class="toolbar sales-toolbar">
         <input id="searchBox" type="search" placeholder="Cari nama, WA, atau email..."/>
         <select id="statusFilter">
           <option value="all">Semua status</option>
@@ -2933,7 +3067,10 @@ th,td{padding:14px 12px!important}
           <option value="rejected">Rejected</option>
           <option value="suspended">Suspended</option>
         </select>
-        <button id="refreshBtn" class="small-btn refresh" type="button">REFRESH DATA</button>
+        <div class="sales-toolbar-actions">
+          <button id="manualRegisterBtn" class="sales-tool-btn manual" type="button"><span>＋</span> MANUAL DAFTAR</button>
+          <button id="exportDataBtn" class="sales-tool-btn export" type="button"><span>⇩</span> EXPORT DATA</button>
+        </div>
       </div>
 
       <div class="table-wrap desktop-table">
@@ -3549,6 +3686,118 @@ th,td{padding:14px 12px!important}
   </div>
 </div>
 
+
+<div id="manualRegisterModal" class="cred-modal hidden">
+  <div class="cred-box sales-tool-modal">
+    <div class="sales-action-modal-head">
+      <div>
+        <h2>Manual Daftar</h2>
+        <p>Daftarkan peserta langsung dari admin BADAI.</p>
+      </div>
+      <button id="closeManualRegisterIcon" class="sales-modal-close" type="button" aria-label="Tutup">×</button>
+    </div>
+
+    <form id="manualRegisterForm">
+      <div class="manage-grid">
+        <div class="manage-field full">
+          <label>Nama Peserta</label>
+          <input id="manualRegName" type="text" autocomplete="name" required placeholder="Nama lengkap"/>
+        </div>
+        <div class="manage-field full">
+          <label>Email</label>
+          <input id="manualRegEmail" type="email" autocomplete="email" required placeholder="email@contoh.com"/>
+        </div>
+        <div class="manage-field full">
+          <label>WhatsApp</label>
+          <input id="manualRegWhatsapp" type="text" inputmode="tel" required placeholder="628xxxxxxxxxx"/>
+        </div>
+
+        <div class="manage-field">
+          <label>Paket</label>
+          <select id="manualRegPlan" required>
+            <option value="free">Paket Gratisan</option>
+            <option value="newbie">Paket Pemula</option>
+            <option value="pro">Paket Untung</option>
+          </select>
+        </div>
+
+        <div class="manage-field">
+          <label>Status</label>
+          <select id="manualRegStatus" required>
+            <option value="pending">PENDING</option>
+            <option value="active">AKTIF / ACC</option>
+          </select>
+        </div>
+
+        <div class="manage-field full">
+          <label>Afiliasi</label>
+          <select id="manualRegAffiliate">
+            <option value="">Tanpa Afiliasi</option>
+          </select>
+          <div class="sales-tool-help">Hanya menampilkan affiliate yang berstatus aktif.</div>
+        </div>
+
+        <div class="manual-reg-price-card full">
+          <span>Nilai Pendaftaran</span>
+          <strong id="manualRegAmountPreview">Rp0</strong>
+        </div>
+      </div>
+
+      <div id="manualRegisterStatus" class="team-status-note"></div>
+
+      <div class="cred-actions manage-member-actions">
+        <button id="saveManualRegisterBtn" class="primary-act" type="submit">SIMPAN PENDAFTARAN</button>
+        <button id="closeManualRegisterBtn" type="button">TUTUP</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="exportDataModal" class="cred-modal hidden">
+  <div class="cred-box sales-tool-modal">
+    <div class="sales-action-modal-head">
+      <div>
+        <h2>Export Data</h2>
+        <p>Filter pendaftaran berdasarkan tanggal dan waktu.</p>
+      </div>
+      <button id="closeExportDataIcon" class="sales-modal-close" type="button" aria-label="Tutup">×</button>
+    </div>
+
+    <form id="exportDataForm">
+      <div class="manage-grid">
+        <div class="manage-field full">
+          <label>Dari Tanggal & Waktu</label>
+          <input id="exportFrom" type="datetime-local"/>
+        </div>
+        <div class="manage-field full">
+          <label>Sampai Tanggal & Waktu</label>
+          <input id="exportTo" type="datetime-local"/>
+        </div>
+        <div class="manage-field full">
+          <label>Format File</label>
+          <select id="exportFormat">
+            <option value="xlsx">Excel (.xlsx)</option>
+            <option value="csv">CSV (.csv)</option>
+            <option value="pdf">PDF (.pdf)</option>
+          </select>
+        </div>
+
+        <div class="export-match-card full">
+          <span>DATA YANG AKAN DIEKSPOR</span>
+          <strong id="exportMatchCount">0 pendaftar</strong>
+        </div>
+      </div>
+
+      <div id="exportDataStatus" class="team-status-note"></div>
+
+      <div class="cred-actions manage-member-actions">
+        <button id="runExportBtn" class="primary-act" type="submit">EXPORT SEKARANG</button>
+        <button id="closeExportDataBtn" type="button">TUTUP</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div id="credentialModal" class="cred-modal hidden">
   <div class="cred-box">
     <h2>Akses Member Dibuat</h2>
@@ -3598,6 +3847,7 @@ th,td{padding:14px 12px!important}
   let affiliatePayouts = [];
   let affiliateProfiles = [];
   let salesAffiliateProfiles = [];
+  let salesAffiliateAccounts = [];
   let affiliateMaterials = [];
   let paymentMethods = [];
   let buatQrisSettings = {
@@ -3784,13 +4034,309 @@ th,td{padding:14px 12px!important}
   async function loadRegistrations(){
     const results = await Promise.all([
       api('/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,admin_note,created_at,activated_at&order=created_at.desc'),
-      api('/rest/v1/profiles?select=id,full_name,email')
+      api('/rest/v1/profiles?select=id,full_name,email'),
+      api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc')
     ]);
     registrations = results[0] || [];
     salesAffiliateProfiles = results[1] || [];
+    salesAffiliateAccounts = results[2] || [];
+    populateManualAffiliateOptions();
     renderSales();
     renderFinance();
+    updateExportMatchCount();
   }
+
+  function manualRegistrationAmount(){
+    const plan = $('manualRegPlan')?.value || 'newbie';
+    if(plan === 'free') return 0;
+    if(plan === 'pro') return Number(marketingSettings.pro_price || marketingSettings.product_price || 0);
+    return Number(marketingSettings.newbie_price || marketingSettings.product_price || 0);
+  }
+
+  function updateManualRegistrationAmount(){
+    if($('manualRegAmountPreview')){
+      $('manualRegAmountPreview').textContent = rupiah(manualRegistrationAmount());
+    }
+  }
+
+  function populateManualAffiliateOptions(){
+    const select = $('manualRegAffiliate');
+    if(!select) return;
+
+    const current = select.value;
+    const rows = (salesAffiliateAccounts || []).filter(a => a.status === 'active');
+
+    select.innerHTML = '<option value="">Tanpa Afiliasi</option>' + rows.map(a => {
+      const profile = salesAffiliateProfiles.find(p => p.id === a.user_id) || {};
+      const label = profile.full_name || profile.email || a.affiliate_code || 'Affiliate';
+      const code = a.affiliate_code || '';
+      return '<option value="' + esc(a.user_id) + '" data-code="' + esc(code) + '">' +
+        esc(label) + (code ? ' — ' + esc(code) : '') +
+      '</option>';
+    }).join('');
+
+    if([...select.options].some(o => o.value === current)) select.value = current;
+  }
+
+  function openManualRegisterModal(){
+    if(!canManageSales()){
+      alert('Role ini tidak punya izin mendaftarkan peserta.');
+      return;
+    }
+
+    $('manualRegisterForm').reset();
+    $('manualRegPlan').value = 'newbie';
+    $('manualRegStatus').value = 'pending';
+    $('manualRegisterStatus').textContent = '';
+    populateManualAffiliateOptions();
+    updateManualRegistrationAmount();
+    $('manualRegisterModal').classList.remove('hidden');
+    setTimeout(() => $('manualRegName')?.focus(), 80);
+  }
+
+  async function saveManualRegistration(){
+    if(!canManageSales()) throw new Error('Role ini tidak punya izin mendaftarkan peserta.');
+
+    const fullName = $('manualRegName').value.trim();
+    const email = $('manualRegEmail').value.trim().toLowerCase();
+    const whatsapp = $('manualRegWhatsapp').value.trim().replace(/[^0-9+]/g,'');
+    const membershipPlan = $('manualRegPlan').value;
+    const targetStatus = $('manualRegStatus').value;
+    const affiliateSelect = $('manualRegAffiliate');
+    const affiliateUserId = affiliateSelect.value || null;
+    const affiliateCode = affiliateUserId
+      ? (affiliateSelect.selectedOptions[0]?.dataset?.code || null)
+      : null;
+    const amount = manualRegistrationAmount();
+
+    if(!fullName || !email || !whatsapp) throw new Error('Nama, email, dan WhatsApp wajib diisi.');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Format email belum valid.');
+    if(!['free','newbie','pro'].includes(membershipPlan)) throw new Error('Paket belum valid.');
+    if(!['pending','active'].includes(targetStatus)) throw new Error('Status belum valid.');
+
+    const duplicate = registrations.find(r =>
+      String(r.email || '').toLowerCase() === email ||
+      String(r.whatsapp || '').replace(/\D/g,'') === whatsapp.replace(/\D/g,'')
+    );
+    if(duplicate && !confirm('Email atau WhatsApp ini sudah ada di data pendaftaran. Tetap lanjutkan?')) return;
+
+    const btn = $('saveManualRegisterBtn');
+    const oldText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'MENYIMPAN...';
+    $('manualRegisterStatus').textContent = 'Menyimpan pendaftaran manual...';
+
+    try{
+      const createdRows = await api('/rest/v1/registrations?select=*', {
+        method:'POST',
+        headers:{'Prefer':'return=representation'},
+        body:JSON.stringify({
+          full_name:fullName,
+          email,
+          whatsapp,
+          product:'BADAI',
+          amount:amount,
+          payment_status:'pending',
+          member_status:'pending',
+          membership_plan:membershipPlan,
+          affiliate_user_id:affiliateUserId,
+          referred_by_code:affiliateCode,
+          admin_note:'Pendaftaran manual oleh ' + (currentTeam?.email || 'admin BADAI')
+        })
+      });
+
+      const created = createdRows?.[0];
+      if(!created?.id) throw new Error('Pendaftaran tersimpan tetapi ID data tidak ditemukan.');
+
+      if(targetStatus === 'active'){
+        $('manualRegisterStatus').textContent = 'Pendaftaran tersimpan. Membuat akses member...';
+        const access = await approveOrResetAccess(created);
+        $('manualRegisterModal').classList.add('hidden');
+        await loadRegistrations();
+        const refreshed = registrations.find(r => r.id === created.id) || created;
+        openCredentialModal(refreshed, access.password);
+        return;
+      }
+
+      $('manualRegisterStatus').textContent = '✓ Peserta berhasil didaftarkan sebagai PENDING.';
+      await loadRegistrations();
+      setTimeout(() => $('manualRegisterModal').classList.add('hidden'), 450);
+    }finally{
+      btn.disabled = false;
+      btn.textContent = oldText;
+    }
+  }
+
+  function localDateTimeInputValue(date){
+    const pad = n => String(n).padStart(2,'0');
+    return date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) +
+      'T' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+  }
+
+  function openExportDataModal(){
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+    $('exportFrom').value = localDateTimeInputValue(start);
+    $('exportTo').value = localDateTimeInputValue(now);
+    $('exportFormat').value = 'xlsx';
+    $('exportDataStatus').textContent = '';
+    updateExportMatchCount();
+    $('exportDataModal').classList.remove('hidden');
+  }
+
+  function exportFilteredRows(){
+    const fromValue = $('exportFrom')?.value || '';
+    const toValue = $('exportTo')?.value || '';
+    const from = fromValue ? new Date(fromValue).getTime() : -Infinity;
+    const to = toValue ? new Date(toValue).getTime() : Infinity;
+
+    if(Number.isFinite(from) && Number.isFinite(to) && from > to){
+      throw new Error('Tanggal mulai tidak boleh melewati tanggal akhir.');
+    }
+
+    return registrations.filter(r => {
+      const ts = new Date(r.created_at).getTime();
+      return Number.isFinite(ts) && ts >= from && ts <= to;
+    });
+  }
+
+  function updateExportMatchCount(){
+    if(!$('exportMatchCount')) return;
+    try{
+      const count = exportFilteredRows().length;
+      $('exportMatchCount').textContent = count + ' pendaftar';
+    }catch(_){
+      $('exportMatchCount').textContent = 'Periksa rentang tanggal';
+    }
+  }
+
+  function exportRowsForFile(rows){
+    return rows.map((r,index) => {
+      const aff = salesAffiliateInfo(r);
+      const d = new Date(r.created_at);
+      return {
+        'No': index + 1,
+        'Tanggal Daftar': d.toLocaleDateString('id-ID'),
+        'Waktu': d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),
+        'Nama': r.full_name || '',
+        'Email': r.email || '',
+        'WhatsApp': r.whatsapp || '',
+        'Paket': planText(r.membership_plan),
+        'Nominal': Number(r.amount || 0),
+        'Status Pembayaran': String(r.payment_status || '').toUpperCase(),
+        'Status Member': salesStatusText(r),
+        'Afiliasi': aff.name || 'Langsung',
+        'Kode Afiliasi': aff.code || ''
+      };
+    });
+  }
+
+  function exportFileBase(){
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    return 'BADAI-PENDAFTARAN-' + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) +
+      '-' + pad(now.getHours()) + pad(now.getMinutes());
+  }
+
+  function downloadCsv(rows){
+    const data = exportRowsForFile(rows);
+    const headers = Object.keys(data[0]);
+    const csvCell = value => '"' + String(value ?? '').replace(/"/g,'""') + '"';
+    const csv = [
+      headers.map(csvCell).join(','),
+      ...data.map(row => headers.map(h => csvCell(row[h])).join(','))
+    ].join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = exportFileBase() + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function downloadExcel(rows){
+    if(!window.XLSX) throw new Error('Library Excel belum termuat. Coba refresh halaman.');
+    const data = exportRowsForFile(rows);
+    const ws = XLSX.utils.json_to_sheet(data);
+    ws['!cols'] = [
+      {wch:6},{wch:15},{wch:10},{wch:24},{wch:28},{wch:18},
+      {wch:14},{wch:16},{wch:18},{wch:16},{wch:22},{wch:16}
+    ];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Pendaftaran');
+    XLSX.writeFile(wb, exportFileBase() + '.xlsx');
+  }
+
+  function downloadPdf(rows){
+    const jsPDFCtor = window.jspdf?.jsPDF;
+    if(!jsPDFCtor) throw new Error('Library PDF belum termuat. Coba refresh halaman.');
+
+    const doc = new jsPDFCtor({orientation:'landscape',unit:'mm',format:'a4'});
+    const data = exportRowsForFile(rows);
+    const head = [['No','Tanggal','Waktu','Nama','Email','WA','Paket','Nominal','Bayar','Member','Afiliasi','Kode']];
+    const body = data.map(r => [
+      r['No'],
+      r['Tanggal Daftar'],
+      r['Waktu'],
+      r['Nama'],
+      r['Email'],
+      r['WhatsApp'],
+      r['Paket'],
+      rupiah(r['Nominal']),
+      r['Status Pembayaran'],
+      r['Status Member'],
+      r['Afiliasi'],
+      r['Kode Afiliasi']
+    ]);
+
+    doc.setFontSize(13);
+    doc.text('Data Pendaftaran Member BADAI', 10, 10);
+    doc.setFontSize(8);
+    doc.text('Diekspor: ' + new Date().toLocaleString('id-ID'), 10, 15);
+
+    doc.autoTable({
+      head,
+      body,
+      startY:19,
+      margin:{left:7,right:7},
+      styles:{fontSize:6,cellPadding:1.4,overflow:'linebreak'},
+      headStyles:{fontStyle:'bold'},
+      columnStyles:{
+        0:{cellWidth:8},
+        1:{cellWidth:19},
+        2:{cellWidth:14},
+        3:{cellWidth:28},
+        4:{cellWidth:35},
+        5:{cellWidth:24},
+        6:{cellWidth:19},
+        7:{cellWidth:24},
+        8:{cellWidth:18},
+        9:{cellWidth:18},
+        10:{cellWidth:28},
+        11:{cellWidth:22}
+      }
+    });
+
+    doc.save(exportFileBase() + '.pdf');
+  }
+
+  async function runExportData(){
+    const rows = exportFilteredRows();
+    if(!rows.length) throw new Error('Tidak ada data pada rentang tanggal dan waktu tersebut.');
+
+    const format = $('exportFormat').value;
+    $('exportDataStatus').textContent = 'Menyiapkan ' + rows.length + ' data...';
+
+    if(format === 'csv') downloadCsv(rows);
+    else if(format === 'pdf') downloadPdf(rows);
+    else downloadExcel(rows);
+
+    $('exportDataStatus').textContent = '✓ Export ' + rows.length + ' data berhasil dibuat.';
+  }
+
 
   async function loadFinanceTransactions(){
     financeTransactions = await api(
@@ -5370,7 +5916,38 @@ th,td{padding:14px 12px!important}
   });
 
   logoutBtn.addEventListener('click', logout);
-  $('refreshBtn').addEventListener('click', loadRegistrations);
+  $('manualRegisterBtn').addEventListener('click', openManualRegisterModal);
+  $('exportDataBtn').addEventListener('click', openExportDataModal);
+
+  $('manualRegPlan').addEventListener('change', updateManualRegistrationAmount);
+  $('manualRegisterForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try{ await saveManualRegistration(); }
+    catch(err){ $('manualRegisterStatus').textContent = '✕ ' + (err.message || 'Gagal menyimpan pendaftaran.'); }
+  });
+  $('closeManualRegisterBtn').addEventListener('click', () => $('manualRegisterModal').classList.add('hidden'));
+  $('closeManualRegisterIcon').addEventListener('click', () => $('manualRegisterModal').classList.add('hidden'));
+  $('manualRegisterModal').addEventListener('click', (e) => {
+    if(e.target === $('manualRegisterModal')) $('manualRegisterModal').classList.add('hidden');
+  });
+
+  $('exportFrom').addEventListener('change', updateExportMatchCount);
+  $('exportTo').addEventListener('change', updateExportMatchCount);
+  $('exportDataForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('runExportBtn');
+    const old = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'MEMBUAT FILE...';
+    try{ await runExportData(); }
+    catch(err){ $('exportDataStatus').textContent = '✕ ' + (err.message || 'Export gagal.'); }
+    finally{ btn.disabled = false; btn.textContent = old; }
+  });
+  $('closeExportDataBtn').addEventListener('click', () => $('exportDataModal').classList.add('hidden'));
+  $('closeExportDataIcon').addEventListener('click', () => $('exportDataModal').classList.add('hidden'));
+  $('exportDataModal').addEventListener('click', (e) => {
+    if(e.target === $('exportDataModal')) $('exportDataModal').classList.add('hidden');
+  });
   $('searchBox').addEventListener('input', renderSales);
   $('statusFilter').addEventListener('change', renderSales);
   document.querySelectorAll('[data-finance-type]').forEach(btn => {
