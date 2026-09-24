@@ -421,6 +421,45 @@
     }
   };
 
+  function memberLifecycleState(profile){
+    const now = Date.now();
+    const exp = profile?.membership_expires_at ? new Date(profile.membership_expires_at).getTime() : NaN;
+    const grace = profile?.membership_grace_until ? new Date(profile.membership_grace_until).getTime() : NaN;
+
+    if(Number.isFinite(grace) && now >= grace) return 'expired';
+    if(Number.isFinite(exp) && now >= exp) return 'grace';
+    if(profile?.member_status === 'suspended') return 'suspended';
+    if(profile?.member_status === 'active') return 'active';
+    return profile?.membership_lifecycle_status || 'pending';
+  }
+
+  function memberDate(value){
+    if(!value) return '-';
+    try{
+      return new Intl.DateTimeFormat('id-ID',{
+        day:'2-digit',month:'short',year:'numeric'
+      }).format(new Date(value));
+    }catch(_){
+      return '-';
+    }
+  }
+
+  function renderMembershipLifecycle(profile){
+    const state = memberLifecycleState(profile);
+    const statusEl = document.getElementById('memberLifecycleStatus');
+    const expiryEl = document.getElementById('memberExpiryDate');
+    const graceEl = document.getElementById('memberGraceDate');
+    const graceNotice = document.getElementById('memberGraceNotice');
+
+    if(statusEl){
+      statusEl.textContent = state === 'grace' ? 'MASA TENGGANG' : 'MASA AKTIF';
+      statusEl.className = state === 'grace' ? 'grace' : 'active';
+    }
+    if(expiryEl) expiryEl.textContent = memberDate(profile?.membership_expires_at);
+    if(graceEl) graceEl.textContent = memberDate(profile?.membership_grace_until);
+    if(graceNotice) graceNotice.classList.toggle('hidden',state !== 'grace');
+  }
+
   async function configureMembership(profile){
     const plan = profile?.membership_plan === 'pro'
       ? 'pro'
@@ -431,6 +470,7 @@
     const footer = document.querySelector('.footer');
 
     document.documentElement.dataset.membershipPlan = plan;
+    renderMembershipLifecycle(profile);
 
     if(planName){
       planName.textContent = plan === 'pro'
@@ -763,7 +803,7 @@
     try{
       const rows = await api(
         '/rest/v1/profiles?id=eq.' + encodeURIComponent(currentUser.id) +
-        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan'
+        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at'
       );
 
       const freshProfile = rows?.[0];
@@ -772,7 +812,9 @@
         return;
       }
 
-      if(freshProfile.member_status !== 'active'){
+      const lifecycleState = memberLifecycleState(freshProfile);
+
+      if(freshProfile.member_status !== 'active' || ['expired','suspended','pending'].includes(lifecycleState)){
         clearSession();
         location.reload();
         return;
@@ -805,17 +847,21 @@
 
       const rows = await api(
         '/rest/v1/profiles?id=eq.' + encodeURIComponent(userId) +
-        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan'
+        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at'
       );
 
       const profile = rows?.[0];
 
-      if(!profile || profile.member_status !== 'active'){
+      const lifecycleState = profile ? memberLifecycleState(profile) : 'pending';
+
+      if(!profile || profile.member_status !== 'active' || ['expired','suspended','pending'].includes(lifecycleState)){
         clearSession();
 
         if(status){
           status.className = 'status error';
-          status.textContent = 'Akses belum aktif. Hubungi admin BADAI.';
+          status.textContent = lifecycleState === 'expired'
+            ? 'Masa akses BADAI sudah berakhir. Hubungi admin untuk perpanjangan 1 tahun.'
+            : 'Akses belum aktif. Hubungi admin BADAI.';
         }
         return;
       }
@@ -876,7 +922,7 @@
     populateAccount(profile, user);
     await configureMembership(profile);
     setAccountStatus('', '');
-    console.log('BADAI member active:', profile?.email || '');
+    console.log('BADAI member access:', profile?.email || '', memberLifecycleState(profile));
   }
 
   document.addEventListener('DOMContentLoaded', () => {
