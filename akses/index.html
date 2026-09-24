@@ -1506,6 +1506,49 @@ h1,h2,h3,h4,h5,h6,
   font:900 8px "Raleway";
   letter-spacing:.02em;
 }
+
+/* BADAI MEMBER LIFECYCLE CARD FINAL */
+.member-lifecycle-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px solid #242424;
+}
+.member-lifecycle-row>div{
+  padding:8px 9px;
+  border:1px solid #252525;
+  border-radius:10px;
+  background:#0b0b0b;
+}
+.member-lifecycle-row span{
+  display:block;
+  color:#6f6f6f;
+  font:900 6.5px "Raleway";
+  letter-spacing:.07em;
+}
+.member-lifecycle-row b{
+  display:block;
+  margin-top:3px;
+  color:#e9e9e9;
+  font-size:9px;
+}
+#memberLifecycleStatus.active{color:#7fdda5}
+#memberLifecycleStatus.grace{color:#f0c36a}
+.member-grace-notice{
+  margin-top:8px;
+  padding:9px 10px;
+  border:1px solid #5b4720;
+  border-radius:10px;
+  background:#1b160a;
+  color:#dcb96c;
+  font-size:8.5px;
+  line-height:1.45;
+}
+.member-grace-notice b{color:#fff}
+/* END BADAI MEMBER LIFECYCLE CARD FINAL */
+
 </style>
 <script src="/akses/auth.js?v=20260921-2" defer></script>
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -1677,6 +1720,19 @@ h1,h2,h3,h4,h5,h6,
         <span>PAKET AKTIF</span>
         <strong id="memberPlanName">PAKET PEMULA</strong>
         <small id="memberPlanDesc">Belajar Ilmu AI + Update</small>
+        <div class="member-lifecycle-row">
+          <div>
+            <span>STATUS</span>
+            <b id="memberLifecycleStatus">MASA AKTIF</b>
+          </div>
+          <div>
+            <span>EXPIRED</span>
+            <b id="memberExpiryDate">-</b>
+          </div>
+        </div>
+        <div id="memberGraceNotice" class="member-grace-notice hidden">
+          Masa tenggang sampai <b id="memberGraceDate">-</b>. Hubungi admin untuk perpanjangan sebelum akses disuspend.
+        </div>
       </div>
 
       <form id="memberAccountForm" class="account-card">
