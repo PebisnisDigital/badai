@@ -3043,6 +3043,150 @@ th,td{padding:14px 12px!important}
 }
 /* END BADAI SALES CASH CARD FINAL */
 
+
+/* BADAI MEMBERSHIP LIFECYCLE ADMIN FINAL */
+.sales-lifecycle-stack{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:3px;
+  min-width:84px;
+}
+.membership-status-meta{
+  display:block;
+  color:#777;
+  font-size:7px;
+  line-height:1.15;
+  white-space:nowrap;
+}
+.membership-status-meta.grace{color:#d6a75c}
+.membership-status-meta.expired{color:#e77a7a}
+.sales-status-pill.grace{
+  background:#2a2110!important;
+  color:#f0c36a!important;
+  border-color:#5b4720!important;
+}
+.sales-status-pill.expired{
+  background:#2b1111!important;
+  color:#ff8f8f!important;
+  border-color:#5c2525!important;
+}
+.membership-lifecycle-card{
+  margin:12px 0 14px;
+  padding:13px;
+  border:1px solid #2b2b2b;
+  border-radius:15px;
+  background:
+    radial-gradient(circle at 92% 8%,rgba(255,79,163,.08),transparent 30%),
+    #0b0b0b;
+}
+.membership-lifecycle-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.membership-lifecycle-head>div>span{
+  display:block;
+  color:#777;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.membership-lifecycle-status{
+  display:block;
+  margin-top:3px;
+  color:#fff;
+  font-size:14px;
+  font-weight:900;
+}
+.membership-lifecycle-status.active{color:#8ee0ae}
+.membership-lifecycle-status.grace{color:#f0c36a}
+.membership-lifecycle-status.expired{color:#ff8f8f}
+.membership-days-pill{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:0 8px;
+  border-radius:999px;
+  background:#171717;
+  border:1px solid #2c2c2c;
+  color:#aaa;
+  font-size:7px;
+  font-weight:900;
+}
+.membership-lifecycle-dates{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+  margin-top:10px;
+}
+.membership-lifecycle-dates>div{
+  padding:8px;
+  border:1px solid #222;
+  border-radius:10px;
+  background:#0f0f0f;
+}
+.membership-lifecycle-dates span{
+  display:block;
+  color:#6f6f6f;
+  font-size:6.5px;
+  font-weight:800;
+}
+.membership-lifecycle-dates b{
+  display:block;
+  margin-top:3px;
+  color:#e9e9e9;
+  font-size:8px;
+}
+.membership-lifecycle-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:10px;
+}
+.membership-lifecycle-actions a,
+.membership-lifecycle-actions button{
+  min-height:38px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:7.5px;
+  font-weight:900;
+  cursor:pointer;
+  text-decoration:none;
+}
+.membership-lifecycle-actions a{
+  border:1px solid #31523c;
+  background:#0c1710;
+  color:#89dca5;
+}
+.membership-lifecycle-actions button{
+  border:0;
+  background:#ff4fa3;
+  color:#111;
+}
+.membership-renewal-help{
+  margin-top:7px;
+  color:#6f6f6f;
+  font-size:7px;
+  line-height:1.4;
+}
+.membership-policy-grid{
+  margin-bottom:10px;
+}
+@media(max-width:560px){
+  .membership-lifecycle-dates{
+    grid-template-columns:1fr;
+  }
+  .membership-lifecycle-actions{
+    grid-template-columns:1fr;
+  }
+}
+/* END BADAI MEMBERSHIP LIFECYCLE ADMIN FINAL */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -3132,9 +3276,11 @@ th,td{padding:14px 12px!important}
         <select id="statusFilter">
           <option value="all">Semua status</option>
           <option value="pending">Pending</option>
-          <option value="active">Active</option>
+          <option value="active">Masa Aktif</option>
+          <option value="grace">Masa Tenggang</option>
+          <option value="expired">Masa Hangus</option>
           <option value="rejected">Rejected</option>
-          <option value="suspended">Suspended</option>
+          <option value="suspended">Suspended Manual</option>
         </select>
         <div class="sales-toolbar-actions">
           <button id="manualRegisterBtn" class="sales-tool-btn manual" type="button"><span>＋</span> MANUAL DAFTAR</button>
@@ -3476,6 +3622,44 @@ th,td{padding:14px 12px!important}
             </div>
             <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[password]</b> <b>[link]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b></div>
           </div>
+
+          <div class="marketing-card membership-notification-settings">
+            <div class="marketing-card-head">
+              <span class="marketing-number">4</span>
+              <div><h3>Masa Aktif &amp; Perpanjangan</h3><p>Atur masa tenggang dan template WA untuk member aktif, tenggang, dan hangus.</p></div>
+            </div>
+
+            <div class="marketing-price-grid membership-policy-grid">
+              <div class="manage-field">
+                <label>Reminder Sebelum Expired</label>
+                <div class="affiliate-month-input">
+                  <input id="membershipReminderDays" type="number" min="1" max="90" step="1" inputmode="numeric"/>
+                  <span>HARI</span>
+                </div>
+              </div>
+              <div class="manage-field">
+                <label>Masa Tenggang</label>
+                <div class="affiliate-month-input">
+                  <input id="membershipGraceDays" type="number" min="1" max="60" step="1" inputmode="numeric"/>
+                  <span>HARI</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="manage-field full">
+              <label>Notifikasi Masa Aktif / Reminder</label>
+              <textarea id="membershipActiveNotification" rows="7"></textarea>
+            </div>
+            <div class="manage-field full">
+              <label>Notifikasi Masa Tenggang</label>
+              <textarea id="membershipGraceNotification" rows="7"></textarea>
+            </div>
+            <div class="manage-field full">
+              <label>Notifikasi Masa Hangus</label>
+              <textarea id="membershipExpiredNotification" rows="7"></textarea>
+            </div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[paket]</b> <b>[harga]</b> <b>[tanggal_daftar]</b> <b>[tanggal_aktif]</b> <b>[tanggal_expired]</b> <b>[tanggal_tenggang]</b> <b>[sisa_hari]</b> <b>[masa_tenggang]</b> <b>[link]</b></div>
+          </div>
         </div>
 
         <div class="marketing-category-panel" data-marketing-panel="affiliate">
@@ -3699,6 +3883,26 @@ th,td{padding:14px 12px!important}
       <div><span>Tanggal Daftar</span><strong id="manageDate">-</strong></div>
     </div>
 
+    <div id="manageMembershipLifecycle" class="membership-lifecycle-card hidden">
+      <div class="membership-lifecycle-head">
+        <div>
+          <span>MASA KEANGGOTAAN</span>
+          <strong id="manageLifecycleStatus">-</strong>
+        </div>
+        <span id="manageLifecycleDays" class="membership-days-pill">-</span>
+      </div>
+      <div class="membership-lifecycle-dates">
+        <div><span>Aktif Sejak</span><b id="manageActiveDate">-</b></div>
+        <div><span>Expired</span><b id="manageExpiryDate">-</b></div>
+        <div><span>Tenggang Sampai</span><b id="manageGraceDate">-</b></div>
+      </div>
+      <div class="membership-lifecycle-actions">
+        <a id="manageMembershipNotify" href="#" target="_blank" rel="noopener">KIRIM NOTIF VIA WA</a>
+        <button id="manageRenewMembershipBtn" type="button">PERPANJANG 1 TAHUN</button>
+      </div>
+      <div id="manageRenewalHelp" class="membership-renewal-help">Harga perpanjangan mengikuti harga paket yang berlaku saat diproses.</div>
+    </div>
+
     <div class="manage-grid">
       <div class="manage-field full">
         <label>Nama Member</label>
@@ -3899,6 +4103,7 @@ th,td{padding:14px 12px!important}
   let teamMembers = [];
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
+  let membershipRenewals = [];
   let marketingSettings = {
     product_price:123000,
     newbie_price:123000,
@@ -3907,7 +4112,12 @@ th,td{padding:14px 12px!important}
     followup_1:'',
     followup_2:'',
     followup_3:'',
-    success_notification:''
+    success_notification:'',
+    membership_grace_days:7,
+    membership_reminder_days:30,
+    membership_active_notification:'',
+    membership_grace_notification:'',
+    membership_expired_notification:''
   };
   let marketingCoupons = [];
   let affiliateSettings = {commission_type:'percent', commission_value:30, inactivity_months:3};
@@ -4101,16 +4311,25 @@ th,td{padding:14px 12px!important}
   }
 
   async function loadRegistrations(){
+    try{
+      await api('/rest/v1/rpc/refresh_membership_lifecycle', {
+        method:'POST',
+        body:JSON.stringify({})
+      });
+    }catch(_){}
+
     const results = await Promise.all([
-      api('/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,admin_note,created_at,activated_at&order=created_at.desc'),
+      api('/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,admin_note,created_at,activated_at,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at&order=created_at.desc'),
       api('/rest/v1/profiles?select=id,full_name,email'),
       api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
-      api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc')
+      api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
+      api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc')
     ]);
     registrations = results[0] || [];
     salesAffiliateProfiles = results[1] || [];
     salesAffiliateAccounts = results[2] || [];
     financeTransactions = results[3] || [];
+    membershipRenewals = results[4] || [];
     populateManualAffiliateOptions();
     renderSales();
     renderFinance();
@@ -4296,6 +4515,9 @@ th,td{padding:14px 12px!important}
         'Nominal': Number(r.amount || 0),
         'Status Pembayaran': String(r.payment_status || '').toUpperCase(),
         'Status Member': salesStatusText(r),
+        'Tanggal Aktif': r.membership_started_at ? membershipDate(r.membership_started_at) : '',
+        'Expired': r.membership_expires_at ? membershipDate(r.membership_expires_at) : '',
+        'Tenggang Sampai': r.membership_grace_until ? membershipDate(r.membership_grace_until) : '',
         'Afiliasi': aff.name || 'Langsung',
         'Kode Afiliasi': aff.code || ''
       };
@@ -4420,7 +4642,7 @@ th,td{padding:14px 12px!important}
   async function loadMarketingSettings(){
     try{
       const rows = await api(
-        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,newbie_price,pro_price,registration_notification,followup_1,followup_2,followup_3,success_notification'
+        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,newbie_price,pro_price,registration_notification,followup_1,followup_2,followup_3,success_notification,membership_grace_days,membership_reminder_days,membership_active_notification,membership_grace_notification,membership_expired_notification'
       );
       if(rows?.[0]) marketingSettings = rows[0];
     }catch(_){}
@@ -4461,6 +4683,11 @@ th,td{padding:14px 12px!important}
     $('marketingFollow2').value = marketingSettings.followup_2 || '';
     $('marketingFollow3').value = marketingSettings.followup_3 || '';
     $('marketingSuccessMessage').value = marketingSettings.success_notification || '';
+    $('membershipGraceDays').value = marketingSettings.membership_grace_days || 7;
+    $('membershipReminderDays').value = marketingSettings.membership_reminder_days || 30;
+    $('membershipActiveNotification').value = marketingSettings.membership_active_notification || '';
+    $('membershipGraceNotification').value = marketingSettings.membership_grace_notification || '';
+    $('membershipExpiredNotification').value = marketingSettings.membership_expired_notification || '';
 
     $('affiliateCommissionType').value = affiliateSettings.commission_type || 'percent';
     $('affiliateCommissionValue').value = affiliateSettings.commission_value || 30;
@@ -4496,11 +4723,23 @@ th,td{padding:14px 12px!important}
       followup_2:$('marketingFollow2').value.trim(),
       followup_3:$('marketingFollow3').value.trim(),
       success_notification:$('marketingSuccessMessage').value.trim(),
+      membership_grace_days:Math.round(Number($('membershipGraceDays').value || 7)),
+      membership_reminder_days:Math.round(Number($('membershipReminderDays').value || 30)),
+      membership_active_notification:$('membershipActiveNotification').value.trim(),
+      membership_grace_notification:$('membershipGraceNotification').value.trim(),
+      membership_expired_notification:$('membershipExpiredNotification').value.trim(),
       updated_by:session.user.id
     };
 
-    if(!body.registration_notification || !body.followup_1 || !body.followup_2 || !body.followup_3 || !body.success_notification){
+    if(!body.registration_notification || !body.followup_1 || !body.followup_2 || !body.followup_3 || !body.success_notification ||
+       !body.membership_active_notification || !body.membership_grace_notification || !body.membership_expired_notification){
       throw new Error('Semua template notifikasi wajib diisi.');
+    }
+    if(body.membership_grace_days < 1 || body.membership_grace_days > 60){
+      throw new Error('Masa tenggang harus 1–60 hari.');
+    }
+    if(body.membership_reminder_days < 1 || body.membership_reminder_days > 90){
+      throw new Error('Reminder expired harus 1–90 hari.');
     }
 
     $('saveMarketingBtn').disabled = true;
@@ -5076,16 +5315,65 @@ th,td{padding:14px 12px!important}
     };
   }
 
+  function membershipLifecycle(row){
+    if(row.member_status === 'pending') return 'pending';
+    if(row.payment_status === 'rejected') return 'rejected';
+
+    const now = Date.now();
+    const exp = row.membership_expires_at ? new Date(row.membership_expires_at).getTime() : NaN;
+    const grace = row.membership_grace_until ? new Date(row.membership_grace_until).getTime() : NaN;
+
+    if(Number.isFinite(grace) && now >= grace) return 'expired';
+    if(Number.isFinite(exp) && now >= exp) return 'grace';
+    if(row.member_status === 'suspended') return 'suspended';
+    if(row.member_status === 'active') return 'active';
+    return row.membership_lifecycle_status || 'pending';
+  }
+
   function salesStatusText(row){
-    if(row.member_status === 'active') return 'AKTIF';
-    if(row.member_status === 'suspended') return 'SUSPEND';
+    const state = membershipLifecycle(row);
+    if(state === 'active') return 'AKTIF';
+    if(state === 'grace') return 'TENGGANG';
+    if(state === 'expired') return 'HANGUS';
+    if(state === 'suspended') return 'SUSPEND';
+    if(state === 'rejected') return 'REJECTED';
     return 'PENDING';
   }
 
   function salesStatusClass(row){
-    if(row.member_status === 'active') return 'active';
-    if(row.member_status === 'suspended') return 'suspended';
+    const state = membershipLifecycle(row);
+    if(state === 'grace') return 'grace';
+    if(state === 'expired') return 'expired';
+    if(state === 'active') return 'active';
+    if(state === 'suspended') return 'suspended';
     return 'pending';
+  }
+
+  function membershipDaysRemaining(row){
+    const state = membershipLifecycle(row);
+    const target = state === 'grace' ? row.membership_grace_until : row.membership_expires_at;
+    if(!target) return null;
+    const diff = new Date(target).getTime() - Date.now();
+    return Math.ceil(diff / 86400000);
+  }
+
+  function membershipDate(value){
+    if(!value) return '-';
+    return new Intl.DateTimeFormat('id-ID',{
+      day:'2-digit',month:'short',year:'numeric'
+    }).format(new Date(value));
+  }
+
+  function membershipStatusMeta(row){
+    const state = membershipLifecycle(row);
+    if(state === 'pending' || state === 'rejected') return '';
+    if(state === 'expired') return '<small class="membership-status-meta expired">Hangus ' + esc(membershipDate(row.membership_grace_until || row.membership_expires_at)) + '</small>';
+    if(state === 'grace') return '<small class="membership-status-meta grace">Tenggang s/d ' + esc(membershipDate(row.membership_grace_until)) + '</small>';
+    if(state === 'active' && row.membership_expires_at){
+      const days = membershipDaysRemaining(row);
+      return '<small class="membership-status-meta">Exp ' + esc(membershipDate(row.membership_expires_at)) + (days !== null ? ' • ' + Math.max(days,0) + ' hari' : '') + '</small>';
+    }
+    return '';
   }
 
   function registrationNumber(row){
@@ -5119,7 +5407,7 @@ th,td{padding:14px 12px!important}
     return registrations.filter(r => {
       const hay = [r.full_name,r.email,r.whatsapp].join(' ').toLowerCase();
       return (!q || hay.includes(q))
-        && (status === 'all' || r.member_status === status || r.payment_status === status);
+        && (status === 'all' || membershipLifecycle(r) === status || r.payment_status === status);
     });
   }
 
@@ -5136,6 +5424,10 @@ th,td{padding:14px 12px!important}
       .filter(r => r.payment_status === 'paid')
       .reduce((sum,r) => sum + Number(r.amount || 0), 0);
 
+    const renewalRevenue = membershipRenewals
+      .filter(r => r.payment_status === 'paid')
+      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+
     const manualIn = financeTransactions
       .filter(t => t.flow_type === 'in')
       .reduce((sum,t) => sum + Number(t.amount || 0), 0);
@@ -5144,7 +5436,7 @@ th,td{padding:14px 12px!important}
       .filter(t => t.flow_type === 'out')
       .reduce((sum,t) => sum + Number(t.amount || 0), 0);
 
-    const currentCash = salesRevenue + manualIn - manualOut;
+    const currentCash = salesRevenue + renewalRevenue + manualIn - manualOut;
 
     $('statActiveRevenue').textContent = rupiah(activeRevenue);
     $('statPendingRevenue').textContent = rupiah(pendingRevenue);
@@ -5223,7 +5515,7 @@ th,td{padding:14px 12px!important}
               ${aff.code ? '<span>'+esc(aff.code)+'</span>' : '<span>Tanpa afiliasi</span>'}
             </div>
           </td>
-          <td><span class="sales-status-pill ${salesStatusClass(r)}">${salesStatusText(r)}</span></td>
+          <td><div class="sales-lifecycle-stack"><span class="sales-status-pill ${salesStatusClass(r)}">${salesStatusText(r)}</span>${membershipStatusMeta(r)}</div></td>
           <td class="sales-action-cell">${actionHtml(r,false)}</td>
         </tr>
       `;
@@ -5253,7 +5545,7 @@ th,td{padding:14px 12px!important}
               <strong title="${esc(aff.name)}">${esc(aff.name)}</strong>
               ${aff.code ? '<span>'+esc(aff.code)+'</span>' : '<span>Tanpa afiliasi</span>'}
             </div>
-            <span class="sales-status-pill ${salesStatusClass(r)}">${salesStatusText(r)}</span>
+            <span class="sales-lifecycle-stack"><span class="sales-status-pill ${salesStatusClass(r)}">${salesStatusText(r)}</span>${membershipStatusMeta(r)}</span>
             <span class="sales-action-cell">${actionHtml(r,true)}</span>
           </div>
         </div>
@@ -5296,9 +5588,12 @@ th,td{padding:14px 12px!important}
   function renderFinance(){
     const paid = paidRows();
     const salesRevenue = paid.reduce((sum,r)=>sum + Number(r.amount||0),0);
+    const renewalRevenue = membershipRenewals
+      .filter(r => r.payment_status === 'paid')
+      .reduce((sum,r)=>sum + Number(r.amount||0),0);
     const {manualIn, manualOut} = manualFinanceTotals();
 
-    const revenue = salesRevenue + manualIn;
+    const revenue = salesRevenue + renewalRevenue + manualIn;
     const expenses = manualOut;
     const liabilities = 0;
     const netProfit = revenue - expenses;
@@ -5317,6 +5612,7 @@ th,td{padding:14px 12px!important}
           <div class="statement-section">
             <div class="statement-title">Pendapatan</div>
             <div class="statement-row"><span>Penjualan BADAI</span><strong>${rupiah(salesRevenue)}</strong></div>
+            <div class="statement-row"><span>Perpanjangan Member</span><strong>${rupiah(renewalRevenue)}</strong></div>
             <div class="statement-row"><span>Pemasukan Manual</span><strong>${rupiah(manualIn)}</strong></div>
             <div class="statement-row total"><span>Total Pendapatan</span><strong>${rupiah(revenue)}</strong></div>
           </div>
@@ -5372,6 +5668,16 @@ th,td{padding:14px 12px!important}
         manual:false
       }));
 
+      const renewalItems = membershipRenewals.map(r => ({
+        id:null,
+        date:r.renewed_at,
+        title:'Perpanjangan ' + planText(r.membership_plan),
+        category:'Perpanjangan Member',
+        flow_type:'in',
+        amount:Number(r.amount||0),
+        manual:false
+      }));
+
       const manualItems = financeTransactions.map(t => ({
         id:t.id,
         date:t.transaction_date,
@@ -5382,7 +5688,7 @@ th,td{padding:14px 12px!important}
         manual:true
       }));
 
-      const allItems = [...salesItems,...manualItems].sort((a,b) =>
+      const allItems = [...salesItems,...renewalItems,...manualItems].sort((a,b) =>
         String(b.date).localeCompare(String(a.date))
       );
 
@@ -5400,6 +5706,7 @@ th,td{padding:14px 12px!important}
           <div class="statement-section">
             <div class="statement-title">Ringkasan Arus Kas</div>
             <div class="statement-row"><span>Kas Masuk Penjualan</span><strong>${rupiah(salesRevenue)}</strong></div>
+            <div class="statement-row"><span>Kas Masuk Perpanjangan</span><strong>${rupiah(renewalRevenue)}</strong></div>
             <div class="statement-row"><span>Kas Masuk Manual</span><strong>${rupiah(manualIn)}</strong></div>
             <div class="statement-row"><span>Kas Keluar Manual</span><strong>${rupiah(manualOut)}</strong></div>
             <div class="statement-row total"><span>Arus Kas Bersih</span><strong>${rupiah(cash)}</strong></div>
@@ -5566,6 +5873,129 @@ th,td{padding:14px 12px!important}
     }
   }
 
+  function currentRenewalPrice(row){
+    if(row?.membership_plan === 'pro'){
+      return Number(marketingSettings.pro_price || marketingSettings.product_price || 0);
+    }
+    return Number(marketingSettings.newbie_price || marketingSettings.product_price || 0);
+  }
+
+  function membershipTemplateValues(row){
+    const state = membershipLifecycle(row);
+    const days = membershipDaysRemaining(row);
+    return {
+      nama:row.full_name || 'Kak',
+      paket:row.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula',
+      harga:rupiah(currentRenewalPrice(row)),
+      tanggal_daftar:membershipDate(row.created_at),
+      tanggal_aktif:membershipDate(row.membership_started_at || row.activated_at),
+      tanggal_expired:membershipDate(row.membership_expires_at),
+      tanggal_tenggang:membershipDate(row.membership_grace_until),
+      sisa_hari:days === null ? '-' : Math.max(days,0),
+      masa_tenggang:marketingSettings.membership_grace_days || 7,
+      link:location.origin.replace(/\/$/,'') + '/#pricing',
+      status:state
+    };
+  }
+
+  function membershipNotificationLink(row){
+    const state = membershipLifecycle(row);
+    const template = state === 'expired'
+      ? marketingSettings.membership_expired_notification
+      : state === 'grace'
+        ? marketingSettings.membership_grace_notification
+        : marketingSettings.membership_active_notification;
+
+    const message = fillMarketingTemplate(template || '', membershipTemplateValues(row));
+    return waMessageLink(row,message);
+  }
+
+  function syncManageMembershipLifecycle(row){
+    const card = $('manageMembershipLifecycle');
+    if(!card) return;
+
+    const eligible = ['newbie','pro'].includes(row.membership_plan)
+      && Boolean(row.membership_expires_at || row.member_status === 'active' || row.member_status === 'suspended');
+
+    card.classList.toggle('hidden', !eligible);
+    if(!eligible) return;
+
+    const state = membershipLifecycle(row);
+    const days = membershipDaysRemaining(row);
+    const labels = {
+      active:'MASA AKTIF',
+      grace:'MASA TENGGANG',
+      expired:'MASA HANGUS',
+      suspended:'SUSPEND',
+      pending:'PENDING'
+    };
+
+    $('manageLifecycleStatus').textContent = labels[state] || state.toUpperCase();
+    $('manageLifecycleStatus').className = 'membership-lifecycle-status ' + state;
+    $('manageLifecycleDays').textContent = state === 'active'
+      ? (days !== null ? Math.max(days,0) + ' HARI TERSISA' : 'AKTIF')
+      : state === 'grace'
+        ? (days !== null ? Math.max(days,0) + ' HARI TENGGANG' : 'TENGGANG')
+        : state === 'expired' ? 'AKSES DISUSPEND' : labels[state];
+
+    $('manageActiveDate').textContent = membershipDate(row.membership_started_at || row.activated_at);
+    $('manageExpiryDate').textContent = membershipDate(row.membership_expires_at);
+    $('manageGraceDate').textContent = membershipDate(row.membership_grace_until);
+
+    const notify = $('manageMembershipNotify');
+    notify.href = membershipNotificationLink(row);
+    notify.textContent = state === 'expired'
+      ? 'KIRIM NOTIF HANGUS VIA WA'
+      : state === 'grace'
+        ? 'KIRIM NOTIF TENGGANG VIA WA'
+        : 'KIRIM NOTIF MASA AKTIF VIA WA';
+
+    const renewalPrice = currentRenewalPrice(row);
+    const renewBtn = $('manageRenewMembershipBtn');
+    renewBtn.textContent = 'PERPANJANG 1 TAHUN • ' + rupiah(renewalPrice);
+    renewBtn.disabled = false;
+    renewBtn.onclick = async () => {
+      const msg =
+        'Pastikan pembayaran perpanjangan ' + rupiah(renewalPrice) +
+        ' sudah diterima. Lanjut perpanjang akses ' + row.full_name + ' selama 365 hari?';
+      if(!confirm(msg)) return;
+
+      const oldText = renewBtn.textContent;
+      renewBtn.disabled = true;
+      renewBtn.textContent = 'MEMPROSES...';
+      try{
+        const result = await api('/rest/v1/rpc/admin_renew_membership', {
+          method:'POST',
+          body:JSON.stringify({
+            p_registration_id:row.id,
+            p_note:'Perpanjangan 1 tahun via Admin BADAI'
+          })
+        });
+
+        await loadRegistrations();
+        const refreshed = registrations.find(r => r.id === row.id);
+        if(refreshed){
+          syncManageMembershipLifecycle(refreshed);
+        }
+        const renewed = result?.[0];
+        alert(
+          'Perpanjangan berhasil.\n\nHarga: ' + rupiah(renewed?.amount || renewalPrice) +
+          '\nExpired baru: ' + membershipDate(renewed?.new_expires_at || refreshed?.membership_expires_at)
+        );
+      }catch(err){
+        alert(err.message || 'Gagal memperpanjang member.');
+      }finally{
+        renewBtn.disabled = false;
+        if(!registrations.find(r => r.id === row.id)) renewBtn.textContent = oldText;
+      }
+    };
+
+    $('manageRenewalHelp').textContent =
+      'Harga perpanjangan mengikuti harga ' +
+      (row.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula') +
+      ' yang berlaku saat ini. Masa aktif ditambah 365 hari.';
+  }
+
   function openManageModal(row){
     $('manageId').value = row.id;
     $('manageNumber').textContent = registrationNumber(row);
@@ -5577,6 +6007,7 @@ th,td{padding:14px 12px!important}
     $('manageStatus').value = row.member_status === 'active' ? 'active' : 'pending';
     $('manageResetAccess').checked = false;
 
+    syncManageMembershipLifecycle(row);
     toggleManageResetOption();
     $('manageModal').classList.remove('hidden');
   }
