@@ -285,7 +285,7 @@ module.exports = async function handler(req, res) {
       line-height:1.25!important;
     }
     .badai-affiliate-rules{
-      padding:17px!important;
+      padding:14px!important;
     }
     .badai-affiliate-rules h3{
       font-size:20px!important;
@@ -795,7 +795,7 @@ module.exports = async function handler(req, res) {
       padding:14px 15px!important;
     }
     #akun .account-logout-card h3{
-      font-size:18px!important;
+      font-size:16px!important;
     }
     #akun .account-logout-card p{
       font-size:12.5px!important;
@@ -1001,8 +1001,8 @@ module.exports = async function handler(req, res) {
   /* BADAI MATERIAL CARDS — card layout, no accordion */
   .badai-material-card-grid{
     display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:16px!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:11px!important;
     align-items:stretch!important;
   }
   .badai-material-card{
@@ -1041,7 +1041,7 @@ module.exports = async function handler(req, res) {
     margin:0!important;
     color:#c2afb8!important;
     font-family:"Nunito",Arial,sans-serif!important;
-    font-size:14px!important;
+    font-size:12.5px!important;
     font-weight:650!important;
     line-height:1.45!important;
   }
@@ -1091,23 +1091,37 @@ module.exports = async function handler(req, res) {
   }
   @media(max-width:560px){
     .badai-material-card-grid{
-      grid-template-columns:1fr!important;
-      gap:13px!important;
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+      gap:9px!important;
     }
     .badai-material-card{
-      min-height:270px!important;
-      padding:16px!important;
-      border-radius:18px!important;
+      min-height:255px!important;
+      padding:11px!important;
+      border-radius:16px!important;
+    }
+    .badai-material-card-number{
+      font-size:9.5px!important;
     }
     .badai-material-card-title{
-      font-size:18px!important;
+      margin:8px 0 5px!important;
+      font-size:14px!important;
+      line-height:1.18!important;
     }
     .badai-material-card-desc{
-      font-size:14px!important;
+      font-size:11px!important;
+      line-height:1.4!important;
+    }
+    .badai-material-card-divider{
+      margin:12px 0 10px!important;
+    }
+    .badai-material-card-actions{
+      gap:7px!important;
     }
     .badai-card-action{
-      min-height:46px!important;
-      font-size:13px!important;
+      min-height:40px!important;
+      padding:6px!important;
+      font-size:10.5px!important;
+      border-radius:10px!important;
     }
   }
 
