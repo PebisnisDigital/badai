@@ -4504,6 +4504,62 @@ main section > .container > .badai-copy-kicker,
   border:0;
   display:block;
 }
+
+.badai-demo-play{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:0;
+  background:
+    radial-gradient(circle at center,rgba(0,0,0,.08),rgba(0,0,0,.30) 62%,rgba(0,0,0,.48));
+  color:#fff;
+  cursor:pointer;
+  transition:background .25s ease,opacity .25s ease;
+}
+.badai-demo-play span{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  padding-left:3px;
+  background:var(--pink);
+  color:#070707;
+  font-size:20px;
+  box-shadow:0 12px 34px rgba(255,79,163,.34);
+  transform:scale(.94);
+  transition:transform .25s ease;
+}
+.badai-demo-play b{
+  display:inline-flex;
+  align-items:center;
+  min-height:23px;
+  padding:0 9px;
+  border-radius:999px;
+  background:rgba(8,8,8,.74);
+  border:1px solid rgba(255,255,255,.12);
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:7px;
+  letter-spacing:.08em;
+}
+.badai-demo-play:hover span{
+  transform:scale(1.04);
+}
+.badai-demo-card.demo-playing .badai-demo-play{
+  opacity:0;
+  pointer-events:none;
+}
+.badai-demo-card.demo-playing{
+  box-shadow:
+    0 38px 92px rgba(0,0,0,.62),
+    0 0 60px rgba(255,79,163,.14),
+    inset 0 1px 0 rgba(255,255,255,.07);
+}
 .badai-demo-card-foot{
   padding:10px 7px 5px;
 }
@@ -4543,7 +4599,7 @@ main section > .container > .badai-copy-kicker,
   filter:saturate(.72) brightness(.72);
   transform:translateX(12%) translateZ(-180px) rotateY(-43deg) scale(.84);
 }
-.badai-demo-card:not(.demo-center) .badai-demo-device{
+.badai-demo-card:not(.demo-center) .badai-demo-device iframe{
   pointer-events:none;
 }
 .badai-demo-dots{
@@ -4604,11 +4660,6 @@ main section > .container > .badai-copy-kicker,
   }
   .badai-demo-card-foot{
     padding-top:8px;
-  }
-}
-@media(prefers-reduced-motion:reduce){
-  .badai-demo-card{
-    transition:none!important;
   }
 }
 /* END BADAI PREMIUM 3D DEMO SHOWCASE */
@@ -4831,11 +4882,16 @@ main section > .container > .badai-copy-kicker,
       </div>
       <div class="badai-demo-device">
         <iframe
+          data-demo-base="https://www.youtube.com/embed/Z9cAgG3RvEw?rel=0&modestbranding=1&playsinline=1"
           src="https://www.youtube.com/embed/Z9cAgG3RvEw?rel=0&modestbranding=1&playsinline=1"
           title="Demo Video AI BADAI 1"
           loading="lazy"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen></iframe>
+        <button class="badai-demo-play" type="button" aria-label="Pilih dan putar Demo Video AI BADAI 1">
+          <span>▶</span>
+          <b>PUTAR DEMO</b>
+        </button>
       </div>
       <div class="badai-demo-card-foot">
         <strong>Contoh Hasil #01</strong>
@@ -4853,11 +4909,16 @@ main section > .container > .badai-copy-kicker,
       </div>
       <div class="badai-demo-device">
         <iframe
+          data-demo-base="https://www.youtube.com/embed/GNdqcDyZ9fw?rel=0&modestbranding=1&playsinline=1"
           src="https://www.youtube.com/embed/GNdqcDyZ9fw?rel=0&modestbranding=1&playsinline=1"
           title="Demo Video AI BADAI 2"
           loading="lazy"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen></iframe>
+        <button class="badai-demo-play" type="button" aria-label="Pilih dan putar Demo Video AI BADAI 2">
+          <span>▶</span>
+          <b>PUTAR DEMO</b>
+        </button>
       </div>
       <div class="badai-demo-card-foot">
         <strong>Contoh Hasil #02</strong>
@@ -4875,11 +4936,16 @@ main section > .container > .badai-copy-kicker,
       </div>
       <div class="badai-demo-device">
         <iframe
+          data-demo-base="https://www.youtube.com/embed/k8KnLPwr594?rel=0&modestbranding=1&playsinline=1"
           src="https://www.youtube.com/embed/k8KnLPwr594?rel=0&modestbranding=1&playsinline=1"
           title="Demo Video AI BADAI 3"
           loading="lazy"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen></iframe>
+        <button class="badai-demo-play" type="button" aria-label="Pilih dan putar Demo Video AI BADAI 3">
+          <span>▶</span>
+          <b>PUTAR DEMO</b>
+        </button>
       </div>
       <div class="badai-demo-card-foot">
         <strong>Contoh Hasil #03</strong>
@@ -4891,7 +4957,7 @@ main section > .container > .badai-copy-kicker,
   <div class="badai-demo-dots" aria-hidden="true">
     <span class="active"></span><span></span><span></span>
   </div>
-  <div class="badai-demo-note">3 demo berputar otomatis. Arahkan kursor ke kartu untuk berhenti sejenak.</div>
+  <div class="badai-demo-note">Demo auto-swipe terus. Klik video yang mau ditonton — animasi berhenti dan video langsung diputar.</div>
 </div>
 </section>
 <section id="materi">
@@ -5398,7 +5464,34 @@ main section > .container > .badai-copy-kicker,
 
   let current = 0;
   let timer = null;
+  let locked = false;
   let touchStartX = 0;
+
+  function stopVideo(card){
+    const frame = card.querySelector('iframe');
+    if(!frame) return;
+    const base = frame.dataset.demoBase || frame.src.split('&autoplay=1')[0];
+    if(frame.src !== base) frame.src = base;
+    card.classList.remove('demo-playing');
+  }
+
+  function stopAllVideos(exceptIndex=-1){
+    cards.forEach((card,index) => {
+      if(index !== exceptIndex) stopVideo(card);
+    });
+  }
+
+  function playCard(index){
+    const card = cards[index];
+    const frame = card?.querySelector('iframe');
+    if(!frame) return;
+
+    stopAllVideos(index);
+
+    const base = frame.dataset.demoBase || frame.src;
+    frame.src = base + (base.includes('?') ? '&' : '?') + 'autoplay=1';
+    card.classList.add('demo-playing');
+  }
 
   function render(){
     const total = cards.length;
@@ -5416,11 +5509,13 @@ main section > .container > .badai-copy-kicker,
   }
 
   function next(){
+    if(locked) return;
     current = (current + 1) % cards.length;
     render();
   }
 
   function prev(){
+    if(locked) return;
     current = (current - 1 + cards.length) % cards.length;
     render();
   }
@@ -5434,38 +5529,52 @@ main section > .container > .badai-copy-kicker,
 
   function start(){
     stop();
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    timer = setInterval(next,4800);
+    if(locked) return;
+    timer = setInterval(next,2400);
   }
 
-  stage.addEventListener('mouseenter',stop);
-  stage.addEventListener('mouseleave',start);
+  function selectAndPlay(index){
+    locked = true;
+    stop();
+    current = index;
+    render();
+
+    // Tunggu sedikit supaya kartu yang dipilih selesai bergerak ke tengah,
+    // lalu mulai video dari user gesture yang sama.
+    window.setTimeout(() => playCard(index),220);
+  }
+
+  cards.forEach((card,index) => {
+    const playButton = card.querySelector('.badai-demo-play');
+
+    playButton?.addEventListener('click',e => {
+      e.preventDefault();
+      e.stopPropagation();
+      selectAndPlay(index);
+    });
+
+    card.addEventListener('click',e => {
+      if(e.target.closest('iframe') || e.target.closest('.badai-demo-play')) return;
+      selectAndPlay(index);
+    });
+  });
 
   stage.addEventListener('touchstart',e => {
+    if(locked) return;
     touchStartX = e.touches[0].clientX;
-    stop();
   },{passive:true});
 
   stage.addEventListener('touchend',e => {
+    if(locked) return;
     const diff = e.changedTouches[0].clientX - touchStartX;
     if(diff < -35) next();
     else if(diff > 35) prev();
     start();
   },{passive:true});
 
-  cards.forEach((card,index) => {
-    card.addEventListener('click',e => {
-      if(index === current) return;
-      if(e.target.closest('iframe')) return;
-      current = index;
-      render();
-      start();
-    });
-  });
-
   document.addEventListener('visibilitychange',() => {
     if(document.hidden) stop();
-    else start();
+    else if(!locked) start();
   });
 
   render();
