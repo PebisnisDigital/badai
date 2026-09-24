@@ -1861,6 +1861,172 @@ th,td{padding:14px 12px!important}
   #pageSales .stat strong{font-size:24px!important}
 }
 
+
+/* BADAI SALES INLINE ACTIONS + MODAL */
+.sales-compact-head,
+.sales-compact-row{
+  grid-template-columns:34px minmax(82px,1fr) minmax(112px,1.25fr) minmax(84px,.95fr) 60px 86px 82px!important;
+}
+.sales-action-cell{
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+}
+.sales-inline-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:5px!important;
+  width:100%!important;
+}
+.sales-action-open,
+.sales-action-delete{
+  border:1px solid #5a2944!important;
+  background:#1a0f15!important;
+  color:#ff8fc5!important;
+  min-height:28px!important;
+  border-radius:8px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  cursor:pointer!important;
+}
+.sales-action-open{
+  gap:4px!important;
+  padding:0 8px!important;
+  font-family:"Nunito",Arial,sans-serif!important;
+  font-size:7.5px!important;
+  font-weight:900!important;
+}
+.sales-action-open span{font-size:11px!important;line-height:1!important}
+.sales-action-delete{
+  width:29px!important;
+  padding:0!important;
+  border-color:#5a2525!important;
+  background:#1b0d0d!important;
+  color:#ff7979!important;
+}
+.sales-action-delete svg{
+  width:13px!important;
+  height:13px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.8!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+.sales-action-modal-box{
+  width:min(100%,520px)!important;
+}
+.sales-action-modal-head{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+}
+.sales-action-modal-head h2{margin:0 0 4px!important}
+.sales-action-modal-head p{margin:0!important}
+.sales-modal-close{
+  width:34px!important;
+  height:34px!important;
+  flex:0 0 34px!important;
+  border:1px solid #333!important;
+  border-radius:10px!important;
+  background:#111!important;
+  color:#aaa!important;
+  font-size:24px!important;
+  line-height:1!important;
+  cursor:pointer!important;
+}
+.sales-action-summary{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+  margin:16px 0 4px!important;
+}
+.sales-action-summary>div{
+  min-width:0!important;
+  padding:10px 11px!important;
+  border:1px solid #292929!important;
+  border-radius:11px!important;
+  background:#0a0a0a!important;
+}
+.sales-action-summary span{
+  display:block!important;
+  margin-bottom:3px!important;
+  color:#777!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  text-transform:uppercase!important;
+}
+.sales-action-summary strong{
+  display:block!important;
+  color:#fff!important;
+  font-family:"Nunito",Arial,sans-serif!important;
+  font-size:12px!important;
+  line-height:1.3!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.sales-action-select-wrap{margin-top:12px!important}
+.sales-action-select-wrap select{
+  min-height:46px!important;
+  font-size:14px!important;
+  font-weight:800!important;
+}
+.sales-pending-tools{
+  margin-top:11px!important;
+  padding:11px!important;
+  border:1px solid #44351b!important;
+  border-radius:12px!important;
+  background:#171208!important;
+}
+.sales-pending-tools>span{
+  display:block!important;
+  margin-bottom:7px!important;
+  color:#d8bd69!important;
+  font-size:10px!important;
+  font-weight:900!important;
+}
+.sales-pending-tools>div{
+  display:grid!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:6px!important;
+}
+.sales-pending-tools a{
+  min-height:34px!important;
+  border:1px solid #5b4922!important;
+  border-radius:9px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:#f4d36d!important;
+  text-decoration:none!important;
+  font-size:10px!important;
+  font-weight:900!important;
+}
+.sales-action-modal-actions{margin-top:14px!important}
+
+@media(max-width:560px){
+  .sales-compact-head,
+  .sales-compact-row{
+    grid-template-columns:28px minmax(66px,1fr) minmax(82px,1.15fr) minmax(66px,.9fr) 50px 72px 68px!important;
+    gap:4px!important;
+  }
+  .sales-action-open{
+    min-height:26px!important;
+    padding:0 5px!important;
+    font-size:6.5px!important;
+  }
+  .sales-action-delete{
+    width:27px!important;
+    min-height:26px!important;
+  }
+  .sales-action-summary{
+    grid-template-columns:1fr!important;
+  }
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -1961,7 +2127,7 @@ th,td{padding:14px 12px!important}
         <table>
           <thead>
             <tr>
-              <th>No</th><th>Member</th><th>Email</th><th>WA</th><th>Paket</th><th>Tanggal Daftar</th>
+              <th>No</th><th>Member</th><th>Email</th><th>WA</th><th>Paket</th><th>Tanggal Daftar</th><th>Aksi</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -2493,6 +2659,54 @@ th,td{padding:14px 12px!important}
     <div class="cred-actions">
       <button id="copyTeamCredentialBtn" class="primary-act" type="button">SALIN AKSES TIM</button>
       <button id="closeTeamCredentialBtn" type="button">TUTUP</button>
+    </div>
+  </div>
+</div>
+
+<div id="salesActionModal" class="cred-modal hidden">
+  <div class="cred-box sales-action-modal-box">
+    <div class="sales-action-modal-head">
+      <div>
+        <h2>Aksi Member</h2>
+        <p>Pilih tindakan untuk data pendaftaran ini.</p>
+      </div>
+      <button id="closeSalesActionIcon" class="sales-modal-close" type="button" aria-label="Tutup">×</button>
+    </div>
+
+    <input id="salesActionId" type="hidden"/>
+
+    <div class="sales-action-summary">
+      <div><span>No</span><strong id="salesActionNo">-</strong></div>
+      <div><span>Member</span><strong id="salesActionName">-</strong></div>
+      <div><span>Email</span><strong id="salesActionEmail">-</strong></div>
+      <div><span>WhatsApp</span><strong id="salesActionWa">-</strong></div>
+      <div><span>Paket</span><strong id="salesActionPlan">-</strong></div>
+      <div><span>Tanggal Daftar</span><strong id="salesActionDate">-</strong></div>
+    </div>
+
+    <div class="manage-field full sales-action-select-wrap">
+      <label>Pilih Aksi</label>
+      <select id="salesActionSelect">
+        <option value="manage">Kelola Data Member</option>
+        <option value="activate">Aktifkan / ACC Member</option>
+        <option value="reset">Reset Akses</option>
+        <option value="suspend">Suspend</option>
+        <option value="pending">Jadikan Pending</option>
+      </select>
+    </div>
+
+    <div id="salesPendingTools" class="sales-pending-tools hidden">
+      <span>Follow-up Pending</span>
+      <div>
+        <a id="salesFu1" href="#" target="_blank" rel="noopener">FU 1</a>
+        <a id="salesFu2" href="#" target="_blank" rel="noopener">FU 2</a>
+        <a id="salesFu3" href="#" target="_blank" rel="noopener">FU 3</a>
+      </div>
+    </div>
+
+    <div class="cred-actions sales-action-modal-actions">
+      <button id="applySalesActionBtn" class="primary-act" type="button">UPDATE</button>
+      <button id="closeSalesActionBtn" type="button">TUTUP</button>
     </div>
   </div>
 </div>
@@ -3493,41 +3707,10 @@ th,td{padding:14px 12px!important}
 
   function actionHtml(r, mobile){
     if(!canManageSales()) return '<span class="meta">READ ONLY</span>';
-
-    const parts = [];
-    const isPaid = r.payment_status === 'paid';
-    const isPending = r.payment_status === 'pending' || r.payment_status === 'waiting_verification';
-
-    if(isPending){
-      parts.push('<a class="action followup" href="' + followUpLink(r,1) + '" target="_blank" rel="noopener">FU 1</a>');
-      parts.push('<a class="action followup fu2" href="' + followUpLink(r,2) + '" target="_blank" rel="noopener">FU 2</a>');
-      parts.push('<a class="action followup fu3" href="' + followUpLink(r,3) + '" target="_blank" rel="noopener">FU 3</a>');
-
-      if(r.user_id){
-        parts.push('<button class="action approve" data-action="approve-existing" data-id="' + r.id + '">ACC + AKTIFKAN</button>');
-      }else{
-        parts.push('<button class="action approve" data-action="approve" data-id="' + r.id + '">ACC + BUAT AKUN</button>');
-      }
-
-      parts.push('<button class="action delete" data-action="delete" data-id="' + r.id + '">' + (mobile?'HAPUS TOTAL':'HAPUS') + '</button>');
-      return parts.join('');
-    }
-
-    if(isPaid){
-      if(!r.user_id){
-        parts.push('<button class="action approve" data-action="approve" data-id="' + r.id + '">ACC + BUAT AKUN</button>');
-      }
-      parts.push('<button class="action manage" data-action="manage" data-id="' + r.id + '">KELOLA</button>');
-      parts.push('<button class="action manage" data-action="reset-access" data-id="' + r.id + '">RESET AKSES</button>');
-      parts.push('<button class="action suspend" data-action="suspend" data-id="' + r.id + '">SUSPEND</button>');
-      parts.push('<button class="action delete" data-action="delete" data-id="' + r.id + '">' + (mobile?'HAPUS TOTAL':'HAPUS') + '</button>');
-      return parts.join('');
-    }
-
-    // Fallback untuk status lain seperti rejected.
-    parts.push('<button class="action approve" data-action="' + (r.user_id ? 'approve-existing' : 'approve') + '" data-id="' + r.id + '">ACC</button>');
-    parts.push('<button class="action delete" data-action="delete" data-id="' + r.id + '">' + (mobile?'HAPUS TOTAL':'HAPUS') + '</button>');
-    return parts.join('');
+    return '<div class="sales-inline-actions">' +
+      '<button class="sales-action-open" type="button" data-action="sales-menu" data-id="' + r.id + '"><span aria-hidden="true">✎</span><b>AKSI</b></button>' +
+      '<button class="sales-action-delete" type="button" data-action="delete" data-id="' + r.id + '" aria-label="Hapus member" title="Hapus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5"/></svg></button>' +
+    '</div>';
   }
 
   function renderSales(){
@@ -3545,15 +3728,13 @@ th,td{padding:14px 12px!important}
         <td><span class="sales-clip" title="${esc(r.whatsapp)}">${esc(r.whatsapp)}</span></td>
         <td><span class="sales-plan">${planText(r.membership_plan)}</span></td>
         <td><span class="sales-date">${dateOnly(r.created_at)}</span></td>
-      </tr>
-      <tr class="sales-action-row">
-        <td colspan="6"><div class="actions sales-row-actions">${actionHtml(r,false)}</div></td>
+        <td class="sales-action-cell">${actionHtml(r,false)}</td>
       </tr>
     `).join('');
 
     const salesHead = rows.length ? `
       <div class="sales-compact-head">
-        <span>No</span><span>Member</span><span>Email</span><span>WA</span><span>Paket</span><span>Tanggal Daftar</span>
+        <span>No</span><span>Member</span><span>Email</span><span>WA</span><span>Paket</span><span>Tanggal Daftar</span><span>Aksi</span>
       </div>` : '';
 
     $('mobileList').innerHTML = salesHead + rows.map(r => `
@@ -3565,8 +3746,8 @@ th,td{padding:14px 12px!important}
           <span class="sales-clip" title="${esc(r.whatsapp)}">${esc(r.whatsapp)}</span>
           <span class="sales-plan">${planText(r.membership_plan)}</span>
           <span class="sales-date">${dateOnly(r.created_at)}</span>
+          <span class="sales-action-cell">${actionHtml(r,true)}</span>
         </div>
-        <div class="actions sales-row-actions">${actionHtml(r,true)}</div>
       </div>
     `).join('');
   }
@@ -3845,6 +4026,72 @@ th,td{padding:14px 12px!important}
     $('credentialModal').classList.remove('hidden');
   }
 
+  function openSalesActionModal(row){
+    $('salesActionId').value = row.id;
+    $('salesActionNo').textContent = registrationNumber(row);
+    $('salesActionName').textContent = row.full_name || '-';
+    $('salesActionEmail').textContent = row.email || '-';
+    $('salesActionWa').textContent = row.whatsapp || '-';
+    $('salesActionPlan').textContent = planText(row.membership_plan);
+    $('salesActionDate').textContent = dateOnly(row.created_at);
+
+    const select = $('salesActionSelect');
+    select.value = 'manage';
+
+    const activateOption = select.querySelector('option[value="activate"]');
+    if(activateOption){
+      activateOption.textContent = row.user_id ? 'Aktifkan / ACC Member' : 'ACC + Buat Akun Member';
+    }
+
+    const resetOption = select.querySelector('option[value="reset"]');
+    const suspendOption = select.querySelector('option[value="suspend"]');
+    if(resetOption) resetOption.disabled = !row.user_id;
+    if(suspendOption) suspendOption.disabled = !row.user_id;
+
+    const pending = row.payment_status === 'pending' || row.payment_status === 'waiting_verification';
+    $('salesPendingTools').classList.toggle('hidden', !pending);
+    if(pending){
+      $('salesFu1').href = followUpLink(row,1);
+      $('salesFu2').href = followUpLink(row,2);
+      $('salesFu3').href = followUpLink(row,3);
+    }
+
+    $('salesActionModal').classList.remove('hidden');
+  }
+
+  async function applySalesAction(){
+    const id = $('salesActionId').value;
+    const row = registrations.find(r => r.id === id);
+    if(!row) return;
+
+    const selected = $('salesActionSelect').value;
+    $('salesActionModal').classList.add('hidden');
+
+    if(selected === 'manage'){
+      openManageModal(row);
+      return;
+    }
+
+    if(selected === 'activate'){
+      await updateRegistration(id, row.user_id ? 'approve-existing' : 'approve');
+      return;
+    }
+
+    if(selected === 'reset'){
+      await updateRegistration(id, 'reset-access');
+      return;
+    }
+
+    if(selected === 'suspend'){
+      await updateRegistration(id, 'suspend');
+      return;
+    }
+
+    if(selected === 'pending'){
+      await updateRegistration(id, 'pending');
+    }
+  }
+
   function openManageModal(row){
     $('manageId').value = row.id;
     $('manageName').value = row.full_name || '';
@@ -3957,6 +4204,7 @@ th,td{padding:14px 12px!important}
     if(!row) return;
     if(!canManageSales()) throw new Error('Role ini tidak punya izin mengubah penjualan.');
 
+    if(action === 'sales-menu'){ openSalesActionModal(row); return; }
     if(action === 'manage'){ openManageModal(row); return; }
 
     if(action === 'approve'){
@@ -4024,6 +4272,20 @@ th,td{padding:14px 12px!important}
         body:JSON.stringify({member_status:'active'})
       });
       await loadRegistrations(); return;
+    }
+
+    if(action === 'pending'){
+      if(!confirm('Ubah status ' + row.full_name + ' menjadi PENDING?')) return;
+      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({
+          payment_status:'pending',
+          member_status:'pending'
+        })
+      });
+      await loadRegistrations();
+      return;
     }
 
     if(action === 'delete'){
@@ -4296,6 +4558,21 @@ th,td{padding:14px 12px!important}
     e.preventDefault();
     try{ await addTeamMember(); }
     catch(err){ $('teamStatus').textContent = err.message; }
+  });
+
+  $('closeSalesActionBtn').addEventListener('click', () => $('salesActionModal').classList.add('hidden'));
+  $('closeSalesActionIcon').addEventListener('click', () => $('salesActionModal').classList.add('hidden'));
+  $('applySalesActionBtn').addEventListener('click', async () => {
+    const btn = $('applySalesActionBtn');
+    const oldText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'MEMPROSES...';
+    try{ await applySalesAction(); }
+    catch(err){ alert('Aksi gagal: ' + err.message); }
+    finally{ btn.disabled = false; btn.textContent = oldText; }
+  });
+  $('salesActionModal').addEventListener('click', (e) => {
+    if(e.target === $('salesActionModal')) $('salesActionModal').classList.add('hidden');
   });
 
   $('closeManageBtn').addEventListener('click', () => $('manageModal').classList.add('hidden'));
