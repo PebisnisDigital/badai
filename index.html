@@ -6019,6 +6019,115 @@ main section > .container > .badai-copy-kicker,
 }
 /* END BADAI PRICING MATERIAL NAMES FINAL */
 
+
+/* BADAI BOTTOM PRICE COMPARISON FINAL */
+#pricing .package-closing{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px dashed #303030;
+}
+#pricing .package-closing-label{
+  margin-bottom:6px;
+  color:#777;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.08em;
+}
+#pricing .package-closing .package-price-wrap{
+  margin:0!important;
+}
+
+/* PEMULA: deliberately bigger, louder, red */
+#pricing .package-closing-newbie{
+  border-top-color:#4a2626;
+}
+#pricing .package-closing-newbie .package-closing-label{
+  color:#c58484;
+}
+#pricing .package-closing-newbie .package-price-wrap{
+  padding:16px 14px!important;
+  border:1px solid #633232!important;
+  background:
+    radial-gradient(circle at 86% 15%,rgba(255,77,79,.16),transparent 36%),
+    linear-gradient(180deg,#170d0d,#0d0909)!important;
+  box-shadow:0 12px 30px rgba(255,77,79,.08)!important;
+}
+#pricing .package-closing-newbie .package-price{
+  color:#ff6868!important;
+  font-size:49px!important;
+  line-height:.94!important;
+  font-weight:950!important;
+  letter-spacing:-.07em!important;
+  text-shadow:0 0 24px rgba(255,77,79,.24)!important;
+}
+#pricing .package-closing-newbie .package-period{
+  color:#e39a9a!important;
+  font-size:11px!important;
+  font-weight:900!important;
+  padding-bottom:5px!important;
+}
+
+/* UNTUNG: cheaper price is smaller but clearly green */
+#pricing .package-closing-pro{
+  margin-top:18px;
+  border-top-color:#234332;
+}
+#pricing .package-closing-pro .package-closing-label{
+  color:#79bd91;
+}
+#pricing .package-closing-pro .package-price-wrap{
+  padding:14px 13px!important;
+  border:1px solid #28523a!important;
+  background:
+    radial-gradient(circle at 86% 15%,rgba(127,226,163,.12),transparent 36%),
+    linear-gradient(180deg,#0d1510,#090d0a)!important;
+  box-shadow:0 12px 30px rgba(82,189,121,.07)!important;
+}
+#pricing .package-closing-pro .package-price{
+  color:#7fe2a3!important;
+  font-size:29px!important;
+  line-height:1!important;
+  font-weight:950!important;
+  letter-spacing:-.045em!important;
+  text-shadow:0 0 20px rgba(127,226,163,.22)!important;
+}
+#pricing .package-closing-pro .package-period{
+  color:#78c995!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  padding-bottom:3px!important;
+}
+#pricing .package-closing-pro .package-price-advantage{
+  margin-top:7px!important;
+  color:#8dd5a6!important;
+  font-size:8.5px!important;
+  font-weight:900!important;
+}
+
+/* CTAs stay visually attached to price decision */
+#pricing .package-closing + .package-select-btn{
+  margin-top:10px!important;
+}
+#pricing .package-card[data-package-card="newbie"] .package-select-btn{
+  min-height:56px!important;
+  font-size:11px!important;
+}
+#pricing .package-card-featured .package-select-btn{
+  min-height:60px!important;
+  font-size:12px!important;
+}
+
+@media(max-width:700px){
+  #pricing .package-closing-newbie .package-price{
+    font-size:44px!important;
+  }
+  #pricing .package-closing-pro .package-price{
+    font-size:27px!important;
+  }
+}
+/* END BADAI BOTTOM PRICE COMPARISON FINAL */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -6558,11 +6667,6 @@ main section > .container > .badai-copy-kicker,
         <p>Untuk yang ingin fokus belajar 10 materi inti lebih dulu.</p>
       </div>
 
-      <div class="package-price-wrap">
-        <div class="package-price-label">Biaya akses 1 tahun</div>
-        <div class="package-price-line"><div class="package-price" id="dynamicNewbiePrice">Rp199.000</div><span class="package-period">/ tahun</span></div>
-      </div>
-
       <div class="package-access-note"><b>Masa akses 1 tahun sejak aktivasi.</b> Selama periode aktif, kamu mendapat update sesuai Paket Pemula.</div>
       <div class="package-material-count">MATERI YANG KAMU DAPAT</div>
       <div class="package-material-list newbie-material-list">
@@ -6583,6 +6687,13 @@ main section > .container > .badai-copy-kicker,
         <div class="package-feature"><span>✓</span><div><b>Member Area</b></div></div>
       </div>
 
+      <div class="package-closing package-closing-newbie">
+        <div class="package-closing-label">BIAYA AKSES 1 TAHUN</div>
+        <div class="package-price-wrap">
+          <div class="package-price-line"><div class="package-price" id="dynamicNewbiePrice">Rp199.000</div><span class="package-period">/ tahun</span></div>
+        </div>
+      </div>
+
       <button class="package-select-btn" type="button" data-package-select="newbie">
         PILIH PAKET PEMULA
       </button>
@@ -6597,12 +6708,6 @@ main section > .container > .badai-copy-kicker,
         <div class="package-label hot">BELAJAR + JALUR UNTUNG</div>
         <h3>UNTUNG</h3>
         <p>Dapat semua materi Pemula + materi Untung + jalur monetisasi + program afiliasi.</p>
-      </div>
-
-      <div class="package-price-wrap">
-        <div class="package-price-label">Biaya akses 1 tahun</div>
-        <div class="package-price-line"><div class="package-price" id="dynamicProPrice">Rp99.000</div><span class="package-period green">/ tahun</span></div>
-        <div class="package-price-advantage" id="proPriceAdvantageCopy">Lebih lengkap • Harga lebih ringan dari Paket Pemula</div>
       </div>
 
       <div class="package-access-note"><b>Masa akses 1 tahun sejak aktivasi.</b> Selama periode aktif, kamu mendapat update Paket Untung + Pemula.</div>
@@ -6650,6 +6755,14 @@ main section > .container > .badai-copy-kicker,
         <div class="package-feature"><span>✓</span><div><b>Program Afiliasi BADAI</b></div></div>
         <div class="package-feature"><span>✓</span><div><b>Bahan Promosi Siap Pakai</b></div></div>
         <div class="package-feature"><span>✓</span><div><b>Dashboard Sales &amp; Komisi Afiliasi</b></div></div>
+      </div>
+
+      <div class="package-closing package-closing-pro">
+        <div class="package-closing-label">BIAYA AKSES 1 TAHUN</div>
+        <div class="package-price-wrap">
+          <div class="package-price-line"><div class="package-price" id="dynamicProPrice">Rp99.000</div><span class="package-period green">/ tahun</span></div>
+          <div class="package-price-advantage" id="proPriceAdvantageCopy">Lebih lengkap • Harga lebih ringan dari Paket Pemula</div>
+        </div>
       </div>
 
       <button class="package-select-btn hot" type="button" data-package-select="pro">
