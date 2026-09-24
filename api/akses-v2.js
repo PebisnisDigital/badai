@@ -1190,40 +1190,40 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   var pemulaMaterials=[
-    {title:'AI VIDEO GENERATOR',video:'',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/T3aDuFAhgGVr'},
-    {title:'BIKIN GEO-SPASIAL',video:'',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS GEO-SPASIAL',toolUrl:'https://share.gemini.google/uIo6f8B4PaZh'},
-    {title:'BIKIN DAKWAH INFLUENCER',video:'',content:''},
-    {title:'BIKIN SELEBGRAM AI',video:'',content:''},
-    {title:'BIKIN AFFILIATE AI',video:'',content:''},
-    {title:'BIKIN PAPER CRAFT',video:'',content:''},
-    {title:'BIKIN UNBOXING AI',video:'',content:''},
-    {title:'BIKIN GAME',video:'',content:''},
-    {title:'BIKIN VIDEO GENJUTSU VIRAL',video:'',content:''},
-    {title:'BIKIN VIDEO KLONING',video:'',content:''}
+    {title:'AI VIDEO GENERATOR',video:'',description:'Bikin video AI dari ide atau materi sederhana supaya lebih cepat jadi konten visual.',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/T3aDuFAhgGVr'},
+    {title:'BIKIN GEO-SPASIAL',video:'',description:'Bikin konten peta, lokasi, dan visual geospasial yang menarik dengan bantuan AI.',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS GEO-SPASIAL',toolUrl:'https://share.gemini.google/uIo6f8B4PaZh'},
+    {title:'BIKIN DAKWAH INFLUENCER',video:'',description:'Bikin karakter dan konten dakwah digital yang konsisten untuk media sosial.',content:''},
+    {title:'BIKIN SELEBGRAM AI',video:'',description:'Bikin karakter selebgram AI lengkap dengan konsep konten dan tampilan yang konsisten.',content:''},
+    {title:'BIKIN AFFILIATE AI',video:'',description:'Bikin konten affiliate berbantu AI untuk memperkenalkan produk dengan lebih menarik.',content:''},
+    {title:'BIKIN PAPER CRAFT',video:'',description:'Bikin desain paper craft dari ide sederhana sampai siap dijadikan pola visual.',content:''},
+    {title:'BIKIN UNBOXING AI',video:'',description:'Bikin video unboxing produk dengan visual AI tanpa harus selalu merekam dari awal.',content:''},
+    {title:'BIKIN GAME',video:'',description:'Bikin game sederhana dengan bantuan AI, mulai dari ide sampai versi yang bisa dimainkan.',content:''},
+    {title:'BIKIN VIDEO GENJUTSU VIRAL',video:'',description:'Bikin video transformasi Genjutsu yang menarik untuk konten pendek dan media sosial.',content:''},
+    {title:'BIKIN VIDEO KLONING',video:'',description:'Bikin video kloning karakter atau diri sendiri untuk variasi konten kreatif dengan AI.',content:''}
   ];
 
   var untungMaterials=[
-    {title:'BIKIN APLIKASI',video:'',content:''},
-    {title:'BIKIN POSTER',video:'',content:''},
-    {title:'BIKIN PRESENTASI',video:'',content:''},
-    {title:'BIKIN BUKU',video:'',content:''},
-    {title:'BIKIN WEB APP',video:'',content:''},
-    {title:'BIKIN RPP',video:'',content:''},
-    {title:'BIKIN LKPD',video:'',content:''},
-    {title:'BIKIN KOMIK DIGITAL',video:'',content:''},
-    {title:'BIKIN LKPD INTERAKTIF',video:'',content:''},
-    {title:'BIKIN INFOGRAFIS',video:'',content:''},
-    {title:'BIKIN PRESENTASI',video:'',content:''},
-    {title:'BIKIN GAME EDUKASI',video:'',content:''},
-    {title:'WEB RAHASIA KUMPULAN PROMPT GRATIS',video:'',content:''},
-    {title:'BUAT VIDEO PENDEK DIBAYAR LYNK ID',video:'',content:''},
-    {title:'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',video:'',content:''},
-    {title:'STRATEGI JAGO JUALAN DI WHATSAPP',video:'',content:''},
-    {title:'CONTEKAN 3 PESAN BIAR KONTAK BARU LEBIH CEPAT JADI PEMBELI',video:'',content:''},
-    {title:'BIKIN KELAS ONLINE',video:'',content:''},
-    {title:'5 STRATEGI DAPAT KONTAK BERKUALITAS',video:'',content:''},
-    {title:'9 STRATEGI DAPAT RIBUAN KONTAK NON STOP',video:'',content:''},
-    {title:'DAPAT KONTAK LANGSUNG DAPAT TRANSFERAN',video:'',content:''}
+    {title:'BIKIN APLIKASI',video:'',description:'Belajar menyusun aplikasi sederhana dengan bantuan AI dari ide sampai fungsi dasarnya.',content:''},
+    {title:'BIKIN POSTER',video:'',description:'Bikin poster promosi yang rapi dan menarik dengan bantuan AI.',content:''},
+    {title:'BIKIN PRESENTASI',video:'',description:'Bikin slide presentasi lebih cepat, terstruktur, dan enak dilihat dengan AI.',content:''},
+    {title:'BIKIN BUKU',video:'',description:'Susun ide, isi, dan struktur buku dengan bantuan AI sampai siap dirapikan.',content:''},
+    {title:'BIKIN WEB APP',video:'',description:'Bikin web app sederhana dari kebutuhan nyata tanpa harus mulai dari kode kosong.',content:''},
+    {title:'BIKIN RPP',video:'',description:'Bantu menyusun RPP yang lebih terstruktur dengan AI sesuai kebutuhan pembelajaran.',content:''},
+    {title:'BIKIN LKPD',video:'',description:'Bikin LKPD yang rapi dan mudah dipakai untuk kegiatan belajar.',content:''},
+    {title:'BIKIN KOMIK DIGITAL',video:'',description:'Bikin cerita, karakter, dan panel komik digital menggunakan bantuan AI.',content:''},
+    {title:'BIKIN LKPD INTERAKTIF',video:'',description:'Ubah materi belajar menjadi LKPD interaktif yang lebih menarik untuk siswa.',content:''},
+    {title:'BIKIN INFOGRAFIS',video:'',description:'Ubah informasi panjang menjadi infografis yang ringkas dan mudah dipahami.',content:''},
+    {title:'BIKIN PRESENTASI',video:'',description:'Susun materi menjadi presentasi visual yang siap dipakai untuk mengajar atau menjual.',content:''},
+    {title:'BIKIN GAME EDUKASI',video:'',description:'Bikin permainan edukasi sederhana yang membantu proses belajar jadi lebih interaktif.',content:''},
+    {title:'WEB RAHASIA KUMPULAN PROMPT GRATIS',video:'',description:'Bikin web sederhana untuk menyimpan dan membagikan koleksi prompt secara rapi.',content:''},
+    {title:'BUAT VIDEO PENDEK DIBAYAR LYNK ID',video:'',description:'Pelajari alur membuat video pendek dan memanfaatkannya melalui fitur monetisasi Lynk ID.',content:''},
+    {title:'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',video:'',description:'Susun alur konten dan promosi agar aktivitas jualan di Instagram dan Threads lebih teratur.',content:''},
+    {title:'STRATEGI JAGO JUALAN DI WHATSAPP',video:'',description:'Pelajari cara membangun percakapan dan penawaran yang lebih nyaman lewat WhatsApp.',content:''},
+    {title:'CONTEKAN 3 PESAN BIAR KONTAK BARU LEBIH CEPAT JADI PEMBELI',video:'',description:'Pelajari tiga pola pesan untuk menindaklanjuti kontak baru tanpa terasa memaksa.',content:''},
+    {title:'BIKIN KELAS ONLINE',video:'',description:'Susun materi, struktur, dan akses kelas online dari pengetahuan yang kamu punya.',content:''},
+    {title:'5 STRATEGI DAPAT KONTAK BERKUALITAS',video:'',description:'Pelajari cara mencari kontak yang lebih relevan dengan produk atau layananmu.',content:''},
+    {title:'9 STRATEGI DAPAT RIBUAN KONTAK NON STOP',video:'',description:'Pelajari beberapa jalur untuk memperluas jaringan kontak secara konsisten.',content:''},
+    {title:'DAPAT KONTAK LANGSUNG DAPAT TRANSFERAN',video:'',description:'Pelajari cara menghubungkan aktivitas mencari kontak dengan penawaran yang jelas dan terarah.',content:''}
   ];
 
   function youtubeEmbedUrl(url){
@@ -1243,9 +1243,9 @@ document.addEventListener('DOMContentLoaded', function(){
       var hasTool=!!String(item.toolUrl||'').trim();
       var hasVideo=!!String(item.video||'').trim();
       var ready=item.ready===true || hasTool || hasVideo;
-      var description=item.content
-        ? item.content
-        : 'Materi ini sedang disiapkan dan akan dibuka setelah tools atau video tutorialnya tersedia.';
+      var description=item.description
+        ? item.description
+        : (item.content ? item.content : 'Materi ini sedang disiapkan.');
 
       var toolButton=hasTool
         ? '<a class="badai-card-action badai-card-action-tool" href="'+item.toolUrl+'" target="_blank" rel="noopener noreferrer">BUKA TOOLS <span>↗</span></a>'
