@@ -2322,6 +2322,40 @@ th,td{padding:14px 12px!important}
     font-size:8px!important;
   }
 }
+
+/* BADAI SALES PACKAGE RESTORED — after Member */
+#pageSales .sales-compact-head,
+#pageSales .sales-compact-row{
+  grid-template-columns:30px minmax(205px,1.8fr) minmax(78px,.72fr) minmax(120px,1fr) 76px 92px!important;
+  gap:8px!important;
+  align-items:center!important;
+}
+#pageSales .sales-package-stack{
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:3px!important;
+}
+#pageSales .sales-package-stack strong{
+  color:#ff7fbd!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+#pageSales .sales-package-stack span{
+  color:#c8c8c8!important;
+  font-size:8px!important;
+  white-space:nowrap!important;
+}
+@media(max-width:560px){
+  #pageSales .sales-compact-head,
+  #pageSales .sales-compact-row{
+    grid-template-columns:24px minmax(150px,1.65fr) minmax(66px,.72fr) minmax(86px,.9fr) 60px 70px!important;
+    gap:4px!important;
+  }
+  #pageSales .sales-package-stack strong{font-size:8px!important}
+  #pageSales .sales-package-stack span{font-size:7px!important}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -2422,7 +2456,7 @@ th,td{padding:14px 12px!important}
         <table>
           <thead>
             <tr>
-              <th>No</th><th>Member</th><th>Afiliasi</th><th>Status</th><th>Aksi</th>
+              <th>No</th><th>Member</th><th>Paket</th><th>Afiliasi</th><th>Status</th><th>Aksi</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -4043,6 +4077,12 @@ th,td{padding:14px 12px!important}
             </div>
           </td>
           <td>
+            <div class="sales-package-stack">
+              <strong>${planText(r.membership_plan)}</strong>
+              <span>${rupiah(r.amount)}</span>
+            </div>
+          </td>
+          <td>
             <div class="sales-affiliate-stack">
               <strong title="${esc(aff.name)}">${esc(aff.name)}</strong>
               ${aff.code ? '<span>'+esc(aff.code)+'</span>' : '<span>Tanpa afiliasi</span>'}
@@ -4056,7 +4096,7 @@ th,td{padding:14px 12px!important}
 
     const salesHead = rows.length ? `
       <div class="sales-compact-head">
-        <span>No</span><span>Member</span><span>Afiliasi</span><span>Status</span><span>Aksi</span>
+        <span>No</span><span>Member</span><span>Paket</span><span>Afiliasi</span><span>Status</span><span>Aksi</span>
       </div>` : '';
 
     $('mobileList').innerHTML = salesHead + rows.map(r => {
@@ -4069,6 +4109,10 @@ th,td{padding:14px 12px!important}
               <strong title="${esc(r.full_name)}">${esc(r.full_name)}</strong>
               <span class="sales-member-contact">✉ ${esc(r.email)}</span>
               <span class="sales-member-contact">◧ ${esc(r.whatsapp)}</span>
+            </div>
+            <div class="sales-package-stack">
+              <strong>${planText(r.membership_plan)}</strong>
+              <span>${rupiah(r.amount)}</span>
             </div>
             <div class="sales-affiliate-stack">
               <strong title="${esc(aff.name)}">${esc(aff.name)}</strong>
