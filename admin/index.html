@@ -4431,9 +4431,9 @@ th,td{padding:14px 12px!important}
       // 3. Semua akun yang sudah ada disinkronkan lewat registration.
       // Trigger database BADAI ikut menyinkronkan profile, paket, status, dan afiliasi.
       const active = targetStatus === 'active';
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+      const updatedRows = await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id) + '&select=id,amount', {
         method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
+        headers:{'Prefer':'return=representation'},
         body:JSON.stringify({
           membership_plan:membershipPlan,
           payment_status:active ? 'paid' : 'pending',
@@ -4442,7 +4442,8 @@ th,td{padding:14px 12px!important}
         })
       });
 
-      await syncPaymentStatus(id, active ? 'paid' : 'pending', row.amount);
+      const syncedAmount = Number(updatedRows?.[0]?.amount ?? row.amount ?? 0);
+      await syncPaymentStatus(id, active ? 'paid' : 'pending', syncedAmount);
 
       // 4. Reset akses hanya tersedia untuk member yang memang sudah AKTIF.
       if(resetAccess){
