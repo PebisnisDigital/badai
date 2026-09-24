@@ -455,6 +455,90 @@ module.exports = async function handler(req, res) {
   .coupon-meta,.coupon-row,.affiliate-material-info,
   .affiliate-payout-meta,.affiliate-overview-row{font-size:12.5px!important}
 
+  /* BADAI SALES FINAL FIT — fill 5th stat + compact invoice rows */
+  .stats{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .stat{min-width:0!important}
+  .stat-revenue strong{
+    font-size:18px!important;
+    letter-spacing:-.025em!important;
+    white-space:nowrap!important;
+  }
+
+  .sales-compact-head,
+  .sales-compact-row{
+    display:grid!important;
+    grid-template-columns:58px minmax(88px,1.05fr) minmax(118px,1.35fr) minmax(88px,1fr) 72px 100px!important;
+    gap:7px!important;
+    align-items:center!important;
+  }
+  .sales-compact-head{
+    padding:7px 9px!important;
+    margin-bottom:5px!important;
+    border:1px solid #2c2c2c!important;
+    border-radius:10px!important;
+    background:#121212!important;
+    color:#8e8e8e!important;
+    font-size:8px!important;
+    font-weight:900!important;
+    text-transform:uppercase!important;
+    letter-spacing:.03em!important;
+  }
+  .sales-compact-record{
+    margin-bottom:6px!important;
+    padding:8px 9px!important;
+    border:1px solid #282828!important;
+    border-radius:12px!important;
+    background:linear-gradient(180deg,#111,#0c0c0c)!important;
+  }
+  .sales-compact-row{
+    min-height:28px!important;
+    font-size:9px!important;
+    line-height:1.15!important;
+  }
+  .sales-compact-row>span,.sales-data-row td{min-width:0!important}
+  .sales-invoice{color:#ff91c6!important;font-weight:900!important;white-space:nowrap!important}
+  .sales-member-name{
+    color:#fff!important;font-weight:900!important;white-space:nowrap!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  .sales-clip{
+    color:#c5c5c5!important;white-space:nowrap!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  .sales-plan{color:#ff91c6!important;font-size:8px!important;font-weight:900!important;white-space:nowrap!important}
+  .sales-date{color:#bdbdbd!important;white-space:nowrap!important}
+  .sales-row-actions{
+    margin-top:7px!important;padding-top:7px!important;border-top:1px solid #242424!important;gap:5px!important;
+  }
+  .sales-row-actions .action{
+    min-height:27px!important;padding:0 8px!important;font-size:7px!important;
+  }
+  .sales-data-row td{
+    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  .sales-action-row td{padding-top:0!important;border-bottom:1px solid #242424!important}
+  .sales-action-row .sales-row-actions{margin-top:0!important}
+
+  @media(max-width:760px){
+    .stats{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+    .stat{padding:8px 7px!important}
+    .stat span{font-size:7px!important}
+    .stat strong{font-size:16px!important}
+    .stat-revenue strong{font-size:12px!important}
+  }
+  @media(max-width:560px){
+    .sales-compact-head,
+    .sales-compact-row{
+      grid-template-columns:50px minmax(70px,1fr) minmax(92px,1.25fr) minmax(72px,.95fr) 58px 82px!important;
+      gap:5px!important;
+    }
+    .sales-compact-head{font-size:6.8px!important;padding:6px!important}
+    .sales-compact-record{padding:7px!important}
+    .sales-compact-row{font-size:7.8px!important}
+    .sales-plan{font-size:6.8px!important}
+    .sales-row-actions .action{font-size:6.5px!important;padding:0 6px!important}
+  }
+
   @media(max-width:760px){
     body{font-size:13.5px!important}
     .dashboard-head h1{font-size:32px!important}
