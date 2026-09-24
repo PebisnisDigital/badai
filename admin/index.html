@@ -2145,6 +2145,24 @@ th,td{padding:14px 12px!important}
   .sales-package-stack span{font-size:7px!important}
   .sales-status-pill{font-size:6.8px!important;min-height:20px!important;padding:0 6px!important}
 }
+
+/* BADAI SALES FINAL — remove date column from list, keep date inside action modal */
+#pageSales .sales-compact-head,
+#pageSales .sales-compact-row{
+  grid-template-columns:30px minmax(185px,1.8fr) minmax(100px,.95fr) minmax(90px,.85fr) 72px 90px!important;
+  gap:8px!important;
+  align-items:center!important;
+}
+#pageSales .sales-action-cell{
+  justify-content:flex-end!important;
+}
+@media(max-width:560px){
+  #pageSales .sales-compact-head,
+  #pageSales .sales-compact-row{
+    grid-template-columns:24px minmax(145px,1.6fr) minmax(80px,.9fr) minmax(76px,.82fr) 60px 70px!important;
+    gap:4px!important;
+  }
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -2245,7 +2263,7 @@ th,td{padding:14px 12px!important}
         <table>
           <thead>
             <tr>
-              <th>No</th><th>Member</th><th>Afiliasi</th><th>Paket</th><th>Status</th><th>Tanggal Daftar</th><th>Aksi</th>
+              <th>No</th><th>Member</th><th>Afiliasi</th><th>Paket</th><th>Status</th><th>Aksi</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -3890,7 +3908,6 @@ th,td{padding:14px 12px!important}
             </div>
           </td>
           <td><span class="sales-status-pill ${salesStatusClass(r)}">${salesStatusText(r)}</span></td>
-          <td><span class="sales-date">${dateOnly(r.created_at)}</span></td>
           <td class="sales-action-cell">${actionHtml(r,false)}</td>
         </tr>
       `;
@@ -3898,7 +3915,7 @@ th,td{padding:14px 12px!important}
 
     const salesHead = rows.length ? `
       <div class="sales-compact-head">
-        <span>No</span><span>Member</span><span>Afiliasi</span><span>Paket</span><span>Status</span><span>Tanggal Daftar</span><span>Aksi</span>
+        <span>No</span><span>Member</span><span>Afiliasi</span><span>Paket</span><span>Status</span><span>Aksi</span>
       </div>` : '';
 
     $('mobileList').innerHTML = salesHead + rows.map(r => {
@@ -3921,7 +3938,6 @@ th,td{padding:14px 12px!important}
               <span>${rupiah(r.amount)}</span>
             </div>
             <span class="sales-status-pill ${salesStatusClass(r)}">${salesStatusText(r)}</span>
-            <span class="sales-date">${dateOnly(r.created_at)}</span>
             <span class="sales-action-cell">${actionHtml(r,true)}</span>
           </div>
         </div>
