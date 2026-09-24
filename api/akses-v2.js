@@ -964,6 +964,39 @@ module.exports = async function handler(req, res) {
     }
   }
 
+
+  .badai-material-copy.is-learning-guide{
+    margin-top:12px!important;
+    padding:18px 18px!important;
+    border-radius:15px!important;
+    background:#0b0b0b!important;
+    border:1px solid #2d2d2d!important;
+    color:#f1f1f1!important;
+    font-family:"Nunito",Arial,sans-serif!important;
+    font-size:18px!important;
+    font-weight:800!important;
+    line-height:1.55!important;
+  }
+  .badai-material-copy.is-learning-guide>b{
+    display:block!important;
+    margin-bottom:7px!important;
+    color:#ff8fc5!important;
+    font-family:"Raleway",Arial,sans-serif!important;
+    font-size:14px!important;
+    font-weight:900!important;
+    letter-spacing:.02em!important;
+  }
+  @media(max-width:560px){
+    .badai-material-copy.is-learning-guide{
+      padding:16px!important;
+      font-size:17px!important;
+      line-height:1.55!important;
+    }
+    .badai-material-copy.is-learning-guide>b{
+      font-size:13px!important;
+    }
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -996,7 +1029,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   var pemulaMaterials=[
-    {title:'AI VIDEO GENERATOR',video:'',content:'',ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/T3aDuFAhgGVr'},
+    {title:'AI VIDEO GENERATOR',video:'',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/T3aDuFAhgGVr'},
     {title:'BIKIN GEO-SPASIAL',video:'',content:''},
     {title:'BIKIN DAKWAH INFLUENCER',video:'',content:''},
     {title:'BIKIN SELEBGRAM AI',video:'',content:''},
@@ -1074,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', function(){
         '<div class="badai-material-content">'+
           '<div class="badai-material-video">'+video+'</div>'+
           (item.toolUrl ? '<a class="badai-material-tool" href="'+item.toolUrl+'" target="_blank" rel="noopener noreferrer">'+(item.toolLabel||'BUKA TOOLS')+'</a>' : '')+
-          '<div class="badai-material-copy"><b>'+label+'</b>'+copy+'</div>'+
+          '<div class="badai-material-copy'+(item.guide?' is-learning-guide':'')+'"><b>'+(item.copyLabel||label)+'</b>'+copy+'</div>'+
         '</div>'+
       '</details>';
     }).join('');
