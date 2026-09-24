@@ -496,7 +496,7 @@ module.exports = async function handler(req, res) {
     line-height:1.15!important;
   }
   .sales-compact-row>span,.sales-data-row td{min-width:0!important}
-  .sales-invoice{color:#ff91c6!important;font-weight:900!important;white-space:nowrap!important}
+  .sales-number{color:#ff91c6!important;font-weight:900!important;white-space:nowrap!important}
   .sales-member-name{
     color:#fff!important;font-weight:900!important;white-space:nowrap!important;
     overflow:hidden!important;text-overflow:ellipsis!important;
