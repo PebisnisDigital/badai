@@ -1,11 +1,20 @@
 module.exports = async function handler(req, res) {
   try {
-    const ref = process.env.VERCEL_GIT_COMMIT_SHA || 'main';
-    const sourceUrl = `https://raw.githubusercontent.com/PebisnisDigital/badai/${encodeURIComponent(ref)}/akses/index.html`;
-    const source = await fetch(sourceUrl, { headers: { 'User-Agent': 'BADAI-Member-Area/1.0' } });
-    if (!source.ok) throw new Error(`Gagal memuat member area (${source.status})`);
+    let html;
 
-    let html = await source.text();
+    // Railway staging must render the files from the exact deployed commit.
+    // Falling back to GitHub main here made /akses look stale even after staging deploys.
+    if (process.env.RAILWAY_PROJECT_ID || process.env.BADAI_ENV === 'staging') {
+      const fs = require('fs');
+      const path = require('path');
+      html = fs.readFileSync(path.join(process.cwd(), 'akses', 'index.html'), 'utf8');
+    } else {
+      const ref = process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_REF || 'main';
+      const sourceUrl = `https://raw.githubusercontent.com/PebisnisDigital/badai/${encodeURIComponent(ref)}/akses/index.html`;
+      const source = await fetch(sourceUrl, { headers: { 'User-Agent': 'BADAI-Member-Area/1.0' } });
+      if (!source.ok) throw new Error(`Gagal memuat member area (${source.status})`);
+      html = await source.text();
+    }
 
     const flaticonUicons = '<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">';
 
