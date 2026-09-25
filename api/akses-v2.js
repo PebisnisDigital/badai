@@ -1206,7 +1206,7 @@ document.addEventListener('DOMContentLoaded', function(){
     {title:'BIKIN AFFILIATE AI',video:'',description:'Bikin konten affiliate berbantu AI untuk memperkenalkan produk dengan lebih menarik.',content:''},
     {title:'BIKIN PAPER CRAFT',video:'',description:'Bikin desain paper craft dari ide sederhana sampai siap dijadikan pola visual.',content:''},
     {title:'BIKIN UNBOXING AI',video:'',description:'Bikin video unboxing produk dengan visual AI tanpa harus selalu merekam dari awal.',content:''},
-    {title:'BIKIN GAME',video:'',description:'Bikin game sederhana dengan bantuan AI, mulai dari ide sampai versi yang bisa dimainkan.',content:''},
+    {title:'BIKIN SQUIDGAME AI',video:'',description:'Bikin konten Squidgame AI dengan bantuan AI, mulai dari konsep adegan sampai hasil visual yang bisa dikembangkan menjadi konten.',content:''},
     {title:'BIKIN VIDEO GENJUTSU VIRAL',video:'',description:'Bikin video transformasi Genjutsu yang menarik untuk konten pendek dan media sosial.',content:''},
     {title:'BIKIN VIDEO KLONING',video:'',description:'Bikin video kloning karakter atau diri sendiri untuk variasi konten kreatif dengan AI.',content:''}
   ];
