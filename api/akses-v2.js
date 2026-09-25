@@ -1192,7 +1192,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var pemulaMaterials=[
     {title:'BIKIN AI EDUKATOR',video:'https://youtu.be/uIVMayQodjI',description:'Bikin karakter AI edukator yang bisa menyampaikan materi, tips, atau penjelasan secara menarik dalam bentuk konten.',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/UAeV1F4ZAmzK'},
     {title:'BIKIN GEO-SPASIAL',video:'',description:'Bikin konten peta, lokasi, dan visual geospasial yang menarik dengan bantuan AI.',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS GEO-SPASIAL',toolUrl:'https://share.gemini.google/mPJoQiTzg6bT'},
-    {title:'BIKIN DAKWAH AI',video:'',description:'Bikin karakter dan konten dakwah digital yang konsisten untuk media sosial.',content:''},
+    {title:'BIKIN AI INFLUENCER',video:'',description:'Bikin AI Influencer dengan teknik pose mirroring di depan cermin, seolah sedang ngaca, untuk menghasilkan karakter dan konten visual yang lebih natural, estetik, dan konsisten.',content:''},
     {title:'BIKIN SELEBGRAM AI',video:'',description:'Bikin karakter selebgram AI lengkap dengan konsep konten dan tampilan yang konsisten.',content:''},
     {title:'BIKIN AFFILIATE AI',video:'',description:'Bikin konten affiliate berbantu AI untuk memperkenalkan produk dengan lebih menarik.',content:''},
     {title:'BIKIN PAPER CRAFT',video:'',description:'Bikin desain paper craft dari ide sederhana sampai siap dijadikan pola visual.',content:''},
