@@ -1322,7 +1322,7 @@ document.addEventListener('DOMContentLoaded', function(){
     {title:'BIKIN UNBOXING AI',video:'',description:'Bikin video unboxing produk dengan visual AI tanpa harus selalu merekam dari awal.',content:'Klik tombol TOOLS untuk membuka tools Unboxing AI.',ready:true,toolLabel:'TOOLS UNBOXING AI',toolUrl:'https://share.gemini.google/eULL8DIU4VgU'},
     {title:'BIKIN SQUIDGAME AI',video:'',description:'Bikin konten Squidgame AI dengan bantuan AI, mulai dari konsep adegan sampai hasil visual yang bisa dikembangkan menjadi konten.',content:'Klik tombol TOOLS untuk membuka tools Bikin Squidgame AI.',ready:true,toolLabel:'TOOLS BIKIN SQUIDGAME AI',toolUrl:'https://share.gemini.google/LAmUjK2yKHHf'},
     {title:'BIKIN VIDEO MINIATUR',video:'',description:'Bikin video miniatur dengan bantuan AI, mulai dari konsep dunia kecil, objek, karakter, hingga visual sinematik yang menarik untuk konten pendek dan media sosial.',content:''},
-    {title:'BIKIN MOBIL KAYU',video:'',description:'Bikin konsep mobil kayu kreatif dengan bantuan AI, mulai dari ide desain, bentuk kendaraan, detail material kayu, sampai visual hasil yang menarik untuk konten.',content:''}
+    {title:'BIKIN MOBIL KAYU',video:'',description:'Bikin konsep mobil kayu kreatif dengan bantuan AI, mulai dari ide desain, bentuk kendaraan, detail material kayu, sampai visual hasil yang menarik untuk konten.',content:'Klik tombol TOOLS untuk membuka tools Bikin Mobil Kayu AI.',ready:true,toolLabel:'TOOLS BIKIN MOBIL KAYU AI',toolUrl:'https://share.gemini.google/TLek7dCbNRQN'}
   ];
 
   // Hard guard for active Pemula tools so this card cannot fall back to "SEGERA HADIR".
