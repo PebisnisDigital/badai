@@ -460,10 +460,15 @@
     if(graceNotice) graceNotice.classList.toggle('hidden',state !== 'grace');
   }
 
+  function normalizeMembershipPlan(value){
+    const raw = String(value || '').trim().toLowerCase().replace(/[_-]+/g,' ');
+    if(['pro','untung','paket untung','member untung'].includes(raw)) return 'pro';
+    if(['free','gratis','gratisan','paket gratisan','member gratisan'].includes(raw)) return 'free';
+    return 'newbie';
+  }
+
   async function configureMembership(profile){
-    const plan = profile?.membership_plan === 'pro'
-      ? 'pro'
-      : (profile?.membership_plan === 'free' ? 'free' : 'newbie');
+    const plan = normalizeMembershipPlan(profile?.membership_plan);
     const planName = document.getElementById('memberPlanName');
     const planDesc = document.getElementById('memberPlanDesc');
     const affiliateNav = document.getElementById('affiliateNavButton');
@@ -482,6 +487,12 @@
         ? 'Belajar Ilmu AI + Update + Program Afiliasi'
         : (plan === 'free' ? 'Komunitas + KulWA' : 'Belajar Ilmu AI + Update');
     }
+
+    try{
+      window.dispatchEvent(new CustomEvent('badai:membership-updated',{
+        detail:{plan:plan,profile:profile || null}
+      }));
+    }catch(_){}
 
     window.BADAI_AFFILIATE_LINK = '';
 
