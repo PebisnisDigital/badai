@@ -76,37 +76,37 @@ module.exports = async function handler(req, res) {
   .badai-member-header-action span{font-size:11px;line-height:1}
 
   .badai-pemula-intro{
-    min-width:0;min-height:76px;display:grid;gap:9px;align-content:center;
-    padding:12px 10px 11px 4px;border-bottom:1px solid #352832;text-align:left
+    min-width:0;min-height:96px;display:grid;gap:12px;align-content:center;
+    padding:16px 12px 14px 6px;border-bottom:1px solid #352832;text-align:left
   }
   .badai-pemula-intro-title-row{display:flex;align-items:center;gap:8px;min-width:0}
   .badai-pemula-intro-title{
     margin:0;color:#fff;font-family:"Raleway",Arial,sans-serif;
-    font-size:18px;font-weight:900;line-height:1;letter-spacing:-.025em;white-space:nowrap
+    font-size:22px;font-weight:900;line-height:1;letter-spacing:-.025em;white-space:nowrap
   }
   .badai-pemula-intro-title span{color:#ff4fa3}
   .badai-pemula-update-badge{
-    display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:999px;
-    border:1px solid #5c2946;background:#1a0f15;color:#ff8fc5;
-    font:900 8.5px/1 "Nunito",Arial,sans-serif;letter-spacing:.06em;white-space:nowrap
+    display:inline-flex;align-items:center;min-height:28px;padding:0 11px;border-radius:999px;
+    border:1px solid #6b3152;background:#1a0f15;color:#ff9cca;
+    font:900 10px/1 "Nunito",Arial,sans-serif;letter-spacing:.055em;white-space:nowrap
   }
   .badai-pemula-intro-marquee{
-    position:relative;min-width:0;overflow:hidden;height:27px;display:flex;align-items:center;
+    position:relative;min-width:0;overflow:hidden;height:34px;display:flex;align-items:center;
     -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 94%,transparent 100%);
     mask-image:linear-gradient(90deg,#000 0%,#000 94%,transparent 100%)
   }
   .badai-pemula-intro-track{
     display:flex;align-items:center;flex:0 0 max-content;width:max-content;white-space:nowrap;
-    animation:badaiPemulaIntroTicker 22s linear infinite!important;
-    -webkit-animation:badaiPemulaIntroTicker 22s linear infinite!important;
+    animation:badaiPemulaIntroTicker 28s linear infinite!important;
+    -webkit-animation:badaiPemulaIntroTicker 28s linear infinite!important;
     will-change:transform;transform:translate3d(0,0,0)
   }
   .badai-pemula-intro-item{
-    flex:0 0 auto;padding-right:62px;color:#d2d2d2;
-    font:800 11.5px/1 "Nunito",Arial,sans-serif;letter-spacing:.005em
+    flex:0 0 auto;padding-right:70px;color:#f0f0f0;
+    font:850 14px/1.15 "Nunito",Arial,sans-serif;letter-spacing:.002em
   }
   .badai-pemula-intro-item::before{
-    content:"●";margin-right:10px;color:#ff4fa3;font-size:6px;vertical-align:1px
+    content:"●";margin-right:12px;color:#ff4fa3;font-size:7px;vertical-align:1px
   }
   @-webkit-keyframes badaiPemulaIntroTicker{
     from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}
@@ -122,12 +122,12 @@ module.exports = async function handler(req, res) {
     .badai-member-header-actions{width:min(100%,245px);gap:5px}
     .badai-member-header-action{min-height:34px;padding:0 7px;border-radius:9px;font-size:8px;gap:4px}
     .badai-member-header-action span{font-size:9px}
-    .badai-pemula-intro{min-height:68px;gap:7px;padding:10px 6px 9px 2px}
-    .badai-pemula-intro-title-row{gap:6px}
-    .badai-pemula-intro-title{font-size:14px}
-    .badai-pemula-update-badge{min-height:19px;padding:0 6px;font-size:7px}
-    .badai-pemula-intro-marquee{height:23px}
-    .badai-pemula-intro-item{font-size:9.7px;padding-right:44px}
+    .badai-pemula-intro{min-height:88px;gap:10px;padding:13px 7px 12px 3px}
+    .badai-pemula-intro-title-row{gap:7px}
+    .badai-pemula-intro-title{font-size:18px}
+    .badai-pemula-update-badge{min-height:24px;padding:0 8px;font-size:8.5px}
+    .badai-pemula-intro-marquee{height:31px}
+    .badai-pemula-intro-item{font-size:12.5px;line-height:1.15;padding-right:52px}
   }
 
   .community-wrap{display:grid;gap:11px}
