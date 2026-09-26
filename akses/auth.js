@@ -521,8 +521,39 @@
       return;
     }
 
-    if(affiliateNav) affiliateNav.style.display = '';
+    if(affiliateNav){
+      affiliateNav.style.display = '';
+      affiliateNav.disabled = true;
+      affiliateNav.dataset.featureLocked = '1';
+      affiliateNav.setAttribute('aria-disabled','true');
+      affiliateNav.setAttribute('title','Segera hadir');
+      const label = affiliateNav.querySelector('.label');
+      if(label) label.innerHTML = 'Afiliasi<small class="affiliate-soon-badge">SEGERA HADIR</small>';
+    }
     if(footer) footer.style.setProperty('--member-nav-count','4');
+
+    // Fitur afiliasi sedang dikunci sementara sampai resmi dibuka.
+    window.BADAI_AFFILIATE_LINK = '';
+    const affiliateScreen = document.getElementById('afiliasi');
+    if(affiliateScreen?.classList.contains('active')){
+      const kelasBtn = document.querySelector('[data-screen="kelas"]');
+      if(kelasBtn) kelasBtn.click();
+    }
+    const lockedLinkEl = document.getElementById('affiliateLink');
+    const lockedCodeEl = document.getElementById('affiliateCode');
+    const lockedSalesEl = document.getElementById('affiliateSalesCount');
+    const lockedCommissionEl = document.getElementById('affiliateCommissionTotal');
+    const lockedRateEl = document.getElementById('affiliateCommissionRate');
+    if(lockedLinkEl) lockedLinkEl.textContent = 'SEGERA HADIR';
+    if(lockedCodeEl) lockedCodeEl.textContent = '-';
+    if(lockedSalesEl) lockedSalesEl.textContent = 'Segera hadir';
+    if(lockedCommissionEl) lockedCommissionEl.textContent = 'Rp0';
+    if(lockedRateEl) lockedRateEl.textContent = 'SEGERA HADIR';
+    renderAffiliateCommissionSummary([],[]);
+    renderAffiliateReferrals([]);
+    renderAffiliatePayoutHistory([]);
+    renderAffiliateMaterials([]);
+    return;
 
     try{
       const results = await Promise.all([
