@@ -2943,6 +2943,33 @@ th,td{padding:14px 12px!important}
   white-space:nowrap;
 }
 
+.manual-reg-price-copy{
+  display:grid;
+  gap:3px;
+  min-width:0;
+}
+
+.manual-reg-price-copy small{
+  color:#676767;
+  font-size:8px;
+  font-weight:800;
+  line-height:1.25;
+}
+
+#manualRegCoupon{
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  font-weight:900;
+}
+
+#manualRegCouponStatus.ok{
+  color:#76d99b;
+}
+
+#manualRegCouponStatus.error{
+  color:#ff7b8d;
+}
+
 .export-match-card strong{
   color:#fff;
   font-size:13px;
@@ -4003,6 +4030,12 @@ th,td{padding:14px 12px!important}
         </div>
 
         <div class="manage-field full">
+          <label>Kode Kupon <span style="color:#777;font-weight:700">(Opsional)</span></label>
+          <input id="manualRegCoupon" type="text" autocomplete="off" placeholder="Contoh: BADAI20"/>
+          <div id="manualRegCouponStatus" class="sales-tool-help">Masukkan kode kupon aktif dari menu Marketing.</div>
+        </div>
+
+        <div class="manage-field full">
           <label>Afiliasi</label>
           <select id="manualRegAffiliate">
             <option value="">Tanpa Afiliasi</option>
@@ -4011,7 +4044,10 @@ th,td{padding:14px 12px!important}
         </div>
 
         <div class="manual-reg-price-card full">
-          <span>Nilai Pendaftaran</span>
+          <div class="manual-reg-price-copy">
+            <span>Nilai Pendaftaran</span>
+            <small id="manualRegDiscountInfo">Harga normal</small>
+          </div>
           <strong id="manualRegAmountPreview">Rp0</strong>
         </div>
       </div>
@@ -4120,6 +4156,7 @@ th,td{padding:14px 12px!important}
     membership_expired_notification:''
   };
   let marketingCoupons = [];
+  let salesActiveCoupons = [];
   let affiliateSettings = {commission_type:'percent', commission_value:30, inactivity_months:3};
   let affiliateAccounts = [];
   let affiliateSales = [];
@@ -4323,37 +4360,119 @@ th,td{padding:14px 12px!important}
       api('/rest/v1/profiles?select=id,full_name,email'),
       api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
       api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
-      api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc')
+      api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc'),
+      api('/rest/v1/marketing_coupons?active=eq.true&select=id,code,discount_type,discount_value,active&order=created_at.desc')
     ]);
     registrations = results[0] || [];
     salesAffiliateProfiles = results[1] || [];
     salesAffiliateAccounts = results[2] || [];
     financeTransactions = results[3] || [];
     membershipRenewals = results[4] || [];
+    salesActiveCoupons = results[5] || [];
     populateManualAffiliateOptions();
     renderSales();
     renderFinance();
     updateExportMatchCount();
   }
 
-  function manualRegistrationAmount(){
+  function manualRegistrationBaseAmount(){
     const plan = $('manualRegPlan')?.value || 'newbie';
     if(plan === 'free') return 0;
     if(plan === 'pro') return Number(marketingSettings.pro_price || marketingSettings.product_price || 0);
     return Number(marketingSettings.newbie_price || marketingSettings.product_price || 0);
   }
 
-  function updateManualRegistrationAmount(){
-    if($('manualRegAmountPreview')){
-      $('manualRegAmountPreview').textContent = rupiah(manualRegistrationAmount());
+  function manualCouponCode(){
+    return String($('manualRegCoupon')?.value || '').trim().toUpperCase();
+  }
+
+  function manualCouponPricing(){
+    const plan = $('manualRegPlan')?.value || 'newbie';
+    const base = manualRegistrationBaseAmount();
+    const code = manualCouponCode();
+
+    if(plan === 'free'){
+      return {base,discount:0,final:0,code:'',coupon:null,valid:true};
     }
 
+    if(!code){
+      return {base,discount:0,final:base,code:'',coupon:null,valid:true};
+    }
+
+    const coupon = (salesActiveCoupons || []).find(item =>
+      item.active === true && String(item.code || '').trim().toUpperCase() === code
+    );
+
+    if(!coupon){
+      return {base,discount:0,final:base,code,coupon:null,valid:false};
+    }
+
+    let discount = 0;
+    if(coupon.discount_type === 'percent'){
+      discount = Math.floor(base * Number(coupon.discount_value || 0) / 100);
+    }else{
+      discount = Number(coupon.discount_value || 0);
+    }
+
+    discount = Math.max(0, Math.min(discount, base));
+    return {base,discount,final:Math.max(0,base-discount),code,coupon,valid:true};
+  }
+
+  function manualRegistrationAmount(){
+    return manualCouponPricing().final;
+  }
+
+  function updateManualRegistrationAmount(){
     const plan = $('manualRegPlan')?.value || 'newbie';
+    const couponInput = $('manualRegCoupon');
+    const couponStatus = $('manualRegCouponStatus');
+    const discountInfo = $('manualRegDiscountInfo');
     const statusSelect = $('manualRegStatus');
+
     if(statusSelect){
       const activeOption = [...statusSelect.options].find(o => o.value === 'active');
       if(activeOption) activeOption.disabled = plan === 'free';
       if(plan === 'free' && statusSelect.value === 'active') statusSelect.value = 'pending';
+    }
+
+    if(couponInput){
+      couponInput.disabled = plan === 'free';
+      if(plan === 'free') couponInput.value = '';
+      else couponInput.value = couponInput.value.toUpperCase().replace(/\s+/g,'');
+    }
+
+    const pricing = manualCouponPricing();
+
+    if($('manualRegAmountPreview')){
+      $('manualRegAmountPreview').textContent = rupiah(pricing.final);
+    }
+
+    if(discountInfo){
+      if(plan === 'free'){
+        discountInfo.textContent = 'Gratisan • kupon tidak diperlukan';
+      }else if(pricing.coupon){
+        discountInfo.textContent = rupiah(pricing.base) + ' − ' + rupiah(pricing.discount) + ' diskon';
+      }else{
+        discountInfo.textContent = 'Harga normal ' + rupiah(pricing.base);
+      }
+    }
+
+    if(couponStatus){
+      couponStatus.classList.remove('ok','error');
+      if(plan === 'free'){
+        couponStatus.textContent = 'Kupon tidak berlaku untuk Paket Gratisan.';
+      }else if(!pricing.code){
+        couponStatus.textContent = 'Masukkan kode kupon aktif dari menu Marketing.';
+      }else if(!pricing.valid){
+        couponStatus.textContent = 'Kode kupon tidak ditemukan atau sedang nonaktif.';
+        couponStatus.classList.add('error');
+      }else{
+        const label = pricing.coupon.discount_type === 'percent'
+          ? Number(pricing.coupon.discount_value || 0) + '%'
+          : rupiah(pricing.coupon.discount_value || 0);
+        couponStatus.textContent = '✓ Kupon ' + pricing.code + ' aktif • diskon ' + label;
+        couponStatus.classList.add('ok');
+      }
     }
   }
 
@@ -4397,6 +4516,7 @@ th,td{padding:14px 12px!important}
     $('manualRegisterForm').reset();
     $('manualRegPlan').value = 'newbie';
     $('manualRegStatus').value = 'pending';
+    $('manualRegCoupon').value = '';
     $('manualRegisterStatus').textContent = '';
     populateManualAffiliateOptions();
     updateManualRegistrationAmount();
@@ -4412,6 +4532,8 @@ th,td{padding:14px 12px!important}
     const whatsapp = normalizeManualWhatsapp($('manualRegWhatsapp').value);
     const membershipPlan = $('manualRegPlan').value;
     const targetStatus = $('manualRegStatus').value;
+    const couponPricing = manualCouponPricing();
+    const couponCode = couponPricing.code || null;
     const affiliateSelect = $('manualRegAffiliate');
     const affiliateUserId = affiliateSelect.value || null;
     const affiliateCode = affiliateUserId
@@ -4423,6 +4545,7 @@ th,td{padding:14px 12px!important}
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Format email belum valid.');
     if(!['free','newbie','pro'].includes(membershipPlan)) throw new Error('Paket belum valid.');
     if(!['pending','active'].includes(targetStatus)) throw new Error('Status belum valid.');
+    if(couponCode && !couponPricing.valid) throw new Error('Kode kupon tidak valid atau sedang nonaktif.');
 
     const duplicate = registrations.find(r =>
       String(r.email || '').toLowerCase() === email ||
@@ -4450,6 +4573,7 @@ th,td{padding:14px 12px!important}
           member_status:'pending',
           membership_plan:membershipPlan,
           source:'admin_manual',
+          coupon_code:membershipPlan === 'free' ? null : couponCode,
           affiliate_user_id:affiliateUserId,
           referred_by_code:affiliateCode,
           admin_note:'Pendaftaran manual oleh ' + (currentTeam?.email || 'admin BADAI')
@@ -6473,6 +6597,8 @@ th,td{padding:14px 12px!important}
   $('exportDataBtn').addEventListener('click', openExportDataModal);
 
   $('manualRegPlan').addEventListener('change', updateManualRegistrationAmount);
+  $('manualRegCoupon').addEventListener('input', updateManualRegistrationAmount);
+  $('manualRegCoupon').addEventListener('change', updateManualRegistrationAmount);
   $('manualRegisterForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     try{ await saveManualRegistration(); }
