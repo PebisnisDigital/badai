@@ -47,13 +47,47 @@ module.exports = async function handler(req, res) {
   .footer button.is-plan-locked::after{content:"🔒";position:absolute;top:4px;right:calc(50% - 24px);font-size:8px;line-height:1}
 
   .badai-member-header{
-    position:sticky;top:0;z-index:80;width:100%;min-height:64px;display:flex;align-items:center;
-    justify-content:space-between;gap:14px;padding:10px 14px;background:rgba(7,7,7,.96);
-    border-bottom:1px solid #242424;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
+    position:sticky;top:0;z-index:80;width:100%;min-height:68px;display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:8px 14px;
+    background:rgba(7,7,7,.97);border-bottom:1px solid #242424;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
   }
   .badai-member-header-logo{display:flex;align-items:center;min-width:0;text-decoration:none}
-  .badai-member-header-logo img{display:block;width:auto;height:34px;max-width:210px;object-fit:contain}
+  .badai-member-header-logo img{display:block;width:auto;height:34px;max-width:150px;object-fit:contain}
+  .badai-member-header-info{min-width:0;display:grid;gap:4px;align-content:center}
+  .badai-member-header-title{
+    margin:0;color:#fff;font-family:"Raleway",Arial,sans-serif;font-size:15px;font-weight:900;
+    line-height:1;letter-spacing:-.02em;white-space:nowrap
+  }
+  .badai-member-header-title span{color:#ff4fa3}
+  .badai-member-marquee{
+    position:relative;min-width:0;overflow:hidden;height:18px;border-radius:5px;
+    background:#0d0d0d;border:1px solid #232323;display:flex;align-items:center;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)
+  }
+  .badai-member-marquee-track{
+    display:inline-flex;align-items:center;width:max-content;white-space:nowrap;
+    animation:badaiMemberNewsTicker 24s linear infinite;will-change:transform
+  }
+  .badai-member-marquee-item{
+    flex:0 0 auto;padding-right:48px;color:#bebebe;font-family:"Nunito",Arial,sans-serif;
+    font-size:8.5px;font-weight:700;line-height:1;letter-spacing:.01em
+  }
+  .badai-member-marquee-item::before{content:"●";margin-right:8px;color:#ff4fa3;font-size:6px;vertical-align:1px}
+  @keyframes badaiMemberNewsTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){.badai-member-marquee-track{animation:none!important}}
   .badai-member-help{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:0 14px;border-radius:999px;background:#25D366;color:#07170d;text-decoration:none;font-family:"Nunito",Arial,sans-serif;font-size:10px;font-weight:700;box-shadow:0 8px 24px rgba(37,211,102,.22);border:1px solid rgba(255,255,255,.08)}
+  @media(max-width:560px){
+    .badai-member-header{grid-template-columns:auto minmax(0,1fr) auto;gap:8px;padding:7px 8px;min-height:64px}
+    .badai-member-header-logo img{height:29px;max-width:92px}
+    .badai-member-header-info{gap:3px}
+    .badai-member-header-title{font-size:12px}
+    .badai-member-marquee{height:16px}
+    .badai-member-marquee-item{font-size:7.5px;padding-right:34px}
+    .badai-member-help{min-height:34px!important;padding:0 9px!important;font-size:9px!important;gap:4px!important}
+    .badai-member-help span:first-child{font-size:9px}
+  }
 
   .community-wrap{display:grid;gap:11px}
   .community-hero{position:relative;overflow:hidden;padding:20px;border-radius:24px;background:linear-gradient(145deg,#151515,#090909);border:1px solid #282828;box-shadow:0 16px 46px rgba(0,0,0,.28)}
@@ -122,12 +156,12 @@ module.exports = async function handler(req, res) {
   .screen-heading h1,.badai-gratisan-heading h1,#akun .account-head h1{margin:0 0 6px!important;color:#fff!important;font-family:"Raleway",Arial,sans-serif!important;font-size:34px!important;font-weight:800!important;line-height:1!important;letter-spacing:-.045em!important}
   .screen-heading p,.badai-gratisan-heading p,#akun .account-head p{margin:0!important;color:#a8a8a8!important;font-family:"Nunito",Arial,sans-serif!important;font-size:11.5px!important;font-weight:600!important;line-height:1.4!important}
 
-  /* PEMULA — left aligned heading + support group + bonus VO */
-  #kelas .screen-heading.badai-pemula-heading{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(310px,350px)!important;align-items:center!important;gap:18px!important;text-align:left!important;padding:4px 4px 0!important;margin-bottom:18px!important}
-  #kelas .badai-pemula-heading-copy{min-width:0}
-  #kelas .badai-pemula-heading h1{text-align:left!important;margin-bottom:7px!important}
-  #kelas .badai-pemula-heading p{text-align:left!important}
-  #kelas .badai-pemula-heading-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:stretch}
+  /* PEMULA — title/tagline moved to sticky header; actions stay above material cards */
+  #kelas .screen-heading.badai-pemula-heading{
+    display:flex!important;justify-content:flex-end!important;align-items:center!important;
+    padding:4px 4px 0!important;margin-bottom:18px!important
+  }
+  #kelas .badai-pemula-heading-actions{width:min(100%,350px);display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:stretch}
   #kelas .badai-pemula-bonus,#kelas .badai-pemula-support{min-width:0;padding:10px 11px;border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,.2);text-align:left}
   #kelas .badai-pemula-bonus{background:linear-gradient(145deg,#191015,#0d0d0d);border:1px solid #4d263a}
   #kelas .badai-pemula-support{background:linear-gradient(145deg,#0f1913,#0b0f0c);border:1px solid #245234}
@@ -139,10 +173,8 @@ module.exports = async function handler(req, res) {
   #kelas .badai-pemula-support a{background:#25d366;box-shadow:0 8px 22px rgba(37,211,102,.16)}
   #kelas .badai-pemula-bonus a span,#kelas .badai-pemula-support a span{font-size:13px}
   @media(max-width:560px){
-    #kelas .screen-heading.badai-pemula-heading{gap:11px!important;grid-template-columns:1fr!important}
-    #kelas .badai-pemula-heading h1{font-size:29px!important}
-    #kelas .badai-pemula-heading p{font-size:10.5px!important;line-height:1.35!important}
-    #kelas .badai-pemula-heading-actions{grid-template-columns:1fr 1fr;gap:7px}
+    #kelas .screen-heading.badai-pemula-heading{padding:3px 0 0!important;margin-bottom:12px!important}
+    #kelas .badai-pemula-heading-actions{width:100%;grid-template-columns:1fr 1fr;gap:7px}
     #kelas .badai-pemula-bonus,#kelas .badai-pemula-support{padding:8px;border-radius:13px}
     #kelas .badai-pemula-bonus small,#kelas .badai-pemula-support small{font-size:7px;margin-bottom:4px}
     #kelas .badai-pemula-bonus a,#kelas .badai-pemula-support a{min-height:34px;padding:0 9px;font-size:9.5px;border-radius:9px}
@@ -1198,6 +1230,15 @@ module.exports = async function handler(req, res) {
     const headerMarkup = String.raw`
 <header class="badai-member-header" aria-label="Header Member Area BADAI">
   <a class="badai-member-header-logo" href="/akses" aria-label="BADAI Member Area"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"></a>
+  <div class="badai-member-header-info" aria-label="Member Pemula">
+    <div class="badai-member-header-title">Member <span>PEMULA</span></div>
+    <div class="badai-member-marquee" aria-label="Materi khusus Member Pemula untuk mulai bikin karya dengan AI. Akan Update sesuai dengan update perkembangan arah AI dunia">
+      <div class="badai-member-marquee-track">
+        <span class="badai-member-marquee-item">Materi khusus Member Pemula untuk mulai bikin karya dengan AI. Akan Update sesuai dengan update perkembangan arah AI dunia</span>
+        <span class="badai-member-marquee-item" aria-hidden="true">Materi khusus Member Pemula untuk mulai bikin karya dengan AI. Akan Update sesuai dengan update perkembangan arah AI dunia</span>
+      </div>
+    </div>
+  </div>
   <a class="badai-member-help" href="https://wa.me/62881022445869?text=Halo%20Admin%20BADAI%2C%20saya%20butuh%20bantuan%20di%20Member%20Area." target="_blank" rel="noopener noreferrer"><span>💬</span><span>HUBUNGI ADMIN</span></a>
 </header>`;
 
@@ -1213,7 +1254,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function memberSession(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')}catch(_){return null}}
 
   var kelas=el('kelas');
-  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-heading-copy"><h1>Member Pemula</h1><p>10 materi khusus Member Pemula untuk mulai bikin karya dengan AI.</p></div><div class="badai-pemula-heading-actions"><div class="badai-pemula-support"><small>GRUP SUPPORT</small><a href="https://chat.whatsapp.com/Jhj7EJy1fFdLoqMk3gxXsP" target="_blank" rel="noopener noreferrer">MASUK GRUP <span>↗</span></a></div><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
+  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-heading-actions"><div class="badai-pemula-support"><small>GRUP SUPPORT</small><a href="https://chat.whatsapp.com/Jhj7EJy1fFdLoqMk3gxXsP" target="_blank" rel="noopener noreferrer">MASUK GRUP <span>↗</span></a></div><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
   var bonus=el('jaluruntung');
   if(bonus&&!bonus.querySelector('.screen-heading')) bonus.insertAdjacentHTML('afterbegin','<div class="screen-heading"><h1>Untung BADAI</h1><p>21 materi khusus Member Untung untuk bikin produk, konten, dan sistem yang menghasilkan.</p></div>');
   var akun=el('akun');
