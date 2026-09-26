@@ -3395,6 +3395,21 @@ th,td{padding:14px 12px!important}
               <div><h3>Atur Harga</h3><p>Atur harga Paket Pemula dan Paket Untung.</p></div>
             </div>
 
+            <div class="buatqris-enable-row" style="margin-bottom:12px">
+              <div>
+                <b>Aktifkan Pendaftaran</b>
+                <span>ON: harga asli tampil dan tombol daftar aktif. OFF: harga di Landing Page menjadi <b>Rp xxx.xxxx</b> dan semua tombol pendaftaran dinonaktifkan.</span>
+              </div>
+              <label class="switch-control">
+                <input id="marketingRegistrationOpen" type="checkbox" checked>
+                <span></span>
+              </label>
+            </div>
+
+            <div id="registrationModeAdminNote" class="template-help" style="margin:0 0 12px">
+              Status saat ini: <b>PENDAFTARAN DIBUKA</b>
+            </div>
+
             <div class="marketing-price-grid">
               <div class="manage-field">
                 <label>Harga Paket Pemula</label>
@@ -4144,6 +4159,7 @@ th,td{padding:14px 12px!important}
     product_price:123000,
     newbie_price:123000,
     pro_price:123000,
+    registration_open:true,
     registration_notification:`Halo Admin BADAI 👋
 
 Saya sudah mengisi formulir pendaftaran BADAI.
@@ -4893,7 +4909,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadMarketingSettings(){
     try{
       const rows = await api(
-        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,newbie_price,pro_price,registration_notification,followup_1,followup_2,followup_3,success_notification,membership_grace_days,membership_reminder_days,membership_active_notification,membership_grace_notification,membership_expired_notification'
+        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,newbie_price,pro_price,registration_open,registration_notification,followup_1,followup_2,followup_3,success_notification,membership_grace_days,membership_reminder_days,membership_active_notification,membership_grace_notification,membership_expired_notification'
       );
       if(rows?.[0]) marketingSettings = rows[0];
     }catch(_){}
@@ -4929,6 +4945,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
     $('marketingNewbiePrice').value = marketingSettings.newbie_price || marketingSettings.product_price || 123000;
     $('marketingProPrice').value = marketingSettings.pro_price || marketingSettings.product_price || 123000;
+    if($('marketingRegistrationOpen')) $('marketingRegistrationOpen').checked = marketingSettings.registration_open !== false;
+    syncRegistrationModeAdmin();
     $('marketingRegisterMessage').value = marketingSettings.registration_notification || '';
     $('marketingFollow1').value = marketingSettings.followup_1 || '';
     $('marketingFollow2').value = marketingSettings.followup_2 || '';
@@ -4953,6 +4971,15 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     populateBuatQrisSettings();
   }
 
+  function syncRegistrationModeAdmin(){
+    const toggle = $('marketingRegistrationOpen');
+    const note = $('registrationModeAdminNote');
+    if(!toggle || !note) return;
+    note.innerHTML = toggle.checked
+      ? 'Status saat ini: <b style="color:#7fe2a3">PENDAFTARAN DIBUKA</b> • Harga asli tampil dan CTA pendaftaran aktif.'
+      : 'Status saat ini: <b style="color:#ff8fc5">PENDAFTARAN DITUTUP</b> • Harga publik disamarkan menjadi Rp xxx.xxxx dan CTA pendaftaran dimatikan.';
+  }
+
   function canManageMarketing(){
     return ['owner','admin','marketing'].includes(currentTeam?.role);
   }
@@ -4969,6 +4996,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const body = {
       newbie_price:Math.round(newbiePrice),
       pro_price:Math.round(proPrice),
+      registration_open:$('marketingRegistrationOpen') ? $('marketingRegistrationOpen').checked : true,
       registration_notification:$('marketingRegisterMessage').value.trim(),
       followup_1:$('marketingFollow1').value.trim(),
       followup_2:$('marketingFollow2').value.trim(),
@@ -6750,6 +6778,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       setMarketingCategoryTab(savedMarketingTab);
     }
   }catch(_){}
+
+  $('marketingRegistrationOpen')?.addEventListener('change', syncRegistrationModeAdmin);
+  syncRegistrationModeAdmin();
 
   $('marketingForm').addEventListener('submit', async (e) => {
     e.preventDefault();
