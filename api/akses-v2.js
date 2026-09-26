@@ -54,25 +54,25 @@ module.exports = async function handler(req, res) {
   }
   .badai-member-header-logo{display:flex;align-items:center;min-width:0;text-decoration:none}
   .badai-member-header-logo img{display:block;width:auto;height:34px;max-width:150px;object-fit:contain}
-  .badai-member-header-info{min-width:0;display:grid;gap:4px;align-content:center}
+  .badai-member-header-info{min-width:0;display:flex;align-items:center;gap:7px;overflow:hidden;white-space:nowrap}
   .badai-member-header-title{
-    margin:0;color:#fff;font-family:"Raleway",Arial,sans-serif;font-size:15px;font-weight:900;
+    flex:0 0 auto;margin:0;color:#fff;font-family:"Raleway",Arial,sans-serif;font-size:13px;font-weight:900;
     line-height:1;letter-spacing:-.02em;white-space:nowrap
   }
   .badai-member-header-title span{color:#ff4fa3}
+  .badai-member-header-title b{color:#8f8f8f;font-weight:900;margin-left:2px}
   .badai-member-marquee{
-    position:relative;min-width:0;overflow:hidden;height:18px;border-radius:5px;
-    background:#0d0d0d;border:1px solid #232323;display:flex;align-items:center;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
-    mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)
+    position:relative;min-width:0;flex:1 1 auto;overflow:hidden;height:22px;display:flex;align-items:center;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 96%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 5%,#000 96%,transparent)
   }
   .badai-member-marquee-track{
     display:inline-flex;align-items:center;width:max-content;white-space:nowrap;
-    animation:badaiMemberNewsTicker 24s linear infinite;will-change:transform
+    animation:badaiMemberNewsTicker 20s linear infinite;will-change:transform
   }
   .badai-member-marquee-item{
-    flex:0 0 auto;padding-right:48px;color:#bebebe;font-family:"Nunito",Arial,sans-serif;
-    font-size:8.5px;font-weight:700;line-height:1;letter-spacing:.01em
+    flex:0 0 auto;padding-right:46px;color:#c8c8c8;font-family:"Nunito",Arial,sans-serif;
+    font-size:9.5px;font-weight:700;line-height:1;letter-spacing:.01em
   }
   .badai-member-marquee-item::before{content:"●";margin-right:8px;color:#ff4fa3;font-size:6px;vertical-align:1px}
   @keyframes badaiMemberNewsTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -81,10 +81,10 @@ module.exports = async function handler(req, res) {
   @media(max-width:560px){
     .badai-member-header{grid-template-columns:auto minmax(0,1fr) auto;gap:8px;padding:7px 8px;min-height:64px}
     .badai-member-header-logo img{height:29px;max-width:92px}
-    .badai-member-header-info{gap:3px}
-    .badai-member-header-title{font-size:12px}
-    .badai-member-marquee{height:16px}
-    .badai-member-marquee-item{font-size:7.5px;padding-right:34px}
+    .badai-member-header-info{gap:5px}
+    .badai-member-header-title{font-size:10px}
+    .badai-member-marquee{height:18px}
+    .badai-member-marquee-item{font-size:8px;padding-right:34px}
     .badai-member-help{min-height:34px!important;padding:0 9px!important;font-size:9px!important;gap:4px!important}
     .badai-member-help span:first-child{font-size:9px}
   }
@@ -1231,7 +1231,7 @@ module.exports = async function handler(req, res) {
 <header class="badai-member-header" aria-label="Header Member Area BADAI">
   <a class="badai-member-header-logo" href="/akses" aria-label="BADAI Member Area"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"></a>
   <div class="badai-member-header-info" aria-label="Member Pemula">
-    <div class="badai-member-header-title">Member <span>PEMULA</span></div>
+    <div class="badai-member-header-title">MEMBER <span>PEMULA</span><b>:</b></div>
     <div class="badai-member-marquee" aria-label="Materi khusus Member Pemula untuk mulai bikin karya dengan AI. Akan Update sesuai dengan update perkembangan arah AI dunia">
       <div class="badai-member-marquee-track">
         <span class="badai-member-marquee-item">Materi khusus Member Pemula untuk mulai bikin karya dengan AI. Akan Update sesuai dengan update perkembangan arah AI dunia</span>
