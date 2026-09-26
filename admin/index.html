@@ -1537,6 +1537,58 @@ main.shell{
   font-size:7px;
   line-height:1.45;
 }
+.buatqris-unique-box{
+  margin:9px 0;
+  padding:10px;
+  border:1px solid #4f2940;
+  border-radius:12px;
+  background:#120c10;
+}
+.buatqris-unique-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.buatqris-unique-head b{
+  display:block;
+  color:#fff;
+  font-size:9px;
+}
+.buatqris-unique-head span{
+  display:block;
+  margin-top:2px;
+  color:#8b7b84;
+  font-size:7px;
+  line-height:1.4;
+}
+.buatqris-unique-pill{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  min-height:23px;
+  padding:0 8px;
+  border:1px solid #2e6841;
+  border-radius:999px;
+  background:#0d1710;
+  color:#82dda0!important;
+  font-size:6px!important;
+  font-weight:950;
+  letter-spacing:.05em;
+}
+.buatqris-unique-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.buatqris-unique-grid .manage-field input{
+  color:#d9d9d9;
+  background:#080808;
+}
+@media(max-width:500px){
+  .buatqris-unique-grid{grid-template-columns:1fr}
+}
 .buatqris-action-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -3538,6 +3590,27 @@ th,td{padding:14px 12px!important}
                 <input id="buatQrisUmkmName" type="text" placeholder="BADAI"/>
                 <div class="price-plan-note">Mengirim parameter <b>qris_name</b>. Pada akun biasa field ini akan diabaikan BuatQris.</div>
               </div>
+            </div>
+
+            <div class="buatqris-unique-box">
+              <div class="buatqris-unique-head">
+                <div>
+                  <b>Kode Unik Pembayaran</b>
+                  <span>Nominal QRIS otomatis dibuat berbeda untuk membantu pencocokan transaksi.</span>
+                </div>
+                <span class="buatqris-unique-pill">AKTIF OTOMATIS</span>
+              </div>
+              <div class="buatqris-unique-grid">
+                <div class="manage-field">
+                  <label>Type</label>
+                  <input type="text" value="Naik (Harga + Kode Unik)" readonly/>
+                </div>
+                <div class="manage-field">
+                  <label>Range Kode Unik</label>
+                  <input type="text" value="Dikelola otomatis oleh BuatQris" readonly/>
+                </div>
+              </div>
+              <div class="price-plan-note">BADAI menampilkan rincian Harga Paket + Kode Unik + Total Pembayaran di popup QRIS. Bayar harus persis sesuai total.</div>
             </div>
 
             <div class="buatqris-reference-grid">
