@@ -2409,6 +2409,11 @@ th,td{padding:14px 12px!important}
   font-size:8px!important;
   white-space:nowrap!important;
 }
+#pageSales .sales-package-stack .sales-unique-meta{
+  color:#ff9dcc!important;
+  font-size:7px!important;
+  font-weight:900!important;
+}
 @media(max-width:560px){
   #pageSales .sales-compact-head,
   #pageSales .sales-compact-row{
@@ -3514,9 +3519,61 @@ th,td{padding:14px 12px!important}
         </div>
 
         <div class="marketing-category-panel" data-marketing-panel="payments">
-          <div class="marketing-card buatqris-card">
+          <div class="marketing-card">
             <div class="marketing-card-head">
               <span class="marketing-number">1</span>
+              <div>
+                <h3>Kode Unik Transfer Manual</h3>
+                <p>Dipakai khusus transfer bank manual agar setiap invoice mudah dicocokkan dengan mutasi rekening.</p>
+              </div>
+            </div>
+
+            <div class="buatqris-enable-row">
+              <div>
+                <b>Aktifkan Kode Unik</b>
+                <span>Hanya berlaku untuk pembayaran manual. QRIS otomatis dan payment gateway tidak diubah.</span>
+              </div>
+              <label class="switch-control">
+                <input id="manualUniqueEnabled" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+
+            <div class="buatqris-grid">
+              <div class="manage-field">
+                <label>Type</label>
+                <select id="manualUniqueType">
+                  <option value="add">Naik (Harga + Kode Unik)</option>
+                  <option value="subtract">Turun (Harga - Kode Unik)</option>
+                </select>
+              </div>
+              <div class="manage-field">
+                <label>Range Min</label>
+                <input id="manualUniqueMin" type="number" min="1" max="9999" step="1" inputmode="numeric" placeholder="1"/>
+              </div>
+              <div class="manage-field">
+                <label>Range Max</label>
+                <input id="manualUniqueMax" type="number" min="1" max="9999" step="1" inputmode="numeric" placeholder="999"/>
+              </div>
+              <div class="manage-field">
+                <label>Contoh Invoice</label>
+                <input id="manualUniquePreview" type="text" readonly value="Rp59.400 + 327 = Rp59.727"/>
+              </div>
+            </div>
+
+            <div class="buatqris-security-note">
+              🔎 Sistem membuat kode unik per pendaftaran manual dan menyimpan TOTAL TRANSFER di data Penjualan. Admin bisa mencari berdasarkan kode unik atau nominal transfer persis.
+            </div>
+
+            <div class="buatqris-action-grid">
+              <button id="saveManualUniqueBtn" class="payment-add-btn" type="button">SIMPAN KODE UNIK</button>
+            </div>
+            <div id="manualUniqueStatus" class="team-status-note"></div>
+          </div>
+
+          <div class="marketing-card buatqris-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">2</span>
               <div>
                 <h3>BuatQris.site</h3>
                 <p>QRIS otomatis. Setelah user daftar, sistem membuat QR sesuai harga paket.</p>
@@ -3640,7 +3697,7 @@ th,td{padding:14px 12px!important}
 
           <div class="marketing-card">
             <div class="marketing-card-head">
-              <span class="marketing-number">2</span>
+              <span class="marketing-number">3</span>
               <div><h3>Tambah Metode Pembayaran</h3><p>Bisa QRIS, payment gateway, atau transfer manual sebanyak yang dibutuhkan.</p></div>
             </div>
 
@@ -3703,7 +3760,7 @@ th,td{padding:14px 12px!important}
 
           <div class="marketing-card">
             <div class="marketing-card-head">
-              <span class="marketing-number">3</span>
+              <span class="marketing-number">4</span>
               <div><h3>Metode Pembayaran Aktif</h3><p>Aktifkan semua metode atau pilih hanya beberapa yang ingin ditampilkan di Landing Page.</p></div>
             </div>
             <div id="paymentMethodList" class="payment-method-list"></div>
@@ -3721,7 +3778,7 @@ th,td{padding:14px 12px!important}
               <label>Pesan Pendaftaran</label>
               <textarea id="marketingRegisterMessage" rows="8"></textarea>
             </div>
-            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b></div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b> <b>[kode_unik]</b> <b>[total_bayar]</b></div>
           </div>
 
           <div class="marketing-card">
@@ -3733,7 +3790,7 @@ th,td{padding:14px 12px!important}
             <div class="manage-field full"><label>Follow Up 1</label><textarea id="marketingFollow1" rows="6"></textarea></div>
             <div class="manage-field full"><label>Follow Up 2</label><textarea id="marketingFollow2" rows="6"></textarea></div>
             <div class="manage-field full"><label>Follow Up 3</label><textarea id="marketingFollow3" rows="6"></textarea></div>
-            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b></div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b> <b>[kode_unik]</b> <b>[total_bayar]</b></div>
           </div>
 
           <div class="marketing-card">
@@ -3746,7 +3803,7 @@ th,td{padding:14px 12px!important}
               <label>Pesan Berhasil</label>
               <textarea id="marketingSuccessMessage" rows="8"></textarea>
             </div>
-            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[password]</b> <b>[link]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b></div>
+            <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[password]</b> <b>[link]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b> <b>[kode_unik]</b> <b>[total_bayar]</b></div>
           </div>
 
           <div class="marketing-card membership-notification-settings">
@@ -4368,6 +4425,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     display_name:'QRIS Otomatis',
     umkm_name:''
   };
+  let manualUniqueSettings = {
+    enabled:true,
+    type:'add',
+    min:1,
+    max:999
+  };
 
   const $ = (id) => document.getElementById(id);
   const authView = $('authView');
@@ -4547,7 +4610,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }catch(_){}
 
     const results = await Promise.all([
-      api('/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,admin_note,created_at,activated_at,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at&order=created_at.desc'),
+      api('/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,payment_unique_code,payment_total_amount,admin_note,created_at,activated_at,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at&order=created_at.desc'),
       api('/rest/v1/profiles?select=id,full_name,email'),
       api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
       api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
@@ -4862,6 +4925,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         'Nama': r.full_name || '',
         'Email': r.email || '',
         'WhatsApp': r.whatsapp || '',
+        'Metode Pembayaran': r.payment_method_name || '',
+        'Kode Unik': r.payment_unique_code || '',
+        'Total Transfer': r.payment_total_amount || r.amount || 0,
         'Paket': planText(r.membership_plan),
         'Nominal': Number(r.amount || 0),
         'Status Pembayaran': String(r.payment_status || '').toUpperCase(),
@@ -4993,7 +5059,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadMarketingSettings(){
     try{
       const rows = await api(
-        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,newbie_price,pro_price,registration_open,registration_notification,followup_1,followup_2,followup_3,success_notification,membership_grace_days,membership_reminder_days,membership_active_notification,membership_grace_notification,membership_expired_notification'
+        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,newbie_price,pro_price,registration_open,registration_notification,followup_1,followup_2,followup_3,success_notification,membership_grace_days,membership_reminder_days,membership_active_notification,membership_grace_notification,membership_expired_notification,manual_unique_enabled,manual_unique_type,manual_unique_min,manual_unique_max'
       );
       if(rows?.[0]) marketingSettings = rows[0];
     }catch(_){}
@@ -5048,6 +5114,14 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('membershipActiveNotification').value = marketingSettings.membership_active_notification || '';
     $('membershipGraceNotification').value = marketingSettings.membership_grace_notification || '';
     $('membershipExpiredNotification').value = marketingSettings.membership_expired_notification || '';
+
+    manualUniqueSettings = {
+      enabled:marketingSettings.manual_unique_enabled !== false,
+      type:marketingSettings.manual_unique_type === 'subtract' ? 'subtract' : 'add',
+      min:Number(marketingSettings.manual_unique_min || 1),
+      max:Number(marketingSettings.manual_unique_max || 999)
+    };
+    populateManualUniqueSettings();
 
     $('affiliateCommissionType').value = affiliateSettings.commission_type || 'percent';
     $('affiliateCommissionValue').value = affiliateSettings.commission_value || 30;
@@ -5456,6 +5530,67 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     await loadMarketing();
   }
 
+  function syncManualUniquePreview(){
+    const type = $('manualUniqueType')?.value || 'add';
+    const min = Math.max(1,Number($('manualUniqueMin')?.value || 1));
+    const max = Math.max(min,Number($('manualUniqueMax')?.value || 999));
+    const sample = Math.round((min + max) / 2);
+    const base = Number(marketingSettings.newbie_price || marketingSettings.product_price || 59400);
+    const total = type === 'subtract' ? Math.max(1,base-sample) : base+sample;
+    if($('manualUniquePreview')){
+      $('manualUniquePreview').value =
+        rupiah(base) + (type === 'subtract' ? ' - ' : ' + ') + rupiah(sample) + ' = ' + rupiah(total);
+    }
+  }
+
+  function populateManualUniqueSettings(){
+    if(!$('manualUniqueEnabled')) return;
+    $('manualUniqueEnabled').checked = manualUniqueSettings.enabled !== false;
+    $('manualUniqueType').value = manualUniqueSettings.type === 'subtract' ? 'subtract' : 'add';
+    $('manualUniqueMin').value = manualUniqueSettings.min || 1;
+    $('manualUniqueMax').value = manualUniqueSettings.max || 999;
+    syncManualUniquePreview();
+  }
+
+  async function saveManualUniqueSettings(){
+    if(!canManageMarketing()) throw new Error('Role ini tidak punya izin mengatur kode unik.');
+
+    const enabled = $('manualUniqueEnabled').checked;
+    const type = $('manualUniqueType').value;
+    const min = Math.round(Number($('manualUniqueMin').value));
+    const max = Math.round(Number($('manualUniqueMax').value));
+
+    if(!['add','subtract'].includes(type)) throw new Error('Type kode unik belum valid.');
+    if(!Number.isInteger(min) || !Number.isInteger(max) || min < 1 || max < min || max > 9999){
+      throw new Error('Range kode unik harus 1–9999 dan Range Max tidak boleh lebih kecil dari Range Min.');
+    }
+
+    await api('/rest/v1/marketing_settings?id=eq.1', {
+      method:'PATCH',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        manual_unique_enabled:enabled,
+        manual_unique_type:type,
+        manual_unique_min:min,
+        manual_unique_max:max,
+        updated_by:session.user.id
+      })
+    });
+
+    $('manualUniqueStatus').textContent = enabled
+      ? '✓ Kode unik transfer manual aktif. Range ' + min + '–' + max + '.'
+      : 'Kode unik transfer manual dinonaktifkan.';
+
+    await loadMarketingSettings();
+    manualUniqueSettings = {
+      enabled:marketingSettings.manual_unique_enabled !== false,
+      type:marketingSettings.manual_unique_type === 'subtract' ? 'subtract' : 'add',
+      min:Number(marketingSettings.manual_unique_min || 1),
+      max:Number(marketingSettings.manual_unique_max || 999)
+    };
+    populateManualUniqueSettings();
+  }
+
   function populateBuatQrisSettings(){
     if(!$('buatQrisEnabled')) return;
 
@@ -5815,7 +5950,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const q = $('searchBox').value.trim().toLowerCase();
     const status = $('statusFilter').value;
     return registrations.filter(r => {
-      const hay = [r.full_name,r.email,r.whatsapp].join(' ').toLowerCase();
+      const hay = [
+        r.full_name,r.email,r.whatsapp,
+        r.payment_unique_code,
+        r.payment_total_amount,
+        r.payment_method_name
+      ].join(' ').toLowerCase();
       return (!q || hay.includes(q))
         && (status === 'all' || membershipLifecycle(r) === status || r.payment_status === status);
     });
@@ -5857,6 +5997,21 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return 'https://wa.me/' + encodeURIComponent(r.whatsapp) + '?text=' + encodeURIComponent(msg);
   }
 
+  function manualPaymentMetaText(r){
+    if(r?.payment_method_type !== 'manual_transfer' || Number(r?.payment_unique_code || 0) <= 0) return '';
+    const sign = Number(r.payment_total_amount || 0) >= Number(r.amount || 0) ? '+' : '-';
+    return 'Kode Unik: ' + sign + rupiah(r.payment_unique_code) +
+      '\nTOTAL TRANSFER: ' + rupiah(r.payment_total_amount) +
+      '\nTransfer persis sesuai total di atas.';
+  }
+
+  function salesPaymentMetaHtml(r){
+    if(r?.payment_method_type !== 'manual_transfer' || Number(r?.payment_unique_code || 0) <= 0) return '';
+    const sign = Number(r.payment_total_amount || 0) >= Number(r.amount || 0) ? '+' : '-';
+    return '<span class="sales-unique-meta" title="Kode unik pembayaran">Transfer ' +
+      esc(rupiah(r.payment_total_amount)) + ' • ' + sign + esc(r.payment_unique_code) + '</span>';
+  }
+
   function followUpLink(r, step){
     const templates = {
       1:marketingSettings.followup_1,
@@ -5871,7 +6026,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       paket:r.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula',
       harga:rupiah(r.amount || marketingSettings.product_price || 123000),
       metode_bayar:r.payment_method_name || '-',
-      detail_bayar:r.payment_method_details || '-'
+      detail_bayar:[
+        r.payment_method_details || '-',
+        manualPaymentMetaText(r)
+      ].filter(Boolean).join('\n'),
+      kode_unik:r.payment_unique_code || 0,
+      total_bayar:rupiah(r.payment_total_amount || r.amount || 0)
     });
 
     return waMessageLink(r, message);
@@ -5917,6 +6077,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
             <div class="sales-package-stack">
               <strong>${planText(r.membership_plan)}</strong>
               <span>${rupiah(r.amount)}</span>
+              ${salesPaymentMetaHtml(r)}
             </div>
           </td>
           <td>
@@ -5950,6 +6111,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
             <div class="sales-package-stack">
               <strong>${planText(r.membership_plan)}</strong>
               <span>${rupiah(r.amount)}</span>
+              ${salesPaymentMetaHtml(r)}
             </div>
             <div class="sales-affiliate-stack">
               <strong title="${esc(aff.name)}">${esc(aff.name)}</strong>
@@ -6917,6 +7079,23 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     e.preventDefault();
     try{ await saveMarketing(); }
     catch(err){ $('marketingStatus').textContent = err.message; }
+  });
+
+  ['manualUniqueType','manualUniqueMin','manualUniqueMax'].forEach(id => {
+    $(id)?.addEventListener('input',syncManualUniquePreview);
+    $(id)?.addEventListener('change',syncManualUniquePreview);
+  });
+
+  $('saveManualUniqueBtn').addEventListener('click', async () => {
+    $('saveManualUniqueBtn').disabled = true;
+    const oldText = $('saveManualUniqueBtn').textContent;
+    $('saveManualUniqueBtn').textContent = 'MENYIMPAN...';
+    try{ await saveManualUniqueSettings(); }
+    catch(err){ $('manualUniqueStatus').textContent = '✕ ' + (err.message || 'Gagal menyimpan kode unik.'); }
+    finally{
+      $('saveManualUniqueBtn').disabled = false;
+      $('saveManualUniqueBtn').textContent = oldText;
+    }
   });
 
   $('saveBuatQrisBtn').addEventListener('click', async () => {
