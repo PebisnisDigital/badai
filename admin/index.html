@@ -4144,16 +4144,107 @@ th,td{padding:14px 12px!important}
     product_price:123000,
     newbie_price:123000,
     pro_price:123000,
-    registration_notification:'',
-    followup_1:'',
-    followup_2:'',
-    followup_3:'',
-    success_notification:'',
+    registration_notification:`Halo Admin BADAI 👋
+
+Saya sudah mengisi formulir pendaftaran BADAI.
+
+DATA PENDAFTARAN
+Nama: [nama]
+Email: [email]
+WhatsApp: [wa]
+Paket: [paket]
+Harga: [harga]
+Metode Pembayaran: [metode_bayar]
+[detail_bayar]
+
+Saya siap melanjutkan pendaftaran. Mohon dibantu prosesnya ya.`,
+    followup_1:`Halo Kak [nama] 👋
+
+Pendaftaran BADAI Kakak untuk [paket] sudah masuk, tapi status pembayarannya masih PENDING.
+
+Total: [harga]
+Metode Pembayaran: [metode_bayar]
+[detail_bayar]
+
+Kalau sudah melakukan pembayaran, kirim bukti pembayarannya ke chat ini ya. Kalau ada kendala, tinggal balas pesan ini.`,
+    followup_2:`Hai Kak [nama] 👋
+
+Izin follow up pendaftaran BADAI Kakak ya.
+
+Paket: [paket]
+Total: [harga]
+
+Akses member belum aktif karena pembayaran belum terverifikasi. Kalau Kakak masih mau lanjut, silakan selesaikan pembayarannya. Kalau sudah bayar, kirim bukti pembayaran ke chat ini supaya bisa segera diproses.`,
+    followup_3:`Halo Kak [nama] 👋
+
+Ini follow up terakhir untuk pendaftaran BADAI Kakak.
+
+Status saat ini masih PENDING, jadi akses member belum aktif.
+
+Paket: [paket]
+Total: [harga]
+
+Kalau masih mau lanjut, silakan selesaikan pembayaran dan kirim bukti ke chat ini. Kalau belum jadi lanjut sekarang, pesan ini boleh diabaikan ya.`,
+    success_notification:`🎉 Halo Kak [nama], pembayaran BADAI sudah berhasil dikonfirmasi.
+
+Akses member Kakak sekarang sudah AKTIF.
+
+Paket: [paket]
+Link Member Area:
+[link]
+
+DATA LOGIN
+Email: [email]
+Password Awal: [password]
+
+Simpan data login ini baik-baik ya. Kalau ada kendala saat masuk ke Member Area, langsung hubungi Admin BADAI.`,
     membership_grace_days:7,
     membership_reminder_days:30,
-    membership_active_notification:'',
-    membership_grace_notification:'',
-    membership_expired_notification:''
+    membership_active_notification:`Halo Kak [nama] 👋
+
+Ini pengingat masa aktif keanggotaan BADAI Kakak.
+
+Paket: [paket]
+Masa aktif sampai: [tanggal_expired]
+Sisa masa aktif: [sisa_hari] hari
+
+Biaya perpanjangan 1 tahun: [harga]
+
+Supaya akses tidak terputus, Kakak bisa melakukan perpanjangan sebelum masa aktif berakhir.
+
+Member Area:
+[link]
+
+Kalau mau diperpanjang, balas pesan ini ya.`,
+    membership_grace_notification:`Halo Kak [nama] 👋
+
+Masa aktif BADAI Kakak sudah berakhir pada [tanggal_expired] dan sekarang masuk MASA TENGGANG selama [masa_tenggang] hari.
+
+Batas masa tenggang: [tanggal_tenggang]
+Paket: [paket]
+Biaya perpanjangan 1 tahun: [harga]
+
+Selama masa tenggang, Kakak masih bisa memperpanjang agar akses tetap berlanjut. Setelah masa tenggang selesai, akses Member Area akan dinonaktifkan.
+
+Member Area:
+[link]
+
+Kalau mau lanjut, balas pesan ini ya.`,
+    membership_expired_notification:`Halo Kak [nama] 👋
+
+Masa tenggang keanggotaan BADAI Kakak sudah berakhir pada [tanggal_tenggang].
+
+Saat ini akses Member Area sudah dinonaktifkan.
+
+Paket: [paket]
+Biaya aktivasi kembali / perpanjangan 1 tahun: [harga]
+
+Untuk mengaktifkan kembali akses BADAI, silakan lakukan perpanjangan.
+
+Member Area:
+[link]
+
+Kalau mau aktif lagi, balas pesan ini ya.`
   };
   let marketingCoupons = [];
   let salesActiveCoupons = [];
