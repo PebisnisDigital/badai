@@ -9,6 +9,7 @@ const akses = require('./api/admin-v3.js');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
+const BUILD_REV = 'badai-staging-ai-influencer-geo-v2';
 
 const MIME = {
   '.html':'text/html; charset=utf-8',
@@ -127,7 +128,8 @@ const server = http.createServer(async (req, res) => {
       return res.status(200).send({
         ok:true,
         app:'BADAI-STAGING',
-        source:process.env.VERCEL_GIT_COMMIT_SHA || 'staging'
+        source:process.env.VERCEL_GIT_COMMIT_SHA || 'staging',
+        build:BUILD_REV
       });
     }
 

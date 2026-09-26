@@ -1,11 +1,20 @@
 module.exports = async function handler(req, res) {
   try {
-    const ref = process.env.VERCEL_GIT_COMMIT_SHA || 'main';
-    const sourceUrl = `https://raw.githubusercontent.com/PebisnisDigital/badai/${encodeURIComponent(ref)}/akses/index.html`;
-    const source = await fetch(sourceUrl, { headers: { 'User-Agent': 'BADAI-Member-Area/1.0' } });
-    if (!source.ok) throw new Error(`Gagal memuat member area (${source.status})`);
+    let html;
 
-    let html = await source.text();
+    // Railway staging must render the files from the exact deployed commit.
+    // Falling back to GitHub main here made /akses look stale even after staging deploys.
+    if (process.env.RAILWAY_PROJECT_ID || process.env.BADAI_ENV === 'staging') {
+      const fs = require('fs');
+      const path = require('path');
+      html = fs.readFileSync(path.join(process.cwd(), 'akses', 'index.html'), 'utf8');
+    } else {
+      const ref = process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_REF || 'main';
+      const sourceUrl = `https://raw.githubusercontent.com/PebisnisDigital/badai/${encodeURIComponent(ref)}/akses/index.html`;
+      const source = await fetch(sourceUrl, { headers: { 'User-Agent': 'BADAI-Member-Area/1.0' } });
+      if (!source.ok) throw new Error(`Gagal memuat member area (${source.status})`);
+      html = await source.text();
+    }
 
     const flaticonUicons = '<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">';
 
@@ -112,6 +121,32 @@ module.exports = async function handler(req, res) {
   .screen-heading .kicker,#akun .account-kicker{display:none!important}
   .screen-heading h1,.badai-gratisan-heading h1,#akun .account-head h1{margin:0 0 6px!important;color:#fff!important;font-family:"Raleway",Arial,sans-serif!important;font-size:34px!important;font-weight:800!important;line-height:1!important;letter-spacing:-.045em!important}
   .screen-heading p,.badai-gratisan-heading p,#akun .account-head p{margin:0!important;color:#a8a8a8!important;font-family:"Nunito",Arial,sans-serif!important;font-size:11.5px!important;font-weight:600!important;line-height:1.4!important}
+
+  /* PEMULA — left aligned heading + support group + bonus VO */
+  #kelas .screen-heading.badai-pemula-heading{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(310px,350px)!important;align-items:center!important;gap:18px!important;text-align:left!important;padding:4px 4px 0!important;margin-bottom:18px!important}
+  #kelas .badai-pemula-heading-copy{min-width:0}
+  #kelas .badai-pemula-heading h1{text-align:left!important;margin-bottom:7px!important}
+  #kelas .badai-pemula-heading p{text-align:left!important}
+  #kelas .badai-pemula-heading-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:stretch}
+  #kelas .badai-pemula-bonus,#kelas .badai-pemula-support{min-width:0;padding:10px 11px;border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,.2);text-align:left}
+  #kelas .badai-pemula-bonus{background:linear-gradient(145deg,#191015,#0d0d0d);border:1px solid #4d263a}
+  #kelas .badai-pemula-support{background:linear-gradient(145deg,#0f1913,#0b0f0c);border:1px solid #245234}
+  #kelas .badai-pemula-bonus small,#kelas .badai-pemula-support small{display:block;margin:0 0 5px;font:800 8px/1 "Nunito",Arial,sans-serif;letter-spacing:.08em}
+  #kelas .badai-pemula-bonus small{color:#ff8fc5}
+  #kelas .badai-pemula-support small{color:#65e995}
+  #kelas .badai-pemula-bonus a,#kelas .badai-pemula-support a{display:flex;align-items:center;justify-content:space-between;gap:9px;min-height:38px;padding:0 12px;border-radius:11px;color:#111;text-decoration:none;font:900 10.5px/1 "Nunito",Arial,sans-serif;white-space:nowrap}
+  #kelas .badai-pemula-bonus a{background:#ff4fa3;box-shadow:0 8px 22px rgba(255,79,163,.18)}
+  #kelas .badai-pemula-support a{background:#25d366;box-shadow:0 8px 22px rgba(37,211,102,.16)}
+  #kelas .badai-pemula-bonus a span,#kelas .badai-pemula-support a span{font-size:13px}
+  @media(max-width:560px){
+    #kelas .screen-heading.badai-pemula-heading{gap:11px!important;grid-template-columns:1fr!important}
+    #kelas .badai-pemula-heading h1{font-size:29px!important}
+    #kelas .badai-pemula-heading p{font-size:10.5px!important;line-height:1.35!important}
+    #kelas .badai-pemula-heading-actions{grid-template-columns:1fr 1fr;gap:7px}
+    #kelas .badai-pemula-bonus,#kelas .badai-pemula-support{padding:8px;border-radius:13px}
+    #kelas .badai-pemula-bonus small,#kelas .badai-pemula-support small{font-size:7px;margin-bottom:4px}
+    #kelas .badai-pemula-bonus a,#kelas .badai-pemula-support a{min-height:34px;padding:0 9px;font-size:9.5px;border-radius:9px}
+  }
 
   /* AKUN — larger type, tighter vertical rhythm */
   #akun .account-head{margin-bottom:10px!important}
@@ -1178,7 +1213,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function memberSession(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')}catch(_){return null}}
 
   var kelas=el('kelas');
-  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading"><h1>Pemula BADAI</h1><p>10 materi khusus Member Pemula untuk mulai bikin karya dengan AI.</p></div>');
+  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-heading-copy"><h1>Pemula BADAI</h1><p>10 materi khusus Member Pemula untuk mulai bikin karya dengan AI.</p></div><div class="badai-pemula-heading-actions"><div class="badai-pemula-support"><small>GRUP SUPPORT</small><a href="https://chat.whatsapp.com/Jhj7EJy1fFdLoqMk3gxXsP" target="_blank" rel="noopener noreferrer">MASUK GRUP <span>↗</span></a></div><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
   var bonus=el('jaluruntung');
   if(bonus&&!bonus.querySelector('.screen-heading')) bonus.insertAdjacentHTML('afterbegin','<div class="screen-heading"><h1>Untung BADAI</h1><p>21 materi khusus Member Untung untuk bikin produk, konten, dan sistem yang menghasilkan.</p></div>');
   var akun=el('akun');
@@ -1192,15 +1227,24 @@ document.addEventListener('DOMContentLoaded', function(){
   var pemulaMaterials=[
     {title:'BIKIN AI EDUKATOR',video:'https://youtu.be/uIVMayQodjI',description:'Bikin karakter AI edukator yang bisa menyampaikan materi, tips, atau penjelasan secara menarik dalam bentuk konten.',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS AI EDUCATOR',toolUrl:'https://share.gemini.google/UAeV1F4ZAmzK'},
     {title:'BIKIN GEO-SPASIAL',video:'https://youtu.be/ZxoE9HJawnk',description:'Bikin konten peta, lokasi, dan visual geospasial yang menarik dengan bantuan AI.',content:'Cara belajarnya mudah, lihat dulu video tutorialnya, dan klik tombol TOOLSnya',copyLabel:'CARA BELAJARNYA',guide:true,ready:true,toolLabel:'TOOLS GEO-SPASIAL',toolUrl:'https://share.gemini.google/mPJoQiTzg6bT'},
-    {title:'BIKIN AI INFLUENCER',video:'',description:'Bikin AI Influencer dengan teknik pose mirroring di depan cermin, seolah sedang ngaca, untuk menghasilkan karakter dan konten visual yang lebih natural, estetik, dan konsisten.',content:''},
-    {title:'BIKIN SELEBGRAM AI',video:'',description:'Bikin karakter selebgram AI lengkap dengan konsep konten dan tampilan yang konsisten.',content:''},
-    {title:'BIKIN AFFILIATE AI',video:'',description:'Bikin konten affiliate berbantu AI untuk memperkenalkan produk dengan lebih menarik.',content:''},
-    {title:'BIKIN PAPER CRAFT',video:'',description:'Bikin desain paper craft dari ide sederhana sampai siap dijadikan pola visual.',content:''},
-    {title:'BIKIN UNBOXING AI',video:'',description:'Bikin video unboxing produk dengan visual AI tanpa harus selalu merekam dari awal.',content:''},
-    {title:'BIKIN GAME',video:'',description:'Bikin game sederhana dengan bantuan AI, mulai dari ide sampai versi yang bisa dimainkan.',content:''},
-    {title:'BIKIN VIDEO GENJUTSU VIRAL',video:'',description:'Bikin video transformasi Genjutsu yang menarik untuk konten pendek dan media sosial.',content:''},
-    {title:'BIKIN VIDEO KLONING',video:'',description:'Bikin video kloning karakter atau diri sendiri untuk variasi konten kreatif dengan AI.',content:''}
+    {title:'BIKIN AI INFLUENCER',video:'https://youtu.be/aAYxcLKzCTc',description:'Bikin AI Influencer dengan teknik pose mirroring di depan cermin, seolah sedang ngaca, untuk menghasilkan karakter dan konten visual yang lebih natural, estetik, dan konsisten.',content:'Cara belajarnya mudah, lihat video tutorialnya lalu klik tombol TOOLS untuk praktik.',ready:true,toolLabel:'TOOLS AI INFLUENCER',toolUrl:'https://share.gemini.google/seGz1fbfq0vy'},
+    {title:'BIKIN ANIMASI MANUSIA GUA',video:'',description:'Bikin animasi manusia gua dengan bantuan AI, mulai dari konsep karakter, suasana zaman purba, ekspresi, gerakan, sampai adegan yang menarik untuk konten.',content:''},
+    {title:'BIKIN DIY CRAFT',video:'',description:'Bikin proyek DIY Craft kreatif dengan bantuan AI, mulai dari mencari ide, menyusun konsep dan desain, sampai mengembangkan hasil kerajinan menjadi konten yang menarik.',content:'Klik tombol TOOLS untuk membuka tools Bikin DIY Craft.',ready:true,toolLabel:'TOOLS BIKIN DIY CRAFT',toolUrl:'https://share.gemini.google/zthNmDhwCaXG'},
+    {title:'BIKIN ANIMASI PAPER',video:'',description:'Bikin animasi bergaya paper dengan bantuan AI, mulai dari ide visual, karakter dan elemen kertas, sampai adegan bergerak yang menarik untuk konten.',content:'Klik tombol TOOLS untuk membuka tools Bikin Animasi Paper.',ready:true,toolLabel:'TOOLS BIKIN ANIMASI PAPER',toolUrl:'https://share.gemini.google/UaAZSHnVR6jN'},
+    {title:'BIKIN UNBOXING AI',video:'',description:'Bikin video unboxing produk dengan visual AI tanpa harus selalu merekam dari awal.',content:'Klik tombol TOOLS untuk membuka tools Unboxing AI.',ready:true,toolLabel:'TOOLS UNBOXING AI',toolUrl:'https://share.gemini.google/eULL8DIU4VgU'},
+    {title:'BIKIN SQUIDGAME AI',video:'',description:'Bikin konten Squidgame AI dengan bantuan AI, mulai dari konsep adegan sampai hasil visual yang bisa dikembangkan menjadi konten.',content:'Klik tombol TOOLS untuk membuka tools Bikin Squidgame AI.',ready:true,toolLabel:'TOOLS BIKIN SQUIDGAME AI',toolUrl:'https://share.gemini.google/LAmUjK2yKHHf'},
+    {title:'BIKIN VIDEO MINIATUR',video:'',description:'Bikin video miniatur dengan bantuan AI, mulai dari konsep dunia kecil, objek, karakter, hingga visual sinematik yang menarik untuk konten pendek dan media sosial.',content:''},
+    {title:'BIKIN MOBIL KAYU',video:'',description:'Bikin konsep mobil kayu kreatif dengan bantuan AI, mulai dari ide desain, bentuk kendaraan, detail material kayu, sampai visual hasil yang menarik untuk konten.',content:''}
   ];
+
+  // Hard guard for active Pemula tools so this card cannot fall back to "SEGERA HADIR".
+  var animasiPaperItem=pemulaMaterials.find(function(item){return item.title==='BIKIN ANIMASI PAPER'});
+  if(animasiPaperItem){
+    animasiPaperItem.toolUrl='https://share.gemini.google/UaAZSHnVR6jN';
+    animasiPaperItem.toolLabel='TOOLS BIKIN ANIMASI PAPER';
+    animasiPaperItem.ready=true;
+    animasiPaperItem.content='Klik tombol TOOLS untuk membuka tools Bikin Animasi Paper.';
+  }
 
   var untungMaterials=[
     {title:'BIKIN APLIKASI',video:'',description:'Belajar menyusun aplikasi sederhana dengan bantuan AI dari ide sampai fungsi dasarnya.',content:''},

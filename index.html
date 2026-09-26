@@ -2805,6 +2805,40 @@ body.register-modal-open{
   }
 }
 
+/* TABLET MODAL STABILITY FIX — avoid viewport/keyboard wobble */
+@media (min-width:521px) and (max-width:1180px){
+  .register-modal-overlay{
+    align-items:center!important;
+    justify-content:center!important;
+    padding:16px!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  .register-modal-shell{
+    width:min(500px,calc(100vw - 32px))!important;
+    max-height:calc(100svh - 32px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    border-radius:22px!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+  .registration-modal-card{
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+  .register-modal-overlay.open{
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+  }
+}
+
 /* HIGH-CONTRAST FORM FOR EMAK-EMAK */
 .registration-modal-card .form-group input,
 .registration-modal-card .payment-method-select{
@@ -6178,7 +6212,7 @@ main section > .container > .badai-copy-kicker,
   <div class="badai-demo-head">
     <div class="badai-demo-kicker">CONTOH HASIL YANG AKAN KITA BUAT</div>
     <h2>Beberapa Contoh Hasil<br/><span class="pink">yang Akan Kita Buat.</span></h2>
-    <p>Baru 3 demo dulu. Fokusnya bukan nonton doang — nanti kita bedah cara bikinnya sampai kamu punya hasil sendiri.</p>
+    <p>Baru 8 demo dulu. Fokusnya bukan nonton doang — nanti kita bedah cara bikinnya sampai kamu punya hasil sendiri.</p>
   </div>
 
   <div class="badai-demo-stage" id="badaiDemoStage" aria-label="Contoh hasil video AI BADAI">
@@ -6262,10 +6296,145 @@ main section > .container > .badai-copy-kicker,
         <span>Mulai dari satu hasil jadi.</span>
       </div>
     </article>
+
+    <article class="badai-demo-card">
+      <div class="badai-demo-card-top">
+        <div>
+          <span>DEMO 04</span>
+          <b>Video AI</b>
+        </div>
+        <i>SHORTS</i>
+      </div>
+      <div class="badai-demo-device">
+        <iframe
+          data-demo-base="https://www.youtube.com/embed/1aHkcblz-nc?rel=0&modestbranding=1&playsinline=1"
+          src="https://www.youtube.com/embed/1aHkcblz-nc?rel=0&modestbranding=1&playsinline=1"
+          title="Demo Video AI BADAI 4"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+        <button class="badai-demo-play" type="button" aria-label="Pilih dan putar Demo Video AI BADAI 4">
+          <span>▶</span>
+          <b>PUTAR DEMO</b>
+        </button>
+      </div>
+      <div class="badai-demo-card-foot">
+        <strong>Contoh Hasil #04</strong>
+        <span>Contoh tambahan hasil video AI yang bisa dipelajari di BADAI.</span>
+      </div>
+    </article>
+
+    <article class="badai-demo-card">
+      <div class="badai-demo-card-top">
+        <div>
+          <span>DEMO 05</span>
+          <b>Video AI</b>
+        </div>
+        <i>SHORTS</i>
+      </div>
+      <div class="badai-demo-device">
+        <iframe
+          data-demo-base="https://www.youtube.com/embed/1aHkcblz-nc?rel=0&modestbranding=1&playsinline=1"
+          src="https://www.youtube.com/embed/1aHkcblz-nc?rel=0&modestbranding=1&playsinline=1"
+          title="Demo Video AI BADAI 5"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+        <button class="badai-demo-play" type="button" aria-label="Pilih dan putar Demo Video AI BADAI 5">
+          <span>▶</span>
+          <b>PUTAR DEMO</b>
+        </button>
+      </div>
+      <div class="badai-demo-card-foot">
+        <strong>Contoh Hasil #05</strong>
+        <span>Contoh tambahan hasil video AI yang bisa dipelajari di BADAI.</span>
+      </div>
+    </article>
+
+    <article class="badai-demo-card">
+      <div class="badai-demo-card-top">
+        <div>
+          <span>DEMO 06</span>
+          <b>Video AI</b>
+        </div>
+        <i>SHORTS</i>
+      </div>
+      <div class="badai-demo-device">
+        <iframe
+          data-demo-base="https://www.youtube.com/embed/P4Xp_JiXyQo?rel=0&modestbranding=1&playsinline=1"
+          src="https://www.youtube.com/embed/P4Xp_JiXyQo?rel=0&modestbranding=1&playsinline=1"
+          title="Demo Video AI BADAI 6"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+        <button class="badai-demo-play" type="button" aria-label="Pilih dan putar Demo Video AI BADAI 6">
+          <span>▶</span>
+          <b>PUTAR DEMO</b>
+        </button>
+      </div>
+      <div class="badai-demo-card-foot">
+        <strong>Contoh Hasil #06</strong>
+        <span>Contoh tambahan hasil video AI yang bisa dipelajari di BADAI.</span>
+      </div>
+    </article>
+
+    <article class="badai-demo-card">
+      <div class="badai-demo-card-top">
+        <div>
+          <span>DEMO 07</span>
+          <b>Video AI</b>
+        </div>
+        <i>SHORTS</i>
+      </div>
+      <div class="badai-demo-device">
+        <iframe
+          data-demo-base="https://www.youtube.com/embed/-U8wkxJF6ms?rel=0&modestbranding=1&playsinline=1"
+          src="https://www.youtube.com/embed/-U8wkxJF6ms?rel=0&modestbranding=1&playsinline=1"
+          title="Demo Video AI BADAI 7"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+        <button class="badai-demo-play" type="button" aria-label="Pilih dan putar Demo Video AI BADAI 7">
+          <span>▶</span>
+          <b>PUTAR DEMO</b>
+        </button>
+      </div>
+      <div class="badai-demo-card-foot">
+        <strong>Contoh Hasil #07</strong>
+        <span>Contoh tambahan hasil video AI yang bisa dipelajari di BADAI.</span>
+      </div>
+    </article>
+
+    <article class="badai-demo-card">
+      <div class="badai-demo-card-top">
+        <div>
+          <span>DEMO 08</span>
+          <b>DIY Craft</b>
+        </div>
+        <i>SHORTS</i>
+      </div>
+      <div class="badai-demo-device">
+        <iframe
+          data-demo-base="https://www.youtube.com/embed/AzRXWuV8Mk0?rel=0&modestbranding=1&playsinline=1"
+          src="https://www.youtube.com/embed/AzRXWuV8Mk0?rel=0&modestbranding=1&playsinline=1"
+          title="Demo DIY Craft BADAI"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+        <button class="badai-demo-play" type="button" aria-label="Pilih dan putar Demo DIY Craft BADAI">
+          <span>▶</span>
+          <b>PUTAR DEMO</b>
+        </button>
+      </div>
+      <div class="badai-demo-card-foot">
+        <strong>Contoh DIY Craft</strong>
+        <span>Contoh hasil DIY Craft yang bisa dipelajari dan dikembangkan di BADAI.</span>
+      </div>
+    </article>
   </div>
 
   <div class="badai-demo-dots" aria-hidden="true">
-    <span class="active"></span><span></span><span></span>
+    <span class="active"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
   </div>
   <div class="badai-demo-note">Demo auto-swipe terus. Klik video yang mau ditonton — animasi berhenti dan video langsung diputar.</div>
 </div>
@@ -6673,13 +6842,13 @@ main section > .container > .badai-copy-kicker,
         <div>AI Educator</div>
         <div>Geo-Spasial</div>
         <div>AI Influencer</div>
-        <div>Selebgram AI</div>
-        <div>Affiliate AI</div>
-        <div>Paper Craft</div>
+        <div>Bikin Animasi Manusia Gua</div>
+        <div>Bikin DIY Craft</div>
+        <div>Bikin Animasi Paper</div>
         <div>Unboxing AI</div>
-        <div>Bikin Game</div>
-        <div>Video Genjutsu Viral</div>
-        <div>Video Kloning</div>
+        <div>Bikin Squidgame AI</div>
+        <div>Video Miniatur</div>
+        <div>Bikin Mobil Kayu</div>
       </div>
       <div class="package-extra-list">
         <div class="package-feature"><span>✓</span><div><b>Komunitas BADAI + KulWA</b></div></div>
@@ -6717,13 +6886,13 @@ main section > .container > .badai-copy-kicker,
         <div>AI Educator</div>
         <div>Geo-Spasial</div>
         <div>AI Influencer</div>
-        <div>Selebgram AI</div>
-        <div>Affiliate AI</div>
-        <div>Paper Craft</div>
+        <div>Bikin Animasi Manusia Gua</div>
+        <div>Bikin DIY Craft</div>
+        <div>Bikin Animasi Paper</div>
         <div>Unboxing AI</div>
-        <div>Bikin Game</div>
-        <div>Video Genjutsu Viral</div>
-        <div>Video Kloning</div>
+        <div>Bikin Squidgame AI</div>
+        <div>Video Miniatur</div>
+        <div>Bikin Mobil Kayu</div>
       </div>
 
       <div class="package-material-count pro-material-heading">MATERI KHUSUS PAKET UNTUNG</div>
@@ -7182,13 +7351,13 @@ main section > .container > .badai-copy-kicker,
     'BIKIN AI EDUCATOR',
     'BIKIN GEO-SPASIAL',
     'BIKIN AI INFLUENCER',
-    'BIKIN SELEBGRAM AI',
-    'BIKIN AFFILIATE AI',
-    'BIKIN PAPER CRAFT',
+    'BIKIN ANIMASI MANUSIA GUA',
+    'BIKIN DIY CRAFT',
+    'BIKIN ANIMASI PAPER',
     'BIKIN UNBOXING AI',
-    'BIKIN GAME',
-    'BIKIN VIDEO GENJUTSU VIRAL',
-    'BIKIN VIDEO KLONING'
+    'BIKIN SQUIDGAME AI',
+    'BIKIN VIDEO MINIATUR',
+    'BIKIN MOBIL KAYU'
   ];
 
   const untungMaterialBenefits = [
@@ -7821,7 +7990,15 @@ Mohon dibantu proses pendaftarannya ya.`
     registrationModal?.setAttribute('aria-hidden','false');
     document.body.classList.add('register-modal-open');
 
-    setTimeout(() => document.getElementById('regNama')?.focus(), 80);
+    // Auto-focus can open the virtual keyboard on tablets and make a fixed modal jump.
+    // Keep auto-focus only for precise desktop pointers.
+    const canAutoFocusRegistration =
+      window.innerWidth > 1180 &&
+      window.matchMedia &&
+      window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    if(canAutoFocusRegistration){
+      setTimeout(() => document.getElementById('regNama')?.focus({preventScroll:true}), 80);
+    }
   }
 
   function closeRegistrationModal(){
@@ -8207,13 +8384,13 @@ Mohon dibantu proses pendaftarannya ya.`
     'BIKIN AI EDUCATOR',
     'BIKIN GEO-SPASIAL',
     'BIKIN AI INFLUENCER',
-    'BIKIN SELEBGRAM AI',
-    'BIKIN AFFILIATE AI',
-    'BIKIN PAPER CRAFT',
+    'BIKIN ANIMASI MANUSIA GUA',
+    'BIKIN DIY CRAFT',
+    'BIKIN ANIMASI PAPER',
     'BIKIN UNBOXING AI',
-    'BIKIN GAME',
-    'BIKIN VIDEO GENJUTSU VIRAL',
-    'BIKIN VIDEO KLONING'
+    'BIKIN SQUIDGAME AI',
+    'BIKIN VIDEO MINIATUR',
+    'BIKIN MOBIL KAYU'
   ];
 
   const untungRaw = [
@@ -8269,7 +8446,7 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   const hotTitles = new Set([
-    'BIKIN VIDEO GENJUTSU VIRAL',
+    'BIKIN VIDEO MINIATUR',
     'BIKIN APLIKASI',
     'BIKIN WEB APP',
     'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',
