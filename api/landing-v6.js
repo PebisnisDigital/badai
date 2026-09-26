@@ -213,7 +213,7 @@ module.exports = async function handler(req, res) {
 </script>`;
 
 
-    const registrationModeStyle = String.raw\`
+    const registrationModeStyle = String.raw`
 <style id="badai-registration-mode-style">
 .badai-registration-closed [data-package-select],
 .badai-registration-closed .register-submit{
@@ -253,9 +253,9 @@ module.exports = async function handler(req, res) {
   #badaiRegistrationClosedNotice{font-size:10.5px;padding:12px 13px}
   #badaiRegistrationClosedNotice b{font-size:11.5px}
 }
-</style>\`;
+</style>`;
 
-    const registrationModeScript = String.raw\`
+    const registrationModeScript = String.raw`
 <script id="badai-registration-mode-script">
 (function(){
   const SUPABASE_URL='https://tlvxlekqrllkvcpgwmic.supabase.co';
@@ -376,7 +376,7 @@ module.exports = async function handler(req, res) {
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadMode()});
   setInterval(loadMode,10000);
 })();
-</script>\`;
+</script>`;
 
     body = body.replace('</head>', style + '\\n' + registrationModeStyle + '\\n</head>');
     body = body.replace('</body>', script + '\\n' + registrationModeScript + '\\n</body>');
