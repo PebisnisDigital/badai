@@ -9,7 +9,7 @@ const akses = require('./api/admin-v3.js');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
-const BUILD_REV = 'badai-staging-ai-influencer-geo-v2';
+const BUILD_REV = 'badai-staging-member-plan-sync-v1';
 
 const MIME = {
   '.html':'text/html; charset=utf-8',
@@ -106,7 +106,8 @@ function serveStatic(req, res, pathname){
     const ext = path.extname(file).toLowerCase();
     res.statusCode = 200;
     res.setHeader('Content-Type', MIME[ext] || 'application/octet-stream');
-    res.setHeader('Cache-Control', ext === '.html' ? 'no-store' : 'public, max-age=300');
+    const noStore = ext === '.html' || pathname === '/akses/auth.js';
+    res.setHeader('Cache-Control', noStore ? 'no-store, max-age=0' : 'public, max-age=300');
     fs.createReadStream(file).pipe(res);
     return true;
   } catch {
