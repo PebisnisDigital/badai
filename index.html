@@ -4683,23 +4683,6 @@ main section > .container > .badai-copy-kicker,
 .badai-demo-card:not(.demo-center) .badai-demo-device iframe{
   pointer-events:none;
 }
-.badai-demo-dots{
-  display:flex;
-  justify-content:center;
-  gap:6px;
-  margin-top:-2px;
-}
-.badai-demo-dots span{
-  width:5px;
-  height:5px;
-  border-radius:999px;
-  background:#343434;
-  transition:width .35s ease,background .35s ease;
-}
-.badai-demo-dots span.active{
-  width:20px;
-  background:#ff4fa3;
-}
 .badai-demo-note{
   margin-top:10px;
   text-align:center;
@@ -6507,9 +6490,6 @@ main section > .container > .badai-copy-kicker,
     </article>
   </div>
 
-  <div class="badai-demo-dots" aria-hidden="true">
-    <span class="active"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-  </div>
   <div class="badai-demo-note">Demo auto-swipe terus. Klik video yang mau ditonton — animasi berhenti dan video langsung diputar.</div>
 </div>
 </section>
@@ -7222,7 +7202,6 @@ main section > .container > .badai-copy-kicker,
   if(!stage) return;
 
   const cards = Array.from(stage.querySelectorAll('.badai-demo-card'));
-  const dots = Array.from(document.querySelectorAll('.badai-demo-dots span'));
   if(cards.length < 2) return;
 
   let current = 0;
@@ -7268,7 +7247,6 @@ main section > .container > .badai-copy-kicker,
       else if(index === right) card.classList.add('demo-right');
     });
 
-    dots.forEach((dot,index) => dot.classList.toggle('active',index === current));
   }
 
   function next(){
