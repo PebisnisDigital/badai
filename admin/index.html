@@ -3398,7 +3398,7 @@ th,td{padding:14px 12px!important}
             <div class="buatqris-enable-row" style="margin-bottom:12px">
               <div>
                 <b>Aktifkan Pendaftaran</b>
-                <span>ON: harga asli tampil dan tombol daftar aktif. OFF: harga di Landing Page menjadi <b>Rp xxx.xxxx</b> dan semua tombol pendaftaran dinonaktifkan.</span>
+                <span>ON: harga asli tampil dan tombol daftar aktif. OFF: harga disamarkan mengikuti jumlah digit harga asli. Contoh Rp259.000 → <b>Rp xxx.xxx</b>, Rp99.000 → <b>Rp xx.xxx</b>.</span>
               </div>
               <label class="switch-control">
                 <input id="marketingRegistrationOpen" type="checkbox" checked>
@@ -4977,7 +4977,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(!toggle || !note) return;
     note.innerHTML = toggle.checked
       ? 'Status saat ini: <b style="color:#7fe2a3">PENDAFTARAN DIBUKA</b> • Harga asli tampil dan CTA pendaftaran aktif.'
-      : 'Status saat ini: <b style="color:#ff8fc5">PENDAFTARAN DITUTUP</b> • Harga publik disamarkan menjadi Rp xxx.xxxx dan CTA pendaftaran dimatikan.';
+      : 'Status saat ini: <b style="color:#ff8fc5">PENDAFTARAN DITUTUP</b> • Jumlah X mengikuti digit harga asli. Contoh Rp259.000 → Rp xxx.xxx, Rp99.000 → Rp xx.xxx. CTA pendaftaran dimatikan.';
   }
 
   function canManageMarketing(){
