@@ -297,6 +297,10 @@ module.exports = async function handler(req, res) {
     note.style.display=registrationOpen?'none':'block';
   }
 
+  function setTextIfChanged(el,value){
+    if(el && el.textContent !== value) el.textContent=value;
+  }
+
   function maskPrices(){
     const newbieEl=document.getElementById('dynamicNewbiePrice');
     const proEl=document.getElementById('dynamicProPrice');
@@ -304,18 +308,18 @@ module.exports = async function handler(req, res) {
     const selectedPlan=document.getElementById('selectedPackage')?.value === 'pro' ? 'pro' : 'newbie';
 
     if(!registrationOpen){
-      if(newbieEl) newbieEl.textContent=priceMask(closedNewbiePrice,newbieEl.textContent);
-      if(proEl) proEl.textContent=priceMask(closedProPrice,proEl.textContent);
+      setTextIfChanged(newbieEl,priceMask(closedNewbiePrice,newbieEl?.textContent));
+      setTextIfChanged(proEl,priceMask(closedProPrice,proEl?.textContent));
       if(selectedEl){
         const selectedAmount=selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice;
-        selectedEl.textContent=priceMask(selectedAmount,selectedEl.textContent);
+        setTextIfChanged(selectedEl,priceMask(selectedAmount,selectedEl.textContent));
       }
     }else{
-      if(newbieEl && closedNewbiePrice > 0) newbieEl.textContent=realPrice(closedNewbiePrice);
-      if(proEl && closedProPrice > 0) proEl.textContent=realPrice(closedProPrice);
+      if(newbieEl && closedNewbiePrice > 0) setTextIfChanged(newbieEl,realPrice(closedNewbiePrice));
+      if(proEl && closedProPrice > 0) setTextIfChanged(proEl,realPrice(closedProPrice));
       if(selectedEl){
         const selectedAmount=selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice;
-        if(selectedAmount > 0) selectedEl.textContent=realPrice(selectedAmount);
+        if(selectedAmount > 0) setTextIfChanged(selectedEl,realPrice(selectedAmount));
       }
     }
 
@@ -323,16 +327,16 @@ module.exports = async function handler(req, res) {
     const smart=document.getElementById('proSmartSaving');
 
     if(!registrationOpen){
-      if(advantage) advantage.textContent='Harga akan diumumkan saat pendaftaran dibuka.';
-      if(smart) smart.textContent='PENDAFTARAN DITUTUP';
+      setTextIfChanged(advantage,'Harga akan diumumkan saat pendaftaran dibuka.');
+      setTextIfChanged(smart,'PENDAFTARAN DITUTUP');
     }else if(closedNewbiePrice > 0 && closedProPrice > 0){
       if(closedNewbiePrice > closedProPrice){
         const saving=realPrice(closedNewbiePrice - closedProPrice);
-        if(advantage) advantage.textContent='Lebih lengkap • Hemat ' + saving + ' dibanding Paket Pemula';
-        if(smart) smart.textContent='PALING LENGKAP • HEMAT ' + saving + ' vs PEMULA';
+        setTextIfChanged(advantage,'Lebih lengkap • Hemat ' + saving + ' dibanding Paket Pemula');
+        setTextIfChanged(smart,'PALING LENGKAP • HEMAT ' + saving + ' vs PEMULA');
       }else{
-        if(advantage) advantage.textContent='Semua materi + jalur cuan + program afiliasi';
-        if(smart) smart.textContent='PAKET PALING LENGKAP';
+        setTextIfChanged(advantage,'Semua materi + jalur cuan + program afiliasi');
+        setTextIfChanged(smart,'PAKET PALING LENGKAP');
       }
     }
   }
@@ -428,8 +432,8 @@ module.exports = async function handler(req, res) {
 })();
 </script>`;
 
-    body = body.replace('</head>', style + '\\n' + registrationModeStyle + '\\n</head>');
-    body = body.replace('</body>', script + '\\n' + registrationModeScript + '\\n</body>');
+    body = body.replace('</head>', style + '\n' + registrationModeStyle + '\n</head>');
+    body = body.replace('</body>', script + '\n' + registrationModeScript + '\n</body>');
 
     Object.entries(headers).forEach(([k,v]) => res.setHeader(k,v));
     res.setHeader('Content-Type','text/html; charset=utf-8');
