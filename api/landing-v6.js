@@ -212,8 +212,174 @@ module.exports = async function handler(req, res) {
 })();
 </script>`;
 
-    body = body.replace('</head>', style + '\n</head>');
-    body = body.replace('</body>', script + '\n</body>');
+
+    const registrationModeStyle = String.raw\`
+<style id="badai-registration-mode-style">
+.badai-registration-closed [data-package-select],
+.badai-registration-closed .register-submit{
+  opacity:.52!important;
+  filter:grayscale(.25)!important;
+  cursor:not-allowed!important;
+  animation:none!important;
+  box-shadow:none!important;
+}
+.badai-registration-closed #dynamicNewbiePrice,
+.badai-registration-closed #dynamicProPrice,
+.badai-registration-closed #selectedPackagePrice{
+  letter-spacing:.01em!important;
+}
+#badaiRegistrationClosedNotice{
+  margin:14px auto 18px;
+  max-width:680px;
+  padding:13px 15px;
+  border:1px solid #5a2944;
+  border-radius:14px;
+  background:linear-gradient(135deg,#180d13,#0d0d0d);
+  color:#ddd;
+  text-align:center;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:11px;
+  line-height:1.45;
+}
+#badaiRegistrationClosedNotice b{
+  display:block;
+  margin-bottom:3px;
+  color:#ff86c1;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:12px;
+  font-weight:900;
+}
+@media(max-width:560px){
+  #badaiRegistrationClosedNotice{font-size:10.5px;padding:12px 13px}
+  #badaiRegistrationClosedNotice b{font-size:11.5px}
+}
+</style>\`;
+
+    const registrationModeScript = String.raw\`
+<script id="badai-registration-mode-script">
+(function(){
+  const SUPABASE_URL='https://tlvxlekqrllkvcpgwmic.supabase.co';
+  const SUPABASE_KEY='sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
+  const MASK='Rp xxx.xxxx';
+  let registrationOpen=true;
+  let busy=false;
+
+  function ensureClosedNotice(){
+    const pricing=document.getElementById('pricing');
+    if(!pricing) return;
+    let note=document.getElementById('badaiRegistrationClosedNotice');
+    if(!note){
+      note=document.createElement('div');
+      note.id='badaiRegistrationClosedNotice';
+      note.innerHTML='<b>PENDAFTARAN SEDANG DITUTUP</b><span>BADAI sedang diperkenalkan lebih dulu. Harga dan tombol pendaftaran akan dibuka kembali saat periode pendaftaran dimulai.</span>';
+      const grid=pricing.querySelector('.package-pricing-grid');
+      if(grid) grid.insertAdjacentElement('beforebegin',note);
+      else pricing.querySelector('.container')?.prepend(note);
+    }
+    note.style.display=registrationOpen?'none':'block';
+  }
+
+  function maskPrices(){
+    ['dynamicNewbiePrice','dynamicProPrice','selectedPackagePrice'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el && !registrationOpen && el.textContent!==MASK) el.textContent=MASK;
+    });
+    const advantage=document.getElementById('proPriceAdvantageCopy');
+    if(advantage && !registrationOpen) advantage.textContent='Harga akan diumumkan saat pendaftaran dibuka.';
+    const smart=document.getElementById('proSmartSaving');
+    if(smart && !registrationOpen) smart.textContent='PENDAFTARAN DITUTUP';
+  }
+
+  function syncButtons(){
+    document.querySelectorAll('[data-package-select]').forEach(btn=>{
+      btn.disabled=!registrationOpen;
+      btn.setAttribute('aria-disabled',registrationOpen?'false':'true');
+      if(!btn.dataset.openLabel) btn.dataset.openLabel=btn.textContent.trim();
+      btn.textContent=registrationOpen?btn.dataset.openLabel:'PENDAFTARAN DITUTUP';
+    });
+
+    const submit=document.querySelector('.register-submit');
+    if(submit){
+      if(!submit.dataset.openLabel) submit.dataset.openLabel=submit.textContent.trim();
+      submit.disabled=!registrationOpen;
+      if(!registrationOpen) submit.textContent='PENDAFTARAN DITUTUP';
+      else if(submit.textContent==='PENDAFTARAN DITUTUP') submit.textContent=submit.dataset.openLabel;
+    }
+  }
+
+  function applyMode(){
+    document.documentElement.classList.toggle('badai-registration-closed',!registrationOpen);
+    ensureClosedNotice();
+    syncButtons();
+    maskPrices();
+
+    if(!registrationOpen){
+      const modal=document.getElementById('registrationModal');
+      if(modal?.classList.contains('open')){
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden','true');
+      }
+    }
+  }
+
+  async function loadMode(){
+    if(busy) return;
+    busy=true;
+    try{
+      const r=await fetch(SUPABASE_URL+'/rest/v1/marketing_public_config?id=eq.1&select=registration_open',{
+        headers:{apikey:SUPABASE_KEY},
+        cache:'no-store'
+      });
+      if(!r.ok) return;
+      const rows=await r.json();
+      registrationOpen=rows?.[0]?.registration_open!==false;
+      window.BADAI_REGISTRATION_OPEN=registrationOpen;
+      applyMode();
+    }catch(_){
+    }finally{
+      busy=false;
+    }
+  }
+
+  document.addEventListener('click',function(e){
+    if(registrationOpen) return;
+    const trigger=e.target.closest?.('[data-package-select],.register-submit');
+    if(!trigger) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    applyMode();
+  },true);
+
+  document.addEventListener('submit',function(e){
+    if(registrationOpen || e.target?.id!=='badaiRegisterForm') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    applyMode();
+  },true);
+
+  const observer=new MutationObserver(()=>{ if(!registrationOpen) maskPrices(); });
+  function boot(){
+    applyMode();
+    loadMode();
+    ['dynamicNewbiePrice','dynamicProPrice','selectedPackagePrice'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) observer.observe(el,{childList:true,subtree:true,characterData:true});
+    });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+
+  window.addEventListener('focus',loadMode);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadMode()});
+  setInterval(loadMode,10000);
+})();
+</script>\`;
+
+    body = body.replace('</head>', style + '\\n' + registrationModeStyle + '\\n</head>');
+    body = body.replace('</body>', script + '\\n' + registrationModeScript + '\\n</body>');
 
     Object.entries(headers).forEach(([k,v]) => res.setHeader(k,v));
     res.setHeader('Content-Type','text/html; charset=utf-8');
