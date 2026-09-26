@@ -3099,6 +3099,72 @@ body.register-modal-open{
   font-size:8px;
   line-height:1.45;
 }
+.qris-access-panel{
+  display:none;
+  gap:10px;
+  padding:14px;
+  border:1px solid #2e6841;
+  border-radius:16px;
+  background:linear-gradient(180deg,#0e1c13,#09110c);
+  text-align:left;
+}
+.qris-access-panel:not(.hidden){display:grid}
+.qris-access-ready{
+  color:#77e49c;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.08em;
+  text-align:center;
+}
+.qris-access-email{
+  display:grid;
+  gap:4px;
+  padding:10px 11px;
+  border:1px solid #25372b;
+  border-radius:11px;
+  background:#080d09;
+  color:#828b85;
+  font-size:8px;
+}
+.qris-access-email b{
+  color:#fff;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:11px;
+  overflow-wrap:anywhere;
+}
+.qris-member-access{
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 14px;
+  border-radius:13px;
+  background:#25d366;
+  color:#07170d;
+  text-decoration:none;
+  text-align:center;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:11px;
+  line-height:1.2;
+  font-weight:950;
+  box-shadow:0 12px 28px rgba(37,211,102,.15);
+}
+.qris-access-panel small{
+  display:block;
+  color:#8a928d;
+  font-size:8px;
+  line-height:1.5;
+  text-align:center;
+}
+.qris-payment-stage.access-ready .qris-stage-amount,
+.qris-payment-stage.access-ready .qris-countdown-box,
+.qris-payment-stage.access-ready .qris-image-wrap,
+.qris-payment-stage.access-ready #qrisStagePaymentLink,
+.qris-payment-stage.access-ready #qrisRetryBtn,
+.qris-payment-stage.access-ready .qris-stage-note{
+  display:none!important;
+}
 
 
 .qris-countdown-box{
@@ -7182,6 +7248,20 @@ main section > .container > .badai-copy-kicker,
           <b>Menunggu pembayaran...</b>
         </div>
 
+        <div id="qrisAccessPanel" class="qris-access-panel hidden">
+          <div class="qris-access-ready">✓ AKSES MEMBER SUDAH AKTIF</div>
+          <div class="qris-access-email">
+            <span>Email login</span>
+            <b id="qrisAccessEmail">-</b>
+          </div>
+          <a id="qrisMemberAccessBtn" class="qris-member-access" href="#">
+            MASUK MEMBER AREA SEKARANG →
+          </a>
+          <small>
+            Login pertama tidak perlu mengetik password. Setelah berhasil masuk, buka menu AKUN lalu buat password sendiri untuk login berikutnya.
+          </small>
+        </div>
+
         <a id="qrisStagePaymentLink" class="qris-stage-link hidden" href="#" target="_blank" rel="noopener">
           BUKA HALAMAN PEMBAYARAN
         </a>
@@ -7538,6 +7618,7 @@ Mohon dibantu proses pendaftarannya ya.`
   let qrisCountdownTimer = null;
   let qrisExpiresAt = 0;
   let qrisPublicToken = '';
+  let qrisBuyerEmail = '';
 
   function escapePaymentHtml(value){
     return String(value ?? '').replace(/[&<>"']/g, ch => ({
@@ -7776,9 +7857,16 @@ Mohon dibantu proses pendaftarannya ya.`
     stopAllQrisTimers();
     qrisPublicToken = '';
     qrisExpiresAt = 0;
+    qrisBuyerEmail = '';
 
     const modalCard = document.querySelector('.registration-modal-card');
     modalCard?.classList.remove('qris-mode','free-success-mode');
+
+    const qrisStage = document.getElementById('qrisPaymentStage');
+    qrisStage?.classList.remove('access-ready');
+    document.getElementById('qrisAccessPanel')?.classList.add('hidden');
+    const accessBtn = document.getElementById('qrisMemberAccessBtn');
+    if(accessBtn) accessBtn.removeAttribute('href');
 
     const countdown = document.getElementById('qrisCountdown');
     if(countdown) countdown.textContent = '15:00:00';
@@ -7808,6 +7896,8 @@ Mohon dibantu proses pendaftarannya ya.`
     const retry = document.getElementById('qrisRetryBtn');
 
     stage?.classList.remove('hidden');
+    stage?.classList.remove('access-ready');
+    document.getElementById('qrisAccessPanel')?.classList.add('hidden');
     if(image) image.src = data.qr_url || '';
     if(amount) amount.textContent = formatRupiah(data.total_amount || data.amount || selectedPackagePrice());
     if(pack) pack.textContent = selectedPackageName();
@@ -7832,6 +7922,39 @@ Mohon dibantu proses pendaftarannya ya.`
     if(qrisPublicToken) scheduleQrisCheck(3000);
   }
 
+  function showQrisMemberAccess(data){
+    const stage = document.getElementById('qrisPaymentStage');
+    const title = document.getElementById('qrisStageTitle');
+    const pack = document.getElementById('qrisStagePackage');
+    const statusEl = document.getElementById('qrisStageStatus');
+    const accessPanel = document.getElementById('qrisAccessPanel');
+    const accessEmail = document.getElementById('qrisAccessEmail');
+    const accessBtn = document.getElementById('qrisMemberAccessBtn');
+
+    stage?.classList.add('access-ready');
+    if(title) title.textContent = 'Pembayaran Berhasil 🎉';
+    if(pack) pack.textContent = selectedPackageName() + ' • Akses sudah aktif';
+    if(statusEl){
+      statusEl.className = 'qris-stage-status success';
+      statusEl.innerHTML = '<span>✓</span><div><b>Pembayaran berhasil!</b><small>Akun member sudah aktif. Klik tombol di bawah untuk masuk tanpa password.</small></div>';
+    }
+
+    if(accessEmail){
+      accessEmail.textContent = qrisBuyerEmail || 'Email yang dipakai saat mendaftar';
+    }
+
+    if(accessBtn){
+      accessBtn.href = data.login_url || '/akses/';
+      accessBtn.textContent = data.login_url
+        ? 'MASUK MEMBER AREA SEKARANG →'
+        : 'BUKA MEMBER AREA →';
+    }
+
+    accessPanel?.classList.remove('hidden');
+    document.getElementById('qrisStagePaymentLink')?.classList.add('hidden');
+    document.getElementById('qrisRetryBtn')?.classList.add('hidden');
+  }
+
   async function checkQrisPayment(){
     if(!qrisPublicToken) return;
 
@@ -7854,21 +7977,7 @@ Mohon dibantu proses pendaftarannya ya.`
 
       if(status === 'success'){
         stopAllQrisTimers();
-        if(statusEl){
-          statusEl.className = 'qris-stage-status success';
-          statusEl.innerHTML = '<span>✓</span><div><b>Pembayaran berhasil!</b><small>Akun member sedang diaktifkan. Kamu akan masuk otomatis...</small></div>';
-        }
-        document.getElementById('qrisStagePaymentLink')?.classList.add('hidden');
-
-        if(data.login_url){
-          setTimeout(() => {
-            window.location.href = data.login_url;
-          }, 1200);
-        }else{
-          setTimeout(() => {
-            window.location.href = '/akses/';
-          }, 1800);
-        }
+        showQrisMemberAccess(data);
         return;
       }
 
@@ -7894,6 +8003,8 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   async function createBuatQrisPayment({nama,email,wa}){
+    qrisBuyerEmail = String(email || '').trim().toLowerCase();
+
     const refCode = (
       window.BADAI_AFFILIATE_REF ||
       localStorage.getItem('badai_affiliate_ref') ||
