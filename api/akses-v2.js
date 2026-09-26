@@ -1229,6 +1229,15 @@ document.addEventListener('DOMContentLoaded', function(){
     {title:'BIKIN MOBIL KAYU',video:'',description:'Bikin konsep mobil kayu kreatif dengan bantuan AI, mulai dari ide desain, bentuk kendaraan, detail material kayu, sampai visual hasil yang menarik untuk konten.',content:''}
   ];
 
+  // Hard guard for active Pemula tools so this card cannot fall back to "SEGERA HADIR".
+  var animasiPaperItem=pemulaMaterials.find(function(item){return item.title==='BIKIN ANIMASI PAPER'});
+  if(animasiPaperItem){
+    animasiPaperItem.toolUrl='https://share.gemini.google/UaAZSHnVR6jN';
+    animasiPaperItem.toolLabel='TOOLS BIKIN ANIMASI PAPER';
+    animasiPaperItem.ready=true;
+    animasiPaperItem.content='Klik tombol TOOLS untuk membuka tools Bikin Animasi Paper.';
+  }
+
   var untungMaterials=[
     {title:'BIKIN APLIKASI',video:'',description:'Belajar menyusun aplikasi sederhana dengan bantuan AI dari ide sampai fungsi dasarnya.',content:''},
     {title:'BIKIN POSTER',video:'',description:'Bikin poster promosi yang rapi dan menarik dengan bantuan AI.',content:''},
