@@ -217,11 +217,19 @@ module.exports = async function handler(req, res) {
 <style id="badai-registration-mode-style">
 .badai-registration-closed [data-package-select],
 .badai-registration-closed .register-submit{
-  opacity:.52!important;
-  filter:grayscale(.25)!important;
+  min-height:78px!important;
+  padding:18px 20px!important;
+  opacity:1!important;
+  filter:none!important;
   cursor:not-allowed!important;
   animation:none!important;
-  box-shadow:none!important;
+  box-shadow:0 12px 30px rgba(255,79,163,.18)!important;
+  font-family:"Raleway",Arial,sans-serif!important;
+  font-size:22px!important;
+  line-height:1.08!important;
+  font-weight:950!important;
+  letter-spacing:.025em!important;
+  text-align:center!important;
 }
 .badai-registration-closed #dynamicNewbiePrice,
 .badai-registration-closed #dynamicProPrice,
@@ -250,6 +258,12 @@ module.exports = async function handler(req, res) {
   font-weight:900;
 }
 @media(max-width:560px){
+  .badai-registration-closed [data-package-select],
+  .badai-registration-closed .register-submit{
+    min-height:70px!important;
+    padding:16px 14px!important;
+    font-size:19px!important;
+  }
   #badaiRegistrationClosedNotice{font-size:10.5px;padding:12px 13px}
   #badaiRegistrationClosedNotice b{font-size:11.5px}
 }
@@ -328,7 +342,7 @@ module.exports = async function handler(req, res) {
 
     if(!registrationOpen){
       setTextIfChanged(advantage,'Harga akan diumumkan saat pendaftaran dibuka.');
-      setTextIfChanged(smart,'PENDAFTARAN DITUTUP');
+      setTextIfChanged(smart,'PENDAFTARAN BELUM DIBUKA');
     }else if(closedNewbiePrice > 0 && closedProPrice > 0){
       if(closedNewbiePrice > closedProPrice){
         const saving=realPrice(closedNewbiePrice - closedProPrice);
@@ -346,15 +360,15 @@ module.exports = async function handler(req, res) {
       btn.disabled=!registrationOpen;
       btn.setAttribute('aria-disabled',registrationOpen?'false':'true');
       if(!btn.dataset.openLabel) btn.dataset.openLabel=btn.textContent.trim();
-      btn.textContent=registrationOpen?btn.dataset.openLabel:'PENDAFTARAN DITUTUP';
+      btn.textContent=registrationOpen?btn.dataset.openLabel:'PENDAFTARAN BELUM DIBUKA';
     });
 
     const submit=document.querySelector('.register-submit');
     if(submit){
       if(!submit.dataset.openLabel) submit.dataset.openLabel=submit.textContent.trim();
       submit.disabled=!registrationOpen;
-      if(!registrationOpen) submit.textContent='PENDAFTARAN DITUTUP';
-      else if(submit.textContent==='PENDAFTARAN DITUTUP') submit.textContent=submit.dataset.openLabel;
+      if(!registrationOpen) submit.textContent='PENDAFTARAN BELUM DIBUKA';
+      else if(submit.textContent==='PENDAFTARAN BELUM DIBUKA') submit.textContent=submit.dataset.openLabel;
     }
   }
 
