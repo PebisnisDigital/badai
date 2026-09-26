@@ -2805,6 +2805,40 @@ body.register-modal-open{
   }
 }
 
+/* TABLET MODAL STABILITY FIX — avoid viewport/keyboard wobble */
+@media (min-width:521px) and (max-width:1180px){
+  .register-modal-overlay{
+    align-items:center!important;
+    justify-content:center!important;
+    padding:16px!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  .register-modal-shell{
+    width:min(500px,calc(100vw - 32px))!important;
+    max-height:calc(100svh - 32px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    border-radius:22px!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+  .registration-modal-card{
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+  .register-modal-overlay.open{
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+  }
+}
+
 /* HIGH-CONTRAST FORM FOR EMAK-EMAK */
 .registration-modal-card .form-group input,
 .registration-modal-card .payment-method-select{
@@ -7956,7 +7990,15 @@ Mohon dibantu proses pendaftarannya ya.`
     registrationModal?.setAttribute('aria-hidden','false');
     document.body.classList.add('register-modal-open');
 
-    setTimeout(() => document.getElementById('regNama')?.focus(), 80);
+    // Auto-focus can open the virtual keyboard on tablets and make a fixed modal jump.
+    // Keep auto-focus only for precise desktop pointers.
+    const canAutoFocusRegistration =
+      window.innerWidth > 1180 &&
+      window.matchMedia &&
+      window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    if(canAutoFocusRegistration){
+      setTimeout(() => document.getElementById('regNama')?.focus({preventScroll:true}), 80);
+    }
   }
 
   function closeRegistrationModal(){
