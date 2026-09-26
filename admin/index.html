@@ -1093,7 +1093,7 @@ main.shell{
 .template-help b{color:#bdbdbd}
 .coupon-form{
   display:grid;
-  grid-template-columns:1.2fr .9fr .8fr auto;
+  grid-template-columns:1.2fr .9fr .8fr .9fr auto;
   gap:5px;
 }
 .coupon-form input,.coupon-form select{
@@ -1108,17 +1108,24 @@ main.shell{
 }
 .coupon-list{display:grid;gap:5px;margin-top:8px}
 .coupon-row{
-  display:grid;grid-template-columns:1fr auto auto;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(118px,150px) auto auto;
   align-items:center;gap:6px;
   border:1px solid #202020;background:#090909;
   border-radius:10px;padding:7px 8px
 }
 .coupon-code{font-size:9px;font-weight:900;color:#fff}
-.coupon-meta{display:block;color:#747474;font-size:7px;margin-top:1px}
-.coupon-toggle,.coupon-delete{
-  min-height:27px;border-radius:999px;padding:0 8px;
-  font-size:7px;font-weight:900;background:#111
+.coupon-meta{display:block;color:#747474;font-size:7px;margin-top:1px;line-height:1.4}
+.coupon-usage{color:#ff9dcc;font-weight:850}
+.coupon-limit-editor{display:grid;grid-template-columns:minmax(72px,1fr) auto;gap:5px;align-items:center}
+.coupon-limit-editor input{
+  min-width:0;min-height:29px;border:1px solid #303030;border-radius:8px;
+  background:#080808;color:#fff;padding:0 7px;font-size:7px
 }
+.coupon-limit-save,.coupon-toggle,.coupon-delete{
+  min-height:27px;border-radius:999px;padding:0 8px;
+  font-size:7px;font-weight:900;background:#111;white-space:nowrap
+}
+.coupon-limit-save{border:1px solid #573047;color:#ff9dcc}
 .coupon-toggle{border:1px solid #2d5138;color:#7ee09f}
 .coupon-toggle.off{border-color:#4a3b22;color:#ddc16e}
 .coupon-delete{border:1px solid #542222;color:#ff8787}
@@ -1126,6 +1133,9 @@ main.shell{
 @media(max-width:450px){
   .coupon-form{grid-template-columns:1fr 1fr}
   .coupon-form button{grid-column:1/-1}
+  .coupon-row{grid-template-columns:1fr auto auto}
+  .coupon-row>div:first-child{grid-column:1/-1}
+  .coupon-limit-editor{grid-column:1/-1}
 }
 
 
@@ -3433,7 +3443,7 @@ th,td{padding:14px 12px!important}
           <div class="marketing-card">
             <div class="marketing-card-head">
               <span class="marketing-number">2</span>
-              <div><h3>Kupon Diskon</h3><p>Buat kode promo dan aktifkan sesuai kebutuhan.</p></div>
+              <div><h3>Kupon Diskon</h3><p>Buat kode promo dengan batas jumlah sales berhasil. Saat batas tercapai, kupon otomatis berhenti berlaku.</p></div>
             </div>
 
             <div class="coupon-form">
@@ -3443,6 +3453,7 @@ th,td{padding:14px 12px!important}
                 <option value="fixed">Nominal (Rp)</option>
               </select>
               <input id="couponValue" type="number" min="1" inputmode="numeric" placeholder="Nilai"/>
+              <input id="couponUsageLimit" type="number" min="1" step="1" inputmode="numeric" placeholder="Batas sales, contoh 200"/>
               <button id="addCouponBtn" type="button">+ TAMBAH</button>
             </div>
 
@@ -4468,7 +4479,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
       api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
       api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc'),
-      api('/rest/v1/marketing_coupons?active=eq.true&select=id,code,discount_type,discount_value,active&order=created_at.desc')
+      api('/rest/v1/marketing_coupons?active=eq.true&select=id,code,discount_type,discount_value,usage_limit,active&order=created_at.desc')
     ]);
     registrations = results[0] || [];
     salesAffiliateProfiles = results[1] || [];
@@ -4919,7 +4930,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     await loadMarketingSettings();
 
     const results = await Promise.all([
-      api('/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,active,created_at&order=created_at.desc'),
+      api('/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,usage_limit,active,created_at&order=created_at.desc'),
       api('/rest/v1/affiliate_settings?id=eq.1&select=id,commission_type,commission_value,inactivity_months'),
       api('/rest/v1/affiliate_accounts?select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
       api('/rest/v1/affiliate_sales?select=id,affiliate_user_id,registration_id,sale_amount,commission_amount,status,sale_at&order=sale_at.desc'),
@@ -4930,10 +4941,17 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       api('/rest/v1/rpc/admin_get_buatqris_settings', {
         method:'POST',
         body:JSON.stringify({})
+      }),
+      api('/rest/v1/rpc/admin_marketing_coupon_usage', {
+        method:'POST',
+        body:JSON.stringify({})
       })
     ]);
 
     marketingCoupons = results[0] || [];
+    const couponUsageRows = results[9] || [];
+    const couponUsageMap = new Map(couponUsageRows.map(row => [row.coupon_id,row]));
+    marketingCoupons = marketingCoupons.map(coupon => Object.assign({},coupon,couponUsageMap.get(coupon.id)||{}));
     if(results[1]?.[0]) affiliateSettings = results[1][0];
     affiliateAccounts = results[2] || [];
     affiliateSales = results[3] || [];
@@ -5065,6 +5083,14 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       : rupiah(coupon.discount_value);
   }
 
+  function couponUsageText(coupon){
+    const used = Number(coupon.used_sales || 0);
+    const limit = coupon.usage_limit == null ? null : Number(coupon.usage_limit);
+    if(!limit) return 'Terpakai ' + used + ' sales • TANPA BATAS';
+    const remaining = Math.max(Number(coupon.remaining_sales ?? (limit-used)),0);
+    return 'Terpakai ' + used + ' / ' + limit + ' sales • Sisa ' + remaining;
+  }
+
   function renderCoupons(){
     $('couponList').innerHTML = marketingCoupons.length
       ? marketingCoupons.map(coupon => `
@@ -5072,6 +5098,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
             <div>
               <span class="coupon-code">${esc(coupon.code)}</span>
               <span class="coupon-meta">${couponValueText(coupon)} • ${coupon.active ? 'AKTIF' : 'NONAKTIF'}</span>
+              <span class="coupon-meta coupon-usage">${esc(couponUsageText(coupon))}</span>
+            </div>
+            <div class="coupon-limit-editor">
+              <input id="couponLimit-${coupon.id}" type="number" min="1" step="1" inputmode="numeric"
+                value="${coupon.usage_limit == null ? '' : Number(coupon.usage_limit)}"
+                placeholder="Batas sales"/>
+              <button class="coupon-limit-save" data-coupon-action="limit" data-id="${coupon.id}" type="button">SIMPAN BATAS</button>
             </div>
             <button class="coupon-toggle ${coupon.active ? '' : 'off'}" data-coupon-action="toggle" data-id="${coupon.id}" type="button">
               ${coupon.active ? 'NONAKTIFKAN' : 'AKTIFKAN'}
@@ -5088,9 +5121,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const code = $('couponCode').value.trim().toUpperCase();
     const discountType = $('couponType').value;
     const discountValue = Number($('couponValue').value);
+    const usageLimit = Number($('couponUsageLimit').value);
 
     if(!code || !discountValue || discountValue <= 0) throw new Error('Isi kode dan nilai diskon.');
     if(discountType === 'percent' && discountValue > 100) throw new Error('Diskon persen maksimal 100%.');
+    if(!Number.isInteger(usageLimit) || usageLimit < 1) throw new Error('Isi batas penggunaan berdasarkan jumlah sales berhasil, minimal 1.');
 
     await api('/rest/v1/marketing_coupons', {
       method:'POST',
@@ -5099,6 +5134,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         code,
         discount_type:discountType,
         discount_value:Math.round(discountValue),
+        usage_limit:usageLimit,
         active:true,
         created_by:session.user.id
       })
@@ -5106,6 +5142,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
     $('couponCode').value = '';
     $('couponValue').value = '';
+    $('couponUsageLimit').value = '';
     await loadMarketing();
   }
 
@@ -5114,7 +5151,28 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const coupon = marketingCoupons.find(c => c.id === id);
     if(!coupon) return;
 
+    if(action === 'limit'){
+      const input = $('couponLimit-' + id);
+      const raw = String(input?.value || '').trim();
+      const usageLimit = raw ? Number(raw) : null;
+      if(usageLimit !== null && (!Number.isInteger(usageLimit) || usageLimit < 1)){
+        throw new Error('Batas penggunaan minimal 1 sales.');
+      }
+
+      await api('/rest/v1/marketing_coupons?id=eq.' + encodeURIComponent(id), {
+        method:'PATCH',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({usage_limit:usageLimit})
+      });
+    }
+
     if(action === 'toggle'){
+      const used = Number(coupon.used_sales || 0);
+      const limit = coupon.usage_limit == null ? null : Number(coupon.usage_limit);
+      if(!coupon.active && limit && used >= limit){
+        throw new Error('Batas sales kupon sudah habis. Naikkan batas penggunaan dulu sebelum mengaktifkan kembali.');
+      }
+
       await api('/rest/v1/marketing_coupons?id=eq.' + encodeURIComponent(id), {
         method:'PATCH',
         headers:{'Prefer':'return=minimal'},
