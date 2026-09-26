@@ -1363,9 +1363,23 @@ document.addEventListener('DOMContentLoaded', function(){
     ['kelas','Pemula','fi fi-rr-square-1'],['jaluruntung','Untung','fi fi-rr-square-2'],['afiliasi','Affiliasi','fi fi-rr-square-3'],['akun','Akun','fi fi-rr-square-4']
   ].forEach(function(menu){var button=document.querySelector('.footer [data-screen="'+menu[0]+'"]');if(!button)return;var label=button.querySelector('.label');var emoji=button.querySelector('.emoji');if(label)label.textContent=menu[1];if(emoji)emoji.innerHTML='<i class="'+menu[2]+'" aria-hidden="true"></i>'});
 
-  function levelFromPlan(plan){if(plan==='pro')return 3;if(plan==='free')return 1;return 2}
-  function currentPlan(){var stable=document.documentElement.dataset.membershipPlan;if(stable)return stable;var text=String(el('memberPlanName')?el('memberPlanName').textContent:'').toUpperCase();if(text.indexOf('UNTUNG')!==-1)return'pro';if(text.indexOf('GRATIS')!==-1)return'free';return'newbie'}
+  function normalizePlan(plan){
+    var value=String(plan||'').trim().toLowerCase().replace(/[_-]+/g,' ');
+    if(['pro','untung','paket untung','member untung'].includes(value))return'pro';
+    if(['free','gratis','gratisan','paket gratisan','member gratisan'].includes(value))return'free';
+    return'newbie'
+  }
+  function levelFromPlan(plan){plan=normalizePlan(plan);if(plan==='pro')return 3;if(plan==='free')return 1;return 2}
+  function currentPlan(){var stable=document.documentElement.dataset.membershipPlan;if(stable)return normalizePlan(stable);var text=String(el('memberPlanName')?el('memberPlanName').textContent:'').toUpperCase();if(text.indexOf('UNTUNG')!==-1)return'pro';if(text.indexOf('GRATIS')!==-1)return'free';return'newbie'}
   function planLabel(level){return level>=3?'MEMBER UNTUNG':level===1?'MEMBER GRATISAN':'MEMBER PEMULA'}
+  function applyResolvedPlan(plan){
+    plan=normalizePlan(plan);
+    document.documentElement.dataset.membershipPlan=plan;
+    var pn=el('memberPlanName'),pd=el('memberPlanDesc');
+    if(pn)pn.textContent=plan==='pro'?'PAKET UNTUNG':plan==='free'?'PAKET GRATISAN':'PAKET PEMULA';
+    if(pd)pd.textContent=plan==='pro'?'Ilmu + Bonus + Program Affiliasi':plan==='free'?'Komunitas + KulWA':'Belajar Ilmu AI + Update';
+    syncPlanAccess()
+  }
 
   var upgradeModal=null;
   function getUpgradeModal(){if(upgradeModal)return upgradeModal;upgradeModal=document.createElement('div');upgradeModal.className='badai-upgrade-modal';upgradeModal.innerHTML='<div class="badai-upgrade-card" role="dialog" aria-modal="true"><div class="badai-upgrade-lock">🔒</div><div class="badai-upgrade-kicker">AKSES TERKUNCI</div><h2 id="badaiUpgradeTitle">Menu ini masih terkunci</h2><p id="badaiUpgradeText">Naik paket untuk membuka akses ini.</p><div id="badaiUpgradeBenefits" class="badai-upgrade-benefits"></div><div class="badai-upgrade-actions"><a id="badaiUpgradeButton" href="#" target="_blank" rel="noopener noreferrer">UPGRADE SEKARANG</a><button type="button" data-close-upgrade>NANTI DULU</button></div></div>';document.body.appendChild(upgradeModal);upgradeModal.addEventListener('click',function(e){if(e.target===upgradeModal||(e.target.closest&&e.target.closest('[data-close-upgrade]')))upgradeModal.classList.remove('open')});return upgradeModal}
@@ -1375,7 +1389,34 @@ document.addEventListener('DOMContentLoaded', function(){
 
   document.addEventListener('click',function(e){var btn=e.target.closest?e.target.closest('.footer button'):null;if(!btn||btn.dataset.planLocked!=='1')return;var screen=btn.getAttribute('data-screen');if(!['kelas','jaluruntung','afiliasi'].includes(screen))return;e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();if(screen==='kelas')openUpgrade('Pemula','Pemula');if(screen==='jaluruntung')openUpgrade('Untung','Untung');if(screen==='afiliasi')openUpgrade('Affiliasi','Untung')},true);
 
-  async function resolveRealPlan(){try{var s=memberSession();if(!s||!s.access_token)return;var userId=s.user&&s.user.id?s.user.id:'';if(!userId){var ur=await fetch(SUPABASE_URL+'/auth/v1/user',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+s.access_token}});if(ur.ok){var u=await ur.json();userId=u&&u.id?u.id:''}}if(!userId)return;var pr=await fetch(SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(userId)+'&select=membership_plan',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+s.access_token}});if(!pr.ok)return;var rows=await pr.json();var plan=rows&&rows[0]&&rows[0].membership_plan?rows[0].membership_plan:'newbie';document.documentElement.dataset.membershipPlan=plan;var pn=el('memberPlanName'),pd=el('memberPlanDesc');if(pn)pn.textContent=plan==='pro'?'PAKET UNTUNG':plan==='free'?'PAKET GRATISAN':'PAKET PEMULA';if(pd)pd.textContent=plan==='pro'?'Ilmu + Bonus + Program Affiliasi':plan==='free'?'Komunitas + KulWA':'Belajar Ilmu AI + Update';syncPlanAccess()}catch(err){console.warn('BADAI plan sync:',err&&err.message?err.message:err)}}
+  async function resolveRealPlan(){
+    try{
+      var s=memberSession();if(!s||!s.access_token)return;
+      var headers={apikey:SUPABASE_KEY,Authorization:'Bearer '+s.access_token};
+      var userId='';
+      var ur=await fetch(SUPABASE_URL+'/auth/v1/user',{headers:headers,cache:'no-store'});
+      if(ur.ok){var u=await ur.json();userId=u&&u.id?u.id:''}
+      if(!userId&&s.user&&s.user.id)userId=s.user.id;
+      if(!userId)return;
+
+      var plan='';
+      var pr=await fetch(SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(userId)+'&select=membership_plan',{headers:headers,cache:'no-store'});
+      if(pr.ok){
+        var rows=await pr.json();
+        if(rows&&rows[0]&&rows[0].membership_plan)plan=rows[0].membership_plan
+      }
+
+      if(!plan){
+        var rr=await fetch(SUPABASE_URL+'/rest/v1/registrations?user_id=eq.'+encodeURIComponent(userId)+'&member_status=eq.active&payment_status=eq.paid&select=membership_plan,activated_at&order=activated_at.desc&limit=1',{headers:headers,cache:'no-store'});
+        if(rr.ok){
+          var regs=await rr.json();
+          if(regs&&regs[0]&&regs[0].membership_plan)plan=regs[0].membership_plan
+        }
+      }
+
+      if(plan)applyResolvedPlan(plan)
+    }catch(err){console.warn('BADAI plan sync:',err&&err.message?err.message:err)}
+  }
 
   function setupAffiliateTabs(){
     var root=el('afiliasi');
@@ -1476,9 +1517,13 @@ document.addEventListener('DOMContentLoaded', function(){
   function bootAffiliate(attempt){ensurePayoutButton();prepareAffiliateBox();var code=affiliateCode();if(code){renderAffiliateChoices(code);return}if((attempt||0)<50)setTimeout(function(){bootAffiliate((attempt||0)+1)},250)}
 
   var planNode=el('memberPlanName');if(planNode&&typeof MutationObserver!=='undefined')new MutationObserver(syncPlanAccess).observe(planNode,{childList:true,subtree:true,characterData:true});
+  window.addEventListener('badai:membership-updated',function(e){
+    var plan=e&&e.detail&&e.detail.plan?e.detail.plan:'';
+    if(plan)applyResolvedPlan(plan)
+  });
   var codeNode=el('affiliateCode');if(codeNode&&typeof MutationObserver!=='undefined')new MutationObserver(function(){affiliateRenderedCode='';bootAffiliate(0)}).observe(codeNode,{childList:true,subtree:true,characterData:true});
 
-  setupAffiliateTabs();syncPlanAccess();setTimeout(resolveRealPlan,250);setTimeout(function(){bootAffiliate(0)},350);
+  setupAffiliateTabs();syncPlanAccess();setTimeout(resolveRealPlan,250);setTimeout(resolveRealPlan,1500);setTimeout(function(){bootAffiliate(0)},350);
 });
 </script>`;
 
