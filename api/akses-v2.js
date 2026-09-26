@@ -122,22 +122,30 @@ module.exports = async function handler(req, res) {
   .screen-heading h1,.badai-gratisan-heading h1,#akun .account-head h1{margin:0 0 6px!important;color:#fff!important;font-family:"Raleway",Arial,sans-serif!important;font-size:34px!important;font-weight:800!important;line-height:1!important;letter-spacing:-.045em!important}
   .screen-heading p,.badai-gratisan-heading p,#akun .account-head p{margin:0!important;color:#a8a8a8!important;font-family:"Nunito",Arial,sans-serif!important;font-size:11.5px!important;font-weight:600!important;line-height:1.4!important}
 
-  /* PEMULA — left aligned heading + bonus VO tool */
-  #kelas .screen-heading.badai-pemula-heading{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:18px!important;text-align:left!important;padding:4px 4px 0!important;margin-bottom:18px!important}
+  /* PEMULA — left aligned heading + support group + bonus VO */
+  #kelas .screen-heading.badai-pemula-heading{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(310px,350px)!important;align-items:center!important;gap:18px!important;text-align:left!important;padding:4px 4px 0!important;margin-bottom:18px!important}
   #kelas .badai-pemula-heading-copy{min-width:0}
   #kelas .badai-pemula-heading h1{text-align:left!important;margin-bottom:7px!important}
   #kelas .badai-pemula-heading p{text-align:left!important}
-  #kelas .badai-pemula-bonus{min-width:168px;padding:10px 11px;border-radius:16px;background:linear-gradient(145deg,#191015,#0d0d0d);border:1px solid #4d263a;box-shadow:0 12px 28px rgba(0,0,0,.2);text-align:left}
-  #kelas .badai-pemula-bonus small{display:block;margin:0 0 5px;color:#ff8fc5;font:800 8px/1 "Nunito",Arial,sans-serif;letter-spacing:.08em}
-  #kelas .badai-pemula-bonus a{display:flex;align-items:center;justify-content:space-between;gap:9px;min-height:38px;padding:0 12px;border-radius:11px;background:#ff4fa3;color:#111;text-decoration:none;font:900 11px/1 "Nunito",Arial,sans-serif;white-space:nowrap;box-shadow:0 8px 22px rgba(255,79,163,.18)}
-  #kelas .badai-pemula-bonus a span{font-size:13px}
+  #kelas .badai-pemula-heading-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:stretch}
+  #kelas .badai-pemula-bonus,#kelas .badai-pemula-support{min-width:0;padding:10px 11px;border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,.2);text-align:left}
+  #kelas .badai-pemula-bonus{background:linear-gradient(145deg,#191015,#0d0d0d);border:1px solid #4d263a}
+  #kelas .badai-pemula-support{background:linear-gradient(145deg,#0f1913,#0b0f0c);border:1px solid #245234}
+  #kelas .badai-pemula-bonus small,#kelas .badai-pemula-support small{display:block;margin:0 0 5px;font:800 8px/1 "Nunito",Arial,sans-serif;letter-spacing:.08em}
+  #kelas .badai-pemula-bonus small{color:#ff8fc5}
+  #kelas .badai-pemula-support small{color:#65e995}
+  #kelas .badai-pemula-bonus a,#kelas .badai-pemula-support a{display:flex;align-items:center;justify-content:space-between;gap:9px;min-height:38px;padding:0 12px;border-radius:11px;color:#111;text-decoration:none;font:900 10.5px/1 "Nunito",Arial,sans-serif;white-space:nowrap}
+  #kelas .badai-pemula-bonus a{background:#ff4fa3;box-shadow:0 8px 22px rgba(255,79,163,.18)}
+  #kelas .badai-pemula-support a{background:#25d366;box-shadow:0 8px 22px rgba(37,211,102,.16)}
+  #kelas .badai-pemula-bonus a span,#kelas .badai-pemula-support a span{font-size:13px}
   @media(max-width:560px){
-    #kelas .screen-heading.badai-pemula-heading{gap:10px!important;grid-template-columns:minmax(0,1fr) 132px!important}
+    #kelas .screen-heading.badai-pemula-heading{gap:11px!important;grid-template-columns:1fr!important}
     #kelas .badai-pemula-heading h1{font-size:29px!important}
     #kelas .badai-pemula-heading p{font-size:10.5px!important;line-height:1.35!important}
-    #kelas .badai-pemula-bonus{min-width:0;padding:8px;border-radius:13px}
-    #kelas .badai-pemula-bonus small{font-size:7px;margin-bottom:4px}
-    #kelas .badai-pemula-bonus a{min-height:34px;padding:0 9px;font-size:10px;border-radius:9px}
+    #kelas .badai-pemula-heading-actions{grid-template-columns:1fr 1fr;gap:7px}
+    #kelas .badai-pemula-bonus,#kelas .badai-pemula-support{padding:8px;border-radius:13px}
+    #kelas .badai-pemula-bonus small,#kelas .badai-pemula-support small{font-size:7px;margin-bottom:4px}
+    #kelas .badai-pemula-bonus a,#kelas .badai-pemula-support a{min-height:34px;padding:0 9px;font-size:9.5px;border-radius:9px}
   }
 
   /* AKUN — larger type, tighter vertical rhythm */
@@ -1205,7 +1213,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function memberSession(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')}catch(_){return null}}
 
   var kelas=el('kelas');
-  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-heading-copy"><h1>Pemula BADAI</h1><p>10 materi khusus Member Pemula untuk mulai bikin karya dengan AI.</p></div><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div>');
+  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-heading-copy"><h1>Pemula BADAI</h1><p>10 materi khusus Member Pemula untuk mulai bikin karya dengan AI.</p></div><div class="badai-pemula-heading-actions"><div class="badai-pemula-support"><small>GRUP SUPPORT</small><a href="https://chat.whatsapp.com/Jhj7EJy1fFdLoqMk3gxXsP" target="_blank" rel="noopener noreferrer">MASUK GRUP <span>↗</span></a></div><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
   var bonus=el('jaluruntung');
   if(bonus&&!bonus.querySelector('.screen-heading')) bonus.insertAdjacentHTML('afterbegin','<div class="screen-heading"><h1>Untung BADAI</h1><p>21 materi khusus Member Untung untuk bikin produk, konten, dan sistem yang menghasilkan.</p></div>');
   var akun=el('akun');
