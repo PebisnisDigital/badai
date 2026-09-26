@@ -2998,23 +2998,47 @@ body.register-modal-open{
   font-size:10px;
 }
 .qris-stage-amount{
+  display:grid;
+  gap:7px;
+  padding:11px 12px;
+  border:1px solid #4d2940;
+  border-radius:13px;
+  background:#160d12;
+}
+.qris-amount-row{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  padding:9px 11px;
-  border:1px solid #4d2940;
-  border-radius:11px;
-  background:#160d12;
 }
-.qris-stage-amount span{
+.qris-amount-row span{
   color:#8f8f8f;
   font-size:8px;
 }
-.qris-stage-amount b{
-  color:#ff8fc5;
+.qris-amount-row b{
+  color:#fff;
   font-family:"Raleway",Arial,sans-serif;
-  font-size:16px;
+  font-size:12px;
+}
+.qris-amount-row.unique{
+  padding:7px 0;
+  border-top:1px dashed #4c3040;
+  border-bottom:1px dashed #4c3040;
+}
+.qris-amount-row.unique span,
+.qris-amount-row.unique b{
+  color:#ff9dcc;
+}
+.qris-amount-row.total b{
+  color:#ff8fc5;
+  font-size:18px;
+}
+.qris-unique-note{
+  margin-top:-1px;
+  color:#a88596;
+  font-size:7px;
+  line-height:1.45;
+  text-align:left;
 }
 .qris-image-wrap{
   width:min(100%,310px);
@@ -7230,8 +7254,19 @@ main section > .container > .badai-copy-kicker,
         <p id="qrisStagePackage">Paket BADAI</p>
 
         <div class="qris-stage-amount">
-          <span>Total Pembayaran</span>
-          <b id="qrisStageAmount">Rp0</b>
+          <div class="qris-amount-row">
+            <span>Harga Paket</span>
+            <b id="qrisBaseAmount">Rp0</b>
+          </div>
+          <div class="qris-amount-row unique">
+            <span>Kode Unik</span>
+            <b id="qrisUniqueAmount">+ Rp0</b>
+          </div>
+          <div class="qris-amount-row total">
+            <span>Total Pembayaran</span>
+            <b id="qrisStageAmount">Rp0</b>
+          </div>
+          <div class="qris-unique-note">Bayar persis sesuai TOTAL PEMBAYARAN supaya transaksi lebih mudah dikenali otomatis.</div>
         </div>
 
         <div class="qris-countdown-box">
@@ -7890,6 +7925,8 @@ Mohon dibantu proses pendaftarannya ya.`
     const stage = document.getElementById('qrisPaymentStage');
     const image = document.getElementById('qrisStageImage');
     const amount = document.getElementById('qrisStageAmount');
+    const baseAmount = document.getElementById('qrisBaseAmount');
+    const uniqueAmount = document.getElementById('qrisUniqueAmount');
     const pack = document.getElementById('qrisStagePackage');
     const link = document.getElementById('qrisStagePaymentLink');
     const status = document.getElementById('qrisStageStatus');
@@ -7899,7 +7936,12 @@ Mohon dibantu proses pendaftarannya ya.`
     stage?.classList.remove('access-ready');
     document.getElementById('qrisAccessPanel')?.classList.add('hidden');
     if(image) image.src = data.qr_url || '';
-    if(amount) amount.textContent = formatRupiah(data.total_amount || data.amount || selectedPackagePrice());
+    const baseValue = Number(data.amount || selectedPackagePrice() || 0);
+    const totalValue = Number(data.total_amount || baseValue || 0);
+    const uniqueValue = Math.max(0,totalValue - baseValue);
+    if(baseAmount) baseAmount.textContent = formatRupiah(baseValue);
+    if(uniqueAmount) uniqueAmount.textContent = '+ ' + formatRupiah(uniqueValue);
+    if(amount) amount.textContent = formatRupiah(totalValue);
     if(pack) pack.textContent = selectedPackageName();
     if(status){
       status.className = 'qris-stage-status waiting';
