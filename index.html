@@ -2805,14 +2805,23 @@ body.register-modal-open{
   }
 }
 
-/* TABLET MODAL HARD STABILITY FIX — top-anchored, no compositor drift */
-@media (min-width:521px) and (max-width:1180px){
+/* TOUCH MODAL HARD STABILITY FIX — phones + tablets */
+@media (max-width:1180px){
   .register-modal-overlay{
+    position:fixed!important;
+    inset:auto!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    bottom:auto!important;
+    width:100%!important;
+    height:var(--badai-register-modal-vh, 100vh)!important;
+    min-height:var(--badai-register-modal-vh, 100vh)!important;
+    max-height:var(--badai-register-modal-vh, 100vh)!important;
+    box-sizing:border-box!important;
     align-items:flex-start!important;
     justify-content:center!important;
-    width:100%!important;
-    height:100%!important;
-    padding:16px!important;
+    padding:calc(8px + env(safe-area-inset-top)) 8px 8px!important;
     overflow:hidden!important;
     overscroll-behavior:none!important;
     touch-action:none!important;
@@ -2821,19 +2830,25 @@ body.register-modal-open{
     transform:none!important;
     animation:none!important;
     transition:none!important;
+    will-change:auto!important;
     contain:layout paint!important;
   }
   .register-modal-shell{
-    width:min(500px,calc(100vw - 32px))!important;
+    position:relative!important;
+    top:0!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    width:min(500px,calc(100vw - 16px))!important;
     height:auto!important;
-    max-height:calc(var(--badai-register-modal-vh, 100svh) - 32px)!important;
+    max-height:calc(var(--badai-register-modal-vh, 100vh) - 24px - env(safe-area-inset-top))!important;
     margin:0!important;
     overflow-y:auto!important;
     overflow-x:hidden!important;
     overscroll-behavior:contain!important;
     touch-action:pan-y!important;
     -webkit-overflow-scrolling:touch!important;
-    border-radius:22px!important;
+    border-radius:18px!important;
     transform:none!important;
     animation:none!important;
     transition:none!important;
@@ -2841,6 +2856,7 @@ body.register-modal-open{
     contain:layout paint!important;
   }
   .registration-modal-card{
+    margin:0!important;
     transform:none!important;
     animation:none!important;
     transition:none!important;
@@ -2851,7 +2867,7 @@ body.register-modal-open{
     animation:none!important;
     transition:none!important;
   }
-  /* Moving transforms inside a fixed scrolling modal can jitter on iPad/tablet browsers. */
+  /* No moving layers inside the popup on touch screens: prevents Safari/Chrome compositor drift. */
   body.register-modal-open .registration-modal-card *,
   body.register-modal-open .registration-modal-card *::before,
   body.register-modal-open .registration-modal-card *::after{
@@ -2859,8 +2875,14 @@ body.register-modal-open{
     transition:none!important;
   }
   body.register-modal-open .register-benefit-track{
+    position:relative!important;
+    inset:auto!important;
     transform:none!important;
+    animation:none!important;
     will-change:auto!important;
+  }
+  body.register-modal-open .register-benefit-track .register-benefit-item:nth-child(n+2){
+    display:none!important;
   }
 }
 
@@ -7988,25 +8010,30 @@ Mohon dibantu proses pendaftarannya ya.`
 
   function lockRegistrationPage(){
     registrationModalLockedScrollY = window.scrollY || window.pageYOffset || 0;
-    const tabletLike = window.innerWidth >= 521 && window.innerWidth <= 1180;
-    const frozenHeight = window.innerHeight || document.documentElement.clientHeight || 800;
+    const frozenHeight = Math.round(
+      (window.visualViewport && window.visualViewport.height) ||
+      window.innerHeight ||
+      document.documentElement.clientHeight ||
+      800
+    );
 
+    // Freeze the opening viewport once. Do not follow address-bar/keyboard resize,
+    // because that resize is what makes fixed modals look like they are being dragged.
     document.documentElement.style.setProperty('--badai-register-modal-vh', frozenHeight + 'px');
     document.documentElement.classList.add('register-modal-open');
     document.body.classList.add('register-modal-open');
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.overscrollBehavior = 'none';
 
-    // Strong body lock for iPad/tablet browsers. Keeps the page from rubber-banding
-    // underneath the fixed popup and visually dragging the modal with it.
+    // Lock the page for every touch size, not just tablets.
     document.body.style.position = 'fixed';
     document.body.style.top = '-' + registrationModalLockedScrollY + 'px';
     document.body.style.left = '0';
     document.body.style.right = '0';
     document.body.style.width = '100%';
+    document.body.style.height = frozenHeight + 'px';
     document.body.style.overflow = 'hidden';
-
-    if(tabletLike){
-      document.documentElement.style.overflow = 'hidden';
-    }
+    document.body.style.overscrollBehavior = 'none';
   }
 
   function unlockRegistrationPage(){
@@ -8014,13 +8041,16 @@ Mohon dibantu proses pendaftarannya ya.`
     document.documentElement.classList.remove('register-modal-open');
     document.body.classList.remove('register-modal-open');
     document.documentElement.style.removeProperty('overflow');
+    document.documentElement.style.removeProperty('overscroll-behavior');
     document.documentElement.style.removeProperty('--badai-register-modal-vh');
     document.body.style.removeProperty('position');
     document.body.style.removeProperty('top');
     document.body.style.removeProperty('left');
     document.body.style.removeProperty('right');
     document.body.style.removeProperty('width');
+    document.body.style.removeProperty('height');
     document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('overscroll-behavior');
     window.scrollTo(0, restoreY);
   }
 
