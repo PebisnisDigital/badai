@@ -2805,26 +2805,40 @@ body.register-modal-open{
   }
 }
 
-/* TABLET MODAL STABILITY FIX — avoid viewport/keyboard wobble */
+/* TABLET MODAL HARD STABILITY FIX — top-anchored, no compositor drift */
 @media (min-width:521px) and (max-width:1180px){
   .register-modal-overlay{
-    align-items:center!important;
+    align-items:flex-start!important;
     justify-content:center!important;
+    width:100%!important;
+    height:100%!important;
     padding:16px!important;
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+    touch-action:none!important;
     backdrop-filter:none!important;
     -webkit-backdrop-filter:none!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    contain:layout paint!important;
   }
   .register-modal-shell{
     width:min(500px,calc(100vw - 32px))!important;
-    max-height:calc(100svh - 32px)!important;
+    height:auto!important;
+    max-height:calc(var(--badai-register-modal-vh, 100svh) - 32px)!important;
+    margin:0!important;
     overflow-y:auto!important;
     overflow-x:hidden!important;
     overscroll-behavior:contain!important;
+    touch-action:pan-y!important;
+    -webkit-overflow-scrolling:touch!important;
     border-radius:22px!important;
     transform:none!important;
     animation:none!important;
     transition:none!important;
     will-change:auto!important;
+    contain:layout paint!important;
   }
   .registration-modal-card{
     transform:none!important;
@@ -2836,6 +2850,17 @@ body.register-modal-open{
     transform:none!important;
     animation:none!important;
     transition:none!important;
+  }
+  /* Moving transforms inside a fixed scrolling modal can jitter on iPad/tablet browsers. */
+  body.register-modal-open .registration-modal-card *,
+  body.register-modal-open .registration-modal-card *::before,
+  body.register-modal-open .registration-modal-card *::after{
+    animation:none!important;
+    transition:none!important;
+  }
+  body.register-modal-open .register-benefit-track{
+    transform:none!important;
+    will-change:auto!important;
   }
 }
 
@@ -7959,6 +7984,46 @@ Mohon dibantu proses pendaftarannya ya.`
     }
   }
 
+  let registrationModalLockedScrollY = 0;
+
+  function lockRegistrationPage(){
+    registrationModalLockedScrollY = window.scrollY || window.pageYOffset || 0;
+    const tabletLike = window.innerWidth >= 521 && window.innerWidth <= 1180;
+    const frozenHeight = window.innerHeight || document.documentElement.clientHeight || 800;
+
+    document.documentElement.style.setProperty('--badai-register-modal-vh', frozenHeight + 'px');
+    document.documentElement.classList.add('register-modal-open');
+    document.body.classList.add('register-modal-open');
+
+    // Strong body lock for iPad/tablet browsers. Keeps the page from rubber-banding
+    // underneath the fixed popup and visually dragging the modal with it.
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + registrationModalLockedScrollY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+
+    if(tabletLike){
+      document.documentElement.style.overflow = 'hidden';
+    }
+  }
+
+  function unlockRegistrationPage(){
+    const restoreY = registrationModalLockedScrollY || 0;
+    document.documentElement.classList.remove('register-modal-open');
+    document.body.classList.remove('register-modal-open');
+    document.documentElement.style.removeProperty('overflow');
+    document.documentElement.style.removeProperty('--badai-register-modal-vh');
+    document.body.style.removeProperty('position');
+    document.body.style.removeProperty('top');
+    document.body.style.removeProperty('left');
+    document.body.style.removeProperty('right');
+    document.body.style.removeProperty('width');
+    document.body.style.removeProperty('overflow');
+    window.scrollTo(0, restoreY);
+  }
+
   function openRegistrationModal(plan){
     selectedPackage = ['free','newbie','pro'].includes(plan) ? plan : 'newbie';
     syncSelectedPackageUI();
@@ -7986,12 +8051,11 @@ Mohon dibantu proses pendaftarannya ya.`
       status.style.color = '#7e7e7e';
     }
 
+    lockRegistrationPage();
     registrationModal?.classList.add('open');
     registrationModal?.setAttribute('aria-hidden','false');
-    document.body.classList.add('register-modal-open');
 
-    // Auto-focus can open the virtual keyboard on tablets and make a fixed modal jump.
-    // Keep auto-focus only for precise desktop pointers.
+    // Auto-focus only on true desktop. Tablet keyboards can resize the visual viewport.
     const canAutoFocusRegistration =
       window.innerWidth > 1180 &&
       window.matchMedia &&
@@ -8006,7 +8070,7 @@ Mohon dibantu proses pendaftarannya ya.`
     stopBenefitTicker();
     registrationModal?.classList.remove('open');
     registrationModal?.setAttribute('aria-hidden','true');
-    document.body.classList.remove('register-modal-open');
+    unlockRegistrationPage();
   }
 
   document.querySelectorAll('[data-package-select]').forEach(btn => {
