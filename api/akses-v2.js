@@ -48,7 +48,7 @@ module.exports = async function handler(req, res) {
 
   .badai-member-header{
     position:sticky;top:0;z-index:80;width:100%;min-height:68px;display:grid;
-    grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:8px 14px;
+    grid-template-columns:auto minmax(0,1fr);align-items:center;gap:14px;padding:8px 14px;
     background:rgba(7,7,7,.97);border-bottom:1px solid #242424;
     backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
   }
@@ -77,16 +77,13 @@ module.exports = async function handler(req, res) {
   .badai-member-marquee-item::before{content:"●";margin-right:8px;color:#ff4fa3;font-size:6px;vertical-align:1px}
   @keyframes badaiMemberNewsTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
   @media(prefers-reduced-motion:reduce){.badai-member-marquee-track{animation:none!important}}
-  .badai-member-help{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:0 14px;border-radius:999px;background:#25D366;color:#07170d;text-decoration:none;font-family:"Nunito",Arial,sans-serif;font-size:10px;font-weight:700;box-shadow:0 8px 24px rgba(37,211,102,.22);border:1px solid rgba(255,255,255,.08)}
   @media(max-width:560px){
-    .badai-member-header{grid-template-columns:auto minmax(0,1fr) auto;gap:8px;padding:7px 8px;min-height:64px}
+    .badai-member-header{grid-template-columns:auto minmax(0,1fr);gap:8px;padding:7px 8px;min-height:64px}
     .badai-member-header-logo img{height:29px;max-width:92px}
     .badai-member-header-info{gap:5px}
     .badai-member-header-title{font-size:10px}
     .badai-member-marquee{height:18px}
     .badai-member-marquee-item{font-size:8px;padding-right:34px}
-    .badai-member-help{min-height:34px!important;padding:0 9px!important;font-size:9px!important;gap:4px!important}
-    .badai-member-help span:first-child{font-size:9px}
   }
 
   .community-wrap{display:grid;gap:11px}
@@ -161,23 +158,24 @@ module.exports = async function handler(req, res) {
     display:flex!important;justify-content:flex-end!important;align-items:center!important;
     padding:4px 4px 0!important;margin-bottom:18px!important
   }
-  #kelas .badai-pemula-heading-actions{width:min(100%,350px);display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:stretch}
-  #kelas .badai-pemula-bonus,#kelas .badai-pemula-support{min-width:0;padding:10px 11px;border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,.2);text-align:left}
+  #kelas .badai-pemula-heading-actions{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;align-items:stretch}
+  #kelas .badai-pemula-admin,#kelas .badai-pemula-bonus,#kelas .badai-pemula-support{min-width:0;padding:10px 11px;border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,.2);text-align:left}
+  #kelas .badai-pemula-admin{background:linear-gradient(145deg,#0f1913,#0b0f0c);border:1px solid #245234}
   #kelas .badai-pemula-bonus{background:linear-gradient(145deg,#191015,#0d0d0d);border:1px solid #4d263a}
   #kelas .badai-pemula-support{background:linear-gradient(145deg,#0f1913,#0b0f0c);border:1px solid #245234}
-  #kelas .badai-pemula-bonus small,#kelas .badai-pemula-support small{display:block;margin:0 0 5px;font:800 8px/1 "Nunito",Arial,sans-serif;letter-spacing:.08em}
+  #kelas .badai-pemula-admin small,#kelas .badai-pemula-bonus small,#kelas .badai-pemula-support small{display:block;margin:0 0 5px;font:800 8px/1 "Nunito",Arial,sans-serif;letter-spacing:.08em}
   #kelas .badai-pemula-bonus small{color:#ff8fc5}
-  #kelas .badai-pemula-support small{color:#65e995}
-  #kelas .badai-pemula-bonus a,#kelas .badai-pemula-support a{display:flex;align-items:center;justify-content:space-between;gap:9px;min-height:38px;padding:0 12px;border-radius:11px;color:#111;text-decoration:none;font:900 10.5px/1 "Nunito",Arial,sans-serif;white-space:nowrap}
+  #kelas .badai-pemula-admin small,#kelas .badai-pemula-support small{color:#65e995}
+  #kelas .badai-pemula-admin a,#kelas .badai-pemula-bonus a,#kelas .badai-pemula-support a{display:flex;align-items:center;justify-content:space-between;gap:9px;min-height:38px;padding:0 12px;border-radius:11px;color:#111;text-decoration:none;font:900 10.5px/1 "Nunito",Arial,sans-serif;white-space:nowrap}
   #kelas .badai-pemula-bonus a{background:#ff4fa3;box-shadow:0 8px 22px rgba(255,79,163,.18)}
-  #kelas .badai-pemula-support a{background:#25d366;box-shadow:0 8px 22px rgba(37,211,102,.16)}
-  #kelas .badai-pemula-bonus a span,#kelas .badai-pemula-support a span{font-size:13px}
+  #kelas .badai-pemula-admin a,#kelas .badai-pemula-support a{background:#25d366;box-shadow:0 8px 22px rgba(37,211,102,.16)}
+  #kelas .badai-pemula-admin a span,#kelas .badai-pemula-bonus a span,#kelas .badai-pemula-support a span{font-size:13px}
   @media(max-width:560px){
     #kelas .screen-heading.badai-pemula-heading{padding:3px 0 0!important;margin-bottom:12px!important}
-    #kelas .badai-pemula-heading-actions{width:100%;grid-template-columns:1fr 1fr;gap:7px}
-    #kelas .badai-pemula-bonus,#kelas .badai-pemula-support{padding:8px;border-radius:13px}
-    #kelas .badai-pemula-bonus small,#kelas .badai-pemula-support small{font-size:7px;margin-bottom:4px}
-    #kelas .badai-pemula-bonus a,#kelas .badai-pemula-support a{min-height:34px;padding:0 9px;font-size:9.5px;border-radius:9px}
+    #kelas .badai-pemula-heading-actions{width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+    #kelas .badai-pemula-admin,#kelas .badai-pemula-bonus,#kelas .badai-pemula-support{padding:8px;border-radius:13px}
+    #kelas .badai-pemula-admin small,#kelas .badai-pemula-bonus small,#kelas .badai-pemula-support small{font-size:7px;margin-bottom:4px}
+    #kelas .badai-pemula-admin a,#kelas .badai-pemula-bonus a,#kelas .badai-pemula-support a{min-height:34px;padding:0 9px;font-size:9px;border-radius:9px}
   }
 
   /* AKUN — larger type, tighter vertical rhythm */
@@ -1239,7 +1237,6 @@ module.exports = async function handler(req, res) {
       </div>
     </div>
   </div>
-  <a class="badai-member-help" href="https://wa.me/62881022445869?text=Halo%20Admin%20BADAI%2C%20saya%20butuh%20bantuan%20di%20Member%20Area." target="_blank" rel="noopener noreferrer"><span>💬</span><span>HUBUNGI ADMIN</span></a>
 </header>`;
 
     const enhancement = String.raw`
@@ -1254,7 +1251,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function memberSession(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')}catch(_){return null}}
 
   var kelas=el('kelas');
-  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-heading-actions"><div class="badai-pemula-support"><small>GRUP SUPPORT</small><a href="https://chat.whatsapp.com/Jhj7EJy1fFdLoqMk3gxXsP" target="_blank" rel="noopener noreferrer">MASUK GRUP <span>↗</span></a></div><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
+  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-heading-actions"><div class="badai-pemula-admin"><small>BANTUAN ADMIN</small><a href="https://wa.me/62881022445869?text=Halo%20Admin%20BADAI%2C%20saya%20butuh%20bantuan%20di%20Member%20Area." target="_blank" rel="noopener noreferrer">HUBUNGI ADMIN <span>↗</span></a></div><div class="badai-pemula-support"><small>GRUP SUPPORT</small><a href="https://chat.whatsapp.com/Jhj7EJy1fFdLoqMk3gxXsP" target="_blank" rel="noopener noreferrer">MASUK GRUP <span>↗</span></a></div><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
   var bonus=el('jaluruntung');
   if(bonus&&!bonus.querySelector('.screen-heading')) bonus.insertAdjacentHTML('afterbegin','<div class="screen-heading"><h1>Untung BADAI</h1><p>21 materi khusus Member Untung untuk bikin produk, konten, dan sistem yang menghasilkan.</p></div>');
   var akun=el('akun');
