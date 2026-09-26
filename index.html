@@ -7707,7 +7707,14 @@ Mohon dibantu proses pendaftarannya ya.`
     }
 
     if(item.method_type === 'manual_transfer'){
-      box.innerHTML = '';
+      const bank = [item.bank_name,item.account_number].filter(Boolean).join(' ');
+      const holder = item.account_holder ? 'an ' + item.account_holder : '';
+      box.innerHTML = `
+        <div class="payment-compact-detail">
+          <span>${escapePaymentHtml([bank,holder].filter(Boolean).join(' • ') || item.display_name || 'Transfer Bank')}</span>
+          <b style="color:#ff8fc5;font-size:8px">Kode unik + total transfer dibuat setelah klik daftar.</b>
+        </div>
+      `;
       return;
     }
 
@@ -8446,30 +8453,84 @@ Mohon dibantu proses pendaftarannya ya.`
         return;
       }
 
-      const response = await fetch(SUPABASE_URL + '/rest/v1/registrations', {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_PUBLISHABLE_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          full_name: nama,
-          email: email,
-          whatsapp: wa,
-          membership_plan: selectedPackage,
-          payment_method_id: selectedPaymentMethodId || null,
-          referred_by_code: (
-            window.BADAI_AFFILIATE_REF ||
-            localStorage.getItem('badai_affiliate_ref') ||
-            null
-          )
-        })
-      });
+      let registrationResult = null;
 
-      if(!response.ok && response.status !== 409){
-        throw new Error('Gagal menyimpan pendaftaran');
+      if(payment?.method_type === 'manual_transfer'){
+        const couponInput = Array.from(document.querySelectorAll('#registrationModal input')).find(input => {
+          const token = ((input.id || '') + ' ' + (input.name || '')).toLowerCase();
+          return token.includes('coupon') || token.includes('kupon');
+        });
+        const couponCode = String(couponInput?.value || '').trim().toUpperCase() || null;
+
+        const response = await fetch(SUPABASE_URL + '/rest/v1/rpc/create_manual_registration', {
+          method:'POST',
+          headers:{
+            'apikey':SUPABASE_PUBLISHABLE_KEY,
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify({
+            p_full_name:nama,
+            p_email:email,
+            p_whatsapp:wa,
+            p_membership_plan:selectedPackage,
+            p_payment_method_id:selectedPaymentMethodId,
+            p_referred_by_code:(
+              window.BADAI_AFFILIATE_REF ||
+              localStorage.getItem('badai_affiliate_ref') ||
+              null
+            ),
+            p_coupon_code:couponCode
+          })
+        });
+
+        const rows = await response.json().catch(()=>[]);
+        if(!response.ok){
+          const err = Array.isArray(rows) ? null : (rows?.message || rows?.error || rows?.hint);
+          throw new Error(err || 'Gagal membuat invoice transfer manual');
+        }
+        registrationResult = Array.isArray(rows) ? rows[0] : rows;
+        if(!registrationResult?.registration_id) throw new Error('Invoice transfer manual belum berhasil dibuat.');
+      }else{
+        const response = await fetch(SUPABASE_URL + '/rest/v1/registrations', {
+          method:'POST',
+          headers:{
+            'apikey':SUPABASE_PUBLISHABLE_KEY,
+            'Content-Type':'application/json',
+            'Prefer':'return=minimal'
+          },
+          body:JSON.stringify({
+            full_name:nama,
+            email,
+            whatsapp:wa,
+            membership_plan:selectedPackage,
+            payment_method_id:selectedPaymentMethodId || null,
+            referred_by_code:(
+              window.BADAI_AFFILIATE_REF ||
+              localStorage.getItem('badai_affiliate_ref') ||
+              null
+            )
+          })
+        });
+
+        if(!response.ok && response.status !== 409){
+          throw new Error('Gagal menyimpan pendaftaran');
+        }
       }
+
+      const uniqueCode = Number(registrationResult?.payment_unique_code || 0);
+      const baseAmount = Number(registrationResult?.amount || selectedPackagePrice() || 0);
+      const totalAmount = Number(registrationResult?.payment_total_amount || baseAmount);
+      const uniqueSign = totalAmount >= baseAmount ? '+' : '-';
+
+      const manualInvoiceDetail = payment?.method_type === 'manual_transfer' && uniqueCode > 0
+        ? [
+            paymentMethodPlainDetail(payment),
+            '',
+            'KODE UNIK: ' + uniqueSign + formatRupiah(uniqueCode),
+            'TOTAL TRANSFER: ' + formatRupiah(totalAmount),
+            'Mohon transfer PERSIS sesuai total di atas agar pembayaran mudah dicocokkan.'
+          ].join('\n')
+        : paymentMethodPlainDetail(payment);
 
       const message = fillTemplate(
         marketingConfig.registration_notification,
@@ -8478,15 +8539,27 @@ Mohon dibantu proses pendaftarannya ya.`
           email,
           wa,
           paket:selectedPackageName(),
-          harga:formatRupiah(selectedPackagePrice()),
-          metode_bayar:selectedPaymentMethod()?.display_name || '-',
-          detail_bayar:paymentMethodPlainDetail(selectedPaymentMethod())
+          harga:formatRupiah(baseAmount),
+          metode_bayar:payment?.display_name || '-',
+          detail_bayar:manualInvoiceDetail,
+          kode_unik:uniqueCode ? (uniqueSign + formatRupiah(uniqueCode)) : '-',
+          total_bayar:formatRupiah(totalAmount)
         }
       );
 
       const whatsappUrl = 'https://wa.me/62881022445869?text=' + encodeURIComponent(message);
 
-      setStatus('Data sudah tercatat. Membuka WhatsApp...', false);
+      if(payment?.method_type === 'manual_transfer'){
+        setStatus(
+          'Invoice dibuat. Total transfer ' + formatRupiah(totalAmount) +
+          (uniqueCode ? ' • kode unik ' + uniqueSign + uniqueCode : '') +
+          '. Membuka WhatsApp...',
+          false
+        );
+      }else{
+        setStatus('Data sudah tercatat. Membuka WhatsApp...', false);
+      }
+
       window.location.href = whatsappUrl;
     } catch (err) {
       const message = String(err?.message || 'Terjadi kesalahan.');
