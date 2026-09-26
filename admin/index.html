@@ -3649,45 +3649,6 @@ th,td{padding:14px 12px!important}
               </div>
             </div>
 
-            <div class="buatqris-unique-box">
-              <div class="buatqris-unique-head">
-                <div>
-                  <b>Kode Unik Pembayaran</b>
-                  <span>Nominal QRIS otomatis dibuat berbeda untuk membantu pencocokan transaksi.</span>
-                </div>
-                <span class="buatqris-unique-pill">AKTIF OTOMATIS</span>
-              </div>
-              <div class="buatqris-unique-grid">
-                <div class="manage-field">
-                  <label>Type</label>
-                  <input type="text" value="Naik (Harga + Kode Unik)" readonly/>
-                </div>
-                <div class="manage-field">
-                  <label>Range Kode Unik</label>
-                  <input type="text" value="Dikelola otomatis oleh BuatQris" readonly/>
-                </div>
-              </div>
-              <div class="price-plan-note">BADAI menampilkan rincian Harga Paket + Kode Unik + Total Pembayaran di popup QRIS. Bayar harus persis sesuai total.</div>
-            </div>
-
-            <div class="buatqris-reference-grid">
-              <div class="buatqris-callback">
-                <span>BASE URL OPEN API</span>
-                <code>https://api.buatqris.site</code>
-                <small>Semua action BuatQris memakai URL yang sama. Request dijalankan dari backend BADAI.</small>
-              </div>
-
-              <div class="buatqris-callback">
-                <span>WEBHOOK BADAI</span>
-                <code>https://tlvxlekqrllkvcpgwmic.supabase.co/functions/v1/buatqris-webhook</code>
-                <small>Masukkan URL ini ke Callback URL BuatQris. Webhook diverifikasi memakai Signing Secret.</small>
-              </div>
-            </div>
-
-            <div class="buatqris-security-note">
-              🔐 Secret Token dan Signing Secret disimpan terenkripsi di Supabase Vault dan tidak pernah dikirim ke Landing Page.
-            </div>
-
             <div class="buatqris-action-grid">
               <button id="saveBuatQrisBtn" class="payment-add-btn" type="button">SIMPAN PENGATURAN</button>
               <button id="testBuatQrisBtn" class="payment-test-btn" type="button">TES KONEKSI SANDBOX</button>
