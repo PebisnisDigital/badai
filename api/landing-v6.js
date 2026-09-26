@@ -260,9 +260,27 @@ module.exports = async function handler(req, res) {
 (function(){
   const SUPABASE_URL='https://tlvxlekqrllkvcpgwmic.supabase.co';
   const SUPABASE_KEY='sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
-  const MASK='Rp xxx.xxxx';
   let registrationOpen=true;
+  let closedNewbiePrice=0;
+  let closedProPrice=0;
   let busy=false;
+
+  function priceMask(amount, fallbackText){
+    const numeric = Math.round(Math.abs(Number(amount || 0)));
+    let digits = numeric > 0
+      ? String(numeric)
+      : String(fallbackText || '').replace(/\D/g,'');
+    if(!digits) digits='0';
+    return 'Rp ' + digits
+      .replace(/\B(?=(\d{3})+(?!\d))/g,'.')
+      .replace(/\d/g,'x');
+  }
+
+  function realPrice(amount){
+    return 'Rp' + new Intl.NumberFormat('id-ID',{
+      maximumFractionDigits:0
+    }).format(Number(amount || 0));
+  }
 
   function ensureClosedNotice(){
     const pricing=document.getElementById('pricing');
@@ -280,14 +298,43 @@ module.exports = async function handler(req, res) {
   }
 
   function maskPrices(){
-    ['dynamicNewbiePrice','dynamicProPrice','selectedPackagePrice'].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el && !registrationOpen && el.textContent!==MASK) el.textContent=MASK;
-    });
+    const newbieEl=document.getElementById('dynamicNewbiePrice');
+    const proEl=document.getElementById('dynamicProPrice');
+    const selectedEl=document.getElementById('selectedPackagePrice');
+    const selectedPlan=document.getElementById('selectedPackage')?.value === 'pro' ? 'pro' : 'newbie';
+
+    if(!registrationOpen){
+      if(newbieEl) newbieEl.textContent=priceMask(closedNewbiePrice,newbieEl.textContent);
+      if(proEl) proEl.textContent=priceMask(closedProPrice,proEl.textContent);
+      if(selectedEl){
+        const selectedAmount=selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice;
+        selectedEl.textContent=priceMask(selectedAmount,selectedEl.textContent);
+      }
+    }else{
+      if(newbieEl && closedNewbiePrice > 0) newbieEl.textContent=realPrice(closedNewbiePrice);
+      if(proEl && closedProPrice > 0) proEl.textContent=realPrice(closedProPrice);
+      if(selectedEl){
+        const selectedAmount=selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice;
+        if(selectedAmount > 0) selectedEl.textContent=realPrice(selectedAmount);
+      }
+    }
+
     const advantage=document.getElementById('proPriceAdvantageCopy');
-    if(advantage && !registrationOpen) advantage.textContent='Harga akan diumumkan saat pendaftaran dibuka.';
     const smart=document.getElementById('proSmartSaving');
-    if(smart && !registrationOpen) smart.textContent='PENDAFTARAN DITUTUP';
+
+    if(!registrationOpen){
+      if(advantage) advantage.textContent='Harga akan diumumkan saat pendaftaran dibuka.';
+      if(smart) smart.textContent='PENDAFTARAN DITUTUP';
+    }else if(closedNewbiePrice > 0 && closedProPrice > 0){
+      if(closedNewbiePrice > closedProPrice){
+        const saving=realPrice(closedNewbiePrice - closedProPrice);
+        if(advantage) advantage.textContent='Lebih lengkap • Hemat ' + saving + ' dibanding Paket Pemula';
+        if(smart) smart.textContent='PALING LENGKAP • HEMAT ' + saving + ' vs PEMULA';
+      }else{
+        if(advantage) advantage.textContent='Semua materi + jalur cuan + program afiliasi';
+        if(smart) smart.textContent='PAKET PALING LENGKAP';
+      }
+    }
   }
 
   function syncButtons(){
@@ -326,13 +373,16 @@ module.exports = async function handler(req, res) {
     if(busy) return;
     busy=true;
     try{
-      const r=await fetch(SUPABASE_URL+'/rest/v1/marketing_public_config?id=eq.1&select=registration_open',{
+      const r=await fetch(SUPABASE_URL+'/rest/v1/marketing_public_config?id=eq.1&select=registration_open,newbie_price,pro_price',{
         headers:{apikey:SUPABASE_KEY},
         cache:'no-store'
       });
       if(!r.ok) return;
       const rows=await r.json();
-      registrationOpen=rows?.[0]?.registration_open!==false;
+      const config=rows?.[0] || {};
+      registrationOpen=config.registration_open!==false;
+      closedNewbiePrice=Number(config.newbie_price || 0);
+      closedProPrice=Number(config.pro_price || 0);
       window.BADAI_REGISTRATION_OPEN=registrationOpen;
       applyMode();
     }catch(_){
