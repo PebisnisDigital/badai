@@ -55,10 +55,11 @@
 
   function captureMagicLinkSession(){
     try{
+      // Supabase can return auth data in either the URL hash or query string.
+      // Support both so QRIS auto-login keeps working across redirect modes.
       const hash = String(location.hash || '').replace(/^#/,'');
-      if(!hash) return false;
-
-      const params = new URLSearchParams(hash);
+      const query = String(location.search || '').replace(/^\\?/,'');
+      const params = new URLSearchParams(hash || query);
       const accessToken = params.get('access_token');
       const refreshToken = params.get('refresh_token');
 
