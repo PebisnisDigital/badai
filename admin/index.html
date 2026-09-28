@@ -3519,6 +3519,7 @@ th,td{padding:14px 12px!important}
   position:absolute!important;
   top:3px!important;
   right:calc(50% - 24px)!important;
+  z-index:20!important;
   min-width:18px!important;
   height:18px!important;
   padding:0 5px!important;
@@ -3526,8 +3527,12 @@ th,td{padding:14px 12px!important}
   place-items:center!important;
   border:2px solid #080808!important;
   border-radius:999px!important;
-  background:#25d366!important;
+  background-color:#25d366!important;
+  background-image:none!important;
   color:#0b141a!important;
+  opacity:1!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
   font:800 9px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;
   box-sizing:border-box!important;
   box-shadow:none!important;
@@ -8498,6 +8503,15 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       badge.classList.toggle('hidden',count<1);
       badge.setAttribute('aria-hidden',count<1?'true':'false');
       badge.title=count>0?(count+' pesan belum dibaca'):'';
+      if(count>0){
+        badge.style.setProperty('background-color','#25d366','important');
+        badge.style.setProperty('background-image','none','important');
+        badge.style.setProperty('color','#0b141a','important');
+        badge.style.setProperty('border','2px solid #080808','important');
+        badge.style.setProperty('opacity','1','important');
+        badge.style.setProperty('filter','none','important');
+        badge.style.setProperty('z-index','20','important');
+      }
     }
     if(mentorAdminUnreadInitialized&&count>mentorAdminUnreadCount){
       mentorAdminToast('💬 Ada pesan baru di Chat BADAI');
