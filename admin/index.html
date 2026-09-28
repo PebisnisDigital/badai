@@ -11214,7 +11214,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
     /* Heavy chat refresh only while Chat page is actually open. */
     const page=$('pageMentor');
-    if(page&&!page.classList.contains('hidden')){
+    if(page&&!page.classList.contains('hidden')&&mentorAdminFeature==='chat'){
       touchMentorPresence().catch(()=>{});
       loadMentorInbox().catch(()=>{});
     }
