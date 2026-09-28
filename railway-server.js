@@ -432,6 +432,47 @@ async function uploadDriveBuffer(drive,parentId,name,mime,buffer){
   return result.data;
 }
 
+async function verifyMentorManagerBearer(token){
+  const user=await verifySupabaseBearer(token);
+  if(!user?.id) return null;
+  const res=await fetch(
+    SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&select=id,role,status&limit=1',
+    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  );
+  if(!res.ok) return null;
+  const rows=await res.json().catch(()=>[]);
+  const team=rows?.[0]||null;
+  if(!team || !['owner','super_admin','admin','mentor'].includes(team.role)) return null;
+  return {user,team};
+}
+
+async function handleMentorAutoreplyUpload(req,res){
+  if(!(await mentorDriveConfigured())){
+    return res.status(503).json({error:'Google Drive Mentor belum terhubung.'});
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const manager=await verifyMentorManagerBearer(token);
+  if(!manager) return res.status(403).json({error:'Tidak punya akses mengelola Auto Reply Mentor.'});
+
+  const parsed=await parseMentorMultipart(req);
+  const drive=await driveClient();
+  const root=await findOrCreateDriveFolder(drive,'AUTO-REPLY-MEDIA',MENTOR_DRIVE_FOLDER_ID);
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  const fileName=stamp+'__'+safeDriveName(parsed.file.name);
+  const saved=await uploadDriveBuffer(drive,root,fileName,parsed.file.mime,parsed.file.buffer);
+
+  return res.status(200).json({
+    ok:true,
+    id:saved.id,
+    name:parsed.file.name,
+    mime:parsed.file.mime,
+    size:parsed.file.size,
+    url:signedMentorFileUrl(saved.id)
+  });
+}
+
 async function handleMentorUpload(req,res){
   if(!(await mentorDriveConfigured())){
     return res.status(503).json({
@@ -799,6 +840,10 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/api/mentor/upload' && req.method === 'POST') {
       return await handleMentorUpload(req,res);
+    }
+
+    if (pathname === '/api/mentor/autoreply/upload' && req.method === 'POST') {
+      return await handleMentorAutoreplyUpload(req,res);
     }
 
     if (pathname === '/api/mentor/file' && req.method === 'GET') {
