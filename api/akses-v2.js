@@ -2019,6 +2019,10 @@ module.exports = async function handler(req, res) {
   #mentor .mentor-group-initial.tone-4{background:#183c32;color:#8be7c0}
   #mentor .mentor-group-initial.tone-5{background:#443b17;color:#ffda76}
   #mentor .mentor-group-initial.tone-6{background:#213654;color:#9fc3ff}
+  #mentor .mentor-group-initial.has-photo{padding:0!important;overflow:hidden;background:#374248!important;color:transparent!important}
+  #mentor .mentor-group-initial img{display:block;width:100%;height:100%;object-fit:cover;border-radius:999px}
+  #mentor .mentor-mention-avatar.has-photo{padding:0!important;overflow:hidden;background:#374248!important;color:transparent!important}
+  #mentor .mentor-mention-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:999px}
   @media(max-width:560px){
     #mentor .mentor-group-message-row{gap:7px}
     #mentor .mentor-group-initial{flex-basis:28px;width:28px;height:28px;font-size:12px!important}
@@ -2100,6 +2104,35 @@ module.exports = async function handler(req, res) {
     #mentor .mentor-chat-info-avatar{width:76px;height:76px}
   }
 
+  /* Profile photo editor: image bytes live on Google Drive, not Supabase Storage */
+  #akun .badai-profile-avatar-card{
+    margin:0 0 12px;padding:14px;display:grid;grid-template-columns:68px minmax(0,1fr) auto;
+    align-items:center;gap:12px;border:1px solid #292929;border-radius:18px;background:#101010
+  }
+  #akun .badai-profile-avatar-preview{
+    width:68px;height:68px;display:grid;place-items:center;overflow:hidden;border-radius:999px;
+    border:2px solid #ff4fa3;background:#26343c;color:#fff;font-size:22px!important;font-weight:700!important
+  }
+  #akun .badai-profile-avatar-preview img{width:100%;height:100%;object-fit:cover}
+  #akun .badai-profile-avatar-copy{min-width:0;display:grid;gap:4px}
+  #akun .badai-profile-avatar-copy b{color:#fff;font-size:14px!important;font-weight:700!important}
+  #akun .badai-profile-avatar-copy span{color:#8f8f8f;font-size:10px!important;line-height:1.4}
+  #akun .badai-profile-avatar-actions{display:flex;align-items:center;gap:7px}
+  #akun .badai-profile-avatar-btn{
+    min-height:38px;padding:0 12px;border:0;border-radius:11px;background:#ff4fa3;color:#111;
+    font-size:10px!important;font-weight:800!important;cursor:pointer
+  }
+  #akun .badai-profile-avatar-btn:disabled{opacity:.55;cursor:wait}
+  #akun .badai-profile-avatar-status{grid-column:2/-1;color:#8696a0;font-size:9px!important;line-height:1.35}
+  #akun .badai-profile-avatar-status.ok{color:#72d79a}
+  #akun .badai-profile-avatar-status.err{color:#ff9292}
+  @media(max-width:520px){
+    #akun .badai-profile-avatar-card{grid-template-columns:58px minmax(0,1fr);gap:10px}
+    #akun .badai-profile-avatar-preview{width:58px;height:58px}
+    #akun .badai-profile-avatar-actions{grid-column:2}
+    #akun .badai-profile-avatar-status{grid-column:1/-1}
+  }
+
   @media(prefers-reduced-motion:reduce){
     .screen.active,
     #mentor.mentor-chat-thread-mode .mentor-chat-card,
@@ -2138,6 +2171,99 @@ document.addEventListener('DOMContentLoaded', function(){
   function el(id){return document.getElementById(id)}
   function memberSession(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')}catch(_){return null}}
 
+
+  function badaiAvatarInitials(name){
+    return String(name||'M').trim().split(/\s+/).slice(0,2).map(function(x){return x.charAt(0)}).join('').toUpperCase()||'M'
+  }
+  function badaiAvatarPreview(url,name){
+    var node=el('badaiProfileAvatarPreview');if(!node)return;
+    if(url){
+      node.innerHTML='<img src="'+mentorEsc(url)+'" alt="Foto profil" loading="lazy">';
+    }else{
+      node.textContent=badaiAvatarInitials(name)
+    }
+  }
+  function badaiAvatarStatus(message,type){
+    var node=el('badaiProfileAvatarStatus');if(!node)return;
+    node.textContent=message||'';
+    node.classList.remove('ok','err');
+    if(type)node.classList.add(type)
+  }
+  function badaiLoadImage(file){
+    if(window.createImageBitmap)return createImageBitmap(file);
+    return new Promise(function(resolve,reject){
+      var img=new Image(),url=URL.createObjectURL(file);
+      img.onload=function(){URL.revokeObjectURL(url);resolve(img)};
+      img.onerror=function(){URL.revokeObjectURL(url);reject(new Error('Foto tidak dapat dibaca.'))};
+      img.src=url
+    })
+  }
+  async function badaiCompressAvatar(file){
+    if(!file||!String(file.type||'').startsWith('image/'))throw new Error('Pilih file foto.');
+    if(file.size>12*1024*1024)throw new Error('Foto awal maksimal 12 MB.');
+    var img=await badaiLoadImage(file);
+    var w=img.width||img.naturalWidth||0,h=img.height||img.naturalHeight||0;
+    if(!w||!h)throw new Error('Ukuran foto tidak terbaca.');
+    var side=Math.min(w,h),sx=(w-side)/2,sy=(h-side)/2;
+    var canvas=document.createElement('canvas');canvas.width=256;canvas.height=256;
+    var ctx=canvas.getContext('2d',{alpha:false});
+    ctx.drawImage(img,sx,sy,side,side,0,0,256,256);
+    if(img.close)try{img.close()}catch(_){}
+    var blob=await new Promise(function(resolve){canvas.toBlob(resolve,'image/webp',0.82)});
+    if(!blob)throw new Error('Gagal mengecilkan foto.');
+    return new File([blob],'avatar.webp',{type:'image/webp'})
+  }
+  async function badaiLoadMyAvatar(){
+    var s=memberSession();
+    if(!s||!s.access_token||!s.user||!s.user.id)return;
+    try{
+      var response=await fetch(SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(s.user.id)+'&select=full_name,avatar_url',{
+        headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+s.access_token}
+      });
+      var rows=await response.json().catch(function(){return []});
+      var row=Array.isArray(rows)?rows[0]:null;
+      badaiAvatarPreview(row&&row.avatar_url,row&&row.full_name)
+    }catch(_){}
+  }
+  function ensureProfileAvatarEditor(){
+    var account=el('akun');if(!account||el('badaiProfileAvatarCard'))return;
+    var form=account.querySelector('.account-card');if(!form)return;
+    var card=document.createElement('div');
+    card.id='badaiProfileAvatarCard';card.className='badai-profile-avatar-card';
+    card.innerHTML=
+      '<div id="badaiProfileAvatarPreview" class="badai-profile-avatar-preview">M</div>'+
+      '<div class="badai-profile-avatar-copy"><b>Foto Profil</b><span>Tampil di Grup BADAI. Foto otomatis dikecilkan agar ringan.</span></div>'+
+      '<div class="badai-profile-avatar-actions"><button id="badaiProfileAvatarBtn" type="button" class="badai-profile-avatar-btn">GANTI FOTO</button><input id="badaiProfileAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>'+
+      '<div id="badaiProfileAvatarStatus" class="badai-profile-avatar-status">Disimpan di Google Drive BADAI, bukan Supabase Storage.</div>';
+    form.parentNode.insertBefore(card,form);
+    var btn=el('badaiProfileAvatarBtn'),input=el('badaiProfileAvatarInput');
+    btn.addEventListener('click',function(){input.click()});
+    input.addEventListener('change',async function(){
+      var file=input.files&&input.files[0];if(!file)return;
+      btn.disabled=true;badaiAvatarStatus('Memproses foto...');
+      try{
+        var compressed=await badaiCompressAvatar(file);
+        badaiAvatarStatus('Mengunggah foto...');
+        var s=memberSession();
+        if(!s||!s.access_token)throw new Error('Sesi login habis. Silakan login ulang.');
+        var fd=new FormData();fd.append('file',compressed,'avatar.webp');
+        var response=await fetch('/api/profile/avatar',{method:'POST',headers:{Authorization:'Bearer '+s.access_token},body:fd});
+        var data=await response.json().catch(function(){return {}});
+        if(!response.ok)throw new Error(data.error||'Upload foto gagal.');
+        badaiAvatarPreview(data.avatar_url,(s.user.user_metadata&&s.user.user_metadata.full_name)||'Member');
+        badaiAvatarStatus('Foto profil sudah diperbarui.','ok');
+        communityParticipantsLoaded=false;
+        loadCommunityParticipants(true).catch(function(){});
+        if(mentorSelectedChat==='group')loadCommunityMessages('group').catch(function(){})
+      }catch(err){
+        badaiAvatarStatus(err.message||'Upload foto gagal.','err')
+      }finally{
+        btn.disabled=false;input.value=''
+      }
+    });
+    badaiLoadMyAvatar()
+  }
+
   var kelas=el('kelas');
   if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-intro"><div class="badai-pemula-intro-title-row"><div class="badai-pemula-intro-title">MEMBER <span>PEMULA</span></div><span class="badai-pemula-update-badge">SELALU UPDATE</span></div><div class="badai-pemula-intro-marquee" aria-label="SEMUA MATERI akan terus diperbarui dan disesuaikan dengan perkembangan AI terbaru. Jadi materi yang dipelajari mengikuti update AI terkini."><div class="badai-pemula-intro-track"><span class="badai-pemula-intro-item">SEMUA MATERI akan terus diperbarui dan disesuaikan dengan perkembangan AI terbaru. Jadi materi yang dipelajari mengikuti update AI terkini.</span><span class="badai-pemula-intro-item" aria-hidden="true">SEMUA MATERI akan terus diperbarui dan disesuaikan dengan perkembangan AI terbaru. Jadi materi yang dipelajari mengikuti update AI terkini.</span></div></div></div><div class="badai-pemula-heading-actions"><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
   var bonus=el('jaluruntung');
@@ -2148,6 +2274,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var accountDesc=akun.querySelector('.account-head p');
     if(accountTitle)accountTitle.textContent='Akun BADAI';
     if(accountDesc)accountDesc.textContent='Kelola data dan keamanan akun Member BADAI.';
+    ensureProfileAvatarEditor();
   }
 
   var pemulaMaterials=[
@@ -2574,7 +2701,7 @@ document.addEventListener('DOMContentLoaded', function(){
   async function loadCommunityParticipants(force){
     if(communityParticipantsLoaded&&!force)return communityParticipants;
     try{
-      var rows=await mentorFetch('/rest/v1/rpc/community_chat_participants',{method:'POST',body:JSON.stringify({p_query:null,p_limit:300})});
+      var rows=await mentorFetch('/rest/v1/rpc/community_chat_participants_v2',{method:'POST',body:JSON.stringify({p_query:null,p_limit:300})});
       communityParticipants=Array.isArray(rows)?rows:[];
       communityParticipantsLoaded=true
     }catch(_){communityParticipants=[]}
@@ -2645,8 +2772,11 @@ document.addEventListener('DOMContentLoaded', function(){
     communityMentionIndex=Math.min(communityMentionIndex,items.length-1);
     picker.innerHTML=items.map(function(p,i){
       var initials=String(p.display_name||'M').trim().split(/\\s+/).slice(0,2).map(function(x){return x.charAt(0)}).join('').toUpperCase();
+      var avatar=p.avatar_url
+        ? '<span class="mentor-mention-avatar has-photo"><img src="'+mentorEsc(p.avatar_url)+'" alt="" loading="lazy"></span>'
+        : '<span class="mentor-mention-avatar">'+mentorEsc(initials||'M')+'</span>';
       return '<button type="button" class="mentor-mention-item '+(i===communityMentionIndex?'active':'')+'" data-community-mention-index="'+i+'">'+
-        '<span class="mentor-mention-avatar">'+mentorEsc(initials||'M')+'</span>'+
+        avatar+
         '<span class="mentor-mention-copy"><b>'+mentorEsc(p.display_name||'Member BADAI')+'</b><small>'+mentorEsc(p.subtitle||'Member BADAI')+'</small></span>'+
       '</button>'
     }).join('');
@@ -2950,7 +3080,10 @@ document.addEventListener('DOMContentLoaded', function(){
       if(slug==='group'&&!own){
         var senderInitial=String(senderName||'M').trim().charAt(0).toUpperCase()||'M';
         var tone=communitySenderTone(senderName);
-        html+='<div class="mentor-group-message-row"><div class="mentor-group-initial '+tone+'">'+mentorEsc(senderInitial)+'</div>'+bubble+'</div>'
+        var avatar=m.sender_avatar_url
+          ? '<div class="mentor-group-initial has-photo"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
+          : '<div class="mentor-group-initial '+tone+'">'+mentorEsc(senderInitial)+'</div>';
+        html+='<div class="mentor-group-message-row">'+avatar+bubble+'</div>'
       }else html+=bubble
     });
     list.innerHTML=html;
@@ -2961,7 +3094,7 @@ document.addEventListener('DOMContentLoaded', function(){
   async function loadCommunityMessages(slug){
     if(!slug||slug==='mentor')return;
     if(slug==='group')await loadCommunityParticipants(false);
-    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
+    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list_v2',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
     renderCommunityMessages(rows||[],slug);
     if(mentorView==='thread'){
       await mentorFetch('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(function(){});
