@@ -3478,6 +3478,128 @@ th,td{padding:14px 12px!important}
 #pageMentor .mentor-inbox-head button,
 #pageMentor .mentor-thread-head button{border-color:#34534a!important;background:#14251f!important;color:#77d7b0!important}
 
+/* CHAT MEMBER PHONE PREVIEW — desktop/tablet */
+@media(min-width:761px){
+  #pageMentor .mentor-admin-layout{
+    grid-template-columns:minmax(280px,340px) minmax(410px,1fr)!important;
+    gap:22px!important;
+    align-items:start;
+  }
+  #pageMentor .mentor-inbox-panel{
+    height:clamp(620px,76vh,780px);
+    display:flex;
+    flex-direction:column;
+    border-radius:18px!important;
+    box-shadow:0 18px 48px rgba(0,0,0,.28);
+  }
+  #pageMentor .mentor-inbox-list{
+    flex:1;
+    min-height:0;
+    max-height:none!important;
+  }
+  #pageMentor .mentor-thread-panel{
+    position:relative;
+    justify-self:center;
+    width:min(390px,100%);
+    height:clamp(620px,76vh,780px);
+    min-height:0!important;
+    border:10px solid #050607!important;
+    border-radius:44px!important;
+    outline:1px solid #343a3f;
+    overflow:hidden!important;
+    box-sizing:border-box;
+    box-shadow:
+      0 28px 80px rgba(0,0,0,.58),
+      0 0 0 2px #111518,
+      inset 0 0 0 1px rgba(255,255,255,.04);
+    background:var(--wa-bg)!important;
+  }
+  #pageMentor .mentor-thread-panel::before{
+    content:"";
+    position:absolute;
+    z-index:25;
+    top:7px;
+    left:50%;
+    width:104px;
+    height:24px;
+    transform:translateX(-50%);
+    border-radius:999px;
+    background:#050607;
+    box-shadow:inset 0 0 0 1px #111518,0 1px 3px rgba(0,0,0,.55);
+    pointer-events:none;
+  }
+  #pageMentor .mentor-thread-panel::after{
+    content:"";
+    position:absolute;
+    z-index:26;
+    top:15px;
+    left:calc(50% + 34px);
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#17272f;
+    box-shadow:0 0 0 1px #0b1115;
+    pointer-events:none;
+  }
+  #pageMentor #mentorThreadView:not(.hidden){
+    display:flex!important;
+    flex-direction:column;
+    height:100%;
+    min-height:0;
+  }
+  #pageMentor .mentor-thread-head{
+    flex:0 0 auto;
+    min-height:76px!important;
+    padding:24px 10px 8px!important;
+    box-sizing:border-box;
+  }
+  #pageMentor .mentor-thread-empty{
+    height:100%;
+    min-height:0!important;
+    align-content:center;
+    padding:56px 26px 26px;
+    box-sizing:border-box;
+  }
+  #pageMentor .mentor-admin-message-wrap{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;
+    position:relative;
+  }
+  #pageMentor .mentor-admin-messages{
+    flex:1 1 auto;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+  }
+  #pageMentor .mentor-admin-stickers,
+  #pageMentor .mentor-admin-attach-menu,
+  #pageMentor .mentor-admin-pending,
+  #pageMentor .mentor-admin-composer,
+  #pageMentor #mentorAdminNote{flex:0 0 auto}
+  #pageMentor .mentor-admin-stickers{
+    max-width:100%;
+    scrollbar-width:none;
+  }
+  #pageMentor .mentor-admin-stickers::-webkit-scrollbar{display:none}
+}
+
+/* On a real phone, remove the fake phone shell */
+@media(max-width:760px){
+  #pageMentor .mentor-thread-panel{
+    width:100%;
+    height:auto;
+    min-height:0!important;
+    border-width:1px!important;
+    border-radius:14px!important;
+    outline:0;
+    box-shadow:none;
+  }
+  #pageMentor .mentor-thread-panel::before,
+  #pageMentor .mentor-thread-panel::after{display:none}
+  #pageMentor #mentorThreadView:not(.hidden){height:auto}
+}
+
 .account-admin-logout{
   margin-top:12px;padding:16px 18px;border:1px solid #402126;border-radius:16px;
   background:linear-gradient(180deg,#140d0e,#0d090a);display:flex;align-items:center;
