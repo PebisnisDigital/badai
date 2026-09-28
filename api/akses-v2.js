@@ -2343,6 +2343,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorSelectedChat='mentor';
   var communityOverviewMap=new Map();
   var communityUnreadTotal=0;
+  var communityOverviewBusy=false;
   var mentorDraftKey='badai_mentor_draft';
   var mentorMemberPresenceLastTouch=0;
 
@@ -2606,6 +2607,8 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   async function refreshCommunityOverview(){
+    if(communityOverviewBusy)return;
+    communityOverviewBusy=true;
     try{
       var rows=await mentorFetch('/rest/v1/rpc/community_chat_overview',{method:'POST',body:'{}'});
       communityOverviewMap=new Map((rows||[]).map(function(x){return [x.channel_slug,x]}));
@@ -2620,6 +2623,7 @@ document.addEventListener('DOMContentLoaded', function(){
       });
       renderTotalChatUnread()
     }catch(_){}
+    finally{communityOverviewBusy=false}
   }
 
   function mentorChatInfoData(){
@@ -3037,17 +3041,33 @@ document.addEventListener('DOMContentLoaded', function(){
     var jump=el('mentorJumpLatest');if(jump)jump.classList.toggle('hidden',mentorNearBottom(messageList))
   });
 
+  function refreshAllChatUnread(){
+    if(document.visibilityState!=='visible')return;
+    refreshMentorOverview().catch(function(){});
+    refreshCommunityOverview().catch(function(){});
+  }
+
   mentorPollTimer=setInterval(function(){
+    if(document.visibilityState!=='visible')return;
+
+    /* Unread badge is global: update it even while member is on Pemula/Untung/Afiliasi/Akun. */
+    refreshAllChatUnread();
+
     var screen=el('mentor');
-    if(screen&&screen.classList.contains('active')&&document.visibilityState==='visible'){
+    if(screen&&screen.classList.contains('active')){
       touchMentorMemberPresence(false);
-      refreshMentorOverview().catch(function(){});refreshCommunityOverview().catch(function(){});
       if(mentorView==='thread'&&mentorSelectedChat!=='mentor')loadCommunityMessages(mentorSelectedChat).catch(function(){});
       else if(mentorConversationId)loadMentorMessages().catch(function(){});else bootMentor()
     }
-  },2500);
-  setInterval(function(){if(document.visibilityState==='visible')refreshMentorOverview().catch(function(){})},8000);
-  setTimeout(function(){refreshMentorOverview().catch(function(){});refreshCommunityOverview().catch(function(){})},1200);
+  },2000);
+
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible')refreshAllChatUnread()
+  });
+  window.addEventListener('focus',refreshAllChatUnread);
+
+  setTimeout(refreshAllChatUnread,350);
+  setTimeout(refreshAllChatUnread,1200);
 
 
   setupAffiliateTabs();syncPlanAccess();setTimeout(resolveRealPlan,250);setTimeout(resolveRealPlan,1500);setTimeout(function(){bootAffiliate(0)},350);
