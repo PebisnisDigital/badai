@@ -1383,6 +1383,44 @@ module.exports = async function handler(req, res) {
   }
 
 
+  /* Chat management menu + multi-delete */
+  .mentor-wa-person{flex:1 1 auto!important}
+  .mentor-chat-more{
+    flex:0 0 38px;width:38px;height:38px;display:grid;place-items:center;border:0;border-radius:999px;
+    background:transparent;color:#d1d7db;font-size:25px;line-height:1;cursor:pointer
+  }
+  .mentor-chat-more:hover{background:#202c33}
+  .mentor-chat-manage-menu{
+    position:absolute;right:9px;top:55px;z-index:120;width:210px;padding:6px;
+    border:1px solid #2b3942;border-radius:11px;background:#202c33;
+    box-shadow:0 14px 36px rgba(0,0,0,.46)
+  }
+  .mentor-chat-manage-menu.hidden{display:none}
+  .mentor-chat-manage-menu button{
+    width:100%;min-height:42px;padding:0 11px;display:flex;align-items:center;gap:10px;border:0;border-radius:8px;
+    background:transparent;color:#e9edef;text-align:left;font:750 11px/1.2 "Nunito",Arial,sans-serif;cursor:pointer
+  }
+  .mentor-chat-manage-menu button:hover{background:#2a3942}
+  .mentor-chat-manage-menu button.danger{color:#ff9aa8}
+  .mentor-chat-select-bar{
+    position:absolute;left:8px;right:8px;top:62px;z-index:110;min-height:46px;padding:6px 8px;
+    display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:8px;
+    border:1px solid #31444e;border-radius:11px;background:#202c33;box-shadow:0 8px 24px rgba(0,0,0,.35)
+  }
+  .mentor-chat-select-bar.hidden{display:none}
+  .mentor-chat-select-bar button{min-height:34px;border:0;border-radius:9px;background:#2a3942;color:#e9edef;font-weight:900;cursor:pointer}
+  .mentor-chat-select-bar .delete-selected{padding:0 12px;background:#ff4fa3;color:#111}
+  .mentor-chat-select-bar b{font-size:11px;color:#e9edef}
+  .mentor-chat-card.chat-select-mode .mentor-msg[data-message-id]{cursor:pointer!important;outline:1px solid transparent}
+  .mentor-chat-card.chat-select-mode .mentor-msg[data-message-id]::after{
+    content:"";position:absolute;right:-9px;top:-8px;width:18px;height:18px;border:2px solid #8696a0;border-radius:999px;background:#0b141a;box-sizing:border-box
+  }
+  .mentor-chat-card.chat-select-mode .mentor-msg[data-message-id].chat-selected{outline:2px solid #ff4fa3!important}
+  .mentor-chat-card.chat-select-mode .mentor-msg[data-message-id].chat-selected::after{
+    content:"✓";display:grid;place-items:center;border-color:#ff4fa3;background:#ff4fa3;color:#111;font-size:10px;font-weight:950
+  }
+  .mentor-chat-card.chat-select-mode .mentor-bubble-menu-btn{display:none!important}
+
   /* Mentor chat: familiar WhatsApp-style behavior, BADAI visual identity */
   .mentor-chat-card{position:relative;border-radius:15px!important;background:#0b0b0b!important;border:1px solid #292929!important;overflow:hidden!important}
   .mentor-wa-head{height:58px;display:flex;align-items:center;gap:10px;padding:8px 11px;border-bottom:1px solid #242424;background:#121212}
@@ -3091,13 +3129,13 @@ document.addEventListener('DOMContentLoaded', function(){
       var reactions=mentorReactionHtml(state);
       var animateMsg=!mentorAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAnimatedMessageIds.add(m.id);
-      html+='<div id="mentor-msg-'+mentorEsc(m.id)+'" class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'" data-message-id="'+mentorEsc(m.id)+'">'+
+      html+='<div id="mentor-msg-'+mentorEsc(m.id)+'" class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorChatSelectedIds.has(String(m.id))?' chat-selected':'')+'" data-message-id="'+mentorEsc(m.id)+'">'+
         '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+mentorEsc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
         (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
         '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+receipt+'</div>'+
         (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>'
     });
-    list.innerHTML=html;
+    list.innerHTML=html;updateMentorChatSelectionUi();
     if(mentorInitialRender||wasNear){mentorScrollBottom(true)}
     else if(hadMessages){el('mentorJumpLatest')&&el('mentorJumpLatest').classList.remove('hidden')}
     mentorInitialRender=false
@@ -3203,7 +3241,87 @@ document.addEventListener('DOMContentLoaded', function(){
     setTimeout(function(){panel.classList.add('hidden');panel.classList.remove('closing');panel.setAttribute('aria-hidden','true')},260)
   }
 
+  var mentorChatSelectMode=false;
+  var mentorChatSelectedIds=new Set();
+
+  function mentorCurrentManageScope(){
+    if(mentorSelectedChat==='announcement'||mentorSelectedChat==='group'){
+      return {kind:'community',key:mentorSelectedChat}
+    }
+    if(mentorSelectedChat==='mentor'&&mentorConversationId){
+      return {kind:'mentor',key:String(mentorConversationId)}
+    }
+    return null
+  }
+
+  function ensureMentorChatManageUi(){
+    var card=el('mentorChatCard');if(!card)return;
+    var menu=el('mentorChatManageMenu');
+    if(!menu){
+      menu=document.createElement('div');
+      menu.id='mentorChatManageMenu';menu.className='mentor-chat-manage-menu hidden';
+      menu.innerHTML='<button type="button" data-chat-manage="clear" class="danger">⌫ <span>Bersihkan semua chat</span></button>'+
+        '<button type="button" data-chat-manage="select">☑ <span>Hapus beberapa chat</span></button>';
+      card.appendChild(menu)
+    }
+    var bar=el('mentorChatSelectBar');
+    if(!bar){
+      bar=document.createElement('div');bar.id='mentorChatSelectBar';bar.className='mentor-chat-select-bar hidden';
+      bar.innerHTML='<button type="button" id="mentorChatSelectCancel">×</button><b><span id="mentorChatSelectedCount">0</span> pesan dipilih</b><button type="button" id="mentorChatDeleteSelected" class="delete-selected">HAPUS</button>';
+      card.appendChild(bar)
+    }
+  }
+
+  function updateMentorChatSelectionUi(){
+    ensureMentorChatManageUi();
+    var card=el('mentorChatCard'),bar=el('mentorChatSelectBar'),count=el('mentorChatSelectedCount');
+    if(card)card.classList.toggle('chat-select-mode',mentorChatSelectMode);
+    if(bar)bar.classList.toggle('hidden',!mentorChatSelectMode);
+    if(count)count.textContent=String(mentorChatSelectedIds.size);
+    document.querySelectorAll('#mentorMessageList .mentor-msg[data-message-id]').forEach(function(node){
+      node.classList.toggle('chat-selected',mentorChatSelectedIds.has(node.getAttribute('data-message-id')))
+    })
+  }
+
+  function closeMentorChatManageMenu(){
+    var menu=el('mentorChatManageMenu');if(menu)menu.classList.add('hidden')
+  }
+
+  function exitMentorChatSelection(){
+    mentorChatSelectMode=false;mentorChatSelectedIds.clear();updateMentorChatSelectionUi()
+  }
+
+  async function reloadManagedMemberChat(){
+    mentorLastKey='';
+    if(mentorSelectedChat==='announcement'||mentorSelectedChat==='group'){
+      await loadCommunityMessages(mentorSelectedChat);await refreshCommunityOverview()
+    }else if(mentorConversationId){
+      await loadMentorMessages();await refreshMentorOverview()
+    }
+  }
+
+  async function clearCurrentMemberChat(){
+    var scope=mentorCurrentManageScope();
+    if(!scope){mentorToast('Chat belum siap.');return}
+    if(!window.confirm('Bersihkan semua chat ini dari tampilan akun kamu? Pesan baru setelah ini tetap akan muncul.'))return;
+    await mentorFetch('/rest/v1/rpc/chat_clear_for_me',{method:'POST',body:JSON.stringify({p_scope_kind:scope.kind,p_scope_key:scope.key})});
+    exitMentorChatSelection();closeMentorChatManageMenu();mentorLastKey='';
+    await reloadManagedMemberChat();
+    mentorToast('Chat sudah dibersihkan dari akun kamu')
+  }
+
+  async function deleteSelectedMemberChat(){
+    if(!mentorChatSelectedIds.size){mentorToast('Pilih minimal satu pesan.');return}
+    var scope=mentorCurrentManageScope();if(!scope)return;
+    var ids=Array.from(mentorChatSelectedIds);
+    await mentorFetch('/rest/v1/rpc/chat_hide_messages_for_me',{method:'POST',body:JSON.stringify({p_scope_kind:scope.kind,p_message_ids:ids})});
+    exitMentorChatSelection();mentorLastKey='';
+    await reloadManagedMemberChat();
+    mentorToast(ids.length+' pesan dihapus dari tampilan')
+  }
+
   function setMemberChatChrome(kind){
+    if(mentorSelectedChat!==kind)exitMentorChatSelection();
     mentorSelectedChat=kind||'mentor';
     var avatar=el('mentorWaAvatar'),name=el('mentorWaName'),sub=el('mentorWaSubstatus');
     var composer=el('mentorComposer'),stickers=el('mentorStickerTray'),attach=el('mentorAttachMenu');
@@ -3266,7 +3384,7 @@ document.addEventListener('DOMContentLoaded', function(){
       else body='<div class="body mentor-wa-formatted">'+(slug==='group'?communityFormatText(m.body||''):mentorFormatText(m.body||''))+'</div>';
       var animateMsg=!mentorAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAnimatedMessageIds.add(m.id);
-      var bubble='<div class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+announcementHead+sender+body+
+      var bubble='<div id="mentor-msg-'+mentorEsc(m.id)+'" data-message-id="'+mentorEsc(m.id)+'" class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorChatSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+announcementHead+sender+body+
         '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own&&slug!=='announcement'?'<span class="mentor-receipt read">✓✓</span>':'')+'</div></div>';
       if(slug==='group'&&!own){
         var tone=communitySenderTone(senderName);
@@ -3278,7 +3396,7 @@ document.addEventListener('DOMContentLoaded', function(){
         html+='<div class="mentor-group-message-row">'+avatar+bubble+'</div>'
       }else html+=bubble
     });
-    list.innerHTML=html;
+    list.innerHTML=html;updateMentorChatSelectionUi();
     if(wasNear||mentorInitialRender)mentorScrollBottom(true);
     mentorInitialRender=false
   }
@@ -3286,7 +3404,7 @@ document.addEventListener('DOMContentLoaded', function(){
   async function loadCommunityMessages(slug){
     if(!slug||slug==='mentor')return;
     if(slug==='group')await loadCommunityParticipants(false);
-    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list_v3',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
+    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list_v4',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
     renderCommunityMessages(rows||[],slug);
     if(mentorView==='thread'){
       await mentorFetch('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(function(){});
@@ -3588,8 +3706,37 @@ document.addEventListener('DOMContentLoaded', function(){
   el('mentorPendingCancel')&&el('mentorPendingCancel').addEventListener('click',clearMentorPending);
   el('mentorReplyCancel')&&el('mentorReplyCancel').addEventListener('click',clearMentorReply);
 
+  ensureMentorChatManageUi();
+  var mentorMoreBtn=el('mentorChatMoreBtn');
+  if(mentorMoreBtn)mentorMoreBtn.addEventListener('click',function(e){
+    e.stopPropagation();ensureMentorChatManageUi();
+    var menu=el('mentorChatManageMenu');if(menu)menu.classList.toggle('hidden')
+  });
+  var manageMenu=el('mentorChatManageMenu');
+  if(manageMenu)manageMenu.addEventListener('click',async function(e){
+    var btn=e.target.closest?e.target.closest('[data-chat-manage]'):null;if(!btn)return;
+    var action=btn.getAttribute('data-chat-manage');
+    try{
+      if(action==='clear')await clearCurrentMemberChat();
+      if(action==='select'){closeMentorChatManageMenu();mentorChatSelectMode=true;mentorChatSelectedIds.clear();updateMentorChatSelectionUi()}
+    }catch(err){mentorToast(err.message||'Gagal mengatur chat.')}
+  });
+  el('mentorChatSelectCancel')&&el('mentorChatSelectCancel').addEventListener('click',exitMentorChatSelection);
+  el('mentorChatDeleteSelected')&&el('mentorChatDeleteSelected').addEventListener('click',async function(){
+    try{await deleteSelectedMemberChat()}catch(err){mentorToast(err.message||'Gagal menghapus pesan.')}
+  });
+
   var mentorMessageList=el('mentorMessageList');
   if(mentorMessageList)mentorMessageList.addEventListener('click',async function(e){
+    if(mentorChatSelectMode){
+      var selectable=e.target.closest?e.target.closest('.mentor-msg[data-message-id]'):null;
+      if(selectable){
+        e.preventDefault();e.stopPropagation();
+        var sid=selectable.getAttribute('data-message-id');
+        if(mentorChatSelectedIds.has(sid))mentorChatSelectedIds.delete(sid);else mentorChatSelectedIds.add(sid);
+        updateMentorChatSelectionUi();return
+      }
+    }
     var menuBtn=e.target.closest?e.target.closest('[data-mentor-message-menu]'):null;
     if(menuBtn){e.stopPropagation();openMentorMessageMenu(menuBtn,menuBtn.getAttribute('data-mentor-message-menu'));return}
     var chip=e.target.closest?e.target.closest('[data-mentor-react-chip]'):null;
@@ -3606,6 +3753,7 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 
   document.addEventListener('click',async function(e){
+    if(!(e.target.closest&&e.target.closest('#mentorChatManageMenu'))&&!(e.target.closest&&e.target.closest('#mentorChatMoreBtn')))closeMentorChatManageMenu();
     var menu=e.target.closest?e.target.closest('.mentor-message-menu'):null;
     if(menu&&mentorMessageMenu){
       var id=mentorMessageMenu.dataset.messageId;
