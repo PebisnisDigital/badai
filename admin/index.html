@@ -5855,6 +5855,7 @@ th,td{padding:14px 12px!important}
   let mentorConversations = [];
   let mentorActiveConversation = null;
   let mentorAdminPollTimer = null;
+  let mentorAdminUnreadBusy = false;
   let mentorAdminUnreadInitialized = false;
   let mentorAdminUnreadCount = 0;
   let mentorPresenceLastTouch = 0;
@@ -8523,7 +8524,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   async function refreshMentorAdminUnread(){
-    if(!allowedPages().includes('mentor'))return;
+    if(!allowedPages().includes('mentor')||mentorAdminUnreadBusy)return;
+    mentorAdminUnreadBusy=true;
     try{
       const results=await Promise.all([
         api('/rest/v1/rpc/admin_mentor_unread_total',{method:'POST',body:JSON.stringify({})}).catch(()=>[]),
@@ -8535,6 +8537,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const communityUnread=(communityRows||[]).reduce((sum,row)=>sum+Number(row?.unread_count||0),0);
       setMentorAdminUnread(dmUnread+communityUnread);
     }catch(_){}
+    finally{mentorAdminUnreadBusy=false}
   }
 
   async function touchMentorPresence(force=false){
@@ -9678,19 +9681,31 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   });
 
-  if(!mentorAdminPollTimer){
-    mentorAdminPollTimer=setInterval(()=>{
-      const page=$('pageMentor');
-      if(page&&!page.classList.contains('hidden')&&document.visibilityState==='visible'){
-        touchMentorPresence().catch(()=>{});
-        loadMentorInbox().catch(()=>{});
-      }
-    },2500);
+  function refreshAdminChatRealtime(){
+    if(document.visibilityState!=='visible')return;
+
+    /* Badge is global: keep it fresh on Penjualan/Keuangan/Marketing/Akun too. */
+    refreshMentorAdminUnread().catch(()=>{});
+
+    /* Heavy chat refresh only while Chat page is actually open. */
+    const page=$('pageMentor');
+    if(page&&!page.classList.contains('hidden')){
+      touchMentorPresence().catch(()=>{});
+      loadMentorInbox().catch(()=>{});
+    }
   }
-  setInterval(()=>{
-    if(document.visibilityState==='visible')refreshMentorAdminUnread().catch(()=>{});
-  },8000);
-  setTimeout(()=>refreshMentorAdminUnread().catch(()=>{}),1500);
+
+  if(!mentorAdminPollTimer){
+    mentorAdminPollTimer=setInterval(refreshAdminChatRealtime,2000);
+  }
+
+  window.addEventListener('focus',refreshAdminChatRealtime);
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible')refreshAdminChatRealtime();
+  });
+
+  setTimeout(refreshAdminChatRealtime,350);
+  setTimeout(refreshAdminChatRealtime,1200);
 
   function setMarketingCategoryTab(tab){
     document.querySelectorAll('[data-marketing-tab]').forEach(btn => {
