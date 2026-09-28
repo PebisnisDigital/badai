@@ -2054,7 +2054,7 @@ document.addEventListener('DOMContentLoaded', function(){
   renderMemberMaterials('profitRouteGrid',untungMaterials,'Materi Untung',11);
 
   [
-    ['kelas','Pemula','fi fi-rr-square-1'],['jaluruntung','Untung','fi fi-rr-square-2'],['afiliasi','Afiliasi','fi fi-rr-square-3'],['akun','Akun','fi fi-rr-square-4'],['mentor','Mentor','fi fi-rr-square-5']
+    ['kelas','Pemula','fi fi-rr-square-1'],['jaluruntung','Untung','fi fi-rr-square-2'],['afiliasi','Afiliasi','fi fi-rr-square-3'],['mentor','Chat','fi fi-rr-square-4'],['akun','Akun','fi fi-rr-square-5']
   ].forEach(function(menu){var button=document.querySelector('.footer [data-screen="'+menu[0]+'"]');if(!button)return;var label=button.querySelector('.label');var emoji=button.querySelector('.emoji');if(label)label.textContent=menu[1];if(emoji)emoji.innerHTML='<i class="'+menu[2]+'" aria-hidden="true"></i>'});
 
   function lockAffiliateNav(){
