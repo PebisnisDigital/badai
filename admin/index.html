@@ -4016,7 +4016,7 @@ th,td{padding:14px 12px!important}
 <div id="teamEditModal" class="cred-modal hidden">
   <div class="cred-box">
     <h2>Edit Akun Tim</h2>
-    <p id="teamEditHelp">Edit nama akun. Password hanya dapat diganti oleh pemilik akun sendiri.</p>
+    <p id="teamEditHelp">Edit nama akun dan password sesuai izin akunmu.</p>
     <input id="teamEditId" type="hidden"/>
     <div class="manage-grid">
       <div class="manage-field full">
@@ -4030,7 +4030,7 @@ th,td{padding:14px 12px!important}
       <div id="teamEditPasswordWrap" class="manage-field full">
         <label>Password Baru</label>
         <input id="teamEditPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti"/>
-        <div class="price-plan-note">Minimal 8 karakter. Hanya akun sendiri yang dapat mengganti password.</div>
+        <div class="price-plan-note">Minimal 8 karakter. Kosongkan jika password tidak ingin diganti.</div>
       </div>
     </div>
     <div id="teamEditStatus" class="team-status-note"></div>
@@ -6991,10 +6991,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('teamEditPassword').value = '';
     $('teamEditStatus').textContent = '';
 
-    $('teamEditPasswordWrap').classList.toggle('hidden', !isSelf);
+    const canManagerEdit = canManageTeamRow(row);
+    $('teamEditPasswordWrap').classList.toggle('hidden', !(isSelf || canManagerEdit));
     $('teamEditHelp').textContent = isSelf
       ? 'Kamu bisa mengganti nama dan password akunmu sendiri.'
-      : 'Owner / Super Admin dapat mengubah nama akun tim. Password hanya dapat diganti oleh pemilik akun sendiri.';
+      : 'Owner / Super Admin dapat mengganti nama dan password akun tim ini.';
 
     $('teamEditModal').classList.remove('hidden');
   }
@@ -7006,7 +7007,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
     const fullName = $('teamEditName').value.trim();
     const isSelf = row.auth_user_id === session?.user?.id;
-    const password = isSelf ? $('teamEditPassword').value : '';
+    const canManagerEdit = canManageTeamRow(row);
+    const password = (isSelf || canManagerEdit) ? $('teamEditPassword').value : '';
 
     if(!fullName) throw new Error('Nama wajib diisi.');
     if(password && password.length < 8) throw new Error('Password minimal 8 karakter.');
@@ -7019,26 +7021,33 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         body:JSON.stringify({p_full_name:fullName})
       });
 
-      if(password){
-        await api('/auth/v1/user', {
-          method:'PUT',
-          body:JSON.stringify({
-            password,
-            data:{full_name:fullName}
-          })
-        });
-      }
+      const authBody = {data:{full_name:fullName}};
+      if(password) authBody.password = password;
+      await api('/auth/v1/user', {
+        method:'PUT',
+        body:JSON.stringify(authBody)
+      });
 
       currentTeam.full_name = fullName;
     }else{
-      if(!canManageTeamRow(row)) throw new Error('Tidak punya izin mengedit akun ini.');
-      await api('/rest/v1/rpc/admin_update_team_name', {
+      if(!canManagerEdit) throw new Error('Tidak punya izin mengedit akun ini.');
+
+      const res = await fetch(SUPABASE_URL + '/functions/v1/admin-create-team-member', {
         method:'POST',
+        headers:{
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer ' + session.access_token,
+          'Content-Type':'application/json'
+        },
         body:JSON.stringify({
-          p_team_id:id,
-          p_full_name:fullName
+          action:'update',
+          team_id:id,
+          full_name:fullName,
+          password:password || ''
         })
       });
+      const data = await res.json().catch(()=>null);
+      if(!res.ok) throw new Error(data?.error || 'Gagal mengedit akun tim.');
     }
 
     $('teamEditStatus').textContent = '✓ Perubahan berhasil disimpan.';
