@@ -4342,6 +4342,19 @@ th,td{padding:14px 12px!important}
   flex:1 1 auto!important;
   min-height:0!important;
 }
+#pageMentor .mentor-inbox-home-back{
+  width:36px;height:36px;flex:0 0 36px;display:grid;place-items:center;
+  border:0!important;border-radius:999px!important;background:transparent!important;color:#d1d7db!important;
+  font-size:22px!important;font-weight:400!important
+}
+#pageMentor .mentor-inbox-home-back.hidden{display:none!important}
+#pageMentor .mentor-inbox-item.community .mentor-inbox-avatar{font-size:18px!important}
+#pageMentor .mentor-inbox-item.community.announcement .mentor-inbox-avatar{background:#59431a!important}
+#pageMentor .mentor-inbox-item.community.group .mentor-inbox-avatar{background:#174a3f!important}
+#pageMentor .mentor-community-sender{
+  margin:0 0 3px;color:#53bdeb;font-size:11px!important;font-weight:600!important
+}
+#pageMentor .mentor-admin-composer.hidden,#pageMentor .mentor-admin-icon.hidden,#pageMentor #claimMentorChatBtn.hidden{display:none!important}
 @media(max-width:760px){
   #pageMentor .mentor-admin-layout{
     height:calc(100dvh - 150px)!important;
@@ -4981,7 +4994,8 @@ th,td{padding:14px 12px!important}
       <div id="mentorAdminLayout" class="mentor-admin-layout">
         <aside class="mentor-inbox-panel">
           <div class="mentor-inbox-head">
-            <div><b>Chat</b><span id="mentorInboxCount">0 percakapan</span></div>
+            <button id="mentorInboxHomeBackBtn" class="mentor-inbox-home-back hidden" type="button" aria-label="Kembali ke daftar chat">←</button>
+            <div><b id="mentorInboxTitle">Chat</b><span id="mentorInboxCount">3 percakapan</span></div>
             <div class="mentor-inbox-head-actions">
               <button id="mentorInboxCollapseBtn" type="button" aria-expanded="true" title="Tutup daftar chat">‹</button>
               <button id="mentorUnreadFilterBtn" type="button" aria-pressed="false" title="Tampilkan yang belum dibaca">●</button>
@@ -5477,6 +5491,9 @@ th,td{padding:14px 12px!important}
   let mentorAdminUiState = new Map();
   let mentorAdminReply = null;
   let mentorAdminMessageMenu = null;
+  let mentorAdminScreen = 'home';
+  let mentorAdminCommunityChannel = '';
+  let mentorCommunityOverviewMap = new Map();
   let mentorInboxQuery = '';
   let mentorUnreadOnly = false;
   let currentFinanceType = 'profitloss';
@@ -8164,10 +8181,114 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       $('mentorThreadMeta').title=(row.member_email||'-')+' • '+(row.member_plan||'-');
     }
     if($('claimMentorChatBtn')){
+      $('claimMentorChatBtn').classList.remove('hidden');
       const mine=row.assigned_team_id===currentTeam?.id;
       $('claimMentorChatBtn').textContent=mine?'CHAT SAYA ✓':'AMBIL CHAT';
       $('claimMentorChatBtn').disabled=mine;
     }
+  }
+
+  function mentorAdminOverviewRow(slug){
+    return mentorCommunityOverviewMap.get(slug)||{};
+  }
+
+  async function loadMentorCommunityOverview(){
+    try{
+      const rows=await api('/rest/v1/rpc/community_chat_overview',{method:'POST',body:JSON.stringify({})})||[];
+      mentorCommunityOverviewMap=new Map(rows.map(x=>[x.channel_slug,x]));
+      return rows;
+    }catch(_){return []}
+  }
+
+  function renderMentorAdminHome(){
+    const list=$('mentorInboxList');if(!list)return;
+    const announcement=mentorAdminOverviewRow('announcement');
+    const group=mentorAdminOverviewRow('group');
+    const mentorUnread=mentorConversations.reduce((sum,row)=>sum+Number(row.unread_count||0),0);
+    const totalMentor=mentorConversations.length;
+    const items=[
+      {kind:'announcement',name:'PENGUMUMAN BADAI',avatar:'📢',preview:announcement.last_message||'Info resmi dari tim BADAI',time:announcement.last_message_at,unread:Number(announcement.unread_count||0),cls:'announcement'},
+      {kind:'mentor',name:'Mentor BADAI',avatar:'M',preview:totalMentor?totalMentor+' percakapan member':'Direct message member dengan Mentor BADAI',time:mentorConversations.reduce((v,r)=>!v||new Date(r.last_message_at||0)>new Date(v)?r.last_message_at:v,null),unread:mentorUnread,cls:''},
+      {kind:'group',name:'Grup BADAI',avatar:'G',preview:group.last_message||'Diskusi bersama semua member BADAI',time:group.last_message_at,unread:Number(group.unread_count||0),cls:'group'}
+    ];
+    const q=String(mentorInboxQuery||'').trim().toLowerCase();
+    const shown=items.filter(x=>!q||[x.name,x.preview].join(' ').toLowerCase().includes(q));
+    $('mentorInboxTitle').textContent='Chat';
+    $('mentorInboxCount').textContent='3 percakapan';
+    $('mentorInboxHomeBackBtn')?.classList.add('hidden');
+    $('mentorUnreadFilterBtn')?.classList.add('hidden');
+    $('refreshMentorInboxBtn')?.classList.remove('hidden');
+    list.innerHTML=shown.map(x=>
+      '<button type="button" class="mentor-inbox-item community '+esc(x.cls)+'" data-admin-chat-kind="'+esc(x.kind)+'">'+
+      '<div class="mentor-inbox-avatar">'+esc(x.avatar)+'</div>'+
+      '<div class="mentor-inbox-main"><div class="mentor-inbox-top"><b>'+esc(x.name)+'</b></div>'+
+      '<span class="mentor-inbox-preview">'+esc(x.preview)+'</span>'+
+      '<span class="mentor-inbox-assigned">'+(x.kind==='announcement'?'Satu arah':(x.kind==='mentor'?'Direct Message':'Diskusi member'))+'</span></div>'+
+      '<div class="mentor-inbox-side"><span class="mentor-inbox-time">'+esc(mentorInboxStamp(x.time))+'</span>'+
+      (x.unread>0?'<span class="mentor-unread">'+(x.unread>99?'99+':x.unread)+'</span>':'')+'</div></button>'
+    ).join('')||'<div class="mentor-inbox-empty">Chat tidak ditemukan.</div>';
+  }
+
+  function adminCommunityCanSend(slug){
+    if(slug==='announcement')return ['owner','super_admin','admin','mentor'].includes(currentTeam?.role);
+    return ['owner','super_admin','admin','mentor','sales','finance','marketing'].includes(currentTeam?.role);
+  }
+
+  function setAdminCommunityChrome(slug){
+    const announcement=slug==='announcement';
+    $('mentorThreadAvatar').textContent=announcement?'📢':'G';
+    $('mentorThreadName').textContent=announcement?'PENGUMUMAN BADAI':'Grup BADAI';
+    $('mentorThreadMeta').textContent=announcement?'Info resmi dari tim BADAI':'Diskusi semua member BADAI';
+    $('claimMentorChatBtn')?.classList.add('hidden');
+    $('mentorAdminReplyBar')?.classList.add('hidden');
+    $('mentorAdminAttachBtn')?.classList.add('hidden');
+    $('mentorAdminStickerBtn')?.classList.toggle('hidden',!adminCommunityCanSend(slug));
+    $('mentorAdminComposer')?.classList.toggle('hidden',!adminCommunityCanSend(slug));
+    if($('mentorAdminNote'))$('mentorAdminNote').textContent=announcement&&!adminCommunityCanSend(slug)?'Hanya Admin, Mentor, dan Super Admin yang dapat mengirim pengumuman.':'';
+  }
+
+  function renderAdminCommunityMessages(rows,slug){
+    const list=$('mentorAdminMessageList');if(!list)return;
+    const uid=session?.user?.id||'';let html='',lastDay='';
+    (rows||[]).forEach(m=>{
+      const day=mentorAdminDateKey(m.created_at);
+      if(day!==lastDay){html+='<div class="mentor-admin-date">'+mentorAdminDateLabel(m.created_at)+'</div>';lastDay=day}
+      const own=String(m.sender_user_id||'')===String(uid),side=own?'mentor':'member';
+      const sender=slug==='group'&&!own?'<div class="mentor-community-sender">'+esc(m.sender_name||'Member BADAI')+'</div>':'';
+      let body='';
+      if(m.message_type==='sticker')body='<div class="body">'+esc(m.sticker_key||'✨')+'</div>';
+      else body='<div class="body mentor-wa-formatted">'+mentorAdminFormatText(m.body||'')+'</div>';
+      html+='<div class="mentor-admin-msg '+side+' '+esc(m.message_type)+'">'+sender+body+
+        '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+(own?'<span class="mentor-admin-receipt read">✓✓</span>':'')+'</div></div>';
+    });
+    list.innerHTML=html||'<div class="empty">'+(slug==='announcement'?'Belum ada pengumuman.':'Belum ada pesan di Grup BADAI.')+'</div>';
+    mentorAdminScrollBottom(true)
+  }
+
+  async function loadAdminCommunityMessages(slug){
+    if(!slug)return;
+    const rows=await api('/rest/v1/rpc/community_chat_messages_list',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:150})})||[];
+    renderAdminCommunityMessages(rows,slug);
+    await api('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(()=>{});
+    await loadMentorCommunityOverview();
+  }
+
+  async function openAdminCommunityThread(slug){
+    mentorAdminScreen=slug;mentorAdminCommunityChannel=slug;mentorActiveConversation=null;
+    $('mentorAdminLayout')?.classList.add('thread-open');
+    $('mentorThreadEmpty')?.classList.add('hidden');$('mentorThreadView')?.classList.remove('hidden');
+    clearMentorAdminPending();clearMentorAdminReply();setAdminCommunityChrome(slug);
+    await loadAdminCommunityMessages(slug);
+    if(adminCommunityCanSend(slug))setTimeout(()=>$('mentorAdminInput')?.focus(),30)
+  }
+
+  async function sendAdminCommunityPayload(type,body,sticker){
+    const slug=mentorAdminCommunityChannel;if(!slug)return;
+    await api('/rest/v1/rpc/community_chat_send',{method:'POST',body:JSON.stringify({
+      p_channel_slug:slug,p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
+      p_drive_file_id:null,p_drive_web_view_link:null,p_file_name:null,p_file_mime:null,p_file_size:null
+    })});
+    await loadAdminCommunityMessages(slug);await loadMentorCommunityOverview();renderMentorAdminHome()
   }
 
   async function loadMentorInbox(){
@@ -8178,8 +8299,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         const fresh=mentorConversations.find(x=>x.conversation_id===mentorActiveConversation.conversation_id);
         if(fresh)mentorActiveConversation=fresh;
       }
+      await loadMentorCommunityOverview();
       renderMentorInbox();updateMentorThreadHeader();
-      setMentorAdminUnread(mentorConversations.reduce((sum,row)=>sum+Number(row.unread_count||0),0));
+      const communityUnread=Array.from(mentorCommunityOverviewMap.values()).reduce((sum,row)=>sum+Number(row.unread_count||0),0);
+      setMentorAdminUnread(mentorConversations.reduce((sum,row)=>sum+Number(row.unread_count||0),0)+communityUnread);
 
       const archiveRows=await api('/rest/v1/mentor_archive_batches?select=status&status=in.(pending,uploading,failed)&limit=100').catch(()=>[]);
       const pending=Array.isArray(archiveRows)?archiveRows.length:0;
@@ -8191,7 +8314,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         $('mentorConnectDriveBtn').disabled=!driveState?.oauth_client_configured;
         $('mentorConnectDriveBtn').textContent=driveState?.oauth_client_configured?'SAMBUNGKAN GOOGLE DRIVE':'BUTUH GOOGLE OAUTH';
       }
-      if(mentorActiveConversation)await loadMentorAdminMessages(false);
+      if(mentorAdminScreen==='mentor-thread'&&mentorActiveConversation)await loadMentorAdminMessages(false);
+      else if(['announcement','group'].includes(mentorAdminScreen))await loadAdminCommunityMessages(mentorAdminCommunityChannel);
     }catch(err){
       if($('mentorInboxList'))$('mentorInboxList').innerHTML='<div class="empty">✕ '+esc(err.message||'Gagal memuat Inbox Mentor.')+'</div>';
     }
@@ -8209,6 +8333,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function renderMentorInbox(){
     const list=$('mentorInboxList');if(!list)return;
+    if(mentorAdminScreen==='home'){renderMentorAdminHome();return}
+    $('mentorInboxTitle').textContent='Mentor BADAI';
+    $('mentorInboxHomeBackBtn')?.classList.remove('hidden');
+    $('mentorUnreadFilterBtn')?.classList.remove('hidden');
     const query=String(mentorInboxQuery||'').trim().toLowerCase();
     const rows=mentorConversations.filter(row=>{
       if(mentorUnreadOnly&&Number(row.unread_count||0)<1)return false;
@@ -8247,7 +8375,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function openMentorConversation(id){
     const row=mentorConversations.find(x=>x.conversation_id===id);if(!row)return;
-    mentorActiveConversation=row;mentorAdminLastKey='';mentorAdminInitialRender=true;renderMentorInbox();
+    mentorAdminScreen='mentor-thread';mentorActiveConversation=row;mentorAdminLastKey='';mentorAdminInitialRender=true;renderMentorInbox();
     $('mentorAdminLayout')?.classList.add('thread-open');
     $('mentorThreadEmpty')?.classList.add('hidden');$('mentorThreadView')?.classList.remove('hidden');updateMentorThreadHeader();
     clearMentorAdminPending();
@@ -8876,13 +9004,31 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   });
 
   $('mentorInboxList')?.addEventListener('click',e=>{
+    const channel=e.target.closest('[data-admin-chat-kind]');
+    if(channel){
+      const kind=channel.dataset.adminChatKind;
+      if(kind==='mentor'){
+        mentorAdminScreen='mentor-list';mentorInboxQuery='';if($('mentorInboxSearch'))$('mentorInboxSearch').value='';
+        renderMentorInbox()
+      }else openAdminCommunityThread(kind);
+      return;
+    }
     const btn=e.target.closest('[data-mentor-conversation]');
     if(btn)openMentorConversation(btn.dataset.mentorConversation);
   });
 
+  $('mentorInboxHomeBackBtn')?.addEventListener('click',()=>{
+    mentorAdminScreen='home';mentorInboxQuery='';mentorUnreadOnly=false;
+    if($('mentorInboxSearch'))$('mentorInboxSearch').value='';
+    renderMentorInbox()
+  });
+
   $('mentorThreadBackBtn')?.addEventListener('click',()=>{
-    mentorAdminSetTyping(false);
+    mentorAdminSetTyping(false);closeMentorAdminMessageMenu();clearMentorAdminReply();
     $('mentorAdminLayout')?.classList.remove('thread-open');
+    if(mentorAdminScreen==='mentor-thread')mentorAdminScreen='mentor-list';
+    else mentorAdminScreen='home';
+    mentorAdminCommunityChannel='';renderMentorInbox();
   });
 
   $('claimMentorChatBtn')?.addEventListener('click',async()=>{
@@ -8898,7 +9044,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   document.querySelectorAll('[data-admin-mentor-sticker]').forEach(btn=>{
     btn.addEventListener('click',async()=>{
       try{
-        await sendMentorAdminPayload('sticker',null,btn.dataset.adminMentorSticker,null);
+        if(['announcement','group'].includes(mentorAdminScreen))await sendAdminCommunityPayload('sticker',null,btn.dataset.adminMentorSticker);
+        else await sendMentorAdminPayload('sticker',null,btn.dataset.adminMentorSticker,null);
         $('mentorAdminStickerTray')?.classList.add('hidden');
       }catch(err){mentorAdminToast(err.message||'Stiker gagal dikirim.')}
     });
@@ -8946,6 +9093,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         const uploaded=await uploadMentorAdminFile(pending);
         await sendMentorAdminPayload(pending.type?.startsWith('image/')?'image':'file',value,null,uploaded);
         clearMentorAdminPending();
+      }else if(['announcement','group'].includes(mentorAdminScreen)){
+        await sendAdminCommunityPayload('text',value,null);
       }else{
         await sendMentorAdminPayload('text',value,null,null);
       }
