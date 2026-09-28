@@ -3310,6 +3310,14 @@ th,td{padding:14px 12px!important}
 .mentor-admin-msg .time{justify-self:end;font-size:6px;opacity:.55}
 .mentor-admin-msg.sticker .body{font-size:28px}
 .mentor-admin-msg a{color:inherit;text-decoration:underline}
+.mentor-admin-image{display:grid;gap:5px;text-decoration:none!important}
+.mentor-admin-image img{display:block;width:min(260px,100%);max-height:280px;object-fit:cover;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:#111}
+.mentor-admin-image span{font-size:7px;font-weight:900;opacity:.8}
+#tabMentor{position:relative}
+.mentor-tab-badge{position:absolute;top:4px;right:8px;min-width:17px;height:17px;padding:0 4px;display:grid;place-items:center;border:2px solid #080808;border-radius:999px;background:#ff4fa3;color:#111;font-size:7px;font-weight:950;box-sizing:border-box}
+.mentor-tab-badge.hidden{display:none}
+.mentor-admin-toast{position:fixed;right:18px;bottom:18px;z-index:9999;max-width:min(360px,calc(100vw - 36px));padding:11px 13px;border:1px solid #65324d;border-radius:12px;background:#180f15;color:#fff;box-shadow:0 16px 42px rgba(0,0,0,.45);font-size:9px;font-weight:850;line-height:1.45;opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s ease}
+.mentor-admin-toast.show{opacity:1;transform:translateY(0)}
 .mentor-admin-stickers{display:flex;gap:5px;padding:7px 8px;border-top:1px solid #242424;overflow:auto}
 .mentor-admin-stickers.hidden{display:none}
 .mentor-admin-stickers button{width:34px;height:34px;border:1px solid #303030;border-radius:9px;background:#151515;font-size:18px}
@@ -3382,6 +3390,7 @@ th,td{padding:14px 12px!important}
       <button id="tabMentor" class="admin-tab" data-page="mentor" type="button" aria-label="Mentor">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>
         <span class="nav-label">Mentor</span>
+        <span id="mentorAdminBadge" class="mentor-tab-badge hidden">0</span>
       </button>
       <button id="tabTeam" class="admin-tab" data-page="team" type="button" aria-label="Tim">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -4389,6 +4398,10 @@ th,td{padding:14px 12px!important}
   let mentorConversations = [];
   let mentorActiveConversation = null;
   let mentorAdminPollTimer = null;
+  let mentorAdminUnreadInitialized = false;
+  let mentorAdminUnreadCount = 0;
+  let mentorPresenceLastTouch = 0;
+  let mentorAdminToastTimer = null;
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
   let membershipRenewals = [];
@@ -6969,6 +6982,62 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }catch(_){ return ''; }
   }
 
+  function mentorAdminToast(message){
+    let node=$('mentorAdminToast');
+    if(!node){
+      node=document.createElement('div');
+      node.id='mentorAdminToast';
+      node.className='mentor-admin-toast';
+      document.body.appendChild(node);
+    }
+    node.textContent=message;
+    node.classList.add('show');
+    clearTimeout(mentorAdminToastTimer);
+    mentorAdminToastTimer=setTimeout(()=>node.classList.remove('show'),3200);
+  }
+
+  function setMentorAdminUnread(count){
+    count=Math.max(0,Number(count||0));
+    const badge=$('mentorAdminBadge');
+    if(badge){
+      badge.textContent=count>99?'99+':String(count);
+      badge.classList.toggle('hidden',count<1);
+    }
+    if(mentorAdminUnreadInitialized && count>mentorAdminUnreadCount){
+      mentorAdminToast('💬 Ada pesan baru dari member BADAI');
+      if(typeof Notification!=='undefined' && Notification.permission==='granted' && document.visibilityState!=='visible'){
+        try{new Notification('Mentor BADAI',{body:'Ada pertanyaan baru dari member.'})}catch(_){}
+      }
+    }
+    mentorAdminUnreadCount=count;
+    mentorAdminUnreadInitialized=true;
+  }
+
+  async function refreshMentorAdminUnread(){
+    if(!allowedPages().includes('mentor')) return;
+    try{
+      const rows=await api('/rest/v1/rpc/admin_mentor_unread_total',{
+        method:'POST',
+        body:JSON.stringify({})
+      }) || [];
+      const row=Array.isArray(rows)?rows[0]:rows;
+      setMentorAdminUnread(row?.unread_total || 0);
+    }catch(_){}
+  }
+
+  async function touchMentorPresence(force=false){
+    if(!allowedPages().includes('mentor')) return;
+    const now=Date.now();
+    if(!force && now-mentorPresenceLastTouch<20000) return;
+    mentorPresenceLastTouch=now;
+    try{
+      await api('/rest/v1/rpc/mentor_touch_presence',{
+        method:'POST',
+        body:JSON.stringify({})
+      });
+    }catch(_){}
+  }
+
   async function loadMentorInbox(){
     if(!allowedPages().includes('mentor')) return;
 
@@ -6978,6 +7047,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         body:JSON.stringify({})
       }) || [];
       renderMentorInbox();
+      setMentorAdminUnread(mentorConversations.reduce((sum,row)=>sum+Number(row.unread_count||0),0));
 
       const archiveRows = await api('/rest/v1/mentor_archive_batches?select=status&status=in.(pending,uploading,failed)&limit=100').catch(()=>[]);
       const pending = Array.isArray(archiveRows) ? archiveRows.length : 0;
@@ -7074,7 +7144,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         if(m.message_type === 'sticker'){
           body = '<div class="body">'+esc(m.sticker_key || '✨')+'</div>';
         }else if(m.message_type === 'image' || m.message_type === 'file'){
-          body = '<div class="body"><a href="'+esc(m.drive_web_view_link || '#')+'" target="_blank" rel="noopener">📎 '+esc(m.file_name || 'Lampiran')+'</a></div>';
+          const link=esc(m.drive_web_view_link || '#');
+          const label=esc(m.file_name || 'Lampiran');
+          body = m.message_type === 'image'
+            ? '<div class="body"><a class="mentor-admin-image" href="'+link+'" target="_blank" rel="noopener"><img src="'+link+'" alt="'+label+'" loading="lazy"><span>🖼 '+label+'</span></a></div>'
+            : '<div class="body"><a href="'+link+'" target="_blank" rel="noopener">📎 '+label+'</a></div>';
         }else{
           body = '<div class="body">'+esc(m.body || '')+'</div>';
         }
@@ -7089,6 +7163,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       method:'POST',
       body:JSON.stringify({p_conversation_id:id})
     }).catch(()=>{});
+    refreshMentorAdminUnread().catch(()=>{});
   }
 
   async function sendMentorAdminPayload(type, body, sticker, fileData){
@@ -7459,6 +7534,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     btn.addEventListener('click', () => switchPage(btn.dataset.page));
   });
 
+  $('tabMentor')?.addEventListener('click', () => {
+    if(typeof Notification!=='undefined' && Notification.permission==='default'){
+      try{Notification.requestPermission().catch(()=>{})}catch(_){}
+    }
+    touchMentorPresence(true).catch(()=>{});
+  });
+
   $('refreshMentorInboxBtn')?.addEventListener('click', () => loadMentorInbox());
   $('mentorConnectDriveBtn')?.addEventListener('click', async () => {
     const btn=$('mentorConnectDriveBtn');
@@ -7536,10 +7618,15 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     mentorAdminPollTimer = setInterval(() => {
       const page = $('pageMentor');
       if(page && !page.classList.contains('hidden') && document.visibilityState === 'visible'){
+        touchMentorPresence().catch(()=>{});
         loadMentorInbox().catch(()=>{});
       }
     },4000);
   }
+  setInterval(() => {
+    if(document.visibilityState === 'visible') refreshMentorAdminUnread().catch(()=>{});
+  },10000);
+  setTimeout(() => refreshMentorAdminUnread().catch(()=>{}),1500);
 
   function setMarketingCategoryTab(tab){
     document.querySelectorAll('[data-marketing-tab]').forEach(btn => {
