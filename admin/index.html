@@ -3532,6 +3532,7 @@ th,td{padding:14px 12px!important}
   box-sizing:border-box!important;
   box-shadow:none!important;
   animation:none!important;
+  pointer-events:none!important;
 }
 .admin-tab.admin-chat-tab .mentor-tab-badge.hidden{display:none!important}
 
@@ -8492,7 +8493,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   function setMentorAdminUnread(count){
     count=Math.max(0,Number(count||0));
     const badge=$('mentorAdminBadge');
-    if(badge){badge.textContent=count>99?'99+':String(count);badge.classList.toggle('hidden',count<1)}
+    if(badge){
+      badge.textContent=count>99?'99+':String(count);
+      badge.classList.toggle('hidden',count<1);
+      badge.setAttribute('aria-hidden',count<1?'true':'false');
+      badge.title=count>0?(count+' pesan belum dibaca'):'';
+    }
     if(mentorAdminUnreadInitialized&&count>mentorAdminUnreadCount){
       mentorAdminToast('💬 Ada pesan baru di Chat BADAI');
       if(typeof Notification!=='undefined'&&Notification.permission==='granted'&&document.visibilityState!=='visible'){
@@ -8752,6 +8758,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     renderAdminCommunityMessages(rows,slug);
     await api('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(()=>{});
     await loadMentorCommunityOverview();
+    await refreshMentorAdminUnread();
   }
 
   async function openAdminCommunityThread(slug){
