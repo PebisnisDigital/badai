@@ -3478,6 +3478,59 @@ th,td{padding:14px 12px!important}
 #pageMentor .mentor-inbox-head button,
 #pageMentor .mentor-thread-head button{border-color:#34534a!important;background:#14251f!important;color:#77d7b0!important}
 
+.account-admin-self{
+  max-width:760px;
+  margin:0 auto 14px;
+}
+.account-admin-section-label{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
+  margin:14px 2px 7px
+}
+.account-admin-section-label span{
+  color:#ff8fc5;font-size:8px;font-weight:950;letter-spacing:.1em
+}
+.account-admin-section-label small{
+  color:#686068;font-size:9px;font-weight:700;text-align:right
+}
+.account-team-label{max-width:100%;margin-top:18px}
+.account-admin-self-card{
+  display:grid;gap:9px;padding:14px 16px;border:1px solid #2c2930;border-radius:16px;
+  background:#101010
+}
+.account-admin-field{display:grid;gap:5px}
+.account-admin-field label{
+  color:#aaa;font-size:9px;font-weight:900;letter-spacing:.04em;text-transform:uppercase
+}
+.account-admin-field input{
+  width:100%;min-height:42px;padding:0 11px;border:1px solid #303030;border-radius:10px;
+  background:#080808;color:#fff;outline:none;font:700 12px "Nunito",Arial,sans-serif
+}
+.account-admin-field input:focus{border-color:#ff4fa3;box-shadow:0 0 0 3px rgba(255,79,163,.10)}
+.account-admin-field input[readonly]{color:#8a8a8a;background:#111;border-color:#242424;cursor:not-allowed}
+.account-admin-field small{color:#6f6f6f;font-size:8.5px;line-height:1.4}
+.account-admin-readonly-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.account-admin-readonly-grid>div{
+  display:grid;gap:3px;padding:10px 11px;border:1px solid #272727;border-radius:11px;background:#0b0b0b
+}
+.account-admin-readonly-grid span{color:#777;font-size:7.5px;font-weight:950;letter-spacing:.08em}
+.account-admin-readonly-grid b{color:#fff;font-size:11px;font-weight:900}
+.account-admin-primary{
+  min-height:40px;border:0;border-radius:10px;background:#ff4fa3;color:#111;
+  font-size:10px;font-weight:950;cursor:pointer
+}
+.account-admin-primary.security{background:#fff}
+.account-admin-primary:disabled{opacity:.55;cursor:wait}
+.account-admin-form-status{min-height:16px;color:#888;font-size:9px;text-align:center}
+.account-admin-form-status.ok{color:#72d79a}
+.account-admin-form-status.err{color:#ff9292}
+.account-admin-security{border-color:#352b34;background:linear-gradient(180deg,#141114,#0f0f0f)}
+#adminProfileDisplayName{display:block;color:#fff;font-size:15px;font-weight:950;line-height:1.15}
+#adminProfileDisplayMeta{display:block;margin-top:3px;color:#908891;font-size:9px;font-weight:700}
+@media(max-width:620px){
+  .account-admin-section-label{display:grid;gap:2px}
+  .account-admin-section-label small{text-align:left}
+  .account-admin-readonly-grid{grid-template-columns:1fr 1fr}
+}
 .account-admin-profile{
   margin:12px 0 0;padding:14px 16px;display:grid;grid-template-columns:64px minmax(0,1fr) auto;
   align-items:center;gap:12px;border:1px solid #2c2630;border-radius:16px;background:#100d10
@@ -5584,8 +5637,69 @@ th,td{padding:14px 12px!important}
       <div class="page-title">
         <div>
           <h2>Akun</h2>
-          <p>Kelola akun dashboard BADAI, data akunmu, dan akses tim sesuai peran.</p>
+          <p>Kelola profil pribadi, keamanan akun, dan akun tim BADAI sesuai peran.</p>
         </div>
+      </div>
+
+      <div class="account-admin-self">
+        <div class="account-admin-profile">
+          <div id="adminProfileAvatarPreview" class="account-admin-avatar">A</div>
+          <div class="account-admin-profile-copy">
+            <b id="adminProfileDisplayName">Admin BADAI</b>
+            <span id="adminProfileDisplayMeta">Tim BADAI</span>
+          </div>
+          <div class="account-admin-avatar-actions">
+            <button id="adminProfileAvatarBtn" class="account-admin-avatar-btn" type="button">GANTI FOTO</button>
+            <input id="adminProfileAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden/>
+          </div>
+          <div id="adminProfileAvatarStatus" class="account-admin-avatar-status">Foto tampil saat akunmu mengirim pesan di Grup BADAI.</div>
+        </div>
+
+        <div class="account-admin-section-label">
+          <span>DATA SAYA</span>
+          <small>Identitas akun dashboard BADAI.</small>
+        </div>
+
+        <form id="adminSelfProfileForm" class="account-admin-self-card">
+          <div class="account-admin-field">
+            <label for="adminSelfName">Nama</label>
+            <input id="adminSelfName" type="text" maxlength="100" required autocomplete="name"/>
+          </div>
+          <div class="account-admin-field">
+            <label for="adminSelfEmail">Email Login</label>
+            <input id="adminSelfEmail" type="email" readonly aria-readonly="true"/>
+            <small>Email login dikunci. Perubahan email dilakukan lewat Owner/Super Admin bila diperlukan.</small>
+          </div>
+          <div class="account-admin-readonly-grid">
+            <div><span>ROLE</span><b id="adminSelfRole">ADMIN</b></div>
+            <div><span>STATUS</span><b id="adminSelfStatus">AKTIF</b></div>
+          </div>
+          <button id="adminSelfProfileSave" class="account-admin-primary" type="submit">SIMPAN DATA</button>
+          <div id="adminSelfProfileStatus" class="account-admin-form-status"></div>
+        </form>
+
+        <div class="account-admin-section-label">
+          <span>KEAMANAN</span>
+          <small>Ganti password akun dashboard.</small>
+        </div>
+
+        <form id="adminSelfSecurityForm" class="account-admin-self-card account-admin-security">
+          <div class="account-admin-field">
+            <label for="adminSelfPassword">Password Baru</label>
+            <input id="adminSelfPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Minimal 8 karakter"/>
+          </div>
+          <div class="account-admin-field">
+            <label for="adminSelfPasswordConfirm">Ulangi Password Baru</label>
+            <input id="adminSelfPasswordConfirm" type="password" minlength="8" autocomplete="new-password" placeholder="Ketik ulang password"/>
+          </div>
+          <button id="adminSelfSecuritySave" class="account-admin-primary security" type="submit">GANTI PASSWORD</button>
+          <div id="adminSelfSecurityStatus" class="account-admin-form-status"></div>
+        </form>
+      </div>
+
+      <div class="account-admin-section-label account-team-label">
+        <span>KELOLA AKUN TIM</span>
+        <small>Hak pengelolaan menyesuaikan role akunmu.</small>
       </div>
 
       <div class="team-layout">
@@ -5613,14 +5727,14 @@ th,td{padding:14px 12px!important}
             <div><b>SALES</b> — Fokus Penjualan dan pengelolaan member.</div>
             <div><b>FINANCE</b> — Hanya melihat Keuangan dan laporan.</div>
             <div><b>MARKETING</b> — Hanya mengatur harga, kupon, dan notifikasi marketing.</div>
-            <div><b>MENTOR</b> — Fokus membalas konsultasi member di menu Mentor.</div>
+            <div><b>MENTOR</b> — Fokus membalas konsultasi member di menu Chat Member.</div>
           </div>
         </div>
 
         <div class="team-panel team-table-wrap">
           <h3>Daftar Akun Dashboard</h3>
           <p id="teamListHelp">Semua akun dashboard dapat melihat daftar akun. Hanya Owner dan Super Admin yang dapat mengelola akun lain.</p>
-          <div id="teamReadOnlyNotice" class="team-status-note hidden">Kamu dapat melihat daftar akun, tetapi hanya bisa mengedit nama dan password akunmu sendiri.</div>
+          <div id="teamReadOnlyNotice" class="team-status-note hidden">Kamu dapat melihat daftar akun dashboard. Data akunmu sendiri dapat diedit pada bagian Data Saya di atas.</div>
           <table>
             <thead>
               <tr><th>Nama</th><th>Role</th><th>Status</th><th>Login</th><th>Aksi</th></tr>
@@ -5629,19 +5743,6 @@ th,td{padding:14px 12px!important}
           </table>
           <div id="teamEmpty" class="empty hidden">Belum ada akun dashboard.</div>
         </div>
-      </div>
-
-      <div class="account-admin-profile">
-        <div id="adminProfileAvatarPreview" class="account-admin-avatar">A</div>
-        <div class="account-admin-profile-copy">
-          <b>Foto Profil Admin</b>
-          <span>Tampil saat akunmu mengirim pesan di Grup BADAI. File disimpan di Google Drive BADAI.</span>
-        </div>
-        <div class="account-admin-avatar-actions">
-          <button id="adminProfileAvatarBtn" class="account-admin-avatar-btn" type="button">GANTI FOTO</button>
-          <input id="adminProfileAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden/>
-        </div>
-        <div id="adminProfileAvatarStatus" class="account-admin-avatar-status">Foto otomatis dikecilkan menjadi 256×256 agar ringan.</div>
       </div>
 
       <div class="account-admin-logout">
@@ -6254,6 +6355,108 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     });
   }
 
+  function adminSelfRoleLabel(role){
+    return role === 'owner' ? 'OWNER'
+      : role === 'super_admin' ? 'SUPER ADMIN'
+      : String(role || 'admin').replace(/_/g,' ').toUpperCase();
+  }
+
+  function setAdminSelfStatus(id,message,type=''){
+    const node=$(id);if(!node)return;
+    node.textContent=message||'';
+    node.classList.remove('ok','err');
+    if(type)node.classList.add(type);
+  }
+
+  function populateAdminSelfSettings(){
+    if(!currentTeam)return;
+    if($('adminSelfName'))$('adminSelfName').value=currentTeam.full_name||'';
+    if($('adminSelfEmail'))$('adminSelfEmail').value=currentTeam.email||session?.user?.email||'';
+    if($('adminSelfRole'))$('adminSelfRole').textContent=adminSelfRoleLabel(currentTeam.role);
+    if($('adminSelfStatus'))$('adminSelfStatus').textContent=currentTeam.status==='active'?'AKTIF':'NONAKTIF';
+    if($('adminProfileDisplayName'))$('adminProfileDisplayName').textContent=currentTeam.full_name||'Admin BADAI';
+    if($('adminProfileDisplayMeta'))$('adminProfileDisplayMeta').textContent=adminSelfRoleLabel(currentTeam.role)+' • '+(currentTeam.status==='active'?'Aktif':'Nonaktif');
+    renderAdminProfileAvatar(currentTeam.avatar_url,currentTeam.full_name);
+  }
+
+  async function saveAdminSelfProfile(){
+    if(!currentTeam||!session?.access_token)throw new Error('Sesi admin tidak valid.');
+    const fullName=String($('adminSelfName')?.value||'').trim();
+    const btn=$('adminSelfProfileSave');
+    if(fullName.length<2||fullName.length>100)throw new Error('Nama harus 2–100 karakter.');
+
+    const old=btn?.textContent||'SIMPAN DATA';
+    if(btn){btn.disabled=true;btn.textContent='MENYIMPAN...'}
+    setAdminSelfStatus('adminSelfProfileStatus','Menyimpan data...');
+    try{
+      await api('/rest/v1/rpc/update_my_admin_profile',{
+        method:'POST',
+        body:JSON.stringify({p_full_name:fullName})
+      });
+      try{
+        await api('/auth/v1/user',{
+          method:'PUT',
+          body:JSON.stringify({data:{full_name:fullName}})
+        });
+      }catch(metaErr){console.warn('Metadata admin tidak ikut diperbarui:',metaErr?.message||metaErr)}
+      currentTeam.full_name=fullName;
+      populateAdminSelfSettings();
+      await loadTeamMembers();
+      setAdminSelfStatus('adminSelfProfileStatus','Data profil berhasil diperbarui.','ok');
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old}
+    }
+  }
+
+  async function saveAdminSelfPassword(){
+    if(!session?.access_token)throw new Error('Sesi admin tidak valid.');
+    const password=$('adminSelfPassword')?.value||'';
+    const confirmPassword=$('adminSelfPasswordConfirm')?.value||'';
+    const btn=$('adminSelfSecuritySave');
+    if(password.length<8)throw new Error('Password baru minimal 8 karakter.');
+    if(password!==confirmPassword)throw new Error('Ulangi password belum sama.');
+
+    const old=btn?.textContent||'GANTI PASSWORD';
+    if(btn){btn.disabled=true;btn.textContent='MENYIMPAN...'}
+    setAdminSelfStatus('adminSelfSecurityStatus','Mengganti password...');
+    try{
+      const updated=await api('/auth/v1/user',{
+        method:'PUT',
+        body:JSON.stringify({password})
+      });
+      if(updated&&session){
+        session.user=Object.assign({},session.user||{},updated);
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(session));
+      }
+      if($('adminSelfPassword'))$('adminSelfPassword').value='';
+      if($('adminSelfPasswordConfirm'))$('adminSelfPasswordConfirm').value='';
+      setAdminSelfStatus('adminSelfSecurityStatus','Password berhasil diganti.','ok');
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old}
+    }
+  }
+
+  function bindAdminSelfSettings(){
+    const profileForm=$('adminSelfProfileForm');
+    if(profileForm&&profileForm.dataset.bound!=='1'){
+      profileForm.dataset.bound='1';
+      profileForm.addEventListener('submit',async e=>{
+        e.preventDefault();
+        try{await saveAdminSelfProfile()}
+        catch(err){setAdminSelfStatus('adminSelfProfileStatus',err.message||'Gagal menyimpan data.','err')}
+      });
+    }
+    const securityForm=$('adminSelfSecurityForm');
+    if(securityForm&&securityForm.dataset.bound!=='1'){
+      securityForm.dataset.bound='1';
+      securityForm.addEventListener('submit',async e=>{
+        e.preventDefault();
+        try{await saveAdminSelfPassword()}
+        catch(err){setAdminSelfStatus('adminSelfSecurityStatus',err.message||'Gagal mengganti password.','err')}
+      });
+    }
+  }
+
   function setAuthStatus(msg, type){
     authStatus.textContent = msg;
     authStatus.className = 'status' + (type ? ' ' + type : '');
@@ -6391,7 +6594,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(page === 'finance') loadFinanceTransactions();
     if(page === 'marketing') loadMarketing();
     if(page === 'mentor') loadMentorInbox();
-    if(page === 'team') loadTeamMembers();
+    if(page === 'team'){
+      populateAdminSelfSettings();
+      loadTeamMembers();
+    }
   }
 
   async function enterDashboard(){
@@ -6415,7 +6621,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       configureTabs();
       configureTeamAccessUI();
       setupAdminProfileAvatar();
-      renderAdminProfileAvatar(currentTeam.avatar_url,currentTeam.full_name);
+      bindAdminSelfSettings();
+      populateAdminSelfSettings();
 
       const allowed = allowedPages();
       if(allowed.includes('sales') || allowed.includes('finance')){
