@@ -10773,6 +10773,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function uploadMentorAdminFile(file){
     if(!file)return null;if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
+    await refreshMentorWorkHours(true);
+    if(mentorWorkHoursStatus?.enabled!==false&&!mentorWorkHoursStatus?.is_open){
+      throw new Error('Di luar jam kerja Mentor BADAI. Lampiran belum dapat dikirim.');
+    }
     const fd=new FormData();fd.append('file',file);fd.append('conversation_id',mentorActiveConversation?.conversation_id||'');
     const res=await fetch('/api/mentor/upload',{method:'POST',headers:{Authorization:'Bearer '+session.access_token},body:fd});
     const data=await res.json().catch(()=>null);
