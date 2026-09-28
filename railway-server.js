@@ -117,7 +117,12 @@ function serveStatic(req, res, pathname){
     res.statusCode = 200;
     res.setHeader('Content-Type', MIME[ext] || 'application/octet-stream');
     const noStore = ext === '.html' || pathname === '/akses/auth.js';
-    res.setHeader('Cache-Control', noStore ? 'no-store, max-age=0' : 'public, max-age=300');
+    const avatarAsset = pathname.startsWith('/avatars/') && ext === '.svg';
+    res.setHeader('Cache-Control', noStore
+      ? 'no-store, max-age=0'
+      : avatarAsset
+        ? 'public, max-age=31536000, immutable'
+        : 'public, max-age=300');
     fs.createReadStream(file).pipe(res);
     return true;
   } catch {
@@ -519,6 +524,15 @@ async function handleProfileAvatarUpload(req,res){
   const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
   const user=await verifySupabaseBearer(token);
   if(!user?.id) return res.status(401).json({error:'Session tidak valid.'});
+
+  const teamCheck=await fetch(
+    SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&role=in.(owner,super_admin,admin,mentor,sales,finance,marketing)&select=id&limit=1',
+    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  );
+  const teamRows=teamCheck.ok?await teamCheck.json().catch(()=>[]):[];
+  if(!teamCheck.ok || !teamRows?.length){
+    return res.status(403).json({error:'Upload foto profil hanya tersedia untuk Admin BADAI.'});
+  }
 
   const parsed=await parseMentorMultipart(req);
   const mime=String(parsed.file.mime||'').toLowerCase();
