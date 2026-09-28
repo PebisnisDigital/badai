@@ -1028,7 +1028,8 @@ body{
   letter-spacing:.04em;
   text-transform:uppercase;
 }
-.account-field input{
+.account-field input,
+.account-field textarea{
   width:100%;
   min-height:42px;
   border-radius:11px;
@@ -1038,10 +1039,58 @@ body{
   padding:0 11px;
   outline:none;
   font:700 11px "Nunito";
+  box-sizing:border-box;
 }
-.account-field input:focus{
+.account-field textarea{
+  min-height:92px;
+  padding:11px;
+  resize:vertical;
+  line-height:1.45;
+}
+.account-field input:focus,
+.account-field textarea:focus{
   border-color:#ff4fa3;
   box-shadow:0 0 0 3px rgba(255,79,163,.10);
+}
+.account-profile-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.account-profile-grid .account-field{margin-bottom:0}
+.account-marketing-consent{
+  margin-top:4px;
+  padding:11px 12px;
+  display:grid;
+  grid-template-columns:18px minmax(0,1fr);
+  gap:9px;
+  align-items:start;
+  border:1px solid #2e2630;
+  border-radius:12px;
+  background:#100c0f;
+}
+.account-marketing-consent input{
+  width:16px!important;
+  min-height:16px!important;
+  height:16px;
+  margin:2px 0 0;
+  accent-color:#ff4fa3;
+}
+.account-marketing-consent span{
+  color:#aaa;
+  font:600 9px/1.45 "Nunito",Arial,sans-serif;
+}
+.account-data-note{
+  margin:2px 0 10px;
+  padding:9px 10px;
+  border-left:3px solid #ff4fa3;
+  border-radius:8px;
+  background:#100b0e;
+  color:#8f858b;
+  font:600 8.5px/1.45 "Nunito",Arial,sans-serif;
+}
+@media(max-width:520px){
+  .account-profile-grid{grid-template-columns:1fr}
 }
 .account-help{
   margin-top:-3px;
@@ -1110,6 +1159,59 @@ body{
 @media(max-width:420px){
   .account-logout-card{grid-template-columns:1fr}
   #badaiMemberLogout{width:100%}
+}
+
+.account-section-label{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin:13px 2px 7px;
+}
+.account-section-label span{
+  color:#ff8cc2;
+  font:900 8px "Raleway";
+  letter-spacing:.11em;
+}
+.account-section-label small{
+  color:#666;
+  font:700 8px "Nunito";
+  line-height:1.3;
+  text-align:right;
+}
+.account-profile-main{
+  margin-bottom:10px!important;
+}
+#memberProfileDisplayName{
+  display:block;
+  color:#fff!important;
+  font:900 15px/1.15 "Raleway",Arial,sans-serif!important;
+}
+#memberProfileDisplayMeta{
+  display:block;
+  margin-top:3px;
+  color:#8f8f8f!important;
+  font:600 9px/1.3 "Nunito",Arial,sans-serif!important;
+}
+.account-field input[readonly]{
+  color:#8d8d8d!important;
+  background:#101010!important;
+  border-color:#242424!important;
+  cursor:not-allowed;
+}
+.account-security-card{
+  border-color:#332832;
+  background:linear-gradient(180deg,#151215,#101010);
+}
+.account-security-save{
+  background:#fff!important;
+  color:#111!important;
+}
+#memberSecurityStatus.ok{color:#7fdda5}
+#memberSecurityStatus.error{color:#ff8d8d}
+@media(max-width:420px){
+  .account-section-label{display:grid;gap:2px}
+  .account-section-label small{text-align:left}
 }
 
 
@@ -1709,15 +1811,178 @@ h1,h2,h3,h4,h5,h6,
       </div>
     </section>
 
+    <section id="mentor" class="screen mentor-chat-list-mode">
+      <div id="mentorChatHome" class="mentor-chat-home">
+        <div class="mentor-chat-home-head">
+          <div>
+            <strong>Chat</strong>
+            <span>3 percakapan</span>
+          </div>
+        </div>
+        <div class="mentor-chat-home-search">
+          <span>⌕</span>
+          <input id="mentorChatSearch" type="search" autocomplete="off" placeholder="Cari chat"/>
+        </div>
+        <div class="mentor-chat-home-list">
+          <button id="announcementChatRow" type="button" class="mentor-chat-row" data-chat-kind="announcement">
+            <div class="mentor-chat-row-avatar announcement">📢</div>
+            <div class="mentor-chat-row-main">
+              <div class="mentor-chat-row-top">
+                <strong>PENGUMUMAN BADAI</strong>
+                <span id="announcementChatRowTime"></span>
+              </div>
+              <div class="mentor-chat-row-bottom">
+                <span id="announcementChatRowPreview">Info resmi dari tim BADAI</span>
+                <b id="announcementChatRowUnread" class="announcement-fire-unread hidden">0</b>
+              </div>
+            </div>
+          </button>
+
+          <button id="groupChatRow" type="button" class="mentor-chat-row" data-chat-kind="group">
+            <div class="mentor-chat-row-avatar group">G</div>
+            <div class="mentor-chat-row-main">
+              <div class="mentor-chat-row-top">
+                <strong>Grup BADAI</strong>
+                <span id="groupChatRowTime"></span>
+              </div>
+              <div class="mentor-chat-row-bottom">
+                <span id="groupChatRowPreview">Diskusi bersama member BADAI</span>
+                <b id="groupChatRowUnread" class="hidden">0</b>
+              </div>
+            </div>
+          </button>
+
+          <button id="mentorChatRow" type="button" class="mentor-chat-row" data-chat-kind="mentor">
+            <div class="mentor-chat-row-avatar">M</div>
+            <div class="mentor-chat-row-main">
+              <div class="mentor-chat-row-top">
+                <strong id="mentorChatRowName">Mentor BADAI</strong>
+                <span id="mentorChatRowTime"></span>
+              </div>
+              <div class="mentor-chat-row-bottom">
+                <span id="mentorChatRowPreview">Buka percakapan dengan Mentor BADAI</span>
+                <b id="mentorChatRowUnread" class="hidden">0</b>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div id="mentorChatCard" class="mentor-chat-card">
+        <div class="mentor-wa-head">
+          <button id="mentorChatBackBtn" class="mentor-chat-back" type="button" aria-label="Kembali ke daftar chat">←</button>
+          <div id="mentorWaAvatar" class="mentor-wa-avatar">M</div>
+          <div class="mentor-wa-person">
+            <strong id="mentorWaName">Mentor BADAI</strong>
+            <span id="mentorWaSubstatus">Menghubungkan...</span>
+          </div>
+          <button id="mentorChatMoreBtn" class="mentor-chat-more" type="button" aria-label="Pengaturan chat" title="Pengaturan chat">⋮</button>
+        </div>
+
+        <div class="mentor-message-wrap">
+          <div id="mentorMessageList" class="mentor-message-list">
+            <div class="mentor-empty">Belum ada percakapan. Kirim pertanyaan pertama kamu 👇</div>
+          </div>
+          <button id="mentorJumpLatest" class="mentor-jump-latest hidden" type="button" aria-label="Ke pesan terbaru">↓</button>
+        </div>
+
+        <div id="mentorReadOnlyNotice" class="mentor-readonly-notice hidden">Hanya Admin, Mentor, dan Super Admin yang dapat mengirim pengumuman.</div>
+
+        <div id="mentorStickerTray" class="mentor-sticker-tray hidden">
+          <button type="button" data-mentor-sticker="👍">👍</button>
+          <button type="button" data-mentor-sticker="🙏">🙏</button>
+          <button type="button" data-mentor-sticker="🔥">🔥</button>
+          <button type="button" data-mentor-sticker="✨">✨</button>
+          <button type="button" data-mentor-sticker="❤️">❤️</button>
+          <button type="button" data-mentor-sticker="😂">😂</button>
+          <button type="button" data-mentor-sticker="💪">💪</button>
+          <button type="button" data-mentor-sticker="🎉">🎉</button>
+        </div>
+
+        <div id="mentorAttachMenu" class="mentor-attach-menu hidden">
+          <label class="mentor-attach-choice image">🖼 <span>Foto</span>
+            <input id="mentorImageInput" type="file" accept="image/*" hidden/>
+          </label>
+          <label class="mentor-attach-choice file">📎 <span>Dokumen</span>
+            <input id="mentorFileInput" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt" hidden/>
+          </label>
+        </div>
+
+        <div id="mentorPendingAttachment" class="mentor-pending-attachment hidden">
+          <div id="mentorPendingPreview" class="mentor-pending-preview"></div>
+          <div class="mentor-pending-meta">
+            <strong id="mentorPendingName">Lampiran</strong>
+            <span id="mentorPendingSize"></span>
+          </div>
+          <button id="mentorPendingCancel" type="button" aria-label="Batalkan lampiran">×</button>
+        </div>
+
+        <div id="mentorReplyBar" class="mentor-reply-bar hidden">
+          <div><b id="mentorReplyTitle">Membalas pesan</b><span id="mentorReplyText"></span></div>
+          <button id="mentorReplyCancel" type="button" aria-label="Batalkan balasan">×</button>
+        </div>
+        <form id="mentorComposer" class="mentor-composer">
+          <button id="mentorStickerBtn" type="button" class="mentor-icon-btn" title="Kirim stiker" aria-label="Kirim stiker">☺</button>
+          <button id="mentorAttachBtn" type="button" class="mentor-icon-btn" title="Kirim file" aria-label="Kirim file">📎</button>
+          <textarea id="mentorMessageInput" rows="1" maxlength="4000" placeholder="Ketik pesan"></textarea>
+          <button id="mentorSendBtn" type="submit" class="mentor-send-btn" aria-label="Kirim">➤</button>
+        </form>
+        <div id="mentorUploadNote" class="mentor-upload-note">File dan gambar disimpan langsung ke Google Drive BADAI.</div>
+      </div>
+
+      <div class="mentor-archive-note">
+        <b>ARSIP AMAN</b>
+        <span>Chat aktif disimpan maksimal 7 hari di Supabase. Arsip harian disiapkan pukul 00.05 WIB dan baru dihapus dari hot storage setelah upload Google Drive terverifikasi.</span>
+      </div>
+    </section>
+
     <section id="akun" class="screen">
       <div class="account-head">
         <div class="account-kicker">AKUN MEMBER BADAI</div>
-        <h1>Pengaturan Akun</h1>
-        <p>Ubah nama, email login, WhatsApp, dan password kamu sendiri.</p>
+        <h1>Akun BADAI</h1>
+        <p>Kelola avatar, data diri, keamanan akun, dan informasi keanggotaan.</p>
+      </div>
+
+      <div id="badaiProfileAvatarCard" class="badai-profile-avatar-card badai-avatar-picker-card account-profile-main">
+        <div id="badaiProfileAvatarPreview" class="badai-profile-avatar-preview">
+          <img src="/avatars/male-korea.svg" alt="Avatar BADAI" loading="eager"/>
+        </div>
+        <div class="badai-profile-avatar-copy">
+          <b id="memberProfileDisplayName">Member BADAI</b>
+          <span id="memberProfileDisplayMeta">Pilih karakter Avatar BADAI kamu</span>
+        </div>
+
+        <div id="badaiAvatarChoices" class="badai-avatar-choice-grid" aria-label="Pilihan Avatar BADAI">
+          <button type="button" class="badai-avatar-choice" data-avatar-key="male-korea" aria-label="Pria rambut idol Korea">
+            <img src="/avatars/male-korea.svg" alt="Pria rambut idol Korea"/>
+            <span>PRIA KOREA</span>
+          </button>
+          <button type="button" class="badai-avatar-choice" data-avatar-key="male-peci" aria-label="Pria pakai peci">
+            <img src="/avatars/male-peci.svg" alt="Pria pakai peci"/>
+            <span>PRIA PECI</span>
+          </button>
+          <button type="button" class="badai-avatar-choice" data-avatar-key="female-longhair" aria-label="Cewek rambut panjang">
+            <img src="/avatars/female-longhair.svg" alt="Cewek rambut panjang"/>
+            <span>CEWEK PANJANG</span>
+          </button>
+          <button type="button" class="badai-avatar-choice" data-avatar-key="female-shorthair" aria-label="Cewek rambut pendek">
+            <img src="/avatars/female-shorthair.svg" alt="Cewek rambut pendek"/>
+            <span>CEWEK PENDEK</span>
+          </button>
+          <button type="button" class="badai-avatar-choice" data-avatar-key="female-hijab" aria-label="Cewek berhijab">
+            <img src="/avatars/female-hijab.svg" alt="Cewek berhijab"/>
+            <span>CEWEK HIJAB</span>
+          </button>
+        </div>
+
+        <div class="badai-profile-avatar-actions">
+          <button id="badaiProfileAvatarSave" type="button" class="badai-profile-avatar-btn">SIMPAN AVATAR</button>
+        </div>
+        <div id="badaiProfileAvatarStatus" class="badai-profile-avatar-status">Avatar ini akan tampil di Grup BADAI, mention, dan chat.</div>
       </div>
 
       <div class="member-plan-card">
-        <span>PAKET AKTIF</span>
+        <span>KEANGGOTAAN</span>
         <strong id="memberPlanName">PAKET PEMULA</strong>
         <small id="memberPlanDesc">Belajar Ilmu AI + Update</small>
         <div class="member-lifecycle-row">
@@ -1726,7 +1991,7 @@ h1,h2,h3,h4,h5,h6,
             <b id="memberLifecycleStatus">MASA AKTIF</b>
           </div>
           <div>
-            <span>EXPIRED</span>
+            <span>AKTIF SAMPAI</span>
             <b id="memberExpiryDate">-</b>
           </div>
         </div>
@@ -1735,15 +2000,15 @@ h1,h2,h3,h4,h5,h6,
         </div>
       </div>
 
-      <form id="memberAccountForm" class="account-card">
-        <div class="account-field">
-          <label for="memberAccountName">Nama</label>
-          <input id="memberAccountName" type="text" autocomplete="name" required placeholder="Nama lengkap"/>
-        </div>
+      <div class="account-section-label">
+        <span>DATA SAYA</span>
+        <small>Lengkapi profil supaya komunikasi dan layanan BADAI lebih relevan.</small>
+      </div>
 
+      <form id="memberAccountForm" class="account-card account-profile-form">
         <div class="account-field">
-          <label for="memberAccountEmail">Email Login</label>
-          <input id="memberAccountEmail" type="email" autocomplete="email" required placeholder="email@contoh.com"/>
+          <label for="memberAccountName">Nama Lengkap</label>
+          <input id="memberAccountName" type="text" autocomplete="name" required maxlength="100" placeholder="Nama lengkap"/>
         </div>
 
         <div class="account-field">
@@ -1752,21 +2017,71 @@ h1,h2,h3,h4,h5,h6,
         </div>
 
         <div class="account-field">
-          <label for="memberAccountPassword">Password Baru</label>
-          <input id="memberAccountPassword" type="password" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti"/>
-          <div class="account-help">Bebas jumlah karakter. Kalau dikosongkan, password lama tetap dipakai.</div>
+          <label for="memberAccountEmail">Email Login</label>
+          <input id="memberAccountEmail" type="email" autocomplete="email" readonly aria-readonly="true" placeholder="email@contoh.com"/>
+          <div class="account-help">Email login dikunci untuk keamanan akun. Hubungi Admin BADAI jika perlu mengganti email.</div>
         </div>
 
-        <button id="memberAccountSave" class="account-save" type="submit">SIMPAN PERUBAHAN</button>
+        <div class="account-profile-grid">
+          <div class="account-field">
+            <label for="memberBirthPlace">Tempat Lahir</label>
+            <input id="memberBirthPlace" type="text" maxlength="120" autocomplete="address-level2" placeholder="Contoh: Bandung"/>
+          </div>
+
+          <div class="account-field">
+            <label for="memberBirthDate">Tanggal Lahir</label>
+            <input id="memberBirthDate" type="date" autocomplete="bday"/>
+          </div>
+        </div>
+
+        <div class="account-field">
+          <label for="memberFullAddress">Alamat Lengkap</label>
+          <textarea id="memberFullAddress" maxlength="1000" autocomplete="street-address" placeholder="Nama jalan, RT/RW, kelurahan/desa, kecamatan, kota/kabupaten, provinsi"></textarea>
+        </div>
+
+        <div class="account-data-note">
+          Data tambahan ini bersifat opsional dan disimpan di profil BADAI. Gunakan hanya data yang nyaman kamu berikan.
+        </div>
+
+        <label class="account-marketing-consent" for="memberMarketingConsent">
+          <input id="memberMarketingConsent" type="checkbox"/>
+          <span>Saya bersedia data profil ini digunakan BADAI untuk personalisasi komunikasi, informasi program, penawaran, dan kegiatan marketing BADAI.</span>
+        </label>
+
+        <button id="memberAccountSave" class="account-save" type="submit">SIMPAN DATA</button>
         <div id="memberAccountStatus" class="account-status"></div>
       </form>
+
+      <div class="account-section-label">
+        <span>KEAMANAN</span>
+        <small>Ganti password tanpa mengubah data profil.</small>
+      </div>
+
+      <form id="memberSecurityForm" class="account-card account-security-card">
+        <div class="account-field">
+          <label for="memberAccountPassword">Password Baru</label>
+          <input id="memberAccountPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Minimal 8 karakter"/>
+        </div>
+        <div class="account-field">
+          <label for="memberAccountPasswordConfirm">Ulangi Password Baru</label>
+          <input id="memberAccountPasswordConfirm" type="password" minlength="8" autocomplete="new-password" placeholder="Ketik ulang password"/>
+        </div>
+        <div class="account-help">Gunakan minimal 8 karakter. Setelah disimpan, password lama tidak bisa dipakai lagi.</div>
+        <button id="memberSecuritySave" class="account-save account-security-save" type="submit">GANTI PASSWORD</button>
+        <div id="memberSecurityStatus" class="account-status"></div>
+      </form>
+
+      <div class="account-section-label">
+        <span>SESI AKUN</span>
+        <small>Keluar dari Member Area pada perangkat ini.</small>
+      </div>
 
       <div class="account-logout-card">
         <div>
           <h3>Keluar dari Akun</h3>
-          <p>Keluar dari Member Area BADAI di perangkat ini.</p>
+          <p>Kamu perlu login kembali untuk membuka Member Area BADAI.</p>
         </div>
-        <button id="badaiMemberLogout" type="button">KELUAR</button>
+        <button id="badaiMemberLogout" type="button">KELUAR / LOGOUT</button>
       </div>
     </section>
 
@@ -1781,6 +2096,10 @@ h1,h2,h3,h4,h5,h6,
     </button>
     <button id="affiliateNavButton" data-screen="afiliasi" onclick="show('afiliasi')" style="display:none">
       <span class="emoji">🔗</span><span class="label">Afiliasi</span>
+    </button>
+    <button id="mentorNavButton" data-screen="mentor" onclick="show('mentor')" aria-label="Chat">
+      <span class="emoji">💬</span><span class="label">Chat</span>
+      <span id="mentorUnreadBadge" class="mentor-nav-badge hidden">0</span>
     </button>
     <button data-screen="akun" onclick="show('akun')">
       <span class="emoji">👤</span><span class="label">Akun</span>

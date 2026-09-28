@@ -1,4 +1,4 @@
-import { access, copyFile, mkdir, rm } from "node:fs/promises";
+import { access, copyFile, cp, mkdir, rm } from "node:fs/promises";
 import { constants } from "node:fs";
 import path from "node:path";
 
@@ -20,6 +20,12 @@ await mkdir(path.join(out, "akses"), { recursive: true });
 await copyFile(
   path.join(root, "akses", "auth.js"),
   path.join(out, "akses", "auth.js")
+);
+
+await cp(
+  path.join(root, "avatars"),
+  path.join(out, "avatars"),
+  { recursive: true }
 );
 
 const verificationFile = "buatqris-verify-7c7a191a8da43b57bf28704876b92857.txt";

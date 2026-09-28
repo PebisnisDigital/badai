@@ -128,105 +128,179 @@
     el.className = 'account-status' + (type ? ' ' + type : '');
   }
 
+  function memberPlanShortLabel(value){
+    const plan = String(value || '').toLowerCase();
+    if(plan === 'pro') return 'Paket Untung';
+    if(plan === 'free') return 'Paket Gratisan';
+    return 'Paket Pemula';
+  }
+
+  function setSecurityStatus(message, type){
+    const el = document.getElementById('memberSecurityStatus');
+    if(!el) return;
+    el.textContent = message || '';
+    el.className = 'account-status' + (type ? ' ' + type : '');
+  }
+
   function populateAccount(profile, user){
     const name = document.getElementById('memberAccountName');
     const email = document.getElementById('memberAccountEmail');
     const wa = document.getElementById('memberAccountWa');
+    const birthPlace = document.getElementById('memberBirthPlace');
+    const birthDate = document.getElementById('memberBirthDate');
+    const fullAddress = document.getElementById('memberFullAddress');
+    const marketingConsent = document.getElementById('memberMarketingConsent');
     const password = document.getElementById('memberAccountPassword');
+    const passwordConfirm = document.getElementById('memberAccountPasswordConfirm');
+    const displayName = document.getElementById('memberProfileDisplayName');
+    const displayMeta = document.getElementById('memberProfileDisplayMeta');
 
-    if(name) name.value = profile?.full_name || user?.user_metadata?.full_name || '';
-    if(email) email.value = user?.email || profile?.email || '';
+    const resolvedName = profile?.full_name || user?.user_metadata?.full_name || 'Member BADAI';
+    if(name) name.value = resolvedName;
+    if(email){
+      email.value = user?.email || profile?.email || '';
+      email.readOnly = true;
+      email.setAttribute('aria-readonly','true');
+    }
     if(wa) wa.value = profile?.whatsapp || user?.user_metadata?.whatsapp || '';
+    if(birthPlace) birthPlace.value = profile?.birth_place || '';
+    if(birthDate){
+      birthDate.value = profile?.birth_date || '';
+      birthDate.max = new Date().toISOString().slice(0,10);
+    }
+    if(fullAddress) fullAddress.value = profile?.full_address || '';
+    if(marketingConsent) marketingConsent.checked = Boolean(profile?.marketing_consent);
     if(password) password.value = '';
+    if(passwordConfirm) passwordConfirm.value = '';
+    if(displayName) displayName.textContent = resolvedName;
+    if(displayMeta){
+      const state = memberLifecycleState(profile);
+      displayMeta.textContent = memberPlanShortLabel(profile?.membership_plan) + ' • ' +
+        (state === 'grace' ? 'Masa Tenggang' : 'Member Aktif');
+    }
   }
 
   async function saveMemberAccount(){
     if(!session?.access_token) throw new Error('Session habis. Silakan login ulang.');
 
     const name = document.getElementById('memberAccountName')?.value.trim() || '';
-    const requestedEmail = document.getElementById('memberAccountEmail')?.value.trim().toLowerCase() || '';
     const wa = normalizeWhatsapp(document.getElementById('memberAccountWa')?.value || '');
-    const password = document.getElementById('memberAccountPassword')?.value || '';
+    const birthPlace = document.getElementById('memberBirthPlace')?.value.trim() || '';
+    const birthDate = document.getElementById('memberBirthDate')?.value || null;
+    const fullAddress = document.getElementById('memberFullAddress')?.value.trim() || '';
+    const marketingConsent = Boolean(document.getElementById('memberMarketingConsent')?.checked);
     const saveBtn = document.getElementById('memberAccountSave');
 
-    if(!name || !requestedEmail || !wa){
-      throw new Error('Nama, email, dan WhatsApp wajib diisi.');
+    if(name.length < 2 || name.length > 100){
+      throw new Error('Nama harus 2–100 karakter.');
     }
-
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestedEmail)){
-      throw new Error('Format email belum valid.');
-    }
-
     if(!/^62\d{8,13}$/.test(wa)){
       throw new Error('Nomor WhatsApp belum valid.');
     }
-
-    const currentEmail = String(currentUser?.email || session?.user?.email || '').toLowerCase();
-    const emailChanged = currentEmail && currentEmail !== requestedEmail;
-
-    if(emailChanged && !confirm(
-      'Email login akan diganti dari ' + currentEmail + ' menjadi ' + requestedEmail + '. Lanjutkan?'
-    )){
-      return;
+    if(birthPlace.length > 120){
+      throw new Error('Tempat lahir maksimal 120 karakter.');
     }
-
-    if(password && !confirm(
-      'Password login akan diganti. Password lama tidak bisa dipakai lagi. Lanjutkan?'
-    )){
-      return;
+    if(fullAddress.length > 1000){
+      throw new Error('Alamat maksimal 1000 karakter.');
     }
-
-    const payload = {
-      data:{
-        full_name:name,
-        whatsapp:wa
+    if(birthDate){
+      const today = new Date().toISOString().slice(0,10);
+      if(birthDate > today || birthDate < '1900-01-01'){
+        throw new Error('Tanggal lahir tidak valid.');
       }
-    };
+    }
 
-    if(emailChanged) payload.email = requestedEmail;
-    if(password) payload.password = password;
-
-    const oldText = saveBtn?.textContent || 'SIMPAN PERUBAHAN';
+    const oldText = saveBtn?.textContent || 'SIMPAN DATA';
     if(saveBtn){
       saveBtn.disabled = true;
       saveBtn.textContent = 'MENYIMPAN...';
     }
+    setAccountStatus('Menyimpan data profil...', '');
 
-    setAccountStatus('Menyimpan perubahan...', '');
+    try{
+      const rows = await api('/rest/v1/rpc/member_profile_update_v2', {
+        method:'POST',
+        body:JSON.stringify({
+          p_full_name:name,
+          p_whatsapp:wa,
+          p_birth_place:birthPlace || null,
+          p_birth_date:birthDate || null,
+          p_full_address:fullAddress || null,
+          p_marketing_consent:marketingConsent
+        })
+      });
+      const fresh = Array.isArray(rows) ? rows[0] : rows;
+
+      currentProfile = Object.assign({}, currentProfile || {}, fresh || {}, {
+        full_name:name,
+        whatsapp:wa,
+        birth_place:birthPlace || null,
+        birth_date:birthDate || null,
+        full_address:fullAddress || null,
+        marketing_consent:marketingConsent
+      });
+
+      try{
+        const updatedUser = await api('/auth/v1/user', {
+          method:'PUT',
+          body:JSON.stringify({data:{full_name:name,whatsapp:wa}})
+        });
+        currentUser = updatedUser || currentUser;
+        if(session){
+          session.user = Object.assign({}, session.user || {}, updatedUser || {});
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+        }
+      }catch(metaErr){
+        console.warn('Metadata auth tidak ikut diperbarui:', metaErr?.message || metaErr);
+        if(currentUser){
+          currentUser.user_metadata = Object.assign({}, currentUser.user_metadata || {}, {
+            full_name:name,whatsapp:wa
+          });
+        }
+      }
+
+      populateAccount(currentProfile, currentUser);
+      setAccountStatus('Data profil berhasil diperbarui.', 'ok');
+    }finally{
+      if(saveBtn){
+        saveBtn.disabled = false;
+        saveBtn.textContent = oldText;
+      }
+    }
+  }
+
+  async function saveMemberPassword(){
+    if(!session?.access_token) throw new Error('Session habis. Silakan login ulang.');
+
+    const password = document.getElementById('memberAccountPassword')?.value || '';
+    const confirmPassword = document.getElementById('memberAccountPasswordConfirm')?.value || '';
+    const saveBtn = document.getElementById('memberSecuritySave');
+
+    if(password.length < 8) throw new Error('Password baru minimal 8 karakter.');
+    if(password !== confirmPassword) throw new Error('Ulangi password belum sama.');
+
+    const oldText = saveBtn?.textContent || 'GANTI PASSWORD';
+    if(saveBtn){
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'MENYIMPAN...';
+    }
+    setSecurityStatus('Mengganti password...', '');
 
     try{
       const updatedUser = await api('/auth/v1/user', {
         method:'PUT',
-        body:JSON.stringify(payload)
+        body:JSON.stringify({password})
       });
-
       currentUser = updatedUser || currentUser;
-
       if(session){
         session.user = Object.assign({}, session.user || {}, updatedUser || {});
         localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
       }
-
-      currentProfile = Object.assign({}, currentProfile || {}, {
-        full_name:name,
-        whatsapp:wa,
-        email:updatedUser?.email || currentProfile?.email || currentEmail
-      });
-
-      populateAccount(currentProfile, currentUser);
-
-      const emailApplied = String(updatedUser?.email || '').toLowerCase() === requestedEmail;
-
-      if(emailChanged && !emailApplied){
-        setAccountStatus(
-          'Nama/WA tersimpan. Untuk email baru, cek inbox email dan lakukan konfirmasi terlebih dahulu.',
-          'ok'
-        );
-      }else if(password){
-        setAccountStatus('Data akun dan password berhasil diperbarui.', 'ok');
-      }else{
-        setAccountStatus('Data akun berhasil diperbarui.', 'ok');
-      }
+      const passwordEl = document.getElementById('memberAccountPassword');
+      const confirmEl = document.getElementById('memberAccountPasswordConfirm');
+      if(passwordEl) passwordEl.value = '';
+      if(confirmEl) confirmEl.value = '';
+      setSecurityStatus('Password berhasil diganti.', 'ok');
     }finally{
       if(saveBtn){
         saveBtn.disabled = false;
@@ -246,6 +320,21 @@
         await saveMemberAccount();
       }catch(err){
         setAccountStatus(err.message || 'Gagal menyimpan data akun.', 'error');
+      }
+    });
+  }
+
+  function bindSecurityForm(){
+    const form = document.getElementById('memberSecurityForm');
+    if(!form || form.dataset.bound === '1') return;
+
+    form.dataset.bound = '1';
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try{
+        await saveMemberPassword();
+      }catch(err){
+        setSecurityStatus(err.message || 'Gagal mengganti password.', 'error');
       }
     });
   }
@@ -499,7 +588,7 @@
 
     if(plan !== 'pro'){
       if(affiliateNav) affiliateNav.style.display = 'none';
-      if(footer) footer.style.setProperty('--member-nav-count','3');
+      if(footer) footer.style.setProperty('--member-nav-count','4');
 
       const affiliateScreen = document.getElementById('afiliasi');
       if(affiliateScreen?.classList.contains('active')){
@@ -531,7 +620,7 @@
       const label = affiliateNav.querySelector('.label');
       if(label) label.innerHTML = 'Afiliasi<small class="affiliate-soon-badge">SEGERA HADIR</small>';
     }
-    if(footer) footer.style.setProperty('--member-nav-count','4');
+    if(footer) footer.style.setProperty('--member-nav-count','5');
 
     // Fitur afiliasi sedang dikunci sementara sampai resmi dibuka.
     window.BADAI_AFFILIATE_LINK = '';
@@ -846,7 +935,7 @@
     try{
       const rows = await api(
         '/rest/v1/profiles?id=eq.' + encodeURIComponent(currentUser.id) +
-        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at'
+        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at,avatar_key,birth_place,birth_date,full_address,marketing_consent,marketing_consent_at'
       );
 
       const freshProfile = rows?.[0];
@@ -890,7 +979,7 @@
 
       const rows = await api(
         '/rest/v1/profiles?id=eq.' + encodeURIComponent(userId) +
-        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at'
+        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at,avatar_key,birth_place,birth_date,full_address,marketing_consent,marketing_consent_at'
       );
 
       const profile = rows?.[0];
@@ -971,6 +1060,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     buildGate();
     bindAccountForm();
+    bindSecurityForm();
 
     try{
       const captured = captureMagicLinkSession();

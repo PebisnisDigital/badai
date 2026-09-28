@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Avatar BADAI pria rambut idol Korea">
+<circle cx="128" cy="128" r="122" fill="#101820"/>
+<circle cx="128" cy="128" r="116" fill="#16232b"/>
+<circle cx="128" cy="128" r="110" fill="none" stroke="#ff4fa3" stroke-opacity=".22" stroke-width="2"/>
+
+<circle cx="128" cy="101" r="39" fill="#f6d0b4" stroke="#f2f2f2" stroke-width="6"/>
+<path d="M91 97c1-31 18-48 42-48 24 0 39 16 42 42-14-6-27-17-35-29-10 17-29 29-49 35Z" fill="#171717"/>
+<path d="M96 83c9-19 23-31 42-31 16 0 28 7 36 20-13-4-29-2-42 6-13-5-25-3-36 5Z" fill="#232323"/>
+<path d="M112 106h7M137 106h7" stroke="#242424" stroke-width="4" stroke-linecap="round"/>
+<path d="M119 123c6 4 12 4 18 0" fill="none" stroke="#c27679" stroke-width="3" stroke-linecap="round"/>
+
+<path d="M92 212c6-31 17-50 36-50s30 19 36 50" fill="#171717" stroke="#f2f2f2" stroke-width="7" stroke-linecap="round"/>
+<path d="M128 166v49M128 184l-35 23M128 184l35 23" fill="none" stroke="#f2f2f2" stroke-width="7" stroke-linecap="round"/>
+<rect x="104" y="169" width="48" height="29" rx="12" fill="#0b0b0b" stroke="#ff4fa3" stroke-width="3"/>
+<text x="128" y="187" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="10" font-weight="700">BADAI</text>
+</svg>

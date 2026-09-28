@@ -1,6 +1,22 @@
 {
   "routes": [
     {
+      "src": "^/api/mentor/(.*)$",
+      "dest": "https://badai.up.railway.app/api/mentor/$1"
+    },
+    {
+      "src": "^/api/community/(.*)$",
+      "dest": "https://badai.up.railway.app/api/community/$1"
+    },
+    {
+      "src": "^/api/profile/(.*)$",
+      "dest": "https://badai.up.railway.app/api/profile/$1"
+    },
+    {
+      "src": "^/api/admin/chat/permanent-delete$",
+      "dest": "https://badai.up.railway.app/api/admin/chat/permanent-delete"
+    },
+    {
       "src": "^/admin/?$",
       "dest": "/api/admin-v5"
     },

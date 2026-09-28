@@ -2,6 +2,10 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
+const { Readable } = require('stream');
+const crypto = require('crypto');
+const Busboy = require('busboy');
+const { google } = require('googleapis');
 
 const landing = require('./api/landing-v6.js');
 const admin = require('./api/admin-v5.js');
@@ -9,7 +13,12 @@ const akses = require('./api/admin-v3.js');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
-const BUILD_REV = 'badai-staging-member-plan-sync-v1';
+const BUILD_REV = 'badai-staging-profile-avatar-drive-v1';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://tlvxlekqrllkvcpgwmic.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
+const MENTOR_ARCHIVE_SECRET = process.env.MENTOR_ARCHIVE_SECRET || '';
+const MENTOR_DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_MENTOR_FOLDER_ID || '';
+const GOOGLE_OAUTH_REDIRECT_URI = process.env.GOOGLE_OAUTH_REDIRECT_URI || 'https://badai.up.railway.app/api/mentor/google/callback';
 
 const MIME = {
   '.html':'text/html; charset=utf-8',
@@ -66,11 +75,12 @@ function decorateReqRes(req, res) {
 
 async function collectBody(req){
   if (!['POST','PUT','PATCH'].includes(String(req.method || '').toUpperCase())) return;
+  const type = String(req.headers['content-type'] || '');
+  if (type.includes('multipart/form-data')) return;
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
   const raw = Buffer.concat(chunks).toString('utf8');
   req.rawBody = raw;
-  const type = String(req.headers['content-type'] || '');
   if (type.includes('application/json')) {
     try { req.body = raw ? JSON.parse(raw) : {}; } catch { req.body = {}; }
   } else {
@@ -107,11 +117,644 @@ function serveStatic(req, res, pathname){
     res.statusCode = 200;
     res.setHeader('Content-Type', MIME[ext] || 'application/octet-stream');
     const noStore = ext === '.html' || pathname === '/akses/auth.js';
-    res.setHeader('Cache-Control', noStore ? 'no-store, max-age=0' : 'public, max-age=300');
+    const avatarAsset = pathname.startsWith('/avatars/') && ext === '.svg';
+    res.setHeader('Cache-Control', noStore
+      ? 'no-store, max-age=0'
+      : avatarAsset
+        ? 'public, max-age=31536000, immutable'
+        : 'public, max-age=300');
     fs.createReadStream(file).pipe(res);
     return true;
   } catch {
     return false;
+  }
+}
+
+let mentorGoogleOauthCache={loadedAt:0,refreshToken:'',googleEmail:'',connectedAt:null};
+
+async function loadStoredGoogleOauth(force){
+  if(!MENTOR_ARCHIVE_SECRET || !SUPABASE_ANON_KEY) return mentorGoogleOauthCache;
+  if(!force && mentorGoogleOauthCache.loadedAt && Date.now()-mentorGoogleOauthCache.loadedAt<60000){
+    return mentorGoogleOauthCache;
+  }
+  try{
+    const rows=await supabaseRpc('mentor_google_oauth_get',{p_worker_secret:MENTOR_ARCHIVE_SECRET});
+    const row=Array.isArray(rows)?rows[0]:rows;
+    mentorGoogleOauthCache={
+      loadedAt:Date.now(),
+      refreshToken:String(row?.refresh_token||''),
+      googleEmail:String(row?.google_email||''),
+      connectedAt:row?.connected_at||null
+    };
+  }catch(error){
+    console.warn('Mentor Google OAuth cache:',error?.message||error);
+    mentorGoogleOauthCache={loadedAt:Date.now(),refreshToken:'',googleEmail:'',connectedAt:null};
+  }
+  return mentorGoogleOauthCache;
+}
+
+async function createDriveAuth(){
+  const clientId = process.env.GOOGLE_CLIENT_ID || '';
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+  let refreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || '';
+
+  if(!refreshToken && clientId && clientSecret){
+    const stored=await loadStoredGoogleOauth(false);
+    refreshToken=stored.refreshToken||'';
+  }
+
+  if(refreshToken && clientId && clientSecret){
+    const oauth = new google.auth.OAuth2(clientId,clientSecret,GOOGLE_OAUTH_REDIRECT_URI);
+    oauth.setCredentials({refresh_token:refreshToken});
+    return oauth;
+  }
+
+  const serviceAccountRaw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || '';
+  if(serviceAccountRaw){
+    const credentials = JSON.parse(serviceAccountRaw);
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes:['https://www.googleapis.com/auth/drive']
+    });
+    return auth;
+  }
+
+  return null;
+}
+
+async function mentorDriveConfigured(){
+  if(!MENTOR_DRIVE_FOLDER_ID) return false;
+  if(process.env.GOOGLE_SERVICE_ACCOUNT_JSON) return true;
+  const clientId=process.env.GOOGLE_CLIENT_ID||'';
+  const clientSecret=process.env.GOOGLE_CLIENT_SECRET||'';
+  if(!clientId || !clientSecret) return false;
+  if(process.env.GOOGLE_DRIVE_REFRESH_TOKEN) return true;
+  const stored=await loadStoredGoogleOauth(false);
+  return Boolean(stored.refreshToken);
+}
+
+async function driveClient(){
+  const auth = await createDriveAuth();
+  if(!auth) throw new Error('Google Drive Mentor belum terhubung.');
+  return google.drive({version:'v3',auth});
+}
+
+function signedMentorFileUrl(fileId){
+  if(!MENTOR_ARCHIVE_SECRET) return '';
+  const sig = crypto.createHmac('sha256',MENTOR_ARCHIVE_SECRET).update(String(fileId)).digest('hex');
+  return '/api/mentor/file?id='+encodeURIComponent(fileId)+'&sig='+sig;
+}
+
+function verifyMentorFileSignature(fileId,sig){
+  if(!fileId || !sig || !MENTOR_ARCHIVE_SECRET) return false;
+  const expected = crypto.createHmac('sha256',MENTOR_ARCHIVE_SECRET).update(String(fileId)).digest('hex');
+  try{
+    return crypto.timingSafeEqual(Buffer.from(expected),Buffer.from(String(sig)));
+  }catch{
+    return false;
+  }
+}
+
+async function verifySupabaseBearer(token){
+  if(!token || !SUPABASE_ANON_KEY) return null;
+  const res = await fetch(SUPABASE_URL+'/auth/v1/user',{
+    headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}
+  });
+  if(!res.ok) return null;
+  return await res.json().catch(()=>null);
+}
+
+async function supabaseRpc(name,body,authorization){
+  const headers={
+    apikey:SUPABASE_ANON_KEY,
+    'Content-Type':'application/json'
+  };
+  if(authorization) headers.Authorization=authorization;
+  const res=await fetch(SUPABASE_URL+'/rest/v1/rpc/'+name,{
+    method:'POST',
+    headers,
+    body:JSON.stringify(body||{})
+  });
+  const text=await res.text();
+  let data=null;
+  if(text){try{data=JSON.parse(text)}catch{data=text}}
+  if(!res.ok) throw new Error((data&&(data.message||data.error||data.msg))||('RPC '+name+' gagal'));
+  return data;
+}
+
+async function verifyAdminBearer(token){
+  const user=await verifySupabaseBearer(token);
+  if(!user?.id) return null;
+  const res=await fetch(
+    SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&select=id,role,status&limit=1',
+    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  );
+  if(!res.ok) return null;
+  const rows=await res.json().catch(()=>[]);
+  const team=rows?.[0]||null;
+  if(!team || !['owner','super_admin'].includes(team.role)) return null;
+  return {user,team};
+}
+
+function googleOauthState(){
+  const ts=String(Date.now());
+  const sig=crypto.createHmac('sha256',MENTOR_ARCHIVE_SECRET).update('google-oauth:'+ts).digest('hex');
+  return ts+'.'+sig;
+}
+
+function verifyGoogleOauthState(value){
+  const raw=String(value||'');
+  const dot=raw.indexOf('.');
+  if(dot<1 || !MENTOR_ARCHIVE_SECRET) return false;
+  const ts=raw.slice(0,dot);
+  const sig=raw.slice(dot+1);
+  const age=Date.now()-Number(ts);
+  if(!Number.isFinite(age) || age<0 || age>15*60*1000) return false;
+  const expected=crypto.createHmac('sha256',MENTOR_ARCHIVE_SECRET).update('google-oauth:'+ts).digest('hex');
+  try{return crypto.timingSafeEqual(Buffer.from(sig),Buffer.from(expected))}catch{return false}
+}
+
+async function handleGoogleOauthConnect(req,res){
+  const clientId=process.env.GOOGLE_CLIENT_ID||'';
+  const clientSecret=process.env.GOOGLE_CLIENT_SECRET||'';
+  if(!clientId || !clientSecret){
+    return res.status(503).json({error:'Google OAuth Client ID/Secret belum dipasang di Railway.'});
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const adminUser=await verifyAdminBearer(token);
+  if(!adminUser) return res.status(403).json({error:'Hanya Owner atau Super Admin yang dapat menyambungkan Google Drive.'});
+
+  const oauth=new google.auth.OAuth2(clientId,clientSecret,GOOGLE_OAUTH_REDIRECT_URI);
+  const url=oauth.generateAuthUrl({
+    access_type:'offline',
+    prompt:'consent',
+    include_granted_scopes:true,
+    state:googleOauthState(),
+    scope:[
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'openid'
+    ]
+  });
+  return res.status(200).json({ok:true,url});
+}
+
+async function handleGoogleOauthCallback(req,res){
+  const clientId=process.env.GOOGLE_CLIENT_ID||'';
+  const clientSecret=process.env.GOOGLE_CLIENT_SECRET||'';
+  const code=String(req.query.code||'');
+  const state=String(req.query.state||'');
+  const oauthError=String(req.query.error||'');
+
+  if(oauthError){
+    res.statusCode=302;
+    res.setHeader('Location','/admin?mentor_drive=error&reason='+encodeURIComponent(oauthError));
+    return res.end();
+  }
+  if(!clientId || !clientSecret || !code || !verifyGoogleOauthState(state)){
+    return res.status(400).send('Otorisasi Google Drive tidak valid atau sudah kedaluwarsa.');
+  }
+
+  const oauth=new google.auth.OAuth2(clientId,clientSecret,GOOGLE_OAUTH_REDIRECT_URI);
+  const tokenResult=await oauth.getToken(code);
+  const tokens=tokenResult.tokens||{};
+  oauth.setCredentials(tokens);
+
+  let refreshToken=String(tokens.refresh_token||'');
+  if(!refreshToken){
+    const stored=await loadStoredGoogleOauth(true);
+    refreshToken=stored.refreshToken||'';
+  }
+  if(!refreshToken) return res.status(400).send('Google tidak memberikan refresh token. Ulangi sambungan dan izinkan akses Drive.');
+
+  let googleEmail='';
+  try{
+    const oauth2=google.oauth2({version:'v2',auth:oauth});
+    const me=await oauth2.userinfo.get();
+    googleEmail=String(me.data?.email||'');
+  }catch(_){}
+
+  await supabaseRpc('mentor_google_oauth_set',{
+    p_worker_secret:MENTOR_ARCHIVE_SECRET,
+    p_refresh_token:refreshToken,
+    p_google_email:googleEmail||null,
+    p_scope:String(tokens.scope||'')||null
+  });
+  mentorGoogleOauthCache={loadedAt:Date.now(),refreshToken,googleEmail,connectedAt:new Date().toISOString()};
+
+  // Verify that the selected Drive folder is actually reachable before declaring success.
+  const drive=await driveClient();
+  await drive.files.get({fileId:MENTOR_DRIVE_FOLDER_ID,fields:'id,name',supportsAllDrives:true});
+
+  res.statusCode=302;
+  res.setHeader('Location','/admin?mentor_drive=connected');
+  return res.end();
+}
+
+function parseMentorMultipart(req){
+  return new Promise((resolve,reject)=>{
+    const bb=Busboy({
+      headers:req.headers,
+      limits:{files:1,fileSize:10*1024*1024,fields:10}
+    });
+    const fields={};
+    let fileData=null;
+    let failed=false;
+
+    bb.on('field',(name,value)=>{fields[name]=value});
+    bb.on('file',(name,file,info)=>{
+      const chunks=[];
+      let size=0;
+      file.on('data',chunk=>{size+=chunk.length;chunks.push(chunk)});
+      file.on('limit',()=>{failed=true;reject(new Error('File maksimal 10 MB.'))});
+      file.on('end',()=>{
+        if(failed) return;
+        fileData={
+          field:name,
+          name:String(info.filename||'file'),
+          mime:String(info.mimeType||'application/octet-stream'),
+          size,
+          buffer:Buffer.concat(chunks)
+        };
+      });
+    });
+    bb.on('error',reject);
+    bb.on('finish',()=>{
+      if(failed) return;
+      if(!fileData) return reject(new Error('File belum dipilih.'));
+      resolve({fields,file:fileData});
+    });
+    req.pipe(bb);
+  });
+}
+
+function safeDriveName(value){
+  return String(value||'BADAI').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim().slice(0,90) || 'BADAI';
+}
+
+function driveQ(value){
+  return String(value||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
+
+async function findOrCreateDriveFolder(drive,name,parentId){
+  const q=[
+    "mimeType='application/vnd.google-apps.folder'",
+    "trashed=false",
+    "name='"+driveQ(name)+"'",
+    "'"+driveQ(parentId)+"' in parents"
+  ].join(' and ');
+  const found=await drive.files.list({
+    q,
+    fields:'files(id,name)',
+    pageSize:1,
+    supportsAllDrives:true,
+    includeItemsFromAllDrives:true
+  });
+  if(found.data.files && found.data.files[0]) return found.data.files[0].id;
+
+  const created=await drive.files.create({
+    requestBody:{name,mimeType:'application/vnd.google-apps.folder',parents:[parentId]},
+    fields:'id',
+    supportsAllDrives:true
+  });
+  return created.data.id;
+}
+
+async function uploadDriveBuffer(drive,parentId,name,mime,buffer){
+  const result=await drive.files.create({
+    requestBody:{name,parents:[parentId]},
+    media:{mimeType:mime,body:Readable.from(buffer)},
+    fields:'id,name,mimeType,size,webViewLink',
+    supportsAllDrives:true
+  });
+  return result.data;
+}
+
+async function handleMentorUpload(req,res){
+  if(!(await mentorDriveConfigured())){
+    return res.status(503).json({
+      error:'Google Drive Mentor belum terhubung. Chat teks dan stiker sudah aktif; file/gambar akan aktif setelah koneksi Drive dipasang.'
+    });
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const user=await verifySupabaseBearer(token);
+  if(!user?.id) return res.status(401).json({error:'Session tidak valid.'});
+
+  const parsed=await parseMentorMultipart(req);
+  const conversationId=String(parsed.fields.conversation_id||'').trim();
+  if(!conversationId) return res.status(400).json({error:'Percakapan Mentor belum tersedia.'});
+
+  const check=await fetch(
+    SUPABASE_URL+'/rest/v1/mentor_conversations?id=eq.'+encodeURIComponent(conversationId)+'&select=id',
+    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  );
+  const rows=check.ok?await check.json().catch(()=>[]):[];
+  if(!check.ok || !rows?.length) return res.status(403).json({error:'Tidak punya akses ke percakapan ini.'});
+
+  const drive=await driveClient();
+  const attachmentRoot=await findOrCreateDriveFolder(drive,'ATTACHMENTS',MENTOR_DRIVE_FOLDER_ID);
+  const conversationFolder=await findOrCreateDriveFolder(drive,conversationId,attachmentRoot);
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  const fileName=stamp+'__'+safeDriveName(parsed.file.name);
+  const saved=await uploadDriveBuffer(drive,conversationFolder,fileName,parsed.file.mime,parsed.file.buffer);
+
+  return res.status(200).json({
+    ok:true,
+    id:saved.id,
+    name:parsed.file.name,
+    mime:parsed.file.mime,
+    size:parsed.file.size,
+    url:signedMentorFileUrl(saved.id)
+  });
+}
+
+
+async function handleCommunityUpload(req,res){
+  if(!(await mentorDriveConfigured())){
+    return res.status(503).json({error:'Google Drive BADAI belum terhubung.'});
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const user=await verifySupabaseBearer(token);
+  if(!user?.id) return res.status(401).json({error:'Session tidak valid.'});
+
+  const parsed=await parseMentorMultipart(req);
+  const channelSlug=String(parsed.fields.channel_slug||'group').trim().toLowerCase();
+  if(!['group','announcement'].includes(channelSlug)){
+    return res.status(400).json({error:'Channel komunitas tidak valid.'});
+  }
+
+  const authHeaders={apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token};
+  const [teamCheck,profileCheck]=await Promise.all([
+    fetch(
+      SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&select=role&limit=1',
+      {headers:authHeaders}
+    ),
+    fetch(
+      SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(user.id)+'&member_status=eq.active&select=id,membership_lifecycle_status&limit=1',
+      {headers:authHeaders}
+    )
+  ]);
+
+  const teamRows=teamCheck.ok?await teamCheck.json().catch(()=>[]):[];
+  const profileRows=profileCheck.ok?await profileCheck.json().catch(()=>[]):[];
+  const role=String(teamRows?.[0]?.role||'');
+  const staffRoles=['owner','super_admin','admin','mentor','sales','finance','marketing'];
+  const announcementRoles=['owner','super_admin','admin','mentor'];
+  const isStaff=staffRoles.includes(role);
+  const isAnnouncementStaff=announcementRoles.includes(role);
+  const memberRow=profileRows?.[0]||null;
+  const isActiveMember=Boolean(
+    memberRow && ['active','grace'].includes(String(memberRow.membership_lifecycle_status||'active'))
+  );
+
+  if(channelSlug==='announcement' && !isAnnouncementStaff){
+    return res.status(403).json({error:'Hanya Admin BADAI yang dapat mengirim lampiran Pengumuman.'});
+  }
+  if(channelSlug==='group' && !isStaff && !isActiveMember){
+    return res.status(403).json({error:'Akses Grup BADAI tidak aktif.'});
+  }
+
+  const drive=await driveClient();
+  const communityRoot=await findOrCreateDriveFolder(drive,'COMMUNITY-ATTACHMENTS',MENTOR_DRIVE_FOLDER_ID);
+  const channelFolder=await findOrCreateDriveFolder(
+    drive,
+    channelSlug==='announcement'?'PENGUMUMAN-BADAI':'GROUP-BADAI',
+    communityRoot
+  );
+  const userFolder=await findOrCreateDriveFolder(drive,String(user.id),channelFolder);
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  const fileName=stamp+'__'+safeDriveName(parsed.file.name);
+  const saved=await uploadDriveBuffer(drive,userFolder,fileName,parsed.file.mime,parsed.file.buffer);
+
+  return res.status(200).json({
+    ok:true,
+    id:saved.id,
+    name:parsed.file.name,
+    mime:parsed.file.mime,
+    size:parsed.file.size,
+    url:signedMentorFileUrl(saved.id)
+  });
+}
+
+async function processAdminMediaDeleteQueue(token,limit=100){
+  const auth='Bearer '+token;
+  const pending=await supabaseRpc('admin_media_delete_queue_pending',{p_limit:limit},auth);
+  const rows=Array.isArray(pending)?pending:[];
+  if(!rows.length) return {processed:0,deleted:0,failed:0};
+
+  let drive=null;
+  try{
+    if(await mentorDriveConfigured()) drive=await driveClient();
+  }catch(_){drive=null}
+
+  let deleted=0,failed=0;
+  for(const row of rows){
+    let ok=false,errorText='';
+    if(!drive){
+      errorText='Google Drive belum terhubung.';
+    }else{
+      try{
+        await drive.files.delete({
+          fileId:String(row.drive_file_id||''),
+          supportsAllDrives:true
+        });
+        ok=true;
+      }catch(error){
+        const code=Number(error?.code||error?.response?.status||0);
+        if(code===404 || code===410){
+          ok=true;
+        }else{
+          errorText=String(error?.message||'Gagal menghapus file dari Google Drive.');
+        }
+      }
+    }
+
+    try{
+      await supabaseRpc('admin_media_delete_queue_mark',{
+        p_queue_id:row.id,
+        p_success:ok,
+        p_error:ok?null:errorText
+      },auth);
+    }catch(markError){
+      console.warn('Media delete queue mark:',markError?.message||markError);
+    }
+
+    if(ok)deleted++;else failed++;
+  }
+  return {processed:rows.length,deleted,failed};
+}
+
+async function handleAdminPermanentChatDelete(req,res){
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const adminUser=await verifyAdminBearer(token);
+  if(!adminUser){
+    return res.status(403).json({error:'Hanya Owner atau Super Admin yang dapat menghapus chat permanen.'});
+  }
+
+  const scopeKind=String(req.body?.scope_kind||'').trim().toLowerCase();
+  const rawIds=Array.isArray(req.body?.message_ids)?req.body.message_ids:[];
+  const ids=rawIds
+    .map(v=>String(v||'').trim())
+    .filter(v=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v))
+    .slice(0,200);
+
+  if(!['community','mentor'].includes(scopeKind)){
+    return res.status(400).json({error:'Jenis chat tidak valid.'});
+  }
+  if(!ids.length){
+    return res.status(400).json({error:'Pilih minimal satu pesan.'});
+  }
+
+  const prepared=await supabaseRpc('admin_chat_permanent_delete_prepare',{
+    p_scope_kind:scopeKind,
+    p_message_ids:ids
+  },'Bearer '+token);
+  const row=Array.isArray(prepared)?prepared[0]:prepared;
+  const cleanup=await processAdminMediaDeleteQueue(token,100).catch(error=>({
+    processed:0,deleted:0,failed:0,error:String(error?.message||error)
+  }));
+
+  return res.status(200).json({
+    ok:true,
+    deleted_messages:Number(row?.deleted_count||0),
+    queued_files:Number(row?.queued_files||0),
+    drive_deleted:Number(cleanup?.deleted||0),
+    drive_failed:Number(cleanup?.failed||0),
+    cleanup_error:cleanup?.error||null
+  });
+}
+
+
+async function handleProfileAvatarUpload(req,res){
+  if(!(await mentorDriveConfigured())){
+    return res.status(503).json({error:'Google Drive BADAI belum terhubung.'});
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const user=await verifySupabaseBearer(token);
+  if(!user?.id) return res.status(401).json({error:'Session tidak valid.'});
+
+  const teamCheck=await fetch(
+    SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&role=in.(owner,super_admin,admin,mentor,sales,finance,marketing)&select=id&limit=1',
+    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  );
+  const teamRows=teamCheck.ok?await teamCheck.json().catch(()=>[]):[];
+  if(!teamCheck.ok || !teamRows?.length){
+    return res.status(403).json({error:'Upload foto profil hanya tersedia untuk Admin BADAI.'});
+  }
+
+  const parsed=await parseMentorMultipart(req);
+  const mime=String(parsed.file.mime||'').toLowerCase();
+  if(!['image/jpeg','image/png','image/webp'].includes(mime)){
+    return res.status(400).json({error:'Foto profil harus JPG, PNG, atau WebP.'});
+  }
+  if(Number(parsed.file.size||0)>2*1024*1024){
+    return res.status(400).json({error:'Foto profil maksimal 2 MB setelah diproses.'});
+  }
+
+  const drive=await driveClient();
+  const avatarRoot=await findOrCreateDriveFolder(drive,'PROFILE-AVATARS',MENTOR_DRIVE_FOLDER_ID);
+  const userFolder=await findOrCreateDriveFolder(drive,String(user.id),avatarRoot);
+  const ext=mime==='image/png'?'.png':mime==='image/webp'?'.webp':'.jpg';
+  const fileName='avatar-'+Date.now()+ext;
+  const saved=await uploadDriveBuffer(drive,userFolder,fileName,mime,parsed.file.buffer);
+  const avatarUrl=signedMentorFileUrl(saved.id);
+
+  const savedProfile=await supabaseRpc(
+    'profile_avatar_set',
+    {p_drive_file_id:saved.id,p_avatar_url:avatarUrl},
+    'Bearer '+token
+  );
+  const row=Array.isArray(savedProfile)?savedProfile[0]:savedProfile;
+
+  return res.status(200).json({
+    ok:true,
+    avatar_url:row?.avatar_url||avatarUrl,
+    drive_file_id:saved.id
+  });
+}
+
+async function handleMentorFile(req,res){
+  const fileId=String(req.query.id||'');
+  const sig=String(req.query.sig||'');
+  if(!verifyMentorFileSignature(fileId,sig)) return res.status(403).send('Link file tidak valid.');
+  if(!(await mentorDriveConfigured())) return res.status(503).send('Google Drive Mentor belum terhubung.');
+
+  const drive=await driveClient();
+  const meta=await drive.files.get({fileId,fields:'name,mimeType,size',supportsAllDrives:true});
+  const data=await drive.files.get({fileId,alt:'media',supportsAllDrives:true},{responseType:'stream'});
+  res.statusCode=200;
+  res.setHeader('Content-Type',meta.data.mimeType||'application/octet-stream');
+  res.setHeader('Content-Disposition','inline; filename="'+String(meta.data.name||'file').replace(/"/g,'')+'"');
+  res.setHeader('Cache-Control','private, max-age=300');
+  data.data.pipe(res);
+}
+
+function csvCell(value){
+  const s=String(value==null?'':value).replace(/"/g,'""');
+  return '"'+s+'"';
+}
+
+async function finishArchiveBatch(batchId,success,payload){
+  return await supabaseRpc('mentor_archive_finish_batch',{
+    p_worker_secret:MENTOR_ARCHIVE_SECRET,
+    p_batch_id:batchId,
+    p_success:Boolean(success),
+    p_drive_file_id:payload?.json?.id||null,
+    p_drive_web_view_link:payload?.json?.webViewLink||null,
+    p_drive_csv_file_id:payload?.csv?.id||null,
+    p_drive_csv_web_view_link:payload?.csv?.webViewLink||null,
+    p_error_message:payload?.error||null
+  });
+}
+
+let mentorArchiveBusy=false;
+async function runMentorArchiveWorker(){
+  if(mentorArchiveBusy || !(await mentorDriveConfigured()) || !SUPABASE_ANON_KEY || !MENTOR_ARCHIVE_SECRET) return;
+  mentorArchiveBusy=true;
+  let batch=null;
+  try{
+    const claimed=await supabaseRpc('mentor_archive_claim_batch',{p_worker_secret:MENTOR_ARCHIVE_SECRET});
+    batch=Array.isArray(claimed)?claimed[0]:claimed;
+    if(!batch?.batch_id) return;
+
+    const drive=await driveClient();
+    const memberFolderName='MEMBER - '+safeDriveName(batch.member_name||'BADAI')+' - '+String(batch.member_user_id||'').slice(0,8);
+    const memberFolder=await findOrCreateDriveFolder(drive,memberFolderName,MENTOR_DRIVE_FOLDER_ID);
+    const date=String(batch.archive_date);
+    const year=date.slice(0,4)||'ARSIP';
+    const month=date.slice(5,7)||'00';
+    const yearFolder=await findOrCreateDriveFolder(drive,year,memberFolder);
+    const monthFolder=await findOrCreateDriveFolder(drive,month,yearFolder);
+
+    const messages=Array.isArray(batch.messages)?batch.messages:[];
+    const jsonl=messages.map(m=>JSON.stringify(m)).join('\n')+'\n';
+    const csvHeader=['created_at','sender_kind','message_type','body','sticker_key','file_name','file_mime','file_size','drive_file_id'];
+    const csvLines=[csvHeader.map(csvCell).join(',')];
+    for(const m of messages){
+      csvLines.push(csvHeader.map(key=>csvCell(m?.[key])).join(','));
+    }
+
+    const base=date+'__mentor-chat';
+    const jsonFile=await uploadDriveBuffer(drive,monthFolder,base+'.jsonl','application/x-ndjson',Buffer.from(jsonl,'utf8'));
+    const csvFile=await uploadDriveBuffer(drive,monthFolder,base+'.csv','text/csv',Buffer.from(csvLines.join('\n')+'\n','utf8'));
+    await finishArchiveBatch(batch.batch_id,true,{json:jsonFile,csv:csvFile});
+    console.log('Mentor archive uploaded:',batch.batch_id,date,batch.member_name);
+  }catch(error){
+    console.error('Mentor archive worker:',error?.message||error);
+    if(batch?.batch_id){
+      try{await finishArchiveBatch(batch.batch_id,false,{error:String(error?.message||error)})}catch(_){}
+    }
+  }finally{
+    mentorArchiveBusy=false;
   }
 }
 
@@ -132,6 +775,46 @@ const server = http.createServer(async (req, res) => {
         source:process.env.VERCEL_GIT_COMMIT_SHA || 'staging',
         build:BUILD_REV
       });
+    }
+
+    if (pathname === '/api/mentor/status') {
+      const stored=await loadStoredGoogleOauth(false);
+      return res.status(200).json({
+        ok:true,
+        drive_configured:await mentorDriveConfigured(),
+        oauth_client_configured:Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+        connected_account:stored.googleEmail ? stored.googleEmail.replace(/^(.{2}).*(@.*)$/,'$1***$2') : '',
+        hot_storage_days:7,
+        archive_time:'00:05 WIB'
+      });
+    }
+
+    if (pathname === '/api/mentor/google/connect' && req.method === 'POST') {
+      return await handleGoogleOauthConnect(req,res);
+    }
+
+    if (pathname === '/api/mentor/google/callback' && req.method === 'GET') {
+      return await handleGoogleOauthCallback(req,res);
+    }
+
+    if (pathname === '/api/mentor/upload' && req.method === 'POST') {
+      return await handleMentorUpload(req,res);
+    }
+
+    if (pathname === '/api/mentor/file' && req.method === 'GET') {
+      return await handleMentorFile(req,res);
+    }
+
+    if (pathname === '/api/community/upload' && req.method === 'POST') {
+      return await handleCommunityUpload(req,res);
+    }
+
+    if (pathname === '/api/profile/avatar' && req.method === 'POST') {
+      return await handleProfileAvatarUpload(req,res);
+    }
+
+    if (pathname === '/api/admin/chat/permanent-delete' && req.method === 'POST') {
+      return await handleAdminPermanentChatDelete(req,res);
     }
 
     if (pathname === '/admin' || pathname === '/admin/' || pathname === '/api/admin-v5') {
@@ -165,4 +848,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('BADAI-STAGING listening on port ' + PORT);
+  mentorDriveConfigured().then(v=>console.log('Mentor Drive configured:',v)).catch(()=>{});
+  setTimeout(() => runMentorArchiveWorker().catch(()=>{}), 15000);
+  setInterval(() => runMentorArchiveWorker().catch(()=>{}), 5*60*1000);
 });

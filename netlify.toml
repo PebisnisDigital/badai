@@ -6,3 +6,29 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+
+# BADAI shared Railway backend proxies
+[[redirects]]
+  from = "/api/mentor/*"
+  to = "https://badai.up.railway.app/api/mentor/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/community/*"
+  to = "https://badai.up.railway.app/api/community/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/profile/*"
+  to = "https://badai.up.railway.app/api/profile/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/admin/chat/permanent-delete"
+  to = "https://badai.up.railway.app/api/admin/chat/permanent-delete"
+  status = 200
+  force = true
