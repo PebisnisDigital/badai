@@ -3624,6 +3624,361 @@ th,td{padding:14px 12px!important}
   #pageMentor .mentor-admin-messages,
   #pageMentor .mentor-thread-empty{min-height:0!important;max-height:none!important}
 }
+
+/* FINAL ADMIN CHAT POLISH — cleaner WhatsApp-like workspace */
+#pageMentor{
+  --wa-bg:#0b141a;
+  --wa-panel:#111b21;
+  --wa-header:#202c33;
+  --wa-input:#2a3942;
+  --wa-line:#23313a;
+  --wa-in:#202c33;
+  --wa-out:#005c4b;
+  --wa-green:#00a884;
+  --wa-bright:#25d366;
+  --wa-text:#e9edef;
+  --wa-muted:#8696a0;
+}
+#pageMentor .mentor-chat-page-head{
+  margin:0 0 10px!important;
+  min-height:38px;
+}
+#pageMentor .mentor-chat-page-head h2{
+  font-size:18px!important;
+  letter-spacing:-.02em;
+}
+#pageMentor .mentor-admin-layout{
+  grid-template-columns:320px minmax(0,1fr)!important;
+  background:var(--wa-panel)!important;
+  border:1px solid #26343c!important;
+  border-radius:16px!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.22);
+}
+#pageMentor .mentor-inbox-panel{
+  background:var(--wa-panel)!important;
+  border-right:1px solid var(--wa-line)!important;
+}
+#pageMentor .mentor-thread-panel{
+  background:var(--wa-bg)!important;
+}
+#pageMentor .mentor-inbox-head{
+  min-height:60px!important;
+  padding:9px 12px!important;
+  background:var(--wa-header)!important;
+}
+#pageMentor .mentor-inbox-head b{
+  font-size:12px!important;
+  font-weight:900!important;
+  color:var(--wa-text)!important;
+}
+#pageMentor .mentor-inbox-head span{
+  font-size:7px!important;
+  color:var(--wa-muted)!important;
+}
+#pageMentor .mentor-inbox-head-actions{
+  display:flex!important;
+  align-items:center!important;
+  gap:2px!important;
+}
+#pageMentor .mentor-inbox-head-actions button{
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:#aebac1!important;
+}
+#pageMentor .mentor-inbox-head-actions button:hover,
+#pageMentor .mentor-inbox-head-actions button.active{
+  background:#2a3942!important;
+  color:var(--wa-bright)!important;
+}
+#pageMentor .mentor-inbox-search{
+  margin:7px 8px!important;
+  min-height:36px!important;
+  border-radius:9px!important;
+  background:#202c33!important;
+}
+#pageMentor .mentor-inbox-search input{
+  font-size:9px!important;
+}
+#pageMentor .mentor-inbox-item{
+  min-height:64px!important;
+  padding:8px 10px!important;
+  grid-template-columns:40px minmax(0,1fr) auto!important;
+  gap:9px!important;
+  border-bottom:1px solid #1f2a30!important;
+  transition:background .14s ease!important;
+}
+#pageMentor .mentor-inbox-item:hover,
+#pageMentor .mentor-inbox-item.active{
+  background:#202c33!important;
+}
+#pageMentor .mentor-inbox-avatar{
+  width:40px!important;
+  height:40px!important;
+  flex:0 0 40px!important;
+  border:0!important;
+  background:#374248!important;
+  color:#dfe5e8!important;
+  font-size:11px!important;
+}
+#pageMentor .mentor-inbox-top b{
+  font-size:9.5px!important;
+  color:#e9edef!important;
+}
+#pageMentor .mentor-inbox-preview{
+  font-size:7.5px!important;
+  color:#8696a0!important;
+}
+#pageMentor .mentor-inbox-assigned{
+  font-size:6.3px!important;
+  color:#667781!important;
+}
+#pageMentor .mentor-inbox-time{
+  font-size:6.3px!important;
+  color:#667781!important;
+}
+#pageMentor .mentor-unread{
+  min-width:18px!important;
+  height:18px!important;
+  padding:0 5px!important;
+  background:var(--wa-bright)!important;
+  color:#0b141a!important;
+  border:0!important;
+  font-size:6.5px!important;
+}
+#pageMentor .mentor-thread-head{
+  min-height:60px!important;
+  padding:8px 12px!important;
+  background:var(--wa-header)!important;
+  border-bottom:1px solid #26343c!important;
+}
+#pageMentor .mentor-thread-person{
+  gap:9px!important;
+}
+#pageMentor .mentor-thread-avatar{
+  width:40px!important;
+  height:40px!important;
+  flex:0 0 40px!important;
+  border:0!important;
+  background:#374248!important;
+  color:#fff!important;
+  font-size:11px!important;
+}
+#pageMentor .mentor-thread-copy b{
+  font-size:10.5px!important;
+  color:var(--wa-text)!important;
+}
+#pageMentor .mentor-thread-copy span{
+  font-size:7px!important;
+  color:var(--wa-muted)!important;
+}
+#pageMentor #claimMentorChatBtn{
+  min-height:30px!important;
+  padding:0 10px!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:#2a3942!important;
+  color:#d5dde1!important;
+  font-size:6.8px!important;
+}
+#pageMentor #claimMentorChatBtn:hover{
+  background:#315248!important;
+  color:#8ff0c6!important;
+}
+#pageMentor .mentor-admin-messages{
+  padding:14px 6.5%!important;
+  gap:3px!important;
+  background-color:var(--wa-bg)!important;
+  background-image:
+    radial-gradient(circle at 15px 17px,rgba(134,150,160,.055) 0 1.1px,transparent 1.3px),
+    radial-gradient(circle at 42px 48px,rgba(134,150,160,.04) 0 1px,transparent 1.3px)!important;
+  background-size:58px 58px,72px 72px!important;
+}
+#pageMentor .mentor-admin-date{
+  margin:8px auto 6px!important;
+  padding:5px 9px!important;
+  border-radius:7px!important;
+  background:#182229!important;
+  color:#d1d7db!important;
+  font-size:6.5px!important;
+  font-weight:850!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.28);
+}
+#pageMentor .mentor-admin-msg{
+  max-width:72%!important;
+  padding:6px 8px 4px!important;
+  border-radius:7.5px!important;
+  box-shadow:0 1px 1px rgba(0,0,0,.28)!important;
+}
+#pageMentor .mentor-admin-msg.member{
+  background:var(--wa-in)!important;
+  color:var(--wa-text)!important;
+  border-top-left-radius:2px!important;
+}
+#pageMentor .mentor-admin-msg.mentor{
+  background:var(--wa-out)!important;
+  color:#e9edef!important;
+  border-top-right-radius:2px!important;
+}
+#pageMentor .mentor-admin-msg .body{
+  padding:1px 1px 0!important;
+  font-size:9.6px!important;
+  line-height:1.38!important;
+  font-weight:650!important;
+}
+#pageMentor .mentor-admin-meta{
+  min-height:10px!important;
+  margin-top:1px!important;
+  padding-left:20px!important;
+  gap:3px!important;
+  color:#aebac1!important;
+  font-size:5.9px!important;
+}
+#pageMentor .mentor-admin-msg.sticker{
+  max-width:none!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#pageMentor .mentor-admin-msg.sticker .body{
+  font-size:36px!important;
+}
+#pageMentor .mentor-admin-image img{
+  width:min(260px,100%)!important;
+  max-height:300px!important;
+  border-radius:6px!important;
+}
+#pageMentor .mentor-admin-file{
+  min-width:180px!important;
+  padding:8px!important;
+  border-radius:7px!important;
+  background:rgba(11,20,26,.34)!important;
+}
+#pageMentor .mentor-admin-jump{
+  right:14px!important;
+  bottom:14px!important;
+  width:34px!important;
+  height:34px!important;
+  border-radius:999px!important;
+  background:#202c33!important;
+  color:#d1d7db!important;
+  border:1px solid #31444e!important;
+}
+#pageMentor .mentor-admin-stickers{
+  padding:7px 9px!important;
+  gap:5px!important;
+  background:#111b21!important;
+  border-top:1px solid #26343c!important;
+}
+#pageMentor .mentor-admin-stickers button{
+  width:34px!important;
+  height:34px!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:#202c33!important;
+}
+#pageMentor .mentor-admin-attach-menu{
+  padding:8px!important;
+  gap:7px!important;
+  background:#111b21!important;
+  border-top:1px solid #26343c!important;
+}
+#pageMentor .mentor-admin-attach-choice{
+  min-height:38px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:#202c33!important;
+  color:#d1d7db!important;
+  font-size:7px!important;
+}
+#pageMentor .mentor-admin-pending{
+  padding:7px 9px!important;
+  background:#111b21!important;
+  border-top:1px solid #26343c!important;
+}
+#pageMentor .mentor-admin-composer{
+  position:relative!important;
+  bottom:auto!important;
+  grid-template-columns:34px 34px minmax(0,1fr) 38px!important;
+  gap:4px!important;
+  padding:7px 9px!important;
+  background:#111b21!important;
+  border-top:1px solid #26343c!important;
+  align-items:end!important;
+}
+#pageMentor .mentor-admin-icon{
+  width:34px!important;
+  height:38px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:#8696a0!important;
+  font-size:18px!important;
+}
+#pageMentor .mentor-admin-icon:hover{
+  color:#d1d7db!important;
+  background:#202c33!important;
+}
+#pageMentor .mentor-admin-composer textarea{
+  min-height:38px!important;
+  max-height:96px!important;
+  padding:10px 13px!important;
+  border:0!important;
+  border-radius:20px!important;
+  background:#2a3942!important;
+  color:#e9edef!important;
+  font-size:9.5px!important;
+  line-height:1.35!important;
+}
+#pageMentor .mentor-admin-composer textarea::placeholder{
+  color:#8696a0!important;
+}
+#pageMentor #mentorAdminSendBtn{
+  width:38px!important;
+  height:38px!important;
+  min-height:38px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:999px!important;
+  background:var(--wa-green)!important;
+  color:#fff!important;
+  font-size:14px!important;
+}
+#pageMentor #mentorAdminNote{
+  min-height:0!important;
+  margin:0!important;
+  padding:0 9px 4px!important;
+  background:#111b21!important;
+  color:#667781!important;
+}
+#pageMentor .mentor-thread-empty{
+  background-color:var(--wa-bg)!important;
+}
+@media(max-width:900px) and (min-width:761px){
+  #pageMentor .mentor-admin-layout{
+    grid-template-columns:280px minmax(0,1fr)!important;
+  }
+  #pageMentor .mentor-admin-messages{padding-left:4%!important;padding-right:4%!important}
+}
+@media(max-width:760px){
+  #pageMentor .mentor-admin-layout{
+    grid-template-columns:1fr!important;
+    border-radius:12px!important;
+  }
+  #pageMentor .mentor-inbox-panel{border-right:0!important}
+  #pageMentor .mentor-admin-messages{
+    padding:12px 9px!important;
+  }
+  #pageMentor .mentor-admin-msg{max-width:84%!important}
+  #pageMentor .mentor-thread-head{padding:7px 9px!important}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
