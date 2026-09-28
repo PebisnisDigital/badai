@@ -1955,6 +1955,47 @@ module.exports = async function handler(req, res) {
     75%{opacity:1;transform:scale(1.12)}
     100%{opacity:1;transform:scale(1)}
   }
+  /* WhatsApp-style speech bubbles + sender names */
+  #mentor .mentor-msg:not(.sticker):not(.system){
+    position:relative!important;
+    border-radius:10px!important;
+    box-shadow:0 1px 1px rgba(0,0,0,.28)!important;
+    overflow:visible!important;
+  }
+  #mentor .mentor-msg.mentor:not(.sticker):not(.system){
+    border-top-left-radius:3px!important;
+  }
+  #mentor .mentor-msg.member:not(.sticker):not(.system){
+    border-top-right-radius:3px!important;
+  }
+  #mentor .mentor-msg.mentor:not(.sticker):not(.system)::before{
+    content:"";position:absolute;left:-8px;top:0;width:12px;height:16px;
+    background:var(--wa-in);clip-path:polygon(100% 0,100% 100%,0 0);
+    border-top-left-radius:2px;filter:drop-shadow(-1px 1px 0 rgba(0,0,0,.12));
+  }
+  #mentor .mentor-msg.member:not(.sticker):not(.system)::before{
+    content:"";position:absolute;right:-8px;top:0;width:12px;height:16px;
+    background:var(--wa-out);clip-path:polygon(0 0,0 100%,100% 0);
+    border-top-right-radius:2px;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.12));
+  }
+  #mentor .mentor-community-sender{
+    margin:0 18px 4px 1px!important;
+    font-size:12px!important;font-weight:600!important;line-height:1.25!important;
+    letter-spacing:-.01em;
+  }
+  #mentor .mentor-community-sender::before{content:"~ ";opacity:.72}
+  #mentor .mentor-community-sender.tone-0{color:#ff73b9!important}
+  #mentor .mentor-community-sender.tone-1{color:#53bdeb!important}
+  #mentor .mentor-community-sender.tone-2{color:#d9a7ff!important}
+  #mentor .mentor-community-sender.tone-3{color:#ffb86b!important}
+  #mentor .mentor-community-sender.tone-4{color:#7ee0b8!important}
+  #mentor .mentor-community-sender.tone-5{color:#ffd166!important}
+  #mentor .mentor-community-sender.tone-6{color:#8fb8ff!important}
+  #mentor .mentor-msg.mentor:not(.sticker):not(.system):has(.mentor-community-sender){
+    padding-top:7px!important;
+  }
+  #mentor .mentor-msg.sticker::before,#mentor .mentor-msg.system::before{display:none!important}
+
   /* Group @mentions */
   #mentor .mentor-mention-btn{font-weight:700!important;font-size:18px!important}
   #mentor .mentor-mention-btn.hidden{display:none!important}
@@ -2848,6 +2889,12 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }
 
+  function communitySenderTone(name){
+    var s=String(name||''),sum=0;
+    for(var i=0;i<s.length;i++)sum=(sum+s.charCodeAt(i)*(i+1))%7;
+    return 'tone-'+sum
+  }
+
   function renderCommunityMessages(rows,slug){
     var list=el('mentorMessageList');if(!list)return;
     var wasNear=mentorNearBottom(list),s=memberSession(),uid=s&&s.user?s.user.id:'';
@@ -2860,7 +2907,8 @@ document.addEventListener('DOMContentLoaded', function(){
       var day=mentorDateKey(m.created_at);
       if(day!==lastDay){html+='<div class="mentor-date-sep">'+mentorDateLabel(m.created_at)+'</div>';lastDay=day}
       var own=String(m.sender_user_id||'')===String(uid||''),side=own?'member':'mentor';
-      var sender=(slug==='group'&&!own)?'<div class="mentor-community-sender">'+mentorEsc(m.sender_name||'Member BADAI')+'</div>':'';
+      var senderName=m.sender_name||'Member BADAI';
+      var sender=(slug==='group'&&!own)?'<div class="mentor-community-sender '+communitySenderTone(senderName)+'">'+mentorEsc(senderName)+'</div>':'';
       var body='';
       if(m.message_type==='sticker')body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
       else if(m.message_type==='image')body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><img src="'+mentorEsc(m.drive_web_view_link||'#')+'" alt="" loading="lazy"></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
