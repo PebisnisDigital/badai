@@ -1705,6 +1705,104 @@ module.exports = async function handler(req, res) {
   .mentor-menu-reactions button{width:30px;height:30px;border:0;border-radius:999px;background:#202c33;font-size:16px}
   @media(max-width:560px){#mentor .mentor-bubble-menu-btn{opacity:.8}}
 
+  /* WhatsApp app navigation: chat list -> thread -> back to chat list */
+  #mentor .mentor-chat-home{
+    width:100%;
+    height:clamp(500px,68dvh,680px);
+    margin:12px 0 0;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    border:1px solid #26343c;
+    border-radius:15px;
+    background:#111b21;
+    color:#e9edef;
+  }
+  #mentor .mentor-chat-home-head{
+    min-height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 14px;
+    background:#202c33;
+    border-bottom:1px solid #26343c;
+  }
+  #mentor .mentor-chat-home-head>div{display:grid;gap:3px}
+  #mentor .mentor-chat-home-head strong{font-size:20px!important;font-weight:700!important;line-height:1.1}
+  #mentor .mentor-chat-home-head span{font-size:11px!important;font-weight:300!important;color:#8696a0}
+  #mentor .mentor-chat-home-search{
+    min-height:42px;
+    margin:8px 10px;
+    padding:0 12px;
+    display:grid;
+    grid-template-columns:22px minmax(0,1fr);
+    align-items:center;
+    gap:5px;
+    border-radius:10px;
+    background:#202c33;
+    color:#8696a0;
+  }
+  #mentor .mentor-chat-home-search input{
+    width:100%;border:0;outline:0;background:transparent;color:#e9edef;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;
+    font-size:14px!important;font-weight:300!important
+  }
+  #mentor .mentor-chat-home-search input::placeholder{color:#8696a0}
+  #mentor .mentor-chat-home-list{
+    flex:1;min-height:0;overflow-y:auto;background:#111b21;
+  }
+  #mentor .mentor-chat-row{
+    width:100%;min-height:76px;padding:10px 12px;
+    display:grid;grid-template-columns:52px minmax(0,1fr);gap:11px;align-items:center;
+    border:0;border-bottom:1px solid #222d34;background:transparent;color:#e9edef;text-align:left;
+  }
+  #mentor .mentor-chat-row:hover,#mentor .mentor-chat-row:active{background:#202c33}
+  #mentor .mentor-chat-row-avatar{
+    width:52px;height:52px;display:grid;place-items:center;border-radius:999px;
+    background:#374248;color:#fff;font-size:17px!important;font-weight:400!important
+  }
+  #mentor .mentor-chat-row-main{min-width:0;display:grid;gap:7px}
+  #mentor .mentor-chat-row-top,
+  #mentor .mentor-chat-row-bottom{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  #mentor .mentor-chat-row-top strong{
+    min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-size:16px!important;font-weight:400!important
+  }
+  #mentor .mentor-chat-row-top span{flex:0 0 auto;color:#8696a0;font-size:11px!important;font-weight:300!important}
+  #mentor .mentor-chat-row-bottom>span{
+    min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8696a0;
+    font-size:13px!important;font-weight:300!important
+  }
+  #mentor .mentor-chat-row-bottom>b{
+    flex:0 0 auto;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;
+    border-radius:999px;background:#25d366;color:#0b141a;font-size:10px!important;font-weight:700!important
+  }
+  #mentor .mentor-chat-back{
+    width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;
+    border:0;border-radius:999px;background:transparent;color:#d1d7db;
+    font-size:22px!important;font-weight:400!important
+  }
+  #mentor .mentor-chat-back:hover{background:#2a3942}
+  #mentor .mentor-wa-head{grid-template-columns:34px 40px minmax(0,1fr)!important}
+  #mentor.mentor-chat-list-mode .mentor-chat-home{display:flex!important}
+  #mentor.mentor-chat-list-mode .mentor-chat-card{display:none!important}
+  #mentor.mentor-chat-thread-mode .mentor-chat-home{display:none!important}
+  #mentor.mentor-chat-thread-mode .mentor-chat-card{display:flex!important}
+  #mentor .mentor-chat-card{
+    width:100%!important;
+    max-width:none!important;
+    margin:12px 0 0!important;
+  }
+  @media(max-width:560px){
+    #mentor .mentor-chat-home,
+    #mentor .mentor-chat-card{
+      height:calc(100dvh - 245px)!important;
+      min-height:360px!important;
+      margin-top:8px!important;
+      border-radius:14px!important;
+    }
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -2024,6 +2122,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorUiState=new Map();
   var mentorReply=null;
   var mentorMessageMenu=null;
+  var mentorView='list';
   var mentorDraftKey='badai_mentor_draft';
   var mentorMemberPresenceLastTouch=0;
 
@@ -2266,10 +2365,44 @@ document.addEventListener('DOMContentLoaded', function(){
     var hour=Math.floor(min/60);if(hour<24)return 'terakhir dilihat '+hour+' jam lalu';
     return 'terakhir dilihat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(new Date(value))
   }
+  function setMentorView(view){
+    mentorView=view==='thread'?'thread':'list';
+    var screen=el('mentor');
+    if(screen){
+      screen.classList.toggle('mentor-chat-list-mode',mentorView==='list');
+      screen.classList.toggle('mentor-chat-thread-mode',mentorView==='thread')
+    }
+    if(mentorView==='thread'){
+      touchMentorMemberPresence(true);
+      mentorLastKey='';
+      loadMentorMessages().then(function(){mentorScrollBottom(true)}).catch(function(){});
+      setTimeout(function(){var input=el('mentorMessageInput');if(input)input.focus()},40)
+    }else{
+      mentorSetTyping(false);
+      closeMentorMessageMenu();
+      clearMentorReply()
+    }
+  }
+
+  function updateMentorChatRow(rows){
+    rows=rows||[];
+    var row=rows.length?rows[rows.length-1]:null;
+    var preview=el('mentorChatRowPreview'),time=el('mentorChatRowTime');
+    if(preview){
+      if(row){
+        var prefix=row.sender_kind==='member'?'Anda: ':'';
+        preview.textContent=prefix+mentorMessageSummary(row)
+      }else preview.textContent='Mulai percakapan dengan Mentor BADAI'
+    }
+    if(time)time.textContent=row?mentorClock(row.created_at):''
+  }
+
   function setMentorUnread(count){
     count=Math.max(0,Number(count||0));
     var badge=el('mentorUnreadBadge');
     if(badge){badge.textContent=count>99?'99+':String(count);badge.classList.toggle('hidden',count<1)}
+    var rowBadge=el('mentorChatRowUnread');
+    if(rowBadge){rowBadge.textContent=count>99?'99+':String(count);rowBadge.classList.toggle('hidden',count<1)}
     if(mentorUnreadInitialized&&count>mentorUnreadCount){
       mentorToast('💬 Ada pesan baru dari Mentor BADAI');
       if(typeof Notification!=='undefined'&&Notification.permission==='granted'&&document.visibilityState!=='visible'){
@@ -2280,12 +2413,16 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function setMentorStatus(row){
     var status=el('mentorMemberStatus'),sub=el('mentorWaSubstatus'),name=el('mentorWaName');
-    if(name)name.textContent=row&&row.assigned_name?row.assigned_name:'Mentor BADAI';
+    var displayName=row&&row.assigned_name?row.assigned_name:'Mentor BADAI';
+    if(name)name.textContent=displayName;
+    if(el('mentorChatRowName'))el('mentorChatRowName').textContent=displayName;
     var text='offline',typing=false,online=false;
     if(row&&row.mentor_typing){text='sedang mengetik...';typing=true;online=true}
     else if(row&&row.mentor_online){text='online';online=true}
     else if(row){text=mentorRelativeLastSeen(row.mentor_last_seen_at)}
     if(sub){sub.textContent=text;sub.classList.toggle('typing',typing)}
+    var rowPreview=el('mentorChatRowPreview');
+    if(rowPreview&&typing)rowPreview.textContent='sedang mengetik...';
     if(status){
       status.textContent=typing?'MENGETIK...':(online?'● MENTOR ONLINE':'○ MENTOR OFFLINE');
       status.classList.toggle('online',online);status.classList.toggle('offline',!online)
@@ -2324,9 +2461,11 @@ document.addEventListener('DOMContentLoaded', function(){
     var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,created_at&order=created_at.desc&limit=80');
     var states=await mentorFetch('/rest/v1/rpc/mentor_message_ui_state',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){return []});
     mentorUiState=new Map((states||[]).map(function(x){return [x.message_id,x]}));
-    rows=(rows||[]).reverse();renderMentorMessages(rows);
+    rows=(rows||[]).reverse();
+    updateMentorChatRow(rows);
+    renderMentorMessages(rows);
     var screen=el('mentor');
-    if(screen&&screen.classList.contains('active')){
+    if(screen&&screen.classList.contains('active')&&mentorView==='thread'){
       await mentorFetch('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){});
       setMentorUnread(0)
     }
@@ -2396,7 +2535,24 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorNav=el('mentorNavButton');
   if(mentorNav)mentorNav.addEventListener('click',function(){
     if(typeof Notification!=='undefined'&&Notification.permission==='default'){try{Notification.requestPermission().catch(function(){})}catch(_){}}
-    setTimeout(function(){bootMentor();var input=el('mentorMessageInput');if(input)input.focus()},30)
+    setMentorView('list');
+    setTimeout(function(){bootMentor()},30)
+  });
+
+  var mentorChatRow=el('mentorChatRow');
+  if(mentorChatRow)mentorChatRow.addEventListener('click',function(){
+    setMentorView('thread')
+  });
+  var mentorChatBackBtn=el('mentorChatBackBtn');
+  if(mentorChatBackBtn)mentorChatBackBtn.addEventListener('click',function(){
+    setMentorView('list')
+  });
+  var mentorChatSearch=el('mentorChatSearch');
+  if(mentorChatSearch)mentorChatSearch.addEventListener('input',function(){
+    var q=String(mentorChatSearch.value||'').trim().toLowerCase();
+    var name=String(el('mentorChatRowName')&&el('mentorChatRowName').textContent||'Mentor BADAI').toLowerCase();
+    var preview=String(el('mentorChatRowPreview')&&el('mentorChatRowPreview').textContent||'').toLowerCase();
+    if(mentorChatRow)mentorChatRow.classList.toggle('hidden',!!q&&!name.includes(q)&&!preview.includes(q))
   });
   var input=el('mentorMessageInput');
   if(input){
