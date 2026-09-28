@@ -3894,13 +3894,14 @@ th,td{padding:14px 12px!important}
       </div>
 
       <div class="team-layout">
-        <div class="team-panel">
+        <div id="teamAddPanel" class="team-panel">
           <h3>Tambah Tim</h3>
           <p>Saat ditambahkan, sistem langsung membuat akun login dan password awal.</p>
           <form id="teamForm" class="team-form">
             <input id="teamName" type="text" required placeholder="Nama tim"/>
             <input id="teamEmail" type="email" required placeholder="Email tim"/>
             <select id="teamRole" required>
+              <option value="super_admin">Super Admin</option>
               <option value="admin">Admin</option>
               <option value="sales">Sales</option>
               <option value="finance">Finance</option>
@@ -3911,7 +3912,8 @@ th,td{padding:14px 12px!important}
           <div id="teamStatus" class="team-status-note"></div>
 
           <div class="team-help">
-            <div><b>ADMIN</b> — Penjualan + Keuangan + Marketing, tanpa pengaturan Tim.</div>
+            <div><b>SUPER ADMIN</b> — Kontrol penuh seperti Owner, termasuk mengelola Tim.</div>
+            <div><b>ADMIN</b> — Penjualan + Keuangan + Marketing + bisa melihat Tim, tanpa mengelola akun lain.</div>
             <div><b>SALES</b> — Fokus Penjualan dan pengelolaan member.</div>
             <div><b>FINANCE</b> — Hanya melihat Keuangan dan laporan.</div>
             <div><b>MARKETING</b> — Hanya mengatur harga, kupon, dan notifikasi marketing.</div>
@@ -3920,7 +3922,8 @@ th,td{padding:14px 12px!important}
 
         <div class="team-panel team-table-wrap">
           <h3>Daftar Tim</h3>
-          <p>Owner punya kontrol penuh. Role lain dibatasi sesuai tugasnya.</p>
+          <p id="teamListHelp">Semua akun dashboard dapat melihat daftar Tim. Hanya Owner dan Super Admin yang dapat mengelola akun lain.</p>
+          <div id="teamReadOnlyNotice" class="team-status-note hidden">Mode lihat saja. Kamu tetap bisa mengedit nama dan password akunmu sendiri lewat tombol EDIT AKUN.</div>
           <table>
             <thead>
               <tr><th>Tim</th><th>Role</th><th>Status</th><th>Akun</th><th>Aksi</th></tr>
@@ -4006,6 +4009,34 @@ th,td{padding:14px 12px!important}
     <div class="cred-actions">
       <button id="copyTeamCredentialBtn" class="primary-act" type="button">SALIN AKSES TIM</button>
       <button id="closeTeamCredentialBtn" type="button">TUTUP</button>
+    </div>
+  </div>
+</div>
+
+<div id="teamEditModal" class="cred-modal hidden">
+  <div class="cred-box">
+    <h2>Edit Akun Tim</h2>
+    <p id="teamEditHelp">Edit nama akun dan password sesuai izin akunmu.</p>
+    <input id="teamEditId" type="hidden"/>
+    <div class="manage-grid">
+      <div class="manage-field full">
+        <label>Nama</label>
+        <input id="teamEditName" type="text" required/>
+      </div>
+      <div class="manage-field full">
+        <label>Email Login</label>
+        <input id="teamEditEmail" type="email" readonly/>
+      </div>
+      <div id="teamEditPasswordWrap" class="manage-field full">
+        <label>Password Baru</label>
+        <input id="teamEditPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti"/>
+        <div class="price-plan-note">Minimal 8 karakter. Kosongkan jika password tidak ingin diganti.</div>
+      </div>
+    </div>
+    <div id="teamEditStatus" class="team-status-note"></div>
+    <div class="cred-actions">
+      <button id="saveTeamEditBtn" class="primary-act" type="button">SIMPAN PERUBAHAN</button>
+      <button id="closeTeamEditBtn" type="button">TUTUP</button>
     </div>
   </div>
 </div>
@@ -4478,12 +4509,27 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function allowedPages(){
     const role = currentTeam?.role;
-    if(role === 'owner') return ['sales','finance','marketing','team'];
-    if(role === 'admin') return ['sales','finance','marketing'];
-    if(role === 'sales') return ['sales'];
-    if(role === 'finance') return ['finance'];
-    if(role === 'marketing') return ['marketing'];
+    if(role === 'owner' || role === 'super_admin') return ['sales','finance','marketing','team'];
+    if(role === 'admin') return ['sales','finance','marketing','team'];
+    if(role === 'sales') return ['sales','team'];
+    if(role === 'finance') return ['finance','team'];
+    if(role === 'marketing') return ['marketing','team'];
     return [];
+  }
+
+  function canManageTeam(){
+    return ['owner','super_admin'].includes(currentTeam?.role);
+  }
+
+  function configureTeamAccessUI(){
+    const manager = canManageTeam();
+    $('teamAddPanel')?.classList.toggle('hidden', !manager);
+    $('teamReadOnlyNotice')?.classList.toggle('hidden', manager);
+    if($('teamListHelp')){
+      $('teamListHelp').textContent = manager
+        ? 'Owner dan Super Admin dapat menambah, mengubah role, mengaktifkan/nonaktifkan, dan menghapus Tim.'
+        : 'Semua akun dashboard dapat melihat daftar Tim. Kamu hanya dapat mengedit nama dan password akunmu sendiri.';
+    }
   }
 
   function configureTabs(){
@@ -4538,6 +4584,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         currentTeam.email + ' • ' + currentTeam.role.toUpperCase();
 
       configureTabs();
+      configureTeamAccessUI();
 
       const allowed = allowedPages();
       if(allowed.includes('sales') || allowed.includes('finance')){
@@ -5107,7 +5154,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   function canManageMarketing(){
-    return ['owner','admin','marketing'].includes(currentTeam?.role);
+    return ['owner','super_admin','admin','marketing'].includes(currentTeam?.role);
   }
 
   async function saveMarketing(){
@@ -5999,7 +6046,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   function canManageSales(){
-    return ['owner','admin','sales'].includes(currentTeam?.role);
+    return ['owner','super_admin','admin','sales'].includes(currentTeam?.role);
   }
 
   function planBadge(plan){
@@ -6808,7 +6855,6 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   async function loadTeamMembers(){
-    if(currentTeam?.role !== 'owner') return;
     teamMembers = await api(
       '/rest/v1/admin_team_members?select=id,auth_user_id,full_name,email,role,status,created_at&order=created_at.asc'
     ) || [];
@@ -6817,6 +6863,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function roleLabel(role){
     return role === 'owner' ? 'OWNER'
+      : role === 'super_admin' ? 'SUPER ADMIN'
       : role === 'admin' ? 'ADMIN'
       : role === 'sales' ? 'SALES'
       : role === 'finance' ? 'FINANCE'
@@ -6824,31 +6871,50 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       : String(role || '').toUpperCase();
   }
 
+  function canManageTeamRow(t){
+    if(!canManageTeam() || !t) return false;
+    if(t.role === 'owner' && currentTeam?.role !== 'owner') return false;
+    return true;
+  }
+
   function renderTeam(){
     $('teamEmpty').classList.toggle('hidden', teamMembers.length !== 0);
     $('teamTableBody').innerHTML = teamMembers.map(t => {
-      const owner = t.role === 'owner';
-      const roleControl = owner
-        ? '<span class="role-pill">OWNER</span>'
-        : '<select class="team-select" data-team-role="' + t.id + '">' +
-            ['admin','sales','finance','marketing'].map(r =>
+      const isSelf = t.auth_user_id && t.auth_user_id === session?.user?.id;
+      const managerRow = canManageTeamRow(t);
+      const canChangeRole = managerRow && t.role !== 'owner' && !isSelf;
+      const canToggle = managerRow && t.role !== 'owner' && !isSelf;
+      const canDelete = managerRow && t.role !== 'owner' && !isSelf;
+
+      const roleControl = canChangeRole
+        ? '<select class="team-select" data-team-role="' + t.id + '">' +
+            ['super_admin','admin','sales','finance','marketing'].map(r =>
               '<option value="'+r+'" '+(t.role===r?'selected':'')+'>'+roleLabel(r)+'</option>'
             ).join('') +
-          '</select>';
+          '</select>'
+        : '<span class="role-pill">'+roleLabel(t.role)+'</span>';
 
-      const statusBtn = owner ? '' :
-        '<button class="action ' + (t.status==='active'?'suspend':'approve') + '" data-team-action="toggle" data-id="' + t.id + '">' +
-        (t.status==='active'?'NONAKTIFKAN':'AKTIFKAN') + '</button>';
+      const editBtn = (isSelf || managerRow)
+        ? '<button class="action approve" data-team-action="edit" data-id="' + t.id + '">' +
+            (isSelf ? 'EDIT AKUN SAYA' : 'EDIT AKUN') +
+          '</button>'
+        : '';
 
-      const deleteBtn = owner ? '' :
-        '<button class="action delete" data-team-action="delete" data-id="' + t.id + '">HAPUS</button>';
+      const statusBtn = canToggle
+        ? '<button class="action ' + (t.status==='active'?'suspend':'approve') + '" data-team-action="toggle" data-id="' + t.id + '">' +
+            (t.status==='active'?'NONAKTIFKAN':'AKTIFKAN') + '</button>'
+        : '';
+
+      const deleteBtn = canDelete
+        ? '<button class="action delete" data-team-action="delete" data-id="' + t.id + '">HAPUS</button>'
+        : '';
 
       return '<tr>' +
-        '<td><div class="name">'+esc(t.full_name)+'</div><div class="meta">'+esc(t.email)+'</div></td>' +
+        '<td><div class="name">'+esc(t.full_name)+(isSelf?' <span class="role-pill">AKUN SAYA</span>':'')+'</div><div class="meta">'+esc(t.email)+'</div></td>' +
         '<td>'+roleControl+'</td>' +
         '<td>'+pill(t.status)+'</td>' +
         '<td>'+(t.auth_user_id?'<span class="pill active">READY</span>':'<span class="pill pending">BELUM</span>')+'</td>' +
-        '<td><div class="actions">'+statusBtn+deleteBtn+'</div></td>' +
+        '<td><div class="actions">'+editBtn+statusBtn+deleteBtn+'</div></td>' +
       '</tr>';
     }).join('');
   }
@@ -6879,7 +6945,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   async function addTeamMember(){
-    if(currentTeam?.role !== 'owner') throw new Error('Hanya Owner yang dapat menambah tim.');
+    if(!canManageTeam()) throw new Error('Hanya Owner atau Super Admin yang dapat menambah tim.');
 
     const fullName = $('teamName').value.trim();
     const email = $('teamEmail').value.trim().toLowerCase();
@@ -6890,11 +6956,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('teamStatus').textContent = 'Membuat akun tim...';
 
     try{
-      const teamEndpoint = role === 'marketing'
-        ? '/functions/v1/admin-create-marketing-team-member'
-        : '/functions/v1/admin-create-team-member';
-
-      const res = await fetch(SUPABASE_URL + teamEndpoint, {
+      const res = await fetch(SUPABASE_URL + '/functions/v1/admin-create-team-member', {
         method:'POST',
         headers:{
           'apikey':SUPABASE_KEY,
@@ -6915,7 +6977,94 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   }
 
+  function openTeamEdit(id){
+    const row = teamMembers.find(t => t.id === id);
+    if(!row) return;
+
+    const isSelf = row.auth_user_id === session?.user?.id;
+    const allowed = isSelf || canManageTeamRow(row);
+    if(!allowed) return;
+
+    $('teamEditId').value = row.id;
+    $('teamEditName').value = row.full_name || '';
+    $('teamEditEmail').value = row.email || '';
+    $('teamEditPassword').value = '';
+    $('teamEditStatus').textContent = '';
+
+    const canManagerEdit = canManageTeamRow(row);
+    $('teamEditPasswordWrap').classList.toggle('hidden', !(isSelf || canManagerEdit));
+    $('teamEditHelp').textContent = isSelf
+      ? 'Kamu bisa mengganti nama dan password akunmu sendiri.'
+      : 'Owner / Super Admin dapat mengganti nama dan password akun tim ini.';
+
+    $('teamEditModal').classList.remove('hidden');
+  }
+
+  async function saveTeamEdit(){
+    const id = $('teamEditId').value;
+    const row = teamMembers.find(t => t.id === id);
+    if(!row) throw new Error('Akun tim tidak ditemukan.');
+
+    const fullName = $('teamEditName').value.trim();
+    const isSelf = row.auth_user_id === session?.user?.id;
+    const canManagerEdit = canManageTeamRow(row);
+    const password = (isSelf || canManagerEdit) ? $('teamEditPassword').value : '';
+
+    if(!fullName) throw new Error('Nama wajib diisi.');
+    if(password && password.length < 8) throw new Error('Password minimal 8 karakter.');
+
+    $('teamEditStatus').textContent = 'Menyimpan perubahan...';
+
+    if(isSelf){
+      await api('/rest/v1/rpc/update_my_admin_profile', {
+        method:'POST',
+        body:JSON.stringify({p_full_name:fullName})
+      });
+
+      const authBody = {data:{full_name:fullName}};
+      if(password) authBody.password = password;
+      await api('/auth/v1/user', {
+        method:'PUT',
+        body:JSON.stringify(authBody)
+      });
+
+      currentTeam.full_name = fullName;
+    }else{
+      if(!canManagerEdit) throw new Error('Tidak punya izin mengedit akun ini.');
+
+      const res = await fetch(SUPABASE_URL + '/functions/v1/admin-create-team-member', {
+        method:'POST',
+        headers:{
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer ' + session.access_token,
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          action:'update',
+          team_id:id,
+          full_name:fullName,
+          password:password || ''
+        })
+      });
+      const data = await res.json().catch(()=>null);
+      if(!res.ok) throw new Error(data?.error || 'Gagal mengedit akun tim.');
+    }
+
+    $('teamEditStatus').textContent = '✓ Perubahan berhasil disimpan.';
+    await loadTeamMembers();
+    setTimeout(() => $('teamEditModal').classList.add('hidden'), 500);
+  }
+
   async function changeTeamRole(id, role){
+    if(!canManageTeam()) throw new Error('Hanya Owner atau Super Admin yang dapat mengubah role.');
+    const row = teamMembers.find(t => t.id === id);
+    if(!row || !canManageTeamRow(row) || row.auth_user_id === session?.user?.id){
+      throw new Error('Role akun ini tidak dapat diubah.');
+    }
+    if(!['super_admin','admin','sales','finance','marketing'].includes(role)){
+      throw new Error('Role belum valid.');
+    }
+
     await api('/rest/v1/admin_team_members?id=eq.' + encodeURIComponent(id), {
       method:'PATCH',
       headers:{'Prefer':'return=minimal'},
@@ -6926,7 +7075,16 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function teamAction(id, action){
     const row = teamMembers.find(t=>t.id===id);
-    if(!row || row.role === 'owner') return;
+    if(!row) return;
+
+    if(action === 'edit'){
+      openTeamEdit(id);
+      return;
+    }
+
+    if(!canManageTeamRow(row) || row.role === 'owner' || row.auth_user_id === session?.user?.id){
+      throw new Error('Akun ini tidak dapat dikelola dari aksi tersebut.');
+    }
 
     if(action === 'toggle'){
       const next = row.status === 'active' ? 'inactive' : 'active';
@@ -7151,6 +7309,22 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   $('closeTeamCredentialBtn').addEventListener('click', () => $('teamCredentialModal').classList.add('hidden'));
   $('teamCredentialModal').addEventListener('click', (e) => {
     if(e.target === $('teamCredentialModal')) $('teamCredentialModal').classList.add('hidden');
+  });
+
+  $('closeTeamEditBtn').addEventListener('click', () => $('teamEditModal').classList.add('hidden'));
+  $('teamEditModal').addEventListener('click', (e) => {
+    if(e.target === $('teamEditModal')) $('teamEditModal').classList.add('hidden');
+  });
+  $('saveTeamEditBtn').addEventListener('click', async () => {
+    $('saveTeamEditBtn').disabled = true;
+    const oldText = $('saveTeamEditBtn').textContent;
+    $('saveTeamEditBtn').textContent = 'MENYIMPAN...';
+    try{ await saveTeamEdit(); }
+    catch(err){ $('teamEditStatus').textContent = '✕ ' + (err.message || 'Gagal menyimpan perubahan.'); }
+    finally{
+      $('saveTeamEditBtn').disabled = false;
+      $('saveTeamEditBtn').textContent = oldText;
+    }
   });
 
   document.addEventListener('change', async (e) => {
