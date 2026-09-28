@@ -1917,6 +1917,54 @@ module.exports = async function handler(req, res) {
     75%{opacity:1;transform:scale(1.12)}
     100%{opacity:1;transform:scale(1)}
   }
+  /* Clickable chat header + WhatsApp-like info screen */
+  #mentor .mentor-chat-card{position:relative!important}
+  #mentor .mentor-wa-person,
+  #mentor #mentorWaAvatar{cursor:pointer}
+  #mentor .mentor-wa-person:active,
+  #mentor #mentorWaAvatar:active{transform:scale(.985)}
+  #mentor .mentor-chat-info-panel{
+    position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;
+    background:#0b141a;color:#e9edef;overflow:hidden;
+    transform:translate3d(100%,0,0);opacity:.45;
+    transition:transform .32s cubic-bezier(.22,.61,.36,1),opacity .24s ease;
+  }
+  #mentor .mentor-chat-info-panel.open{transform:translate3d(0,0,0);opacity:1}
+  #mentor .mentor-chat-info-panel.closing{transform:translate3d(100%,0,0);opacity:.5}
+  #mentor .mentor-chat-info-panel.hidden{display:none!important}
+  #mentor .mentor-chat-info-head{
+    flex:0 0 auto;min-height:60px;display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:8px;
+    padding:7px 10px;background:#202c33;border-bottom:1px solid #26343c
+  }
+  #mentor .mentor-chat-info-head button{
+    width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:999px;background:transparent;
+    color:#d1d7db;font-size:22px!important;transition:transform .16s ease,background .16s ease
+  }
+  #mentor .mentor-chat-info-head button:active{transform:scale(.9);background:#2a3942}
+  #mentor .mentor-chat-info-head b{font-size:16px!important;font-weight:500!important}
+  #mentor .mentor-chat-info-scroll{flex:1;min-height:0;overflow-y:auto;padding:22px 14px 28px}
+  #mentor .mentor-chat-info-hero{
+    display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px 10px 24px
+  }
+  #mentor .mentor-chat-info-avatar{
+    width:82px;height:82px;display:grid;place-items:center;border-radius:999px;background:#374248;
+    border:2px solid #ff4fa3;color:#fff;font-size:28px!important;font-weight:500!important;
+    box-shadow:0 10px 30px rgba(0,0,0,.3)
+  }
+  #mentor .mentor-chat-info-hero strong{margin-top:12px;font-size:22px!important;font-weight:500!important;line-height:1.2}
+  #mentor .mentor-chat-info-hero span{margin-top:5px;color:#8696a0;font-size:12px!important;font-weight:300!important}
+  #mentor .mentor-chat-info-card{
+    margin:0 0 10px;padding:15px 16px;border:1px solid #26343c;border-radius:14px;background:#111b21;
+    box-shadow:0 8px 22px rgba(0,0,0,.12)
+  }
+  #mentor .mentor-chat-info-card.note{background:#101d20}
+  #mentor .mentor-chat-info-label{display:block;margin-bottom:7px;color:#53bdeb;font-size:10px!important;font-weight:600!important;letter-spacing:.08em}
+  #mentor .mentor-chat-info-card p{margin:0;color:#d1d7db;font-size:14px!important;font-weight:300!important;line-height:1.55}
+  @media(max-width:560px){
+    #mentor .mentor-chat-info-scroll{padding:18px 12px 24px}
+    #mentor .mentor-chat-info-avatar{width:76px;height:76px}
+  }
+
   @media(prefers-reduced-motion:reduce){
     .screen.active,
     #mentor.mentor-chat-thread-mode .mentor-chat-card,
@@ -2533,6 +2581,61 @@ document.addEventListener('DOMContentLoaded', function(){
     }catch(_){}
   }
 
+  function mentorChatInfoData(){
+    if(mentorSelectedChat==='announcement')return {
+      avatar:'📢',title:'PENGUMUMAN BADAI',subtitle:'Channel resmi • Satu arah',
+      desc:'Semua informasi penting komunitas BADAI dikirim di sini. Hanya Owner, Super Admin, Admin, dan Mentor yang dapat mengirim pesan. Member hanya membaca agar pengumuman penting tidak tenggelam.',
+      note:'Gunakan channel ini sebagai sumber informasi resmi BADAI.'
+    };
+    if(mentorSelectedChat==='group')return {
+      avatar:'G',title:'Grup BADAI',subtitle:'Diskusi komunitas • Semua member',
+      desc:'Ruang ngobrol bersama seluruh Member BADAI dan tim BADAI. Gunakan untuk bertanya, berbagi progres, diskusi karya, dan saling bantu selama belajar.',
+      note:'Jaga diskusi tetap relevan, nyaman, dan saling menghargai.'
+    };
+    return {
+      avatar:'M',title:'Mentor BADAI',subtitle:'Konsultasi privat • Tim Mentor BADAI',
+      desc:'Percakapan pribadi antara kamu dan tim Mentor BADAI. Balasan dapat ditangani Owner maupun mentor yang sedang bertugas, tetapi di sisi member seluruh layanan tetap tampil sebagai Mentor BADAI.',
+      note:'Chat ini bersifat privat antara kamu dan tim BADAI.'
+    };
+  }
+
+  function ensureMentorChatInfoPanel(){
+    var card=el('mentorChatCard');if(!card)return null;
+    var panel=el('mentorChatInfoPanel');if(panel)return panel;
+    panel=document.createElement('section');
+    panel.id='mentorChatInfoPanel';
+    panel.className='mentor-chat-info-panel hidden';
+    panel.setAttribute('aria-hidden','true');
+    panel.innerHTML=
+      '<div class="mentor-chat-info-head"><button id="mentorChatInfoBack" type="button" aria-label="Kembali">←</button><b>Info Chat</b></div>'+
+      '<div class="mentor-chat-info-scroll">'+
+        '<div class="mentor-chat-info-hero"><div id="mentorChatInfoAvatar" class="mentor-chat-info-avatar">M</div><strong id="mentorChatInfoTitle">Mentor BADAI</strong><span id="mentorChatInfoSubtitle"></span></div>'+
+        '<div class="mentor-chat-info-card"><span class="mentor-chat-info-label">DESKRIPSI</span><p id="mentorChatInfoDesc"></p></div>'+
+        '<div class="mentor-chat-info-card note"><span class="mentor-chat-info-label">INFO</span><p id="mentorChatInfoNote"></p></div>'+
+      '</div>';
+    card.appendChild(panel);
+    var back=panel.querySelector('#mentorChatInfoBack');
+    if(back)back.addEventListener('click',closeMentorChatInfo);
+    return panel
+  }
+
+  function openMentorChatInfo(){
+    if(mentorView!=='thread')return;
+    var panel=ensureMentorChatInfoPanel();if(!panel)return;
+    var data=mentorChatInfoData();
+    var av=el('mentorChatInfoAvatar'),title=el('mentorChatInfoTitle'),sub=el('mentorChatInfoSubtitle'),desc=el('mentorChatInfoDesc'),note=el('mentorChatInfoNote');
+    if(av)av.textContent=data.avatar;if(title)title.textContent=data.title;if(sub)sub.textContent=data.subtitle;if(desc)desc.textContent=data.desc;if(note)note.textContent=data.note;
+    panel.classList.remove('hidden','closing');
+    panel.setAttribute('aria-hidden','false');
+    requestAnimationFrame(function(){panel.classList.add('open')})
+  }
+
+  function closeMentorChatInfo(){
+    var panel=el('mentorChatInfoPanel');if(!panel||panel.classList.contains('hidden'))return;
+    panel.classList.remove('open');panel.classList.add('closing');
+    setTimeout(function(){panel.classList.add('hidden');panel.classList.remove('closing');panel.setAttribute('aria-hidden','true')},260)
+  }
+
   function setMemberChatChrome(kind){
     mentorSelectedChat=kind||'mentor';
     var avatar=el('mentorWaAvatar'),name=el('mentorWaName'),sub=el('mentorWaSubstatus');
@@ -2616,6 +2719,7 @@ document.addEventListener('DOMContentLoaded', function(){
       }else loadCommunityMessages(mentorSelectedChat).then(function(){mentorScrollBottom(true)}).catch(function(){});
       if(mentorSelectedChat!=='announcement')setTimeout(function(){var input=el('mentorMessageInput');if(input)input.focus()},40)
     }else{
+      closeMentorChatInfo();
       mentorSetTyping(false);closeMentorMessageMenu();clearMentorReply();
       refreshCommunityOverview().catch(function(){});refreshMentorOverview().catch(function(){})
     }
@@ -2783,6 +2887,10 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   var mentorChatBackBtn=el('mentorChatBackBtn');
   if(mentorChatBackBtn)mentorChatBackBtn.addEventListener('click',function(){setMentorView('list')});
+  var mentorHeadPerson=document.querySelector('#mentor .mentor-wa-person');
+  var mentorHeadAvatar=el('mentorWaAvatar');
+  if(mentorHeadPerson)mentorHeadPerson.addEventListener('click',openMentorChatInfo);
+  if(mentorHeadAvatar)mentorHeadAvatar.addEventListener('click',openMentorChatInfo);
   var mentorChatSearch=el('mentorChatSearch');
   if(mentorChatSearch)mentorChatSearch.addEventListener('input',function(){
     var q=String(mentorChatSearch.value||'').trim().toLowerCase();
