@@ -8450,29 +8450,52 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const list=$('mentorInboxList');if(!list)return;
     const announcement=mentorAdminOverviewRow('announcement');
     const group=mentorAdminOverviewRow('group');
-    const mentorUnread=mentorConversations.reduce((sum,row)=>sum+Number(row.unread_count||0),0);
-    const totalMentor=mentorConversations.length;
-    const items=[
-      {kind:'announcement',name:'PENGUMUMAN BADAI',avatar:'📢',preview:announcement.last_message||'Info resmi dari tim BADAI',time:announcement.last_message_at,unread:Number(announcement.unread_count||0),cls:'announcement'},
-      {kind:'group',name:'Grup BADAI',avatar:'G',preview:group.last_message||'Diskusi bersama semua member BADAI',time:group.last_message_at,unread:Number(group.unread_count||0),cls:'group'},
-      {kind:'mentor',name:'Mentor BADAI',avatar:'M',preview:totalMentor?totalMentor+' percakapan member':'Direct message member dengan Mentor BADAI',time:mentorConversations.reduce((v,r)=>!v||new Date(r.last_message_at||0)>new Date(v)?r.last_message_at:v,null),unread:mentorUnread,cls:''}
-    ];
     const q=String(mentorInboxQuery||'').trim().toLowerCase();
-    const shown=items.filter(x=>!q||[x.name,x.preview].join(' ').toLowerCase().includes(q));
+
+    const pinned=[
+      {kind:'announcement',name:'PENGUMUMAN BADAI',avatar:'📢',preview:announcement.last_message||'Info resmi dari tim BADAI',time:announcement.last_message_at,unread:Number(announcement.unread_count||0),cls:'announcement',label:'Satu arah'},
+      {kind:'group',name:'Grup BADAI',avatar:'G',preview:group.last_message||'Diskusi bersama semua member BADAI',time:group.last_message_at,unread:Number(group.unread_count||0),cls:'group',label:'Diskusi member'}
+    ].filter(x=>!q||[x.name,x.preview,x.label].join(' ').toLowerCase().includes(q));
+
+    const memberRows=mentorConversations.filter(row=>{
+      if(mentorUnreadOnly&&Number(row.unread_count||0)<1)return false;
+      if(!q)return true;
+      const hay=[row.member_name,row.member_email,row.member_plan,row.last_message_preview,row.assigned_name].filter(Boolean).join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+
     $('mentorInboxTitle').textContent='Chat';
-    $('mentorInboxCount').textContent='3 percakapan';
+    const total=2+mentorConversations.length;
+    const visibleCount=pinned.length+memberRows.length;
+    $('mentorInboxCount').textContent=(q||mentorUnreadOnly)?(visibleCount+' dari '+total+' chat'):(total+' percakapan');
     $('mentorInboxHomeBackBtn')?.classList.add('hidden');
-    $('mentorUnreadFilterBtn')?.classList.add('hidden');
+    $('mentorUnreadFilterBtn')?.classList.remove('hidden');
     $('refreshMentorInboxBtn')?.classList.remove('hidden');
-    list.innerHTML=shown.map(x=>
+
+    const pinnedHtml=pinned.map(x=>
       '<button type="button" class="mentor-inbox-item community '+esc(x.cls)+'" data-admin-chat-kind="'+esc(x.kind)+'">'+
       '<div class="mentor-inbox-avatar">'+esc(x.avatar)+'</div>'+
       '<div class="mentor-inbox-main"><div class="mentor-inbox-top"><b>'+esc(x.name)+'</b></div>'+
       '<span class="mentor-inbox-preview">'+esc(x.preview)+'</span>'+
-      '<span class="mentor-inbox-assigned">'+(x.kind==='announcement'?'Satu arah':(x.kind==='mentor'?'Direct Message':'Diskusi member'))+'</span></div>'+
+      '<span class="mentor-inbox-assigned">'+esc(x.label)+'</span></div>'+
       '<div class="mentor-inbox-side"><span class="mentor-inbox-time">'+esc(mentorInboxStamp(x.time))+'</span>'+
       (x.unread>0?'<span class="mentor-unread">'+(x.unread>99?'99+':x.unread)+'</span>':'')+'</div></button>'
-    ).join('')||'<div class="mentor-inbox-empty">Chat tidak ditemukan.</div>';
+    ).join('');
+
+    const memberHtml=memberRows.map(row=>{
+      const unread=Number(row.unread_count||0);
+      const preview=row.member_typing?'mengetik...':((row.last_message_sender_kind==='mentor'?'Anda: ':'')+(row.last_message_preview||'Belum ada pesan'));
+      const assigned=row.assigned_name?('Ditangani '+row.assigned_name):'Belum diambil mentor';
+      return '<button type="button" title="'+esc(row.member_name||'Member BADAI')+'" class="mentor-inbox-item '+(unread?'unread':'')+'" data-mentor-conversation="'+row.conversation_id+'">'+
+        '<div class="mentor-inbox-avatar">'+esc(mentorInitials(row.member_name))+'</div>'+
+        '<div class="mentor-inbox-main"><div class="mentor-inbox-top"><b>'+esc(row.member_name||'Member BADAI')+'</b></div>'+
+        '<span class="mentor-inbox-preview '+(row.member_typing?'typing':'')+'">'+esc(preview)+'</span>'+
+        '<span class="mentor-inbox-assigned">'+esc(assigned)+'</span></div>'+
+        '<div class="mentor-inbox-side"><span class="mentor-inbox-time '+(unread?'fresh':'')+'">'+esc(mentorInboxStamp(row.last_message_at))+'</span>'+
+        (unread>0?'<span class="mentor-unread">'+(unread>99?'99+':unread)+'</span>':'')+'</div></button>';
+    }).join('');
+
+    list.innerHTML=(pinnedHtml+memberHtml)||'<div class="mentor-inbox-empty">Chat tidak ditemukan.</div>';
   }
 
   function adminCommunityCanSend(slug){
@@ -8585,8 +8608,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   function renderMentorInbox(){
+    renderMentorAdminHome();
+    return;
     const list=$('mentorInboxList');if(!list)return;
-    if(mentorAdminScreen==='home'){renderMentorAdminHome();return}
     $('mentorInboxTitle').textContent='Mentor BADAI';
     $('mentorInboxHomeBackBtn')?.classList.remove('hidden');
     $('mentorUnreadFilterBtn')?.classList.remove('hidden');
@@ -8628,7 +8652,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function openMentorConversation(id){
     const row=mentorConversations.find(x=>x.conversation_id===id);if(!row)return;
-    mentorAdminScreen='mentor-thread';mentorActiveConversation=row;mentorAdminLastKey='';mentorAdminInitialRender=true;renderMentorInbox();
+    mentorAdminScreen='mentor-thread';mentorActiveConversation=row;mentorAdminLastKey='';mentorAdminInitialRender=true;
     $('mentorAdminLayout')?.classList.add('thread-open');
     $('mentorThreadEmpty')?.classList.add('hidden');$('mentorThreadView')?.classList.remove('hidden');updateMentorThreadHeader();
     clearMentorAdminPending();
@@ -9265,10 +9289,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const channel=e.target.closest('[data-admin-chat-kind]');
     if(channel){
       const kind=channel.dataset.adminChatKind;
-      if(kind==='mentor'){
-        mentorAdminScreen='mentor-list';mentorInboxQuery='';if($('mentorInboxSearch'))$('mentorInboxSearch').value='';
-        renderMentorInbox()
-      }else openAdminCommunityThread(kind);
+      openAdminCommunityThread(kind);
       return;
     }
     const btn=e.target.closest('[data-mentor-conversation]');
@@ -9284,8 +9305,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   $('mentorThreadBackBtn')?.addEventListener('click',()=>{
     mentorAdminSetTyping(false);closeMentorAdminMessageMenu();clearMentorAdminReply();
     $('mentorAdminLayout')?.classList.remove('thread-open');
-    if(mentorAdminScreen==='mentor-thread')mentorAdminScreen='mentor-list';
-    else mentorAdminScreen='home';
+    mentorAdminScreen='home';
     mentorAdminCommunityChannel='';renderMentorInbox();
   });
 
