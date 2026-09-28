@@ -1890,20 +1890,45 @@ h1,h2,h3,h4,h5,h6,
       <div class="account-head">
         <div class="account-kicker">AKUN MEMBER BADAI</div>
         <h1>Akun BADAI</h1>
-        <p>Kelola foto profil, data diri, keamanan akun, dan informasi keanggotaan.</p>
+        <p>Kelola avatar, data diri, keamanan akun, dan informasi keanggotaan.</p>
       </div>
 
-      <div id="badaiProfileAvatarCard" class="badai-profile-avatar-card account-profile-main">
-        <div id="badaiProfileAvatarPreview" class="badai-profile-avatar-preview">M</div>
+      <div id="badaiProfileAvatarCard" class="badai-profile-avatar-card badai-avatar-picker-card account-profile-main">
+        <div id="badaiProfileAvatarPreview" class="badai-profile-avatar-preview">
+          <img src="/avatars/male-korea.svg" alt="Avatar BADAI" loading="eager"/>
+        </div>
         <div class="badai-profile-avatar-copy">
           <b id="memberProfileDisplayName">Member BADAI</b>
-          <span id="memberProfileDisplayMeta">Profil Member BADAI</span>
+          <span id="memberProfileDisplayMeta">Pilih karakter Avatar BADAI kamu</span>
         </div>
+
+        <div id="badaiAvatarChoices" class="badai-avatar-choice-grid" aria-label="Pilihan Avatar BADAI">
+          <button type="button" class="badai-avatar-choice" data-avatar-key="male-korea" aria-label="Pria rambut idol Korea">
+            <img src="/avatars/male-korea.svg" alt="Pria rambut idol Korea"/>
+            <span>PRIA KOREA</span>
+          </button>
+          <button type="button" class="badai-avatar-choice" data-avatar-key="male-peci" aria-label="Pria pakai peci">
+            <img src="/avatars/male-peci.svg" alt="Pria pakai peci"/>
+            <span>PRIA PECI</span>
+          </button>
+          <button type="button" class="badai-avatar-choice" data-avatar-key="female-longhair" aria-label="Cewek rambut panjang">
+            <img src="/avatars/female-longhair.svg" alt="Cewek rambut panjang"/>
+            <span>CEWEK PANJANG</span>
+          </button>
+          <button type="button" class="badai-avatar-choice" data-avatar-key="female-shorthair" aria-label="Cewek rambut pendek">
+            <img src="/avatars/female-shorthair.svg" alt="Cewek rambut pendek"/>
+            <span>CEWEK PENDEK</span>
+          </button>
+          <button type="button" class="badai-avatar-choice" data-avatar-key="female-hijab" aria-label="Cewek berhijab">
+            <img src="/avatars/female-hijab.svg" alt="Cewek berhijab"/>
+            <span>CEWEK HIJAB</span>
+          </button>
+        </div>
+
         <div class="badai-profile-avatar-actions">
-          <button id="badaiProfileAvatarBtn" type="button" class="badai-profile-avatar-btn">GANTI FOTO</button>
-          <input id="badaiProfileAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden/>
+          <button id="badaiProfileAvatarSave" type="button" class="badai-profile-avatar-btn">SIMPAN AVATAR</button>
         </div>
-        <div id="badaiProfileAvatarStatus" class="badai-profile-avatar-status">Foto tampil di Grup BADAI dan Chat Mentor.</div>
+        <div id="badaiProfileAvatarStatus" class="badai-profile-avatar-status">Avatar ini akan tampil di Grup BADAI, mention, dan chat.</div>
       </div>
 
       <div class="member-plan-card">
