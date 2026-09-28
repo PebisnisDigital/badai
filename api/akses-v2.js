@@ -1996,6 +1996,35 @@ module.exports = async function handler(req, res) {
   }
   #mentor .mentor-msg.sticker::before,#mentor .mentor-msg.system::before{display:none!important}
 
+  /* Group sender identity: initial avatar + bubble */
+  #mentor .mentor-group-message-row{
+    width:100%;display:flex;align-items:flex-start;gap:8px;align-self:flex-start;
+  }
+  #mentor .mentor-group-message-row .mentor-msg{
+    align-self:flex-start!important;
+    max-width:calc(79% - 38px)!important;
+  }
+  #mentor .mentor-group-initial{
+    flex:0 0 30px;width:30px;height:30px;margin-top:1px;
+    display:grid;place-items:center;border-radius:999px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 1px 3px rgba(0,0,0,.28);
+    font-size:13px!important;font-weight:600!important;line-height:1!important;
+    color:#e9edef;background:#374248;
+  }
+  #mentor .mentor-group-initial.tone-0{background:#4a2038;color:#ff91c8}
+  #mentor .mentor-group-initial.tone-1{background:#123c49;color:#6bc9f2}
+  #mentor .mentor-group-initial.tone-2{background:#342447;color:#dfb4ff}
+  #mentor .mentor-group-initial.tone-3{background:#49301a;color:#ffc17f}
+  #mentor .mentor-group-initial.tone-4{background:#183c32;color:#8be7c0}
+  #mentor .mentor-group-initial.tone-5{background:#443b17;color:#ffda76}
+  #mentor .mentor-group-initial.tone-6{background:#213654;color:#9fc3ff}
+  @media(max-width:560px){
+    #mentor .mentor-group-message-row{gap:7px}
+    #mentor .mentor-group-initial{flex-basis:28px;width:28px;height:28px;font-size:12px!important}
+    #mentor .mentor-group-message-row .mentor-msg{max-width:calc(84% - 35px)!important}
+  }
+
   /* Group @mentions */
   #mentor .mentor-mention-btn{font-weight:700!important;font-size:18px!important}
   #mentor .mentor-mention-btn.hidden{display:none!important}
@@ -2916,8 +2945,13 @@ document.addEventListener('DOMContentLoaded', function(){
       else body='<div class="body mentor-wa-formatted">'+(slug==='group'?communityFormatText(m.body||''):mentorFormatText(m.body||''))+'</div>';
       var animateMsg=!mentorAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAnimatedMessageIds.add(m.id);
-      html+='<div class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
-        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own?'<span class="mentor-receipt read">✓✓</span>':'')+'</div></div>'
+      var bubble='<div class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
+        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own?'<span class="mentor-receipt read">✓✓</span>':'')+'</div></div>';
+      if(slug==='group'&&!own){
+        var senderInitial=String(senderName||'M').trim().charAt(0).toUpperCase()||'M';
+        var tone=communitySenderTone(senderName);
+        html+='<div class="mentor-group-message-row"><div class="mentor-group-initial '+tone+'">'+mentorEsc(senderInitial)+'</div>'+bubble+'</div>'
+      }else html+=bubble
     });
     list.innerHTML=html;
     if(wasNear||mentorInitialRender)mentorScrollBottom(true);
