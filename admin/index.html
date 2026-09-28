@@ -3477,6 +3477,25 @@ th,td{padding:14px 12px!important}
   .account-admin-logout{align-items:stretch;display:grid;padding:13px}
   .account-admin-logout-btn{width:100%;min-height:42px}
 }
+
+.admin-header-chat{
+  position:relative;min-height:38px;padding:0 13px;display:flex;align-items:center;justify-content:center;
+  gap:7px;border:1px solid #4f2b40;border-radius:11px;background:#180f15;color:#ff9dcc;
+  font:950 9px/1 "Nunito",Arial,sans-serif;letter-spacing:.03em;cursor:pointer;
+  transition:background .18s ease,border-color .18s ease,transform .18s ease
+}
+.admin-header-chat:hover{transform:translateY(-1px);background:#22131b;border-color:#703653}
+.admin-header-chat.active{background:#ff4fa3;border-color:#ff4fa3;color:#0a0708}
+.admin-header-chat svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.admin-header-chat .mentor-tab-badge{
+  top:-6px!important;right:-6px!important;border-color:#070707!important
+}
+@media(max-width:560px){
+  .topbar-inner{gap:8px!important;padding-left:10px!important;padding-right:10px!important}
+  .admin-brand-wrap{min-width:0}
+  .admin-header-chat{min-height:34px;padding:0 9px;gap:5px;font-size:7.8px;white-space:nowrap}
+  .admin-header-chat svg{width:14px;height:14px}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -3493,6 +3512,13 @@ th,td{padding:14px 12px!important}
       <span class="admin-brand-pill">ADMIN</span>
       <span id="adminIdentity" class="header-admin-identity hidden">Memuat akun...</span>
       <span id="headerPageTitle" class="header-page-title hidden">Penjualan BADAI</span>
+    </div>
+    <div class="top-actions">
+      <button id="tabMentor" class="admin-header-chat hidden" data-page="mentor" type="button" aria-label="Chat Member">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>
+        <span>CHAT MEMBER</span>
+        <span id="mentorAdminBadge" class="mentor-tab-badge hidden">0</span>
+      </button>
     </div>
   </div>
 </header>
@@ -3534,11 +3560,6 @@ th,td{padding:14px 12px!important}
       <button id="tabMarketing" class="admin-tab" data-page="marketing" type="button" aria-label="Marketing">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11v2"/><path d="M6 9v6"/><path d="M9 8l9-4v16l-9-4z"/><path d="M9 16l2 5H7l-1-6"/></svg>
         <span class="nav-label">Marketing</span>
-      </button>
-      <button id="tabMentor" class="admin-tab" data-page="mentor" type="button" aria-label="Mentor">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>
-        <span class="nav-label">Mentor</span>
-        <span id="mentorAdminBadge" class="mentor-tab-badge hidden">0</span>
       </button>
       <button id="tabTeam" class="admin-tab" data-page="team" type="button" aria-label="Akun">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="M18 5.5h3M19.5 4v3"/></svg>
@@ -4844,7 +4865,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       sales:'Penjualan BADAI',
       finance:'Keuangan BADAI',
       marketing:'Marketing BADAI',
-      mentor:'Mentor BADAI',
+      mentor:'Chat Member',
       team:'Akun BADAI'
     };
     if($('headerPageTitle')) $('headerPageTitle').textContent = pageTitles[page] || 'BADAI';
