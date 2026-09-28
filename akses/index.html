@@ -1709,9 +1709,38 @@ h1,h2,h3,h4,h5,h6,
       </div>
     </section>
 
-    <section id="mentor" class="screen">
-      <div class="mentor-chat-card">
+    <section id="mentor" class="screen mentor-chat-list-mode">
+      <div id="mentorChatHome" class="mentor-chat-home">
+        <div class="mentor-chat-home-head">
+          <div>
+            <strong>Chat</strong>
+            <span>1 percakapan</span>
+          </div>
+        </div>
+        <div class="mentor-chat-home-search">
+          <span>⌕</span>
+          <input id="mentorChatSearch" type="search" autocomplete="off" placeholder="Cari chat"/>
+        </div>
+        <div class="mentor-chat-home-list">
+          <button id="mentorChatRow" type="button" class="mentor-chat-row">
+            <div class="mentor-chat-row-avatar">M</div>
+            <div class="mentor-chat-row-main">
+              <div class="mentor-chat-row-top">
+                <strong id="mentorChatRowName">Mentor BADAI</strong>
+                <span id="mentorChatRowTime"></span>
+              </div>
+              <div class="mentor-chat-row-bottom">
+                <span id="mentorChatRowPreview">Buka percakapan dengan Mentor BADAI</span>
+                <b id="mentorChatRowUnread" class="hidden">0</b>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div id="mentorChatCard" class="mentor-chat-card">
         <div class="mentor-wa-head">
+          <button id="mentorChatBackBtn" class="mentor-chat-back" type="button" aria-label="Kembali ke daftar chat">←</button>
           <div class="mentor-wa-avatar">M</div>
           <div class="mentor-wa-person">
             <strong id="mentorWaName">Mentor BADAI</strong>
