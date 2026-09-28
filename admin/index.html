@@ -4634,6 +4634,35 @@ th,td{padding:14px 12px!important}
 }
 #pageMentor .mentor-admin-msg.sticker::before,#pageMentor .mentor-admin-msg.system::before{display:none!important}
 
+/* Group sender identity: initial avatar + bubble */
+#pageMentor .mentor-admin-group-message-row{
+  width:100%;display:flex;align-items:flex-start;gap:8px;align-self:flex-start;
+}
+#pageMentor .mentor-admin-group-message-row .mentor-admin-msg{
+  align-self:flex-start!important;
+  max-width:calc(78% - 38px)!important;
+}
+#pageMentor .mentor-admin-group-initial{
+  flex:0 0 30px;width:30px;height:30px;margin-top:1px;
+  display:grid;place-items:center;border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 1px 3px rgba(0,0,0,.28);
+  font-size:13px!important;font-weight:600!important;line-height:1!important;
+  color:#e9edef;background:#374248;
+}
+#pageMentor .mentor-admin-group-initial.tone-0{background:#4a2038;color:#ff91c8}
+#pageMentor .mentor-admin-group-initial.tone-1{background:#123c49;color:#6bc9f2}
+#pageMentor .mentor-admin-group-initial.tone-2{background:#342447;color:#dfb4ff}
+#pageMentor .mentor-admin-group-initial.tone-3{background:#49301a;color:#ffc17f}
+#pageMentor .mentor-admin-group-initial.tone-4{background:#183c32;color:#8be7c0}
+#pageMentor .mentor-admin-group-initial.tone-5{background:#443b17;color:#ffda76}
+#pageMentor .mentor-admin-group-initial.tone-6{background:#213654;color:#9fc3ff}
+@media(max-width:760px){
+  #pageMentor .mentor-admin-group-message-row{gap:7px}
+  #pageMentor .mentor-admin-group-initial{flex-basis:28px;width:28px;height:28px;font-size:12px!important}
+  #pageMentor .mentor-admin-group-message-row .mentor-admin-msg{max-width:calc(84% - 35px)!important}
+}
+
 /* Group @mentions */
 #pageMentor .mentor-admin-mention-btn{font-weight:700!important;font-size:18px!important}
 #pageMentor .mentor-admin-mention-btn.hidden{display:none!important}
@@ -8854,8 +8883,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       else body='<div class="body mentor-wa-formatted">'+(slug==='group'?mentorAdminCommunityFormatText(m.body||''):mentorAdminFormatText(m.body||''))+'</div>';
       const animateMsg=!mentorAdminAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
-      html+='<div class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
+      const bubble='<div class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
         '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+(own?'<span class="mentor-admin-receipt read">✓✓</span>':'')+'</div></div>';
+      if(slug==='group'&&!own){
+        const senderInitial=String(senderName||'M').trim().charAt(0).toUpperCase()||'M';
+        const tone=mentorAdminSenderTone(senderName);
+        html+='<div class="mentor-admin-group-message-row"><div class="mentor-admin-group-initial '+tone+'">'+esc(senderInitial)+'</div>'+bubble+'</div>';
+      }else html+=bubble;
     });
     list.innerHTML=html||'<div class="empty">'+(slug==='announcement'?'Belum ada pengumuman.':'Belum ada pesan di Grup BADAI.')+'</div>';
     mentorAdminScrollBottom(true)
