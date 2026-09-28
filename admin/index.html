@@ -3282,6 +3282,42 @@ th,td{padding:14px 12px!important}
 /* END BADAI MEMBERSHIP LIFECYCLE ADMIN FINAL */
 
 
+.mentor-thread-actions{display:flex!important;align-items:center!important;gap:6px!important}
+.mentor-thread-more{
+  width:34px!important;height:34px!important;min-height:34px!important;padding:0!important;
+  display:grid!important;place-items:center!important;border:0!important;border-radius:999px!important;
+  background:transparent!important;color:#d1d7db!important;font-size:24px!important;line-height:1!important;cursor:pointer!important
+}
+.mentor-thread-more:hover{background:#2a3942!important}
+#pageMentor .mentor-chat-manage-menu{
+  position:absolute;right:9px;top:58px;z-index:120;width:210px;padding:6px;
+  border:1px solid #2b3942;border-radius:11px;background:#202c33;box-shadow:0 14px 36px rgba(0,0,0,.46)
+}
+#pageMentor .mentor-chat-manage-menu.hidden{display:none}
+#pageMentor .mentor-chat-manage-menu button{
+  width:100%;min-height:42px;padding:0 11px;display:flex;align-items:center;gap:10px;border:0;border-radius:8px;
+  background:transparent;color:#e9edef;text-align:left;font-size:10px;font-weight:800;cursor:pointer
+}
+#pageMentor .mentor-chat-manage-menu button:hover{background:#2a3942}
+#pageMentor .mentor-chat-manage-menu button.danger{color:#ff9aa8}
+#pageMentor .mentor-chat-select-bar{
+  position:absolute;left:8px;right:8px;top:64px;z-index:110;min-height:46px;padding:6px 8px;
+  display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:8px;
+  border:1px solid #31444e;border-radius:11px;background:#202c33;box-shadow:0 8px 24px rgba(0,0,0,.35)
+}
+#pageMentor .mentor-chat-select-bar.hidden{display:none}
+#pageMentor .mentor-chat-select-bar button{min-height:34px;border:0;border-radius:9px;background:#2a3942;color:#e9edef;font-weight:900;cursor:pointer}
+#pageMentor .mentor-chat-select-bar .delete-selected{padding:0 12px;background:#ff4fa3;color:#111}
+#pageMentor .mentor-chat-select-bar b{font-size:10px;color:#e9edef}
+#pageMentor #mentorThreadView.chat-select-mode .mentor-admin-msg[data-message-id]{cursor:pointer!important;outline:1px solid transparent;position:relative}
+#pageMentor #mentorThreadView.chat-select-mode .mentor-admin-msg[data-message-id]::after{
+  content:"";position:absolute;right:-9px;top:-8px;width:18px;height:18px;border:2px solid #8696a0;border-radius:999px;background:#0b141a;box-sizing:border-box
+}
+#pageMentor #mentorThreadView.chat-select-mode .mentor-admin-msg[data-message-id].chat-selected{outline:2px solid #ff4fa3!important}
+#pageMentor #mentorThreadView.chat-select-mode .mentor-admin-msg[data-message-id].chat-selected::after{
+  content:"✓";display:grid;place-items:center;border-color:#ff4fa3;background:#ff4fa3;color:#111;font-size:10px;font-weight:950
+}
+#pageMentor #mentorThreadView.chat-select-mode .mentor-bubble-menu-btn{display:none!important}
 .mentor-admin-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 12px}
 .mentor-admin-status-grid .stat{min-width:0}
 .mentor-admin-status-grid .stat strong{font-size:16px}
@@ -9342,7 +9378,78 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     setTimeout(()=>{panel.classList.add('hidden');panel.classList.remove('closing');panel.setAttribute('aria-hidden','true')},260);
   }
 
+  let mentorAdminSelectMode=false;
+  const mentorAdminSelectedIds=new Set();
+
+  function adminCurrentManageScope(){
+    if(['announcement','group'].includes(mentorAdminScreen)){
+      return {kind:'community',key:mentorAdminCommunityChannel||mentorAdminScreen};
+    }
+    if(mentorAdminScreen==='mentor-thread'&&mentorActiveConversation?.conversation_id){
+      return {kind:'mentor',key:String(mentorActiveConversation.conversation_id)};
+    }
+    return null;
+  }
+
+  function ensureAdminChatManageUi(){
+    const view=$('mentorThreadView');if(!view)return;
+    let menu=$('mentorAdminChatManageMenu');
+    if(!menu){
+      menu=document.createElement('div');
+      menu.id='mentorAdminChatManageMenu';menu.className='mentor-chat-manage-menu hidden';
+      menu.innerHTML='<button type="button" data-admin-chat-manage="clear" class="danger">⌫ <span>Bersihkan semua chat</span></button>'+
+        '<button type="button" data-admin-chat-manage="select">☑ <span>Hapus beberapa chat</span></button>';
+      view.appendChild(menu);
+    }
+    let bar=$('mentorAdminChatSelectBar');
+    if(!bar){
+      bar=document.createElement('div');bar.id='mentorAdminChatSelectBar';bar.className='mentor-chat-select-bar hidden';
+      bar.innerHTML='<button type="button" id="mentorAdminSelectCancel">×</button><b><span id="mentorAdminSelectedCount">0</span> pesan dipilih</b><button type="button" id="mentorAdminDeleteSelected" class="delete-selected">HAPUS</button>';
+      view.appendChild(bar);
+    }
+  }
+
+  function updateAdminChatSelectionUi(){
+    ensureAdminChatManageUi();
+    $('mentorThreadView')?.classList.toggle('chat-select-mode',mentorAdminSelectMode);
+    $('mentorAdminChatSelectBar')?.classList.toggle('hidden',!mentorAdminSelectMode);
+    if($('mentorAdminSelectedCount'))$('mentorAdminSelectedCount').textContent=String(mentorAdminSelectedIds.size);
+    document.querySelectorAll('#mentorAdminMessageList .mentor-admin-msg[data-message-id]').forEach(node=>{
+      node.classList.toggle('chat-selected',mentorAdminSelectedIds.has(node.dataset.messageId));
+    });
+  }
+
+  function closeAdminChatManageMenu(){$('mentorAdminChatManageMenu')?.classList.add('hidden')}
+  function exitAdminChatSelection(){mentorAdminSelectMode=false;mentorAdminSelectedIds.clear();updateAdminChatSelectionUi()}
+
+  async function reloadManagedAdminChat(){
+    mentorAdminLastKey='';
+    if(['announcement','group'].includes(mentorAdminScreen)){
+      await loadAdminCommunityMessages(mentorAdminCommunityChannel);await loadMentorCommunityOverview();
+    }else if(mentorActiveConversation){
+      await loadMentorAdminMessages(true);await loadMentorInbox();
+    }
+  }
+
+  async function clearCurrentAdminChat(){
+    const scope=adminCurrentManageScope();if(!scope){mentorAdminToast('Chat belum siap.');return}
+    if(!window.confirm('Bersihkan semua chat ini dari tampilan akun admin kamu? Pesan baru setelah ini tetap akan muncul.'))return;
+    await api('/rest/v1/rpc/chat_clear_for_me',{method:'POST',body:JSON.stringify({p_scope_kind:scope.kind,p_scope_key:scope.key})});
+    exitAdminChatSelection();closeAdminChatManageMenu();mentorAdminLastKey='';
+    await reloadManagedAdminChat();mentorAdminToast('Chat sudah dibersihkan dari akun ini');
+  }
+
+  async function deleteSelectedAdminChat(){
+    if(!mentorAdminSelectedIds.size){mentorAdminToast('Pilih minimal satu pesan.');return}
+    const scope=adminCurrentManageScope();if(!scope)return;
+    const ids=Array.from(mentorAdminSelectedIds);
+    await api('/rest/v1/rpc/chat_hide_messages_for_me',{method:'POST',body:JSON.stringify({p_scope_kind:scope.kind,p_message_ids:ids})});
+    exitAdminChatSelection();mentorAdminLastKey='';
+    await reloadManagedAdminChat();mentorAdminToast(ids.length+' pesan dihapus dari tampilan');
+  }
+
   function setAdminCommunityChrome(slug){
+    exitAdminChatSelection();
     const announcement=slug==='announcement';
     ensureMentorAdminMentionUi();
     const view=$('mentorThreadView'),composer=$('mentorAdminComposer');
@@ -9407,7 +9514,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
       const animateMsg=!mentorAdminAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
-      const bubble='<div class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+announcementHead+sender+body+
+      const bubble='<div id="mentor-msg-'+esc(m.id)+'" data-message-id="'+esc(m.id)+'" class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorAdminSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+announcementHead+sender+body+
         '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+(own&&slug!=='announcement'?'<span class="mentor-admin-receipt read">✓✓</span>':'')+'</div></div>';
 
       if(slug==='group'&&!own){
@@ -9421,13 +9528,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       }else html+=bubble;
     });
     list.innerHTML=html||'<div class="empty">'+(slug==='announcement'?'Belum ada pengumuman.':'Belum ada pesan di Grup BADAI.')+'</div>';
-    mentorAdminScrollBottom(true)
+    updateAdminChatSelectionUi();mentorAdminScrollBottom(true)
   }
 
   async function loadAdminCommunityMessages(slug){
     if(!slug)return;
     if(slug==='group')await loadMentorAdminParticipants(false);
-    const rows=await api('/rest/v1/rpc/community_chat_messages_list_v3',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:150})})||[];
+    const rows=await api('/rest/v1/rpc/community_chat_messages_list_v4',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:150})})||[];
     renderAdminCommunityMessages(rows,slug);
     await api('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(()=>{});
     await loadMentorCommunityOverview();
@@ -9457,7 +9564,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadMentorInbox(){
     if(!allowedPages().includes('mentor'))return;
     try{
-      mentorConversations=await api('/rest/v1/rpc/admin_mentor_conversations_v3',{method:'POST',body:JSON.stringify({})})||[];
+      mentorConversations=await api('/rest/v1/rpc/admin_mentor_conversations_v4',{method:'POST',body:JSON.stringify({})})||[];
       if(mentorActiveConversation){
         const fresh=mentorConversations.find(x=>x.conversation_id===mentorActiveConversation.conversation_id);
         if(fresh)mentorActiveConversation=fresh;
@@ -9539,6 +9646,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function openMentorConversation(id){
     const row=mentorConversations.find(x=>x.conversation_id===id);if(!row)return;
+    exitAdminChatSelection();
     closeAdminChatInfo();
     mentorAdminScreen='mentor-thread';mentorActiveConversation=row;mentorAdminLastKey='';mentorAdminInitialRender=true;
     $('mentorAdminLayout')?.classList.add('thread-open');
@@ -9829,13 +9937,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
           const reactions=mentorAdminReactionHtml(state);
           const animateMsg=!mentorAdminAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
           if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
-          html+='<div id="mentor-msg-'+esc(m.id)+'" class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'" data-message-id="'+esc(m.id)+'">'+
+          html+='<div id="mentor-msg-'+esc(m.id)+'" class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorAdminSelectedIds.has(String(m.id))?' chat-selected':'')+'" data-message-id="'+esc(m.id)+'">'+
             '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+esc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
             (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
             '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+receipt+'</div>'+
             (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>';
         });
-        list.innerHTML=html||'<div class="empty">Belum ada pesan.</div>';
+        list.innerHTML=html||'<div class="empty">Belum ada pesan.</div>';updateAdminChatSelectionUi();
         if(forceScroll||mentorAdminInitialRender||wasNear)mentorAdminScrollBottom(true);
         else $('mentorAdminJumpLatest')?.classList.remove('hidden');
         mentorAdminInitialRender=false;
@@ -10320,6 +10428,24 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   document.querySelector('#pageMentor .mentor-thread-person')?.addEventListener('click',openAdminChatInfo);
 
+  ensureAdminChatManageUi();
+  $('mentorThreadMoreBtn')?.addEventListener('click',e=>{
+    e.stopPropagation();ensureAdminChatManageUi();$('mentorAdminChatManageMenu')?.classList.toggle('hidden');
+  });
+  $('mentorAdminChatManageMenu')?.addEventListener('click',async e=>{
+    const btn=e.target.closest('[data-admin-chat-manage]');if(!btn)return;
+    try{
+      if(btn.dataset.adminChatManage==='clear')await clearCurrentAdminChat();
+      if(btn.dataset.adminChatManage==='select'){
+        closeAdminChatManageMenu();mentorAdminSelectMode=true;mentorAdminSelectedIds.clear();updateAdminChatSelectionUi();
+      }
+    }catch(err){mentorAdminToast(err.message||'Gagal mengatur chat.')}
+  });
+  $('mentorAdminSelectCancel')?.addEventListener('click',exitAdminChatSelection);
+  $('mentorAdminDeleteSelected')?.addEventListener('click',async()=>{
+    try{await deleteSelectedAdminChat()}catch(err){mentorAdminToast(err.message||'Gagal menghapus pesan.')}
+  });
+
   $('claimMentorChatBtn')?.addEventListener('click',async()=>{
     try{await claimMentorConversation()}
     catch(err){if($('mentorAdminNote'))$('mentorAdminNote').textContent='✕ '+(err.message||'Gagal mengambil chat.')}
@@ -10418,6 +10544,15 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   $('mentorAdminReplyCancel')?.addEventListener('click',clearMentorAdminReply);
 
   $('mentorAdminMessageList')?.addEventListener('click',async e=>{
+    if(mentorAdminSelectMode){
+      const selectable=e.target.closest('.mentor-admin-msg[data-message-id]');
+      if(selectable){
+        e.preventDefault();e.stopPropagation();
+        const sid=selectable.dataset.messageId;
+        if(mentorAdminSelectedIds.has(sid))mentorAdminSelectedIds.delete(sid);else mentorAdminSelectedIds.add(sid);
+        updateAdminChatSelectionUi();return;
+      }
+    }
     const menuBtn=e.target.closest('[data-mentor-message-menu]');
     if(menuBtn){e.stopPropagation();openMentorAdminMessageMenu(menuBtn,menuBtn.dataset.mentorMessageMenu);return}
     const chip=e.target.closest('[data-mentor-react-chip]');
@@ -10434,6 +10569,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   });
 
   document.addEventListener('click',async e=>{
+    if(!e.target.closest('#mentorAdminChatManageMenu')&&!e.target.closest('#mentorThreadMoreBtn'))closeAdminChatManageMenu();
     const menu=e.target.closest('.mentor-message-menu');
     if(menu&&mentorAdminMessageMenu){
       const id=mentorAdminMessageMenu.dataset.messageId;
