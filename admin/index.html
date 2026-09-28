@@ -4457,6 +4457,103 @@ th,td{padding:14px 12px!important}
   line-height:1.35!important;
   text-align:center!important;
 }
+
+/* iOS-inspired motion across admin + chat */
+.admin-page:not(.hidden){
+  animation:badaiAdminScreenIn .28s cubic-bezier(.22,.61,.36,1) both;
+}
+#pageMentor .mentor-admin-layout:not(.thread-open) .mentor-inbox-panel{
+  animation:badaiAdminPopIn .32s cubic-bezier(.22,.61,.36,1) both;
+}
+#pageMentor .mentor-admin-layout.thread-open .mentor-thread-panel{
+  animation:badaiAdminPushIn .34s cubic-bezier(.22,.61,.36,1) both;
+  transform-origin:right center;
+}
+#pageMentor .mentor-inbox-item{
+  transition:transform .18s cubic-bezier(.22,.61,.36,1),background .18s ease,opacity .18s ease!important;
+}
+#pageMentor .mentor-inbox-item:active{transform:scale(.988)}
+#pageMentor .mentor-thread-back,
+#pageMentor .mentor-inbox-home-back,
+#pageMentor .mentor-admin-icon,
+#pageMentor #mentorAdminSendBtn,
+#pageMentor .mentor-reaction-chip{
+  transition:transform .16s cubic-bezier(.22,.61,.36,1),background .16s ease,opacity .16s ease!important;
+}
+#pageMentor .mentor-thread-back:active,
+#pageMentor .mentor-inbox-home-back:active,
+#pageMentor .mentor-admin-icon:active,
+#pageMentor #mentorAdminSendBtn:active,
+#pageMentor .mentor-reaction-chip:active{transform:scale(.9)}
+#pageMentor .mentor-admin-msg.mentor-msg-new{
+  animation:badaiAdminBubbleIn .32s cubic-bezier(.18,.89,.32,1.24) both;
+}
+#pageMentor .mentor-admin-msg.mentor.mentor-msg-new{transform-origin:right bottom}
+#pageMentor .mentor-admin-msg.member.mentor-msg-new{transform-origin:left bottom}
+#pageMentor .mentor-reaction-chips{animation:badaiAdminReactionIn .22s cubic-bezier(.22,.61,.36,1) both}
+.mentor-message-menu{
+  transform-origin:top right;
+  animation:badaiAdminMenuIn .2s cubic-bezier(.22,.61,.36,1) both;
+}
+#pageMentor .mentor-admin-stickers:not(.hidden),
+#pageMentor .mentor-admin-attach-menu:not(.hidden),
+#pageMentor .mentor-admin-pending:not(.hidden),
+#pageMentor .mentor-reply-bar:not(.hidden){
+  animation:badaiAdminTrayIn .24s cubic-bezier(.22,.61,.36,1) both;
+}
+#pageMentor .mentor-unread{
+  animation:badaiAdminBadgeIn .3s cubic-bezier(.18,.89,.32,1.35) both;
+}
+@keyframes badaiAdminScreenIn{
+  from{opacity:0;transform:translate3d(10px,0,0) scale(.995)}
+  to{opacity:1;transform:none}
+}
+@keyframes badaiAdminPushIn{
+  from{opacity:.2;transform:translate3d(11%,0,0) scale(.985)}
+  to{opacity:1;transform:none}
+}
+@keyframes badaiAdminPopIn{
+  from{opacity:.3;transform:translate3d(-7%,0,0) scale(.99)}
+  to{opacity:1;transform:none}
+}
+@keyframes badaiAdminBubbleIn{
+  0%{opacity:0;transform:translate3d(0,10px,0) scale(.92)}
+  70%{opacity:1;transform:translate3d(0,-1px,0) scale(1.015)}
+  100%{opacity:1;transform:none}
+}
+@keyframes badaiAdminMenuIn{
+  from{opacity:0;transform:translate3d(0,-5px,0) scale(.94)}
+  to{opacity:1;transform:none}
+}
+@keyframes badaiAdminTrayIn{
+  from{opacity:0;transform:translate3d(0,10px,0)}
+  to{opacity:1;transform:none}
+}
+@keyframes badaiAdminReactionIn{
+  from{opacity:0;transform:scale(.88)}
+  to{opacity:1;transform:none}
+}
+@keyframes badaiAdminBadgeIn{
+  0%{opacity:0;transform:scale(.55)}
+  75%{opacity:1;transform:scale(1.12)}
+  100%{opacity:1;transform:scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+  .admin-page:not(.hidden),
+  #pageMentor .mentor-admin-layout:not(.thread-open) .mentor-inbox-panel,
+  #pageMentor .mentor-admin-layout.thread-open .mentor-thread-panel,
+  #pageMentor .mentor-admin-msg.mentor-msg-new,
+  #pageMentor .mentor-reaction-chips,
+  .mentor-message-menu,
+  #pageMentor .mentor-admin-stickers:not(.hidden),
+  #pageMentor .mentor-admin-attach-menu:not(.hidden),
+  #pageMentor .mentor-admin-pending:not(.hidden),
+  #pageMentor .mentor-reply-bar:not(.hidden),
+  #pageMentor .mentor-unread{
+    animation:none!important;
+    transition:none!important;
+  }
+}
 @media(max-width:760px){
   #pageMentor .mentor-admin-layout{
     height:calc(100dvh - 150px)!important;
@@ -5593,6 +5690,7 @@ th,td{padding:14px 12px!important}
   let mentorAdminUiState = new Map();
   let mentorAdminReply = null;
   let mentorAdminMessageMenu = null;
+  let mentorAdminAnimatedMessageIds = new Set();
   let mentorAdminScreen = 'home';
   let mentorAdminCommunityChannel = '';
   let mentorCommunityOverviewMap = new Map();
@@ -8371,7 +8469,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       let body='';
       if(m.message_type==='sticker')body='<div class="body">'+esc(m.sticker_key||'✨')+'</div>';
       else body='<div class="body mentor-wa-formatted">'+mentorAdminFormatText(m.body||'')+'</div>';
-      html+='<div class="mentor-admin-msg '+side+' '+esc(m.message_type)+'">'+sender+body+
+      const animateMsg=!mentorAdminAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
+      if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
+      html+='<div class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
         '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+(own?'<span class="mentor-admin-receipt read">✓✓</span>':'')+'</div></div>';
     });
     list.innerHTML=html||'<div class="empty">'+(slug==='announcement'?'Belum ada pengumuman.':'Belum ada pesan di Grup BADAI.')+'</div>';
@@ -8668,7 +8768,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
           }
           const receipt=m.sender_kind==='mentor'?mentorAdminReceipt(m.created_at):'';
           const reactions=mentorAdminReactionHtml(state);
-          html+='<div id="mentor-msg-'+esc(m.id)+'" class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+'" data-message-id="'+esc(m.id)+'">'+
+          const animateMsg=!mentorAdminAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
+          if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
+          html+='<div id="mentor-msg-'+esc(m.id)+'" class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'" data-message-id="'+esc(m.id)+'">'+
             '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+esc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
             (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
             '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+receipt+'</div>'+
