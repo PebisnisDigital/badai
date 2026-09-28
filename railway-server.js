@@ -2,6 +2,10 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
+const { Readable } = require('stream');
+const crypto = require('crypto');
+const Busboy = require('busboy');
+const { google } = require('googleapis');
 
 const landing = require('./api/landing-v6.js');
 const admin = require('./api/admin-v5.js');
@@ -9,7 +13,11 @@ const akses = require('./api/admin-v3.js');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
-const BUILD_REV = 'badai-staging-member-plan-sync-v1';
+const BUILD_REV = 'badai-staging-mentor-hot-archive-v1';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://tlvxlekqrllkvcpgwmic.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
+const MENTOR_ARCHIVE_SECRET = process.env.MENTOR_ARCHIVE_SECRET || '';
+const MENTOR_DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_MENTOR_FOLDER_ID || '';
 
 const MIME = {
   '.html':'text/html; charset=utf-8',
@@ -66,11 +74,12 @@ function decorateReqRes(req, res) {
 
 async function collectBody(req){
   if (!['POST','PUT','PATCH'].includes(String(req.method || '').toUpperCase())) return;
+  const type = String(req.headers['content-type'] || '');
+  if (type.includes('multipart/form-data')) return;
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
   const raw = Buffer.concat(chunks).toString('utf8');
   req.rawBody = raw;
-  const type = String(req.headers['content-type'] || '');
   if (type.includes('application/json')) {
     try { req.body = raw ? JSON.parse(raw) : {}; } catch { req.body = {}; }
   } else {
@@ -115,6 +124,284 @@ function serveStatic(req, res, pathname){
   }
 }
 
+async function createDriveAuth(){
+  const refreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || '';
+  const clientId = process.env.GOOGLE_CLIENT_ID || '';
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+
+  if(refreshToken && clientId && clientSecret){
+    const oauth = new google.auth.OAuth2(clientId,clientSecret);
+    oauth.setCredentials({refresh_token:refreshToken});
+    return oauth;
+  }
+
+  const serviceAccountRaw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || '';
+  if(serviceAccountRaw){
+    const credentials = JSON.parse(serviceAccountRaw);
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes:['https://www.googleapis.com/auth/drive']
+    });
+    return auth;
+  }
+
+  return null;
+}
+
+function mentorDriveConfigured(){
+  return Boolean(
+    MENTOR_DRIVE_FOLDER_ID &&
+    (
+      (process.env.GOOGLE_DRIVE_REFRESH_TOKEN && process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) ||
+      process.env.GOOGLE_SERVICE_ACCOUNT_JSON
+    )
+  );
+}
+
+async function driveClient(){
+  const auth = await createDriveAuth();
+  if(!auth) throw new Error('Google Drive Mentor belum terhubung.');
+  return google.drive({version:'v3',auth});
+}
+
+function signedMentorFileUrl(fileId){
+  if(!MENTOR_ARCHIVE_SECRET) return '';
+  const sig = crypto.createHmac('sha256',MENTOR_ARCHIVE_SECRET).update(String(fileId)).digest('hex');
+  return '/api/mentor/file?id='+encodeURIComponent(fileId)+'&sig='+sig;
+}
+
+function verifyMentorFileSignature(fileId,sig){
+  if(!fileId || !sig || !MENTOR_ARCHIVE_SECRET) return false;
+  const expected = crypto.createHmac('sha256',MENTOR_ARCHIVE_SECRET).update(String(fileId)).digest('hex');
+  try{
+    return crypto.timingSafeEqual(Buffer.from(expected),Buffer.from(String(sig)));
+  }catch{
+    return false;
+  }
+}
+
+async function verifySupabaseBearer(token){
+  if(!token || !SUPABASE_ANON_KEY) return null;
+  const res = await fetch(SUPABASE_URL+'/auth/v1/user',{
+    headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}
+  });
+  if(!res.ok) return null;
+  return await res.json().catch(()=>null);
+}
+
+async function supabaseRpc(name,body,authorization){
+  const headers={
+    apikey:SUPABASE_ANON_KEY,
+    'Content-Type':'application/json'
+  };
+  if(authorization) headers.Authorization=authorization;
+  const res=await fetch(SUPABASE_URL+'/rest/v1/rpc/'+name,{
+    method:'POST',
+    headers,
+    body:JSON.stringify(body||{})
+  });
+  const text=await res.text();
+  let data=null;
+  if(text){try{data=JSON.parse(text)}catch{data=text}}
+  if(!res.ok) throw new Error((data&&(data.message||data.error||data.msg))||('RPC '+name+' gagal'));
+  return data;
+}
+
+function parseMentorMultipart(req){
+  return new Promise((resolve,reject)=>{
+    const bb=Busboy({
+      headers:req.headers,
+      limits:{files:1,fileSize:10*1024*1024,fields:10}
+    });
+    const fields={};
+    let fileData=null;
+    let failed=false;
+
+    bb.on('field',(name,value)=>{fields[name]=value});
+    bb.on('file',(name,file,info)=>{
+      const chunks=[];
+      let size=0;
+      file.on('data',chunk=>{size+=chunk.length;chunks.push(chunk)});
+      file.on('limit',()=>{failed=true;reject(new Error('File maksimal 10 MB.'))});
+      file.on('end',()=>{
+        if(failed) return;
+        fileData={
+          field:name,
+          name:String(info.filename||'file'),
+          mime:String(info.mimeType||'application/octet-stream'),
+          size,
+          buffer:Buffer.concat(chunks)
+        };
+      });
+    });
+    bb.on('error',reject);
+    bb.on('finish',()=>{
+      if(failed) return;
+      if(!fileData) return reject(new Error('File belum dipilih.'));
+      resolve({fields,file:fileData});
+    });
+    req.pipe(bb);
+  });
+}
+
+function safeDriveName(value){
+  return String(value||'BADAI').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim().slice(0,90) || 'BADAI';
+}
+
+function driveQ(value){
+  return String(value||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
+
+async function findOrCreateDriveFolder(drive,name,parentId){
+  const q=[
+    "mimeType='application/vnd.google-apps.folder'",
+    "trashed=false",
+    "name='"+driveQ(name)+"'",
+    "'"+driveQ(parentId)+"' in parents"
+  ].join(' and ');
+  const found=await drive.files.list({
+    q,
+    fields:'files(id,name)',
+    pageSize:1,
+    supportsAllDrives:true,
+    includeItemsFromAllDrives:true
+  });
+  if(found.data.files && found.data.files[0]) return found.data.files[0].id;
+
+  const created=await drive.files.create({
+    requestBody:{name,mimeType:'application/vnd.google-apps.folder',parents:[parentId]},
+    fields:'id',
+    supportsAllDrives:true
+  });
+  return created.data.id;
+}
+
+async function uploadDriveBuffer(drive,parentId,name,mime,buffer){
+  const result=await drive.files.create({
+    requestBody:{name,parents:[parentId]},
+    media:{mimeType:mime,body:Readable.from(buffer)},
+    fields:'id,name,mimeType,size,webViewLink',
+    supportsAllDrives:true
+  });
+  return result.data;
+}
+
+async function handleMentorUpload(req,res){
+  if(!mentorDriveConfigured()){
+    return res.status(503).json({
+      error:'Google Drive Mentor belum terhubung. Chat teks dan stiker sudah aktif; file/gambar akan aktif setelah koneksi Drive dipasang.'
+    });
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const user=await verifySupabaseBearer(token);
+  if(!user?.id) return res.status(401).json({error:'Session tidak valid.'});
+
+  const parsed=await parseMentorMultipart(req);
+  const conversationId=String(parsed.fields.conversation_id||'').trim();
+  if(!conversationId) return res.status(400).json({error:'Percakapan Mentor belum tersedia.'});
+
+  const check=await fetch(
+    SUPABASE_URL+'/rest/v1/mentor_conversations?id=eq.'+encodeURIComponent(conversationId)+'&select=id',
+    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  );
+  const rows=check.ok?await check.json().catch(()=>[]):[];
+  if(!check.ok || !rows?.length) return res.status(403).json({error:'Tidak punya akses ke percakapan ini.'});
+
+  const drive=await driveClient();
+  const attachmentRoot=await findOrCreateDriveFolder(drive,'ATTACHMENTS',MENTOR_DRIVE_FOLDER_ID);
+  const conversationFolder=await findOrCreateDriveFolder(drive,conversationId,attachmentRoot);
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  const fileName=stamp+'__'+safeDriveName(parsed.file.name);
+  const saved=await uploadDriveBuffer(drive,conversationFolder,fileName,parsed.file.mime,parsed.file.buffer);
+
+  return res.status(200).json({
+    ok:true,
+    id:saved.id,
+    name:parsed.file.name,
+    mime:parsed.file.mime,
+    size:parsed.file.size,
+    url:signedMentorFileUrl(saved.id)
+  });
+}
+
+async function handleMentorFile(req,res){
+  const fileId=String(req.query.id||'');
+  const sig=String(req.query.sig||'');
+  if(!verifyMentorFileSignature(fileId,sig)) return res.status(403).send('Link file tidak valid.');
+  if(!mentorDriveConfigured()) return res.status(503).send('Google Drive Mentor belum terhubung.');
+
+  const drive=await driveClient();
+  const meta=await drive.files.get({fileId,fields:'name,mimeType,size',supportsAllDrives:true});
+  const data=await drive.files.get({fileId,alt:'media',supportsAllDrives:true},{responseType:'stream'});
+  res.statusCode=200;
+  res.setHeader('Content-Type',meta.data.mimeType||'application/octet-stream');
+  res.setHeader('Content-Disposition','inline; filename="'+String(meta.data.name||'file').replace(/"/g,'')+'"');
+  res.setHeader('Cache-Control','private, max-age=300');
+  data.data.pipe(res);
+}
+
+function csvCell(value){
+  const s=String(value==null?'':value).replace(/"/g,'""');
+  return '"'+s+'"';
+}
+
+async function finishArchiveBatch(batchId,success,payload){
+  return await supabaseRpc('mentor_archive_finish_batch',{
+    p_worker_secret:MENTOR_ARCHIVE_SECRET,
+    p_batch_id:batchId,
+    p_success:Boolean(success),
+    p_drive_file_id:payload?.json?.id||null,
+    p_drive_web_view_link:payload?.json?.webViewLink||null,
+    p_drive_csv_file_id:payload?.csv?.id||null,
+    p_drive_csv_web_view_link:payload?.csv?.webViewLink||null,
+    p_error_message:payload?.error||null
+  });
+}
+
+let mentorArchiveBusy=false;
+async function runMentorArchiveWorker(){
+  if(mentorArchiveBusy || !mentorDriveConfigured() || !SUPABASE_ANON_KEY || !MENTOR_ARCHIVE_SECRET) return;
+  mentorArchiveBusy=true;
+  let batch=null;
+  try{
+    const claimed=await supabaseRpc('mentor_archive_claim_batch',{p_worker_secret:MENTOR_ARCHIVE_SECRET});
+    batch=Array.isArray(claimed)?claimed[0]:claimed;
+    if(!batch?.batch_id) return;
+
+    const drive=await driveClient();
+    const memberFolderName='MEMBER - '+safeDriveName(batch.member_name||'BADAI')+' - '+String(batch.member_user_id||'').slice(0,8);
+    const memberFolder=await findOrCreateDriveFolder(drive,memberFolderName,MENTOR_DRIVE_FOLDER_ID);
+    const date=String(batch.archive_date);
+    const year=date.slice(0,4)||'ARSIP';
+    const month=date.slice(5,7)||'00';
+    const yearFolder=await findOrCreateDriveFolder(drive,year,memberFolder);
+    const monthFolder=await findOrCreateDriveFolder(drive,month,yearFolder);
+
+    const messages=Array.isArray(batch.messages)?batch.messages:[];
+    const jsonl=messages.map(m=>JSON.stringify(m)).join('\n')+'\n';
+    const csvHeader=['created_at','sender_kind','message_type','body','sticker_key','file_name','file_mime','file_size','drive_file_id'];
+    const csvLines=[csvHeader.map(csvCell).join(',')];
+    for(const m of messages){
+      csvLines.push(csvHeader.map(key=>csvCell(m?.[key])).join(','));
+    }
+
+    const base=date+'__mentor-chat';
+    const jsonFile=await uploadDriveBuffer(drive,monthFolder,base+'.jsonl','application/x-ndjson',Buffer.from(jsonl,'utf8'));
+    const csvFile=await uploadDriveBuffer(drive,monthFolder,base+'.csv','text/csv',Buffer.from(csvLines.join('\n')+'\n','utf8'));
+    await finishArchiveBatch(batch.batch_id,true,{json:jsonFile,csv:csvFile});
+    console.log('Mentor archive uploaded:',batch.batch_id,date,batch.member_name);
+  }catch(error){
+    console.error('Mentor archive worker:',error?.message||error);
+    if(batch?.batch_id){
+      try{await finishArchiveBatch(batch.batch_id,false,{error:String(error?.message||error)})}catch(_){}
+    }
+  }finally{
+    mentorArchiveBusy=false;
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   decorateReqRes(req, res);
 
@@ -132,6 +419,23 @@ const server = http.createServer(async (req, res) => {
         source:process.env.VERCEL_GIT_COMMIT_SHA || 'staging',
         build:BUILD_REV
       });
+    }
+
+    if (pathname === '/api/mentor/status') {
+      return res.status(200).json({
+        ok:true,
+        drive_configured:mentorDriveConfigured(),
+        hot_storage_days:7,
+        archive_time:'00:05 WIB'
+      });
+    }
+
+    if (pathname === '/api/mentor/upload' && req.method === 'POST') {
+      return await handleMentorUpload(req,res);
+    }
+
+    if (pathname === '/api/mentor/file' && req.method === 'GET') {
+      return await handleMentorFile(req,res);
     }
 
     if (pathname === '/admin' || pathname === '/admin/' || pathname === '/api/admin-v5') {
@@ -165,4 +469,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('BADAI-STAGING listening on port ' + PORT);
+  console.log('Mentor Drive configured:', mentorDriveConfigured());
+  setTimeout(() => runMentorArchiveWorker().catch(()=>{}), 15000);
+  setInterval(() => runMentorArchiveWorker().catch(()=>{}), 5*60*1000);
 });
