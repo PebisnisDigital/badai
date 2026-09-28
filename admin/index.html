@@ -3478,6 +3478,33 @@ th,td{padding:14px 12px!important}
 #pageMentor .mentor-inbox-head button,
 #pageMentor .mentor-thread-head button{border-color:#34534a!important;background:#14251f!important;color:#77d7b0!important}
 
+.account-admin-profile{
+  margin:12px 0 0;padding:14px 16px;display:grid;grid-template-columns:64px minmax(0,1fr) auto;
+  align-items:center;gap:12px;border:1px solid #2c2630;border-radius:16px;background:#100d10
+}
+.account-admin-avatar{
+  width:64px;height:64px;display:grid;place-items:center;overflow:hidden;border-radius:999px;
+  border:2px solid #ff4fa3;background:#26343c;color:#fff;font-size:20px;font-weight:900
+}
+.account-admin-avatar img{width:100%;height:100%;object-fit:cover}
+.account-admin-profile-copy{min-width:0;display:grid;gap:4px}
+.account-admin-profile-copy b{color:#fff;font-size:14px}
+.account-admin-profile-copy span{color:#8f858b;font-size:10px;line-height:1.45}
+.account-admin-avatar-actions{display:flex;align-items:center}
+.account-admin-avatar-btn{
+  min-height:38px;padding:0 12px;border:0;border-radius:10px;background:#ff4fa3;color:#111;
+  font-size:9px;font-weight:950;cursor:pointer
+}
+.account-admin-avatar-btn:disabled{opacity:.55;cursor:wait}
+.account-admin-avatar-status{grid-column:2/-1;color:#8696a0;font-size:9px;line-height:1.35}
+.account-admin-avatar-status.ok{color:#72d79a}
+.account-admin-avatar-status.err{color:#ff9292}
+@media(max-width:620px){
+  .account-admin-profile{grid-template-columns:56px minmax(0,1fr)}
+  .account-admin-avatar{width:56px;height:56px}
+  .account-admin-avatar-actions{grid-column:2}
+  .account-admin-avatar-status{grid-column:1/-1}
+}
 .account-admin-logout{
   margin-top:12px;padding:16px 18px;border:1px solid #402126;border-radius:16px;
   background:linear-gradient(180deg,#140d0e,#0d090a);display:flex;align-items:center;
@@ -4657,6 +4684,14 @@ th,td{padding:14px 12px!important}
 #pageMentor .mentor-admin-group-initial.tone-4{background:#183c32;color:#8be7c0}
 #pageMentor .mentor-admin-group-initial.tone-5{background:#443b17;color:#ffda76}
 #pageMentor .mentor-admin-group-initial.tone-6{background:#213654;color:#9fc3ff}
+#pageMentor .mentor-admin-group-initial.has-photo{padding:0!important;overflow:hidden;background:#374248!important;color:transparent!important}
+#pageMentor .mentor-admin-group-initial img,
+#pageMentor .mentor-admin-mention-avatar img,
+#pageMentor .mentor-inbox-avatar img,
+#pageMentor .mentor-thread-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:999px}
+#pageMentor .mentor-admin-mention-avatar.has-photo,
+#pageMentor .mentor-inbox-avatar.has-photo,
+#pageMentor .mentor-thread-avatar.has-photo{padding:0!important;overflow:hidden;color:transparent!important}
 @media(max-width:760px){
   #pageMentor .mentor-admin-group-message-row{gap:7px}
   #pageMentor .mentor-admin-group-initial{flex-basis:28px;width:28px;height:28px;font-size:12px!important}
@@ -5596,6 +5631,19 @@ th,td{padding:14px 12px!important}
         </div>
       </div>
 
+      <div class="account-admin-profile">
+        <div id="adminProfileAvatarPreview" class="account-admin-avatar">A</div>
+        <div class="account-admin-profile-copy">
+          <b>Foto Profil Admin</b>
+          <span>Tampil saat akunmu mengirim pesan di Grup BADAI. File disimpan di Google Drive BADAI.</span>
+        </div>
+        <div class="account-admin-avatar-actions">
+          <button id="adminProfileAvatarBtn" class="account-admin-avatar-btn" type="button">GANTI FOTO</button>
+          <input id="adminProfileAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden/>
+        </div>
+        <div id="adminProfileAvatarStatus" class="account-admin-avatar-status">Foto otomatis dikecilkan menjadi 256×256 agar ringan.</div>
+      </div>
+
       <div class="account-admin-logout">
         <div>
           <span class="account-admin-kicker">SESI AKUN</span>
@@ -6128,6 +6176,84 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   const authStatus = $('authStatus');
   const logoutBtn = $('logoutBtn');
 
+
+  function adminAvatarInitials(name){
+    return String(name||'A').trim().split(/\s+/).slice(0,2).map(x=>x.charAt(0)).join('').toUpperCase()||'A';
+  }
+
+  function renderAdminProfileAvatar(url,name){
+    const node=$('adminProfileAvatarPreview');if(!node)return;
+    node.innerHTML='';
+    node.classList.toggle('has-photo',Boolean(url));
+    if(url){
+      const img=document.createElement('img');img.src=url;img.alt='Foto profil';img.loading='lazy';node.appendChild(img);
+    }else node.textContent=adminAvatarInitials(name);
+  }
+
+  function setAdminAvatarStatus(message,type=''){
+    const node=$('adminProfileAvatarStatus');if(!node)return;
+    node.textContent=message||'';
+    node.classList.remove('ok','err');
+    if(type)node.classList.add(type);
+  }
+
+  function loadAdminAvatarImage(file){
+    if(window.createImageBitmap)return createImageBitmap(file);
+    return new Promise((resolve,reject)=>{
+      const img=new Image(),url=URL.createObjectURL(file);
+      img.onload=()=>{URL.revokeObjectURL(url);resolve(img)};
+      img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Foto tidak dapat dibaca.'))};
+      img.src=url;
+    });
+  }
+
+  async function compressAdminAvatar(file){
+    if(!file||!String(file.type||'').startsWith('image/'))throw new Error('Pilih file foto.');
+    if(file.size>12*1024*1024)throw new Error('Foto awal maksimal 12 MB.');
+    const img=await loadAdminAvatarImage(file);
+    const w=img.width||img.naturalWidth||0,h=img.height||img.naturalHeight||0;
+    if(!w||!h)throw new Error('Ukuran foto tidak terbaca.');
+    const side=Math.min(w,h),sx=(w-side)/2,sy=(h-side)/2;
+    const canvas=document.createElement('canvas');canvas.width=256;canvas.height=256;
+    const ctx=canvas.getContext('2d',{alpha:false});
+    ctx.drawImage(img,sx,sy,side,side,0,0,256,256);
+    if(img.close)try{img.close()}catch(_){}
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',0.82));
+    if(!blob)throw new Error('Gagal mengecilkan foto.');
+    return new File([blob],'avatar.webp',{type:'image/webp'});
+  }
+
+  function setupAdminProfileAvatar(){
+    const btn=$('adminProfileAvatarBtn'),input=$('adminProfileAvatarInput');
+    if(!btn||!input||btn.dataset.ready==='1')return;
+    btn.dataset.ready='1';
+    btn.addEventListener('click',()=>input.click());
+    input.addEventListener('change',async()=>{
+      const file=input.files?.[0];if(!file)return;
+      btn.disabled=true;setAdminAvatarStatus('Memproses foto...');
+      try{
+        const compressed=await compressAdminAvatar(file);
+        if(!session?.access_token)throw new Error('Sesi login habis. Silakan login ulang.');
+        setAdminAvatarStatus('Mengunggah foto...');
+        const fd=new FormData();fd.append('file',compressed,'avatar.webp');
+        const res=await fetch('/api/profile/avatar',{method:'POST',headers:{Authorization:'Bearer '+session.access_token},body:fd});
+        const data=await res.json().catch(()=>({}));
+        if(!res.ok)throw new Error(data.error||'Upload foto gagal.');
+        if(currentTeam)currentTeam.avatar_url=data.avatar_url||'';
+        renderAdminProfileAvatar(data.avatar_url,currentTeam?.full_name||'Admin BADAI');
+        setAdminAvatarStatus('Foto profil sudah diperbarui.','ok');
+        mentorAdminParticipantsLoaded=false;
+        loadMentorAdminParticipants(true).catch(()=>{});
+        if(mentorAdminScreen==='group')loadAdminCommunityMessages('group').catch(()=>{});
+        loadTeamMembers().catch(()=>{});
+      }catch(err){
+        setAdminAvatarStatus(err.message||'Upload foto gagal.','err');
+      }finally{
+        btn.disabled=false;input.value='';
+      }
+    });
+  }
+
   function setAuthStatus(msg, type){
     authStatus.textContent = msg;
     authStatus.className = 'status' + (type ? ' ' + type : '');
@@ -6200,7 +6326,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
     const rows = await api(
       '/rest/v1/admin_team_members?auth_user_id=eq.' + encodeURIComponent(userId) +
-      '&select=id,auth_user_id,full_name,email,role,status'
+      '&select=id,auth_user_id,full_name,email,role,status,avatar_url'
     );
     return rows?.[0] || null;
   }
@@ -6288,6 +6414,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
       configureTabs();
       configureTeamAccessUI();
+      setupAdminProfileAvatar();
+      renderAdminProfileAvatar(currentTeam.avatar_url,currentTeam.full_name);
 
       const allowed = allowedPages();
       if(allowed.includes('sales') || allowed.includes('finance')){
@@ -8692,7 +8820,14 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('mentorAdminStickerBtn')?.classList.remove('hidden');
     composer?.classList.remove('hidden');
     if($('mentorThreadName'))$('mentorThreadName').textContent=row.member_name||'Member BADAI';
-    if($('mentorThreadAvatar'))$('mentorThreadAvatar').textContent=mentorInitials(row.member_name);
+    if($('mentorThreadAvatar')){
+      const avatar=$('mentorThreadAvatar');
+      avatar.innerHTML='';
+      avatar.classList.toggle('has-photo',Boolean(row.member_avatar_url));
+      if(row.member_avatar_url){
+        const img=document.createElement('img');img.src=row.member_avatar_url;img.alt='';img.loading='lazy';avatar.appendChild(img);
+      }else avatar.textContent=mentorInitials(row.member_name);
+    }
     if($('mentorThreadMeta')){
       $('mentorThreadMeta').textContent=mentorThreadStatus(row);
       $('mentorThreadMeta').classList.toggle('typing',Boolean(row.member_typing));
@@ -8759,7 +8894,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const preview=row.member_typing?'mengetik...':((row.last_message_sender_kind==='mentor'?'Anda: ':'')+(row.last_message_preview||'Belum ada pesan'));
       const assigned=row.assigned_name?('Ditangani '+row.assigned_name):'Belum diambil mentor';
       return '<button type="button" title="'+esc(row.member_name||'Member BADAI')+'" class="mentor-inbox-item '+(unread?'unread':'')+'" data-mentor-conversation="'+row.conversation_id+'">'+
-        '<div class="mentor-inbox-avatar">'+esc(mentorInitials(row.member_name))+'</div>'+
+        (row.member_avatar_url
+          ? '<div class="mentor-inbox-avatar has-photo"><img src="'+esc(row.member_avatar_url)+'" alt="" loading="lazy"></div>'
+          : '<div class="mentor-inbox-avatar">'+esc(mentorInitials(row.member_name))+'</div>')+
         '<div class="mentor-inbox-main"><div class="mentor-inbox-top"><b>'+esc(row.member_name||'Member BADAI')+'</b></div>'+
         '<span class="mentor-inbox-preview '+(row.member_typing?'typing':'')+'">'+esc(preview)+'</span>'+
         '<span class="mentor-inbox-assigned">'+esc(assigned)+'</span></div>'+
@@ -8888,7 +9025,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       if(slug==='group'&&!own){
         const senderInitial=String(senderName||'M').trim().charAt(0).toUpperCase()||'M';
         const tone=mentorAdminSenderTone(senderName);
-        html+='<div class="mentor-admin-group-message-row"><div class="mentor-admin-group-initial '+tone+'">'+esc(senderInitial)+'</div>'+bubble+'</div>';
+        const avatar=m.sender_avatar_url
+          ? '<div class="mentor-admin-group-initial has-photo"><img src="'+esc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
+          : '<div class="mentor-admin-group-initial '+tone+'">'+esc(senderInitial)+'</div>';
+        html+='<div class="mentor-admin-group-message-row">'+avatar+bubble+'</div>';
       }else html+=bubble;
     });
     list.innerHTML=html||'<div class="empty">'+(slug==='announcement'?'Belum ada pengumuman.':'Belum ada pesan di Grup BADAI.')+'</div>';
@@ -8898,7 +9038,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadAdminCommunityMessages(slug){
     if(!slug)return;
     if(slug==='group')await loadMentorAdminParticipants(false);
-    const rows=await api('/rest/v1/rpc/community_chat_messages_list',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:150})})||[];
+    const rows=await api('/rest/v1/rpc/community_chat_messages_list_v2',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:150})})||[];
     renderAdminCommunityMessages(rows,slug);
     await api('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(()=>{});
     await loadMentorCommunityOverview();
@@ -8927,7 +9067,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadMentorInbox(){
     if(!allowedPages().includes('mentor'))return;
     try{
-      mentorConversations=await api('/rest/v1/rpc/admin_mentor_conversations',{method:'POST',body:JSON.stringify({})})||[];
+      mentorConversations=await api('/rest/v1/rpc/admin_mentor_conversations_v2',{method:'POST',body:JSON.stringify({})})||[];
       if(mentorActiveConversation){
         const fresh=mentorConversations.find(x=>x.conversation_id===mentorActiveConversation.conversation_id);
         if(fresh)mentorActiveConversation=fresh;
@@ -8994,7 +9134,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const preview=row.member_typing?'mengetik...':((row.last_message_sender_kind==='mentor'?'Anda: ':'')+(row.last_message_preview||'Belum ada pesan'));
       const assigned=row.assigned_name?('Ditangani '+row.assigned_name):'Belum diambil mentor';
       return '<button type="button" title="'+esc(row.member_name||'Member BADAI')+'" class="mentor-inbox-item '+(active?'active ':'')+(unread?'unread':'')+'" data-mentor-conversation="'+row.conversation_id+'">'+
-        '<div class="mentor-inbox-avatar">'+esc(mentorInitials(row.member_name))+'</div>'+
+        (row.member_avatar_url
+          ? '<div class="mentor-inbox-avatar has-photo"><img src="'+esc(row.member_avatar_url)+'" alt="" loading="lazy"></div>'
+          : '<div class="mentor-inbox-avatar">'+esc(mentorInitials(row.member_name))+'</div>')+
         '<div class="mentor-inbox-main"><div class="mentor-inbox-top"><b>'+esc(row.member_name||'Member BADAI')+'</b></div>'+
         '<span class="mentor-inbox-preview '+(row.member_typing?'typing':'')+'">'+esc(preview)+'</span>'+
         '<span class="mentor-inbox-assigned">'+esc(assigned)+'</span></div>'+
@@ -9091,7 +9233,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadMentorAdminParticipants(force=false){
     if(mentorAdminParticipantsLoaded&&!force)return mentorAdminParticipants;
     try{
-      const rows=await api('/rest/v1/rpc/community_chat_participants',{method:'POST',body:JSON.stringify({p_query:null,p_limit:300})});
+      const rows=await api('/rest/v1/rpc/community_chat_participants_v2',{method:'POST',body:JSON.stringify({p_query:null,p_limit:300})});
       mentorAdminParticipants=Array.isArray(rows)?rows:[];
       mentorAdminParticipantsLoaded=true;
     }catch(_){mentorAdminParticipants=[]}
@@ -9161,8 +9303,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     mentorAdminMentionIndex=Math.min(mentorAdminMentionIndex,items.length-1);
     picker.innerHTML=items.map((p,i)=>{
       const initials=String(p.display_name||'M').trim().split(/\\s+/).slice(0,2).map(x=>x.charAt(0)).join('').toUpperCase();
+      const avatar=p.avatar_url
+        ? '<span class="mentor-admin-mention-avatar has-photo"><img src="'+esc(p.avatar_url)+'" alt="" loading="lazy"></span>'
+        : '<span class="mentor-admin-mention-avatar">'+esc(initials||'M')+'</span>';
       return '<button type="button" class="mentor-admin-mention-item '+(i===mentorAdminMentionIndex?'active':'')+'" data-admin-community-mention-index="'+i+'">'+
-        '<span class="mentor-admin-mention-avatar">'+esc(initials||'M')+'</span>'+
+        avatar+
         '<span class="mentor-admin-mention-copy"><b>'+esc(p.display_name||'Member BADAI')+'</b><small>'+esc(p.subtitle||'Member BADAI')+'</small></span>'+
       '</button>';
     }).join('');
@@ -9389,7 +9534,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function loadTeamMembers(){
     teamMembers = await api(
-      '/rest/v1/admin_team_members?select=id,auth_user_id,full_name,email,role,status,created_at&order=created_at.asc'
+      '/rest/v1/admin_team_members?select=id,auth_user_id,full_name,email,role,status,avatar_url,created_at&order=created_at.asc'
     ) || [];
     renderTeam();
   }
