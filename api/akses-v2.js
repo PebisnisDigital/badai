@@ -1628,6 +1628,33 @@ module.exports = async function handler(req, res) {
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
   }
 
+  /* Light baseline so WhatsApp-style bold has real contrast */
+  #mentor .mentor-chat-card{font-weight:300!important}
+  #mentor .mentor-wa-person span,
+  #mentor .mentor-msg .body,
+  #mentor .mentor-msg-meta,
+  #mentor .mentor-image-caption,
+  #mentor .mentor-composer textarea,
+  #mentor .mentor-upload-note,
+  #mentor .mentor-file-copy small,
+  #mentor .mentor-pending-meta span,
+  #mentor .mentor-empty{
+    font-weight:300!important;
+  }
+  #mentor .mentor-wa-person strong,
+  #mentor .mentor-file-copy b,
+  #mentor .mentor-pending-meta strong{
+    font-weight:400!important;
+  }
+  #mentor .mentor-wa-formatted strong,
+  #mentor .mentor-image-caption strong{
+    font-weight:700!important;
+  }
+  #mentor .mentor-wa-formatted em,
+  #mentor .mentor-image-caption em{font-weight:300!important}
+  #mentor .mentor-date-sep{font-weight:400!important}
+  #mentor .mentor-attach-choice{font-weight:400!important}
+
 </style>`;
 
     const headerMarkup = String.raw`
