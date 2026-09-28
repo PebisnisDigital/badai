@@ -1709,6 +1709,50 @@ h1,h2,h3,h4,h5,h6,
       </div>
     </section>
 
+    <section id="mentor" class="screen">
+      <div class="mentor-member-head">
+        <div>
+          <span class="mentor-kicker">MENTOR BADAI</span>
+          <h1>Konsultasi Langsung</h1>
+          <p>Tanya mentor kapan pun kamu mentok. Chat aktif disimpan sementara di sistem, lalu diarsipkan ke Google Drive.</p>
+        </div>
+        <div id="mentorMemberStatus" class="mentor-member-status">Menghubungkan...</div>
+      </div>
+
+      <div class="mentor-chat-card">
+        <div id="mentorMessageList" class="mentor-message-list">
+          <div class="mentor-empty">Belum ada percakapan. Kirim pertanyaan pertama kamu 👇</div>
+        </div>
+
+        <div id="mentorStickerTray" class="mentor-sticker-tray hidden">
+          <button type="button" data-mentor-sticker="👍">👍</button>
+          <button type="button" data-mentor-sticker="🙏">🙏</button>
+          <button type="button" data-mentor-sticker="🔥">🔥</button>
+          <button type="button" data-mentor-sticker="✨">✨</button>
+          <button type="button" data-mentor-sticker="❤️">❤️</button>
+          <button type="button" data-mentor-sticker="😂">😂</button>
+          <button type="button" data-mentor-sticker="💪">💪</button>
+          <button type="button" data-mentor-sticker="🎉">🎉</button>
+        </div>
+
+        <form id="mentorComposer" class="mentor-composer">
+          <button id="mentorStickerBtn" type="button" class="mentor-icon-btn" title="Kirim stiker">☺</button>
+          <label class="mentor-icon-btn mentor-file-btn" title="Kirim gambar atau file">
+            ＋
+            <input id="mentorFileInput" type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt" hidden/>
+          </label>
+          <textarea id="mentorMessageInput" rows="1" maxlength="4000" placeholder="Tulis pesan ke mentor..."></textarea>
+          <button id="mentorSendBtn" type="submit" class="mentor-send-btn">KIRIM</button>
+        </form>
+        <div id="mentorUploadNote" class="mentor-upload-note">File/gambar akan langsung masuk Google Drive setelah koneksi Drive diaktifkan Admin.</div>
+      </div>
+
+      <div class="mentor-archive-note">
+        <b>ARSIP AMAN</b>
+        <span>Chat aktif disimpan maksimal 7 hari di Supabase. Arsip harian disiapkan pukul 00.05 WIB dan baru dihapus dari hot storage setelah upload Google Drive terverifikasi.</span>
+      </div>
+    </section>
+
     <section id="akun" class="screen">
       <div class="account-head">
         <div class="account-kicker">AKUN MEMBER BADAI</div>
@@ -1781,6 +1825,9 @@ h1,h2,h3,h4,h5,h6,
     </button>
     <button id="affiliateNavButton" data-screen="afiliasi" onclick="show('afiliasi')" style="display:none">
       <span class="emoji">🔗</span><span class="label">Afiliasi</span>
+    </button>
+    <button id="mentorNavButton" data-screen="mentor" onclick="show('mentor')">
+      <span class="emoji">💬</span><span class="label">Mentor</span>
     </button>
     <button data-screen="akun" onclick="show('akun')">
       <span class="emoji">👤</span><span class="label">Akun</span>
