@@ -1817,6 +1817,9 @@ module.exports = async function handler(req, res) {
     isolation:isolate;
     animation:badaiAnnouncementFirePulse 1.35s ease-in-out infinite!important;
   }
+  #mentor .mentor-chat-row-bottom>b.announcement-fire-unread.hidden{
+    display:none!important;
+  }
   #mentor .mentor-chat-row-bottom>b.announcement-fire-unread::before{
     content:"🔥";
     position:absolute;
