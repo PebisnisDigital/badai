@@ -2648,7 +2648,8 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function setMentorStatus(row){
     var status=el('mentorMemberStatus'),sub=el('mentorWaSubstatus'),name=el('mentorWaName');
-    var displayName=row&&row.assigned_name?row.assigned_name:'Mentor BADAI';
+    /* Member-facing identity stays unified as Mentor BADAI, regardless of which staff account replies. */
+    var displayName='Mentor BADAI';
     if(mentorSelectedChat==='mentor'&&name)name.textContent=displayName;
     if(el('mentorChatRowName'))el('mentorChatRowName').textContent=displayName;
     var text='offline',typing=false,online=false;
