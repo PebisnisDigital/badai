@@ -3517,23 +3517,42 @@ th,td{padding:14px 12px!important}
 }
 .admin-tab.admin-chat-tab .mentor-tab-badge{
   position:absolute!important;
-  top:3px!important;
-  right:calc(50% - 24px)!important;
-  min-width:18px!important;
-  height:18px!important;
-  padding:0 5px!important;
+  top:1px!important;
+  right:calc(50% - 25px)!important;
+  min-width:22px!important;
+  height:22px!important;
+  padding:0 6px!important;
   display:grid!important;
   place-items:center!important;
-  border:2px solid #0c0c0c!important;
+  border:2px solid #ffffff!important;
   border-radius:999px!important;
-  background:#25d366!important;
-  color:#0b141a!important;
-  font-size:9px!important;
-  font-weight:900!important;
+  background:#55ff8a!important;
+  color:#07130b!important;
+  font-size:11px!important;
+  font-weight:950!important;
   line-height:1!important;
+  letter-spacing:-.02em!important;
   box-sizing:border-box!important;
+  box-shadow:
+    0 0 0 2px rgba(85,255,138,.22),
+    0 0 12px rgba(85,255,138,.95),
+    0 0 24px rgba(85,255,138,.48)!important;
+  animation:mentorUnreadGlow 1.6s ease-in-out infinite!important;
 }
 .admin-tab.admin-chat-tab .mentor-tab-badge.hidden{display:none!important}
+@keyframes mentorUnreadGlow{
+  0%,100%{
+    transform:scale(1);
+    box-shadow:0 0 0 2px rgba(85,255,138,.20),0 0 10px rgba(85,255,138,.78),0 0 20px rgba(85,255,138,.35);
+  }
+  50%{
+    transform:scale(1.12);
+    box-shadow:0 0 0 3px rgba(85,255,138,.28),0 0 16px rgba(85,255,138,1),0 0 30px rgba(85,255,138,.58);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .admin-tab.admin-chat-tab .mentor-tab-badge{animation:none!important}
+}
 @media(max-width:560px){
   .topbar-inner{gap:8px!important;padding-left:10px!important;padding-right:10px!important}
   .admin-brand-wrap{min-width:0}
