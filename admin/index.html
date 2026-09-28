@@ -3281,6 +3281,41 @@ th,td{padding:14px 12px!important}
 }
 /* END BADAI MEMBERSHIP LIFECYCLE ADMIN FINAL */
 
+
+.mentor-admin-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 12px}
+.mentor-admin-status-grid .stat{min-width:0}
+.mentor-admin-status-grid .stat strong{font-size:16px}
+.mentor-admin-layout{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,1.7fr);gap:10px;min-height:560px}
+.mentor-inbox-panel,.mentor-thread-panel{border:1px solid #242424;border-radius:14px;background:#090909;overflow:hidden}
+.mentor-inbox-head,.mentor-thread-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border-bottom:1px solid #242424;background:#0d0d0d}
+.mentor-inbox-head>div,.mentor-thread-head>div{display:grid;gap:3px}
+.mentor-inbox-head b,.mentor-thread-head b{font-size:10px;color:#fff}
+.mentor-inbox-head span,.mentor-thread-head span{font-size:7px;color:#777}
+.mentor-inbox-head button,.mentor-thread-head button{min-height:29px;padding:0 9px;border:1px solid #543049;border-radius:9px;background:#160d12;color:#ff9dcc;font-size:7px;font-weight:900}
+.mentor-inbox-list{max-height:600px;overflow:auto;padding:6px}
+.mentor-inbox-item{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:9px;border:1px solid transparent;border-radius:10px;background:transparent;color:#fff;text-align:left;cursor:pointer}
+.mentor-inbox-item:hover,.mentor-inbox-item.active{background:#151015;border-color:#4b2940}
+.mentor-inbox-item b{display:block;font-size:9px}
+.mentor-inbox-item span{display:block;margin-top:2px;color:#777;font-size:7px}
+.mentor-unread{align-self:start;min-width:20px;height:20px;display:grid;place-items:center;border-radius:999px;background:#ff4fa3;color:#111!important;font-size:7px!important;font-weight:950}
+.mentor-thread-empty{min-height:520px;display:grid;place-items:center;color:#777;text-align:center;padding:20px;font-size:9px}
+.mentor-admin-messages{height:430px;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:7px;background:radial-gradient(circle at 50% -20%,#1a0c14,#080808 38%,#060606)}
+.mentor-admin-msg{max-width:82%;padding:8px 10px;border-radius:12px;display:grid;gap:3px}
+.mentor-admin-msg.member{align-self:flex-start;background:#171717;border:1px solid #2b2b2b;color:#fff;border-bottom-left-radius:4px}
+.mentor-admin-msg.mentor{align-self:flex-end;background:#ff4fa3;color:#111;border-bottom-right-radius:4px}
+.mentor-admin-msg .who{font-size:6px;font-weight:950;opacity:.7}
+.mentor-admin-msg .body{white-space:pre-wrap;overflow-wrap:anywhere;font-size:9px;line-height:1.45;font-weight:750}
+.mentor-admin-msg .time{justify-self:end;font-size:6px;opacity:.55}
+.mentor-admin-msg.sticker .body{font-size:28px}
+.mentor-admin-msg a{color:inherit;text-decoration:underline}
+.mentor-admin-stickers{display:flex;gap:5px;padding:7px 8px;border-top:1px solid #242424;overflow:auto}
+.mentor-admin-stickers.hidden{display:none}
+.mentor-admin-stickers button{width:34px;height:34px;border:1px solid #303030;border-radius:9px;background:#151515;font-size:18px}
+.mentor-admin-composer{display:grid;grid-template-columns:34px 34px minmax(0,1fr) auto;gap:5px;padding:8px;border-top:1px solid #242424;align-items:end}
+.mentor-admin-icon{width:34px;height:36px;display:grid;place-items:center;border:1px solid #303030;border-radius:9px;background:#151515;color:#fff;font-size:16px;cursor:pointer;box-sizing:border-box}
+.mentor-admin-composer textarea{min-height:36px;max-height:100px;resize:none;border:1px solid #303030;border-radius:10px;background:#111;color:#fff;padding:9px;font-size:9px}
+.mentor-admin-composer button[type="submit"]{min-height:36px;border:0;border-radius:9px;background:#ff4fa3;color:#111;padding:0 11px;font-size:8px;font-weight:950}
+@media(max-width:760px){.mentor-admin-status-grid{grid-template-columns:1fr}.mentor-admin-layout{grid-template-columns:1fr}.mentor-inbox-list{max-height:280px}.mentor-admin-messages{height:430px}}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -3341,6 +3376,10 @@ th,td{padding:14px 12px!important}
       <button id="tabMarketing" class="admin-tab" data-page="marketing" type="button" aria-label="Marketing">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11v2"/><path d="M6 9v6"/><path d="M9 8l9-4v16l-9-4z"/><path d="M9 16l2 5H7l-1-6"/></svg>
         <span class="nav-label">Marketing</span>
+      </button>
+      <button id="tabMentor" class="admin-tab" data-page="mentor" type="button" aria-label="Mentor">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>
+        <span class="nav-label">Mentor</span>
       </button>
       <button id="tabTeam" class="admin-tab" data-page="team" type="button" aria-label="Tim">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -3885,6 +3924,64 @@ th,td{padding:14px 12px!important}
       </form>
     </section>
 
+    <section id="pageMentor" class="admin-page hidden">
+      <div class="page-title">
+        <div>
+          <h2>Mentor</h2>
+          <p>Inbox konsultasi member BADAI. Chat aktif disimpan maksimal 7 hari sebelum diarsipkan ke Google Drive.</p>
+        </div>
+      </div>
+
+      <div class="mentor-admin-status-grid">
+        <div class="stat"><span>HOT STORAGE</span><strong>7 HARI</strong><small>Supabase untuk chat aktif</small></div>
+        <div class="stat"><span>ARSIP HARIAN</span><strong>00.05 WIB</strong><small>Disiapkan otomatis tiap malam</small></div>
+        <div class="stat"><span>GOOGLE DRIVE</span><strong id="mentorDriveStatus">BELUM TERHUBUNG</strong><small>Pesan tidak dihapus sebelum arsip terverifikasi</small></div>
+      </div>
+
+      <div class="mentor-admin-layout">
+        <aside class="mentor-inbox-panel">
+          <div class="mentor-inbox-head">
+            <div><b>INBOX MEMBER</b><span id="mentorInboxCount">0 percakapan</span></div>
+            <button id="refreshMentorInboxBtn" type="button">REFRESH</button>
+          </div>
+          <div id="mentorInboxList" class="mentor-inbox-list">
+            <div class="empty">Belum ada percakapan Mentor.</div>
+          </div>
+        </aside>
+
+        <section class="mentor-thread-panel">
+          <div id="mentorThreadEmpty" class="mentor-thread-empty">Pilih member dari Inbox untuk membuka percakapan.</div>
+          <div id="mentorThreadView" class="hidden">
+            <div class="mentor-thread-head">
+              <div>
+                <b id="mentorThreadName">Member</b>
+                <span id="mentorThreadMeta">-</span>
+              </div>
+              <button id="claimMentorChatBtn" type="button">AMBIL CHAT</button>
+            </div>
+            <div id="mentorAdminMessageList" class="mentor-admin-messages"></div>
+            <div id="mentorAdminStickerTray" class="mentor-admin-stickers hidden">
+              <button type="button" data-admin-mentor-sticker="👍">👍</button>
+              <button type="button" data-admin-mentor-sticker="🙏">🙏</button>
+              <button type="button" data-admin-mentor-sticker="🔥">🔥</button>
+              <button type="button" data-admin-mentor-sticker="✨">✨</button>
+              <button type="button" data-admin-mentor-sticker="❤️">❤️</button>
+              <button type="button" data-admin-mentor-sticker="😂">😂</button>
+              <button type="button" data-admin-mentor-sticker="💪">💪</button>
+              <button type="button" data-admin-mentor-sticker="🎉">🎉</button>
+            </div>
+            <form id="mentorAdminComposer" class="mentor-admin-composer">
+              <button id="mentorAdminStickerBtn" type="button" class="mentor-admin-icon">☺</button>
+              <label class="mentor-admin-icon">＋<input id="mentorAdminFileInput" type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt" hidden/></label>
+              <textarea id="mentorAdminInput" rows="1" maxlength="4000" placeholder="Balas member..."></textarea>
+              <button id="mentorAdminSendBtn" type="submit">KIRIM</button>
+            </form>
+            <div id="mentorAdminNote" class="team-status-note">Lampiran langsung ke Google Drive setelah koneksi Drive diaktifkan.</div>
+          </div>
+        </section>
+      </div>
+    </section>
+
     <section id="pageTeam" class="admin-page hidden">
       <div class="page-title">
         <div>
@@ -3906,6 +4003,7 @@ th,td{padding:14px 12px!important}
               <option value="sales">Sales</option>
               <option value="finance">Finance</option>
               <option value="marketing">Marketing</option>
+              <option value="mentor">Mentor</option>
             </select>
             <button id="addTeamBtn" class="primary" type="submit">TAMBAH TIM + BUAT AKSES</button>
           </form>
@@ -3917,6 +4015,7 @@ th,td{padding:14px 12px!important}
             <div><b>SALES</b> — Fokus Penjualan dan pengelolaan member.</div>
             <div><b>FINANCE</b> — Hanya melihat Keuangan dan laporan.</div>
             <div><b>MARKETING</b> — Hanya mengatur harga, kupon, dan notifikasi marketing.</div>
+            <div><b>MENTOR</b> — Fokus membalas konsultasi member di menu Mentor.</div>
           </div>
         </div>
 
@@ -4285,6 +4384,9 @@ th,td{padding:14px 12px!important}
   let adminAutoSyncLastMarketing = 0;
   let adminAutoSyncLastTeam = 0;
   let teamMembers = [];
+  let mentorConversations = [];
+  let mentorActiveConversation = null;
+  let mentorAdminPollTimer = null;
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
   let membershipRenewals = [];
@@ -4509,11 +4611,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function allowedPages(){
     const role = currentTeam?.role;
-    if(role === 'owner' || role === 'super_admin') return ['sales','finance','marketing','team'];
-    if(role === 'admin') return ['sales','finance','marketing','team'];
+    if(role === 'owner' || role === 'super_admin') return ['sales','finance','marketing','mentor','team'];
+    if(role === 'admin') return ['sales','finance','marketing','mentor','team'];
     if(role === 'sales') return ['sales','team'];
     if(role === 'finance') return ['finance','team'];
     if(role === 'marketing') return ['marketing','team'];
+    if(role === 'mentor') return ['mentor','team'];
     return [];
   }
 
@@ -4537,6 +4640,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('tabSales').classList.toggle('hidden', !allowed.includes('sales'));
     $('tabFinance').classList.toggle('hidden', !allowed.includes('finance'));
     $('tabMarketing').classList.toggle('hidden', !allowed.includes('marketing'));
+    $('tabMentor').classList.toggle('hidden', !allowed.includes('mentor'));
     $('tabTeam').classList.toggle('hidden', !allowed.includes('team'));
   }
 
@@ -4547,21 +4651,24 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       sales:'Penjualan BADAI',
       finance:'Keuangan BADAI',
       marketing:'Marketing BADAI',
+      mentor:'Mentor BADAI',
       team:'Tim BADAI'
     };
     if($('headerPageTitle')) $('headerPageTitle').textContent = pageTitles[page] || 'BADAI';
 
-    ['sales','finance','marketing','team'].forEach(name => {
+    ['sales','finance','marketing','mentor','team'].forEach(name => {
       $('page' + name.charAt(0).toUpperCase() + name.slice(1)).classList.toggle('hidden', name !== page);
       const tab =
         name === 'sales' ? $('tabSales') :
         name === 'finance' ? $('tabFinance') :
-        name === 'marketing' ? $('tabMarketing') : $('tabTeam');
+        name === 'marketing' ? $('tabMarketing') :
+        name === 'mentor' ? $('tabMentor') : $('tabTeam');
       tab.classList.toggle('active', name === page);
     });
 
     if(page === 'finance') loadFinanceTransactions();
     if(page === 'marketing') loadMarketing();
+    if(page === 'mentor') loadMentorInbox();
     if(page === 'team') loadTeamMembers();
   }
 
@@ -6868,6 +6975,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       : role === 'sales' ? 'SALES'
       : role === 'finance' ? 'FINANCE'
       : role === 'marketing' ? 'MARKETING'
+      : role === 'mentor' ? 'MENTOR'
       : String(role || '').toUpperCase();
   }
 
@@ -6888,7 +6996,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
       const roleControl = canChangeRole
         ? '<select class="team-select" data-team-role="' + t.id + '">' +
-            ['super_admin','admin','sales','finance','marketing'].map(r =>
+            ['super_admin','admin','sales','finance','marketing','mentor'].map(r =>
               '<option value="'+r+'" '+(t.role===r?'selected':'')+'>'+roleLabel(r)+'</option>'
             ).join('') +
           '</select>'
@@ -7061,7 +7169,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(!row || !canManageTeamRow(row) || row.auth_user_id === session?.user?.id){
       throw new Error('Role akun ini tidak dapat diubah.');
     }
-    if(!['super_admin','admin','sales','finance','marketing'].includes(role)){
+    if(!['super_admin','admin','sales','finance','marketing','mentor'].includes(role)){
       throw new Error('Role belum valid.');
     }
 
