@@ -1714,7 +1714,7 @@ h1,h2,h3,h4,h5,h6,
         <div class="mentor-chat-home-head">
           <div>
             <strong>Chat</strong>
-            <span>1 percakapan</span>
+            <span>3 percakapan</span>
           </div>
         </div>
         <div class="mentor-chat-home-search">
@@ -1722,7 +1722,21 @@ h1,h2,h3,h4,h5,h6,
           <input id="mentorChatSearch" type="search" autocomplete="off" placeholder="Cari chat"/>
         </div>
         <div class="mentor-chat-home-list">
-          <button id="mentorChatRow" type="button" class="mentor-chat-row">
+          <button id="announcementChatRow" type="button" class="mentor-chat-row" data-chat-kind="announcement">
+            <div class="mentor-chat-row-avatar announcement">📢</div>
+            <div class="mentor-chat-row-main">
+              <div class="mentor-chat-row-top">
+                <strong>PENGUMUMAN BADAI</strong>
+                <span id="announcementChatRowTime"></span>
+              </div>
+              <div class="mentor-chat-row-bottom">
+                <span id="announcementChatRowPreview">Info resmi dari tim BADAI</span>
+                <b id="announcementChatRowUnread" class="hidden">0</b>
+              </div>
+            </div>
+          </button>
+
+          <button id="mentorChatRow" type="button" class="mentor-chat-row" data-chat-kind="mentor">
             <div class="mentor-chat-row-avatar">M</div>
             <div class="mentor-chat-row-main">
               <div class="mentor-chat-row-top">
@@ -1735,13 +1749,27 @@ h1,h2,h3,h4,h5,h6,
               </div>
             </div>
           </button>
+
+          <button id="groupChatRow" type="button" class="mentor-chat-row" data-chat-kind="group">
+            <div class="mentor-chat-row-avatar group">G</div>
+            <div class="mentor-chat-row-main">
+              <div class="mentor-chat-row-top">
+                <strong>Grup BADAI</strong>
+                <span id="groupChatRowTime"></span>
+              </div>
+              <div class="mentor-chat-row-bottom">
+                <span id="groupChatRowPreview">Diskusi bersama member BADAI</span>
+                <b id="groupChatRowUnread" class="hidden">0</b>
+              </div>
+            </div>
+          </button>
         </div>
       </div>
 
       <div id="mentorChatCard" class="mentor-chat-card">
         <div class="mentor-wa-head">
           <button id="mentorChatBackBtn" class="mentor-chat-back" type="button" aria-label="Kembali ke daftar chat">←</button>
-          <div class="mentor-wa-avatar">M</div>
+          <div id="mentorWaAvatar" class="mentor-wa-avatar">M</div>
           <div class="mentor-wa-person">
             <strong id="mentorWaName">Mentor BADAI</strong>
             <span id="mentorWaSubstatus">Menghubungkan...</span>
@@ -1754,6 +1782,8 @@ h1,h2,h3,h4,h5,h6,
           </div>
           <button id="mentorJumpLatest" class="mentor-jump-latest hidden" type="button" aria-label="Ke pesan terbaru">↓</button>
         </div>
+
+        <div id="mentorReadOnlyNotice" class="mentor-readonly-notice hidden">Hanya Admin, Mentor, dan Super Admin yang dapat mengirim pengumuman.</div>
 
         <div id="mentorStickerTray" class="mentor-sticker-tray hidden">
           <button type="button" data-mentor-sticker="👍">👍</button>
