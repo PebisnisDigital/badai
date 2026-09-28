@@ -3326,6 +3326,75 @@ th,td{padding:14px 12px!important}
 .mentor-admin-composer textarea{min-height:36px;max-height:100px;resize:none;border:1px solid #303030;border-radius:10px;background:#111;color:#fff;padding:9px;font-size:9px}
 .mentor-admin-composer button[type="submit"]{min-height:36px;border:0;border-radius:9px;background:#ff4fa3;color:#111;padding:0 11px;font-size:8px;font-weight:950}
 @media(max-width:760px){.mentor-admin-status-grid{grid-template-columns:1fr}.mentor-admin-layout{grid-template-columns:1fr}.mentor-inbox-list{max-height:280px}.mentor-admin-messages{height:430px}}
+
+/* Mentor chat: familiar WhatsApp-style behavior, BADAI identity */
+.mentor-admin-layout{grid-template-columns:minmax(260px,.9fr) minmax(0,1.8fr)}
+.mentor-inbox-panel,.mentor-thread-panel{background:#0c0c0c}
+.mentor-inbox-head{background:#121212}
+.mentor-inbox-list{padding:0!important;background:#0d0d0d}
+.mentor-inbox-item{grid-template-columns:42px minmax(0,1fr) auto!important;gap:9px!important;padding:10px 9px!important;border:0!important;border-bottom:1px solid #1f1f1f!important;border-radius:0!important}
+.mentor-inbox-item:hover,.mentor-inbox-item.active{background:#181818!important}
+.mentor-inbox-avatar{width:42px;height:42px;display:grid;place-items:center;border-radius:999px;background:#2a2a2a;color:#fff;font-size:12px;font-weight:950}
+.mentor-inbox-main{min-width:0;display:grid;gap:4px}
+.mentor-inbox-top{display:flex;align-items:center;gap:8px}
+.mentor-inbox-top b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9.5px!important}
+.mentor-inbox-preview{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888!important;font-size:7.5px!important}
+.mentor-inbox-preview.typing{color:#78dfa0!important}
+.mentor-inbox-assigned{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#666!important;font-size:6.5px!important}
+.mentor-inbox-side{display:grid;justify-items:end;align-content:start;gap:6px}
+.mentor-inbox-time{color:#777;font-size:6.5px}
+.mentor-unread{min-width:18px!important;height:18px!important;font-size:6.5px!important}
+.mentor-thread-head{min-height:58px;padding:8px 10px!important;background:#121212!important}
+.mentor-thread-person{min-width:0;display:flex!important;align-items:center;gap:9px}
+.mentor-thread-avatar{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:999px;background:linear-gradient(145deg,#ff4fa3,#9f245f);color:#fff;font-size:12px;font-weight:950}
+.mentor-thread-copy{min-width:0;display:grid;gap:3px}
+.mentor-thread-copy b{font-size:10px!important}
+.mentor-thread-copy span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:7px!important}
+.mentor-thread-copy span.typing{color:#78dfa0!important}
+.mentor-admin-message-wrap{position:relative}
+.mentor-admin-messages{height:min(61vh,570px)!important;padding:14px 10px!important;gap:3px!important;background:
+ radial-gradient(circle at 12px 12px,rgba(255,255,255,.018) 1.2px,transparent 1.5px) 0 0/24px 24px,
+ linear-gradient(180deg,#0c0c0c,#080808)!important;scroll-behavior:smooth}
+.mentor-admin-date{align-self:center;margin:8px 0 6px;padding:5px 9px;border-radius:8px;background:#1a1719;color:#aaa;font-size:6.5px;font-weight:850}
+.mentor-admin-msg{max-width:78%!important;padding:6px 7px 4px!important;border:0!important;border-radius:8px!important;display:block!important;box-shadow:0 1px 1px rgba(0,0,0,.22)}
+.mentor-admin-msg.member{align-self:flex-start!important;background:#202020!important;color:#f7f7f7!important;border-top-left-radius:2px!important}
+.mentor-admin-msg.mentor{align-self:flex-end!important;background:#512039!important;color:#fff!important;border-top-right-radius:2px!important}
+.mentor-admin-msg .who{display:none!important}
+.mentor-admin-msg .body{font-size:9.5px!important;line-height:1.4!important;padding:1px 2px 0}
+.mentor-admin-meta{display:flex;justify-content:flex-end;align-items:center;gap:3px;margin-top:1px;padding-left:18px;color:rgba(255,255,255,.55);font-size:6px}
+.mentor-admin-receipt{font-size:8px;letter-spacing:-2px;color:#aaa;padding-right:2px}
+.mentor-admin-receipt.read{color:#55b9ff}
+.mentor-admin-msg.sticker{background:transparent!important;box-shadow:none!important;padding:3px!important}
+.mentor-admin-msg.sticker .body{font-size:34px!important}
+.mentor-admin-image img{width:min(290px,100%)!important;max-height:330px!important;border:0!important;border-radius:6px!important}
+.mentor-admin-image span{display:none}
+.mentor-admin-caption{padding:6px 3px 1px;font-size:9px;line-height:1.4}
+.mentor-admin-file{display:flex;align-items:center;gap:8px;min-width:190px;padding:8px;border-radius:7px;background:rgba(0,0,0,.18);text-decoration:none!important}
+.mentor-admin-file-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:999px;background:#333;font-size:13px}
+.mentor-admin-file-copy{min-width:0;display:grid;gap:2px}
+.mentor-admin-file-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px}
+.mentor-admin-file-copy small{font-size:6px;opacity:.65}
+.mentor-admin-jump{position:absolute;right:12px;bottom:12px;z-index:3;width:34px;height:34px;border:1px solid #343434;border-radius:999px;background:#202020;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.45);font-size:16px}
+.mentor-admin-jump.hidden{display:none}
+.mentor-admin-stickers{background:#151515!important}
+.mentor-admin-attach-menu{display:flex;gap:8px;padding:8px;border-top:1px solid #292929;background:#151515}
+.mentor-admin-attach-menu.hidden{display:none}
+.mentor-admin-attach-choice{flex:1;min-height:40px;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid #303030;border-radius:9px;background:#202020;color:#fff;font-size:8px;font-weight:850;cursor:pointer}
+.mentor-admin-pending{display:grid;grid-template-columns:46px minmax(0,1fr) 28px;gap:8px;align-items:center;padding:8px;border-top:1px solid #292929;background:#171717}
+.mentor-admin-pending.hidden{display:none}
+.mentor-admin-pending-preview{width:46px;height:46px;display:grid;place-items:center;border-radius:7px;background:#252525;overflow:hidden;font-size:18px}
+.mentor-admin-pending-preview img{width:100%;height:100%;object-fit:cover}
+.mentor-admin-pending-copy{min-width:0;display:grid;gap:3px}
+.mentor-admin-pending-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px}
+.mentor-admin-pending-copy span{color:#888;font-size:6.5px}
+.mentor-admin-pending>button{width:27px;height:27px;border:0;border-radius:999px;background:#292929;color:#bbb;font-size:16px}
+.mentor-admin-composer{grid-template-columns:32px 32px minmax(0,1fr) 36px!important;gap:5px!important;padding:7px 8px!important;background:#121212!important}
+.mentor-admin-icon{width:32px!important;height:36px!important;border:0!important;border-radius:999px!important;background:transparent!important;color:#aaa!important;font-size:18px!important}
+#mentorAdminAttachBtn{transform:rotate(-28deg);font-size:20px!important}
+.mentor-admin-composer textarea{min-height:36px!important;max-height:104px!important;border:0!important;border-radius:19px!important;background:#262626!important;padding:9px 12px!important;font-size:9.5px!important;line-height:1.4!important;overflow-y:auto!important}
+.mentor-admin-composer button[type="submit"]{width:36px!important;height:36px!important;min-height:36px!important;padding:0!important;border-radius:999px!important;font-size:14px!important}
+#mentorAdminNote{min-height:0!important;margin:0!important;padding:0 8px!important;border:0!important;background:#121212!important;color:#777!important;font-size:6.5px!important}
+@media(max-width:760px){.mentor-admin-layout{grid-template-columns:1fr}.mentor-admin-messages{height:calc(100dvh - 360px)!important;min-height:340px}}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -4417,6 +4486,11 @@ th,td{padding:14px 12px!important}
   let mentorAdminUnreadCount = 0;
   let mentorPresenceLastTouch = 0;
   let mentorAdminToastTimer = null;
+  let mentorAdminTypingTimer = null;
+  let mentorAdminPendingFile = null;
+  let mentorAdminPendingObjectUrl = '';
+  let mentorAdminLastKey = '';
+  let mentorAdminInitialRender = true;
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
   let membershipRenewals = [];
