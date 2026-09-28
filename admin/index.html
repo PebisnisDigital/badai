@@ -9415,7 +9415,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         '<div class="mentor-auto-rule-actions">'+
           '<button class="primary" type="button" data-auto-action="edit" data-id="'+esc(r.id)+'">EDIT</button>'+
           '<button type="button" data-auto-action="toggle" data-id="'+esc(r.id)+'">'+(r.is_active?'NONAKTIFKAN':'AKTIFKAN')+'</button>'+
-          '<button class="danger" type="button" data-auto-action="delete" data-id="'+esc(r.id)+'">HAPUS</button>'+
+          (['owner','super_admin','admin'].includes(currentTeam?.role)?'<button class="danger" type="button" data-auto-action="delete" data-id="'+esc(r.id)+'">HAPUS</button>':'')+
         '</div>'+
       '</article>';
     }).join('')||'<div class="empty">Belum ada Auto Reply. Klik + BUAT AUTO REPLY untuk mulai.</div>';
