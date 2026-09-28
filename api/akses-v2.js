@@ -1798,6 +1798,40 @@ module.exports = async function handler(req, res) {
   #mentor .mentor-chat-row-bottom>b.hidden{
     display:none!important;
   }
+  #mentor .mentor-chat-row-bottom>b.announcement-fire-unread{
+    position:relative!important;
+    width:30px!important;
+    min-width:30px!important;
+    height:31px!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+    background:transparent!important;
+    border:0!important;
+    border-radius:0!important;
+    color:#fff!important;
+    font-size:10px!important;
+    font-weight:900!important;
+    line-height:1!important;
+    text-shadow:0 1px 2px rgba(0,0,0,.95),0 0 3px rgba(0,0,0,.75)!important;
+    isolation:isolate;
+    animation:badaiAnnouncementFirePulse 1.35s ease-in-out infinite!important;
+  }
+  #mentor .mentor-chat-row-bottom>b.announcement-fire-unread::before{
+    content:"🔥";
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    font-size:30px!important;
+    line-height:1;
+    filter:drop-shadow(0 0 6px rgba(255,91,0,.72));
+    z-index:-1;
+  }
+  @keyframes badaiAnnouncementFirePulse{
+    0%,100%{transform:scale(1);filter:brightness(1)}
+    50%{transform:scale(1.10);filter:brightness(1.14)}
+  }
   #mentor .mentor-chat-back{
     width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;
     border:0;border-radius:999px;background:transparent;color:#d1d7db;
@@ -1979,6 +2013,9 @@ module.exports = async function handler(req, res) {
     #mentor .mentor-chat-row-bottom>b:not(.hidden){
       animation:none!important;
       transition:none!important;
+    }
+    #mentor .mentor-chat-row-bottom>b.announcement-fire-unread{
+      animation:none!important;
     }
   }
 
