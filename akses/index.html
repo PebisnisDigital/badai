@@ -1112,6 +1112,59 @@ body{
   #badaiMemberLogout{width:100%}
 }
 
+.account-section-label{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin:13px 2px 7px;
+}
+.account-section-label span{
+  color:#ff8cc2;
+  font:900 8px "Raleway";
+  letter-spacing:.11em;
+}
+.account-section-label small{
+  color:#666;
+  font:700 8px "Nunito";
+  line-height:1.3;
+  text-align:right;
+}
+.account-profile-main{
+  margin-bottom:10px!important;
+}
+#memberProfileDisplayName{
+  display:block;
+  color:#fff!important;
+  font:900 15px/1.15 "Raleway",Arial,sans-serif!important;
+}
+#memberProfileDisplayMeta{
+  display:block;
+  margin-top:3px;
+  color:#8f8f8f!important;
+  font:600 9px/1.3 "Nunito",Arial,sans-serif!important;
+}
+.account-field input[readonly]{
+  color:#8d8d8d!important;
+  background:#101010!important;
+  border-color:#242424!important;
+  cursor:not-allowed;
+}
+.account-security-card{
+  border-color:#332832;
+  background:linear-gradient(180deg,#151215,#101010);
+}
+.account-security-save{
+  background:#fff!important;
+  color:#111!important;
+}
+#memberSecurityStatus.ok{color:#7fdda5}
+#memberSecurityStatus.error{color:#ff8d8d}
+@media(max-width:420px){
+  .account-section-label{display:grid;gap:2px}
+  .account-section-label small{text-align:left}
+}
+
 
 .affiliate-pro-pill{
   display:inline-flex;
@@ -1836,12 +1889,25 @@ h1,h2,h3,h4,h5,h6,
     <section id="akun" class="screen">
       <div class="account-head">
         <div class="account-kicker">AKUN MEMBER BADAI</div>
-        <h1>Pengaturan Akun</h1>
-        <p>Ubah nama, email login, WhatsApp, dan password kamu sendiri.</p>
+        <h1>Akun BADAI</h1>
+        <p>Kelola foto profil, data diri, keamanan akun, dan informasi keanggotaan.</p>
+      </div>
+
+      <div id="badaiProfileAvatarCard" class="badai-profile-avatar-card account-profile-main">
+        <div id="badaiProfileAvatarPreview" class="badai-profile-avatar-preview">M</div>
+        <div class="badai-profile-avatar-copy">
+          <b id="memberProfileDisplayName">Member BADAI</b>
+          <span id="memberProfileDisplayMeta">Profil Member BADAI</span>
+        </div>
+        <div class="badai-profile-avatar-actions">
+          <button id="badaiProfileAvatarBtn" type="button" class="badai-profile-avatar-btn">GANTI FOTO</button>
+          <input id="badaiProfileAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden/>
+        </div>
+        <div id="badaiProfileAvatarStatus" class="badai-profile-avatar-status">Foto tampil di Grup BADAI dan Chat Mentor.</div>
       </div>
 
       <div class="member-plan-card">
-        <span>PAKET AKTIF</span>
+        <span>KEANGGOTAAN</span>
         <strong id="memberPlanName">PAKET PEMULA</strong>
         <small id="memberPlanDesc">Belajar Ilmu AI + Update</small>
         <div class="member-lifecycle-row">
@@ -1850,7 +1916,7 @@ h1,h2,h3,h4,h5,h6,
             <b id="memberLifecycleStatus">MASA AKTIF</b>
           </div>
           <div>
-            <span>EXPIRED</span>
+            <span>AKTIF SAMPAI</span>
             <b id="memberExpiryDate">-</b>
           </div>
         </div>
@@ -1859,15 +1925,15 @@ h1,h2,h3,h4,h5,h6,
         </div>
       </div>
 
-      <form id="memberAccountForm" class="account-card">
-        <div class="account-field">
-          <label for="memberAccountName">Nama</label>
-          <input id="memberAccountName" type="text" autocomplete="name" required placeholder="Nama lengkap"/>
-        </div>
+      <div class="account-section-label">
+        <span>DATA SAYA</span>
+        <small>Data yang tampil sebagai identitas Member BADAI.</small>
+      </div>
 
+      <form id="memberAccountForm" class="account-card account-profile-form">
         <div class="account-field">
-          <label for="memberAccountEmail">Email Login</label>
-          <input id="memberAccountEmail" type="email" autocomplete="email" required placeholder="email@contoh.com"/>
+          <label for="memberAccountName">Nama Lengkap</label>
+          <input id="memberAccountName" type="text" autocomplete="name" required maxlength="100" placeholder="Nama lengkap"/>
         </div>
 
         <div class="account-field">
@@ -1876,21 +1942,45 @@ h1,h2,h3,h4,h5,h6,
         </div>
 
         <div class="account-field">
-          <label for="memberAccountPassword">Password Baru</label>
-          <input id="memberAccountPassword" type="password" autocomplete="new-password" placeholder="Kosongkan jika tidak diganti"/>
-          <div class="account-help">Bebas jumlah karakter. Kalau dikosongkan, password lama tetap dipakai.</div>
+          <label for="memberAccountEmail">Email Login</label>
+          <input id="memberAccountEmail" type="email" autocomplete="email" readonly aria-readonly="true" placeholder="email@contoh.com"/>
+          <div class="account-help">Email login dikunci untuk keamanan akun. Hubungi Admin BADAI jika perlu mengganti email.</div>
         </div>
 
-        <button id="memberAccountSave" class="account-save" type="submit">SIMPAN PERUBAHAN</button>
+        <button id="memberAccountSave" class="account-save" type="submit">SIMPAN DATA</button>
         <div id="memberAccountStatus" class="account-status"></div>
       </form>
+
+      <div class="account-section-label">
+        <span>KEAMANAN</span>
+        <small>Ganti password tanpa mengubah data profil.</small>
+      </div>
+
+      <form id="memberSecurityForm" class="account-card account-security-card">
+        <div class="account-field">
+          <label for="memberAccountPassword">Password Baru</label>
+          <input id="memberAccountPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Minimal 8 karakter"/>
+        </div>
+        <div class="account-field">
+          <label for="memberAccountPasswordConfirm">Ulangi Password Baru</label>
+          <input id="memberAccountPasswordConfirm" type="password" minlength="8" autocomplete="new-password" placeholder="Ketik ulang password"/>
+        </div>
+        <div class="account-help">Gunakan minimal 8 karakter. Setelah disimpan, password lama tidak bisa dipakai lagi.</div>
+        <button id="memberSecuritySave" class="account-save account-security-save" type="submit">GANTI PASSWORD</button>
+        <div id="memberSecurityStatus" class="account-status"></div>
+      </form>
+
+      <div class="account-section-label">
+        <span>SESI AKUN</span>
+        <small>Keluar dari Member Area pada perangkat ini.</small>
+      </div>
 
       <div class="account-logout-card">
         <div>
           <h3>Keluar dari Akun</h3>
-          <p>Keluar dari Member Area BADAI di perangkat ini.</p>
+          <p>Kamu perlu login kembali untuk membuka Member Area BADAI.</p>
         </div>
-        <button id="badaiMemberLogout" type="button">KELUAR</button>
+        <button id="badaiMemberLogout" type="button">KELUAR / LOGOUT</button>
       </div>
     </section>
 
