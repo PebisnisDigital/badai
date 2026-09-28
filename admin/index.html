@@ -4488,6 +4488,62 @@ th,td{padding:14px 12px!important}
   text-align:center!important;
 }
 
+/* WhatsApp-like chat info screen */
+#pageMentor #mentorThreadView{position:relative!important}
+#pageMentor .mentor-thread-person{cursor:pointer}
+#pageMentor .mentor-thread-person:active{transform:scale(.988)}
+#pageMentor .mentor-admin-chat-info-panel{
+  position:absolute;inset:0;z-index:90;display:flex;flex-direction:column;
+  background:#0b141a;color:#e9edef;overflow:hidden;
+  transform:translate3d(100%,0,0);opacity:.45;
+  transition:transform .32s cubic-bezier(.22,.61,.36,1),opacity .24s ease;
+}
+#pageMentor .mentor-admin-chat-info-panel.open{transform:translate3d(0,0,0);opacity:1}
+#pageMentor .mentor-admin-chat-info-panel.closing{transform:translate3d(100%,0,0);opacity:.5}
+#pageMentor .mentor-admin-chat-info-panel.hidden{display:none!important}
+#pageMentor .mentor-admin-chat-info-head{
+  flex:0 0 auto;min-height:60px;display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:8px;
+  padding:7px 10px;background:#202c33;border-bottom:1px solid #26343c
+}
+#pageMentor .mentor-admin-chat-info-head button{
+  width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:999px;background:transparent;
+  color:#d1d7db;font-size:22px!important;transition:transform .16s ease,background .16s ease
+}
+#pageMentor .mentor-admin-chat-info-head button:active{transform:scale(.9);background:#2a3942}
+#pageMentor .mentor-admin-chat-info-head b{font-size:16px!important;font-weight:500!important}
+#pageMentor .mentor-admin-chat-info-scroll{flex:1;min-height:0;overflow-y:auto;padding:22px 14px 28px}
+#pageMentor .mentor-admin-chat-info-hero{
+  display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px 10px 24px
+}
+#pageMentor .mentor-admin-chat-info-avatar{
+  width:82px;height:82px;display:grid;place-items:center;border-radius:999px;background:#374248;
+  border:2px solid #ff4fa3;color:#fff;font-size:28px!important;font-weight:500!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.3)
+}
+#pageMentor .mentor-admin-chat-info-hero strong{margin-top:12px;font-size:22px!important;font-weight:500!important;line-height:1.2}
+#pageMentor .mentor-admin-chat-info-hero span{margin-top:5px;color:#8696a0;font-size:12px!important;font-weight:300!important}
+#pageMentor .mentor-admin-chat-info-card{
+  margin:0 0 10px;padding:15px 16px;border:1px solid #26343c;border-radius:14px;background:#111b21;
+  box-shadow:0 8px 22px rgba(0,0,0,.12)
+}
+#pageMentor .mentor-admin-chat-info-label{
+  display:block;margin-bottom:7px;color:#53bdeb;font-size:10px!important;font-weight:600!important;letter-spacing:.08em
+}
+#pageMentor .mentor-admin-chat-info-card p{margin:0;color:#d1d7db;font-size:14px!important;font-weight:300!important;line-height:1.55}
+#pageMentor .mentor-admin-chat-info-card.details{padding-top:11px;padding-bottom:11px}
+#pageMentor .mentor-admin-chat-info-row{
+  display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px solid #223039
+}
+#pageMentor .mentor-admin-chat-info-row:first-of-type{border-top:0}
+#pageMentor .mentor-admin-chat-info-row span{color:#8696a0;font-size:12px!important;font-weight:300!important}
+#pageMentor .mentor-admin-chat-info-row b{
+  min-width:0;overflow-wrap:anywhere;color:#e9edef;font-size:12px!important;font-weight:400!important;text-align:right
+}
+@media(max-width:760px){
+  #pageMentor .mentor-admin-chat-info-scroll{padding:18px 12px 24px}
+  #pageMentor .mentor-admin-chat-info-avatar{width:76px;height:76px}
+}
+
 /* iOS-inspired motion across admin + chat */
 .admin-page:not(.hidden){
   animation:badaiAdminScreenIn .28s cubic-bezier(.22,.61,.36,1) both;
@@ -8503,6 +8559,72 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return ['owner','super_admin','admin','mentor','sales','finance','marketing'].includes(currentTeam?.role);
   }
 
+  function adminChatInfoData(){
+    if(mentorAdminScreen==='announcement')return {
+      avatar:'📢',title:'PENGUMUMAN BADAI',subtitle:'Channel resmi • Satu arah',
+      desc:'Channel resmi untuk menyampaikan informasi penting kepada seluruh Member BADAI. Hanya Owner, Super Admin, Admin, dan Mentor yang dapat mengirim pesan.',
+      details:[['Akses','Seluruh Member BADAI'],['Mode','Satu arah'],['Pengirim','Tim BADAI']]
+    };
+    if(mentorAdminScreen==='group')return {
+      avatar:'G',title:'Grup BADAI',subtitle:'Diskusi komunitas • Semua member',
+      desc:'Ruang diskusi bersama seluruh Member BADAI dan tim BADAI. Dipakai untuk bertanya, berbagi progres, diskusi karya, dan saling membantu selama belajar.',
+      details:[['Akses','Member aktif + Tim BADAI'],['Mode','Diskusi bersama'],['Status','Grup komunitas']]
+    };
+    const row=mentorActiveConversation||{};
+    return {
+      avatar:mentorInitials(row.member_name||'Member BADAI'),
+      title:row.member_name||'Member BADAI',
+      subtitle:'Direct Message • Member BADAI',
+      desc:'Percakapan privat antara member ini dengan tim Mentor BADAI. Dari sisi member, identitas layanan tetap tampil sebagai Mentor BADAI walaupun balasan diberikan Owner atau mentor yang sedang bertugas.',
+      details:[
+        ['Email',row.member_email||'-'],
+        ['Paket',row.member_plan||'-'],
+        ['Ditangani',row.assigned_name||'Belum diambil mentor']
+      ]
+    };
+  }
+
+  function ensureAdminChatInfoPanel(){
+    const view=$('mentorThreadView');if(!view)return null;
+    let panel=$('mentorAdminChatInfoPanel');if(panel)return panel;
+    panel=document.createElement('section');
+    panel.id='mentorAdminChatInfoPanel';
+    panel.className='mentor-admin-chat-info-panel hidden';
+    panel.setAttribute('aria-hidden','true');
+    panel.innerHTML=
+      '<div class="mentor-admin-chat-info-head"><button id="mentorAdminChatInfoBack" type="button" aria-label="Kembali">←</button><b>Info Chat</b></div>'+
+      '<div class="mentor-admin-chat-info-scroll">'+
+        '<div class="mentor-admin-chat-info-hero"><div id="mentorAdminChatInfoAvatar" class="mentor-admin-chat-info-avatar">M</div><strong id="mentorAdminChatInfoTitle">Chat</strong><span id="mentorAdminChatInfoSubtitle"></span></div>'+
+        '<div class="mentor-admin-chat-info-card"><span class="mentor-admin-chat-info-label">DESKRIPSI</span><p id="mentorAdminChatInfoDesc"></p></div>'+
+        '<div id="mentorAdminChatInfoDetails" class="mentor-admin-chat-info-card details"></div>'+
+      '</div>';
+    view.appendChild(panel);
+    panel.querySelector('#mentorAdminChatInfoBack')?.addEventListener('click',closeAdminChatInfo);
+    return panel;
+  }
+
+  function openAdminChatInfo(){
+    if(!['announcement','group','mentor-thread'].includes(mentorAdminScreen))return;
+    const panel=ensureAdminChatInfoPanel();if(!panel)return;
+    const data=adminChatInfoData();
+    $('mentorAdminChatInfoAvatar').textContent=data.avatar;
+    $('mentorAdminChatInfoTitle').textContent=data.title;
+    $('mentorAdminChatInfoSubtitle').textContent=data.subtitle;
+    $('mentorAdminChatInfoDesc').textContent=data.desc;
+    $('mentorAdminChatInfoDetails').innerHTML=
+      '<span class="mentor-admin-chat-info-label">DETAIL</span>'+
+      data.details.map(item=>'<div class="mentor-admin-chat-info-row"><span>'+esc(item[0])+'</span><b>'+esc(item[1])+'</b></div>').join('');
+    panel.classList.remove('hidden','closing');
+    panel.setAttribute('aria-hidden','false');
+    requestAnimationFrame(()=>panel.classList.add('open'));
+  }
+
+  function closeAdminChatInfo(){
+    const panel=$('mentorAdminChatInfoPanel');if(!panel||panel.classList.contains('hidden'))return;
+    panel.classList.remove('open');panel.classList.add('closing');
+    setTimeout(()=>{panel.classList.add('hidden');panel.classList.remove('closing');panel.setAttribute('aria-hidden','true')},260);
+  }
+
   function setAdminCommunityChrome(slug){
     const announcement=slug==='announcement';
     const view=$('mentorThreadView'),composer=$('mentorAdminComposer');
@@ -8550,6 +8672,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   async function openAdminCommunityThread(slug){
+    closeAdminChatInfo();
     mentorAdminScreen=slug;mentorAdminCommunityChannel=slug;mentorActiveConversation=null;
     $('mentorAdminLayout')?.classList.add('thread-open');
     $('mentorThreadEmpty')?.classList.add('hidden');$('mentorThreadView')?.classList.remove('hidden');
@@ -8652,6 +8775,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function openMentorConversation(id){
     const row=mentorConversations.find(x=>x.conversation_id===id);if(!row)return;
+    closeAdminChatInfo();
     mentorAdminScreen='mentor-thread';mentorActiveConversation=row;mentorAdminLastKey='';mentorAdminInitialRender=true;
     $('mentorAdminLayout')?.classList.add('thread-open');
     $('mentorThreadEmpty')?.classList.add('hidden');$('mentorThreadView')?.classList.remove('hidden');updateMentorThreadHeader();
@@ -9303,11 +9427,14 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   });
 
   $('mentorThreadBackBtn')?.addEventListener('click',()=>{
+    closeAdminChatInfo();
     mentorAdminSetTyping(false);closeMentorAdminMessageMenu();clearMentorAdminReply();
     $('mentorAdminLayout')?.classList.remove('thread-open');
     mentorAdminScreen='home';
     mentorAdminCommunityChannel='';renderMentorInbox();
   });
+
+  document.querySelector('#pageMentor .mentor-thread-person')?.addEventListener('click',openAdminChatInfo);
 
   $('claimMentorChatBtn')?.addEventListener('click',async()=>{
     try{await claimMentorConversation()}
