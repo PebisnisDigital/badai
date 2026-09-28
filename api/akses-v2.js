@@ -1420,7 +1420,7 @@ module.exports = async function handler(req, res) {
   .mentor-pending-attachment>button{width:28px;height:28px;border:0;border-radius:999px;background:#292929;color:#bbb;font-size:17px;cursor:pointer}
   .mentor-composer{grid-template-columns:34px 34px minmax(0,1fr) 38px!important;gap:5px!important;padding:7px 8px!important;background:#121212!important;align-items:end!important}
   .mentor-icon-btn{width:34px!important;height:38px!important;border:0!important;border-radius:999px!important;background:transparent!important;color:#a8a8a8!important;font-size:19px!important}
-  #mentorAttachBtn{transform:rotate(-28deg);font-size:21px!important}
+  #mentorAttachBtn{transform:none;font-size:18px!important}
   .mentor-composer textarea{min-height:38px!important;max-height:108px!important;border:0!important;border-radius:20px!important;background:#262626!important;padding:10px 13px!important;color:#fff!important;font:650 11.5px/1.35 "Nunito",Arial,sans-serif!important;overflow-y:auto!important}
   .mentor-composer textarea:focus{box-shadow:0 0 0 1px #45333c inset!important}
   .mentor-send-btn{width:38px!important;height:38px!important;min-height:38px!important;padding:0!important;display:grid!important;place-items:center!important;border-radius:999px!important;background:#ff4fa3!important;color:#111!important;font-size:15px!important}
@@ -1454,8 +1454,22 @@ module.exports = async function handler(req, res) {
       linear-gradient(45deg,transparent 46%,rgba(134,150,160,.018) 47% 53%,transparent 54%),
       linear-gradient(-45deg,transparent 46%,rgba(134,150,160,.014) 47% 53%,transparent 54%)!important;
     background-size:58px 58px,72px 72px,94px 94px,118px 118px!important;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    scrollbar-gutter:stable;
+    scrollbar-width:thin;
+    scrollbar-color:#43515a transparent;
   }
-  #mentor .mentor-date-sep{background:#182229!important;color:#d1d7db!important}
+  #mentor .mentor-message-list::-webkit-scrollbar{width:7px;height:7px}
+  #mentor .mentor-message-list::-webkit-scrollbar-track{background:transparent}
+  #mentor .mentor-message-list::-webkit-scrollbar-thumb{background:#43515a;border-radius:999px;border:2px solid transparent;background-clip:padding-box}
+  #mentor .mentor-date-sep{position:sticky;top:6px;z-index:2;background:#182229!important;color:#d1d7db!important;backdrop-filter:blur(6px)}
+  #mentor .mentor-jump-latest:not(.hidden){animation:mentorJumpIn .16s ease-out}
+  #mentor .mentor-sticker-tray:not(.hidden),
+  #mentor .mentor-attach-menu:not(.hidden),
+  #mentor .mentor-pending-attachment:not(.hidden){animation:mentorTrayIn .14s ease-out}
+  @keyframes mentorJumpIn{from{opacity:0;transform:translateY(8px) scale(.92)}to{opacity:1;transform:none}}
+  @keyframes mentorTrayIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   #mentor .mentor-msg.mentor{background:var(--wa-in)!important;color:var(--wa-text)!important}
   #mentor .mentor-msg.member{background:var(--wa-out)!important;color:#e9edef!important}
   #mentor .mentor-msg.system{background:#182229!important;color:#d1d7db!important}
@@ -1850,9 +1864,13 @@ document.addEventListener('DOMContentLoaded', function(){
   function mentorNearBottom(list){
     return !list || list.scrollHeight-list.scrollTop-list.clientHeight<90
   }
-  function mentorScrollBottom(force){
+  function mentorScrollBottom(force,smooth){
     var list=el('mentorMessageList');if(!list)return;
-    if(force||mentorNearBottom(list)){list.scrollTop=list.scrollHeight;el('mentorJumpLatest')&&el('mentorJumpLatest').classList.add('hidden')}
+    if(force||mentorNearBottom(list)){
+      var top=list.scrollHeight;
+      if(typeof list.scrollTo==='function')list.scrollTo({top:top,behavior:smooth?'smooth':'auto'});else list.scrollTop=top;
+      el('mentorJumpLatest')&&el('mentorJumpLatest').classList.add('hidden')
+    }
   }
   function renderMentorMessages(rows){
     var list=el('mentorMessageList');if(!list)return;
@@ -2086,7 +2104,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var picker=el(id);if(picker)picker.addEventListener('change',function(){var file=picker.files&&picker.files[0];if(file)setMentorPending(file)})
   });
   el('mentorPendingCancel')&&el('mentorPendingCancel').addEventListener('click',clearMentorPending);
-  el('mentorJumpLatest')&&el('mentorJumpLatest').addEventListener('click',function(){mentorScrollBottom(true)});
+  el('mentorJumpLatest')&&el('mentorJumpLatest').addEventListener('click',function(){mentorScrollBottom(true,true)});
   var messageList=el('mentorMessageList');
   if(messageList)messageList.addEventListener('scroll',function(){
     var jump=el('mentorJumpLatest');if(jump)jump.classList.toggle('hidden',mentorNearBottom(messageList))
