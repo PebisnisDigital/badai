@@ -1793,6 +1793,16 @@ module.exports = async function handler(req, res) {
     max-width:none!important;
     margin:12px 0 0!important;
   }
+  #mentor .mentor-chat-row-avatar.announcement{background:#59431a!important;font-size:20px!important}
+  #mentor .mentor-chat-row-avatar.group{background:#174a3f!important}
+  #mentor .mentor-readonly-notice{
+    flex:0 0 auto;padding:10px 14px;border-top:1px solid #26343c;background:#111b21;color:#8696a0;
+    text-align:center;font-size:12px!important;font-weight:300!important
+  }
+  #mentor .mentor-community-sender{
+    margin:0 0 3px;color:#53bdeb;font-size:11px!important;font-weight:600!important
+  }
+  #mentor .mentor-composer.hidden,#mentor .mentor-readonly-notice.hidden,#mentor .mentor-chat-row.hidden{display:none!important}
   @media(max-width:560px){
     #mentor .mentor-chat-home,
     #mentor .mentor-chat-card{
@@ -2123,6 +2133,9 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorReply=null;
   var mentorMessageMenu=null;
   var mentorView='list';
+  var mentorSelectedChat='mentor';
+  var communityOverviewMap=new Map();
+  var communityUnreadTotal=0;
   var mentorDraftKey='badai_mentor_draft';
   var mentorMemberPresenceLastTouch=0;
 
@@ -2365,6 +2378,100 @@ document.addEventListener('DOMContentLoaded', function(){
     var hour=Math.floor(min/60);if(hour<24)return 'terakhir dilihat '+hour+' jam lalu';
     return 'terakhir dilihat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(new Date(value))
   }
+  function renderTotalChatUnread(){
+    var total=Math.max(0,Number(mentorUnreadCount||0)+Number(communityUnreadTotal||0));
+    var badge=el('mentorUnreadBadge');
+    if(badge){badge.textContent=total>99?'99+':String(total);badge.classList.toggle('hidden',total<1)}
+  }
+
+  function communityRowIds(slug){
+    return slug==='announcement'
+      ? {preview:'announcementChatRowPreview',time:'announcementChatRowTime',unread:'announcementChatRowUnread'}
+      : {preview:'groupChatRowPreview',time:'groupChatRowTime',unread:'groupChatRowUnread'}
+  }
+
+  async function refreshCommunityOverview(){
+    try{
+      var rows=await mentorFetch('/rest/v1/rpc/community_chat_overview',{method:'POST',body:'{}'});
+      communityOverviewMap=new Map((rows||[]).map(function(x){return [x.channel_slug,x]}));
+      communityUnreadTotal=0;
+      (rows||[]).forEach(function(row){
+        var ids=communityRowIds(row.channel_slug);
+        var p=el(ids.preview),t=el(ids.time),u=el(ids.unread);
+        if(p)p.textContent=row.last_message||row.subtitle||'';
+        if(t)t.textContent=row.last_message_at?mentorClock(row.last_message_at):'';
+        var n=Math.max(0,Number(row.unread_count||0));communityUnreadTotal+=n;
+        if(u){u.textContent=n>99?'99+':String(n);u.classList.toggle('hidden',n<1)}
+      });
+      renderTotalChatUnread()
+    }catch(_){}
+  }
+
+  function setMemberChatChrome(kind){
+    mentorSelectedChat=kind||'mentor';
+    var avatar=el('mentorWaAvatar'),name=el('mentorWaName'),sub=el('mentorWaSubstatus');
+    var composer=el('mentorComposer'),stickers=el('mentorStickerTray'),attach=el('mentorAttachMenu');
+    var notice=el('mentorReadOnlyNotice'),attachBtn=el('mentorAttachBtn'),stickerBtn=el('mentorStickerBtn');
+    if(stickers)stickers.classList.add('hidden');if(attach)attach.classList.add('hidden');clearMentorPending();clearMentorReply();
+    if(kind==='announcement'){
+      if(avatar)avatar.textContent='📢';if(name)name.textContent='PENGUMUMAN BADAI';if(sub)sub.textContent='Info resmi dari tim BADAI';
+      if(composer)composer.classList.add('hidden');if(notice)notice.classList.remove('hidden');
+    }else if(kind==='group'){
+      if(avatar)avatar.textContent='G';if(name)name.textContent='Grup BADAI';if(sub)sub.textContent='Diskusi semua member BADAI';
+      if(composer)composer.classList.remove('hidden');if(notice)notice.classList.add('hidden');
+      if(attachBtn)attachBtn.classList.add('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');
+    }else{
+      if(avatar)avatar.textContent='M';if(notice)notice.classList.add('hidden');if(composer)composer.classList.remove('hidden');
+      if(attachBtn)attachBtn.classList.remove('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');
+      refreshMentorOverview().catch(function(){})
+    }
+  }
+
+  function renderCommunityMessages(rows,slug){
+    var list=el('mentorMessageList');if(!list)return;
+    var wasNear=mentorNearBottom(list),s=memberSession(),uid=s&&s.user?s.user.id:'';
+    rows=rows||[];var html='',lastDay='';
+    if(!rows.length){
+      list.innerHTML='<div class="mentor-empty">'+(slug==='announcement'?'Belum ada pengumuman dari tim BADAI.':'Belum ada pesan di Grup BADAI. Jadi yang pertama ngobrol 👋')+'</div>';
+      return
+    }
+    rows.forEach(function(m){
+      var day=mentorDateKey(m.created_at);
+      if(day!==lastDay){html+='<div class="mentor-date-sep">'+mentorDateLabel(m.created_at)+'</div>';lastDay=day}
+      var own=String(m.sender_user_id||'')===String(uid||''),side=own?'member':'mentor';
+      var sender=(slug==='group'&&!own)?'<div class="mentor-community-sender">'+mentorEsc(m.sender_name||'Member BADAI')+'</div>':'';
+      var body='';
+      if(m.message_type==='sticker')body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
+      else if(m.message_type==='image')body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><img src="'+mentorEsc(m.drive_web_view_link||'#')+'" alt="" loading="lazy"></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
+      else if(m.message_type==='file')body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><span class="mentor-file-icon">📄</span><span class="mentor-file-copy"><b>'+mentorEsc(m.file_name||'Dokumen')+'</b><small>'+mentorEsc(mentorSize(m.file_size)||String(m.file_mime||'Dokumen'))+'</small></span></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
+      else body='<div class="body mentor-wa-formatted">'+mentorFormatText(m.body||'')+'</div>';
+      html+='<div class="mentor-msg '+side+' '+mentorEsc(m.message_type)+'">'+sender+body+
+        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own?'<span class="mentor-receipt read">✓✓</span>':'')+'</div></div>'
+    });
+    list.innerHTML=html;
+    if(wasNear||mentorInitialRender)mentorScrollBottom(true);
+    mentorInitialRender=false
+  }
+
+  async function loadCommunityMessages(slug){
+    if(!slug||slug==='mentor')return;
+    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
+    renderCommunityMessages(rows||[],slug);
+    if(mentorView==='thread'){
+      await mentorFetch('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(function(){});
+      await refreshCommunityOverview()
+    }
+  }
+
+  async function sendCommunityPayload(type,body,sticker){
+    if(mentorSelectedChat!=='group')return;
+    await mentorFetch('/rest/v1/rpc/community_chat_send',{method:'POST',body:JSON.stringify({
+      p_channel_slug:'group',p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
+      p_drive_file_id:null,p_drive_web_view_link:null,p_file_name:null,p_file_mime:null,p_file_size:null
+    })});
+    await loadCommunityMessages('group');await refreshCommunityOverview();mentorScrollBottom(true)
+  }
+
   function setMentorView(view){
     mentorView=view==='thread'?'thread':'list';
     var screen=el('mentor');
@@ -2373,14 +2480,16 @@ document.addEventListener('DOMContentLoaded', function(){
       screen.classList.toggle('mentor-chat-thread-mode',mentorView==='thread')
     }
     if(mentorView==='thread'){
-      touchMentorMemberPresence(true);
-      mentorLastKey='';
-      loadMentorMessages().then(function(){mentorScrollBottom(true)}).catch(function(){});
-      setTimeout(function(){var input=el('mentorMessageInput');if(input)input.focus()},40)
+      mentorInitialRender=true;mentorLastKey='';
+      setMemberChatChrome(mentorSelectedChat);
+      if(mentorSelectedChat==='mentor'){
+        touchMentorMemberPresence(true);
+        loadMentorMessages().then(function(){mentorScrollBottom(true)}).catch(function(){})
+      }else loadCommunityMessages(mentorSelectedChat).then(function(){mentorScrollBottom(true)}).catch(function(){});
+      if(mentorSelectedChat!=='announcement')setTimeout(function(){var input=el('mentorMessageInput');if(input)input.focus()},40)
     }else{
-      mentorSetTyping(false);
-      closeMentorMessageMenu();
-      clearMentorReply()
+      mentorSetTyping(false);closeMentorMessageMenu();clearMentorReply();
+      refreshCommunityOverview().catch(function(){});refreshMentorOverview().catch(function(){})
     }
   }
 
@@ -2399,8 +2508,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function setMentorUnread(count){
     count=Math.max(0,Number(count||0));
-    var badge=el('mentorUnreadBadge');
-    if(badge){badge.textContent=count>99?'99+':String(count);badge.classList.toggle('hidden',count<1)}
     var rowBadge=el('mentorChatRowUnread');
     if(rowBadge){rowBadge.textContent=count>99?'99+':String(count);rowBadge.classList.toggle('hidden',count<1)}
     if(mentorUnreadInitialized&&count>mentorUnreadCount){
@@ -2409,7 +2516,7 @@ document.addEventListener('DOMContentLoaded', function(){
         try{new Notification('Mentor BADAI',{body:'Ada balasan baru dari mentor.'})}catch(_){}
       }
     }
-    mentorUnreadCount=count;mentorUnreadInitialized=true
+    mentorUnreadCount=count;mentorUnreadInitialized=true;renderTotalChatUnread()
   }
   function setMentorStatus(row){
     var status=el('mentorMemberStatus'),sub=el('mentorWaSubstatus'),name=el('mentorWaName');
@@ -2539,20 +2646,20 @@ document.addEventListener('DOMContentLoaded', function(){
     setTimeout(function(){bootMentor()},30)
   });
 
-  var mentorChatRow=el('mentorChatRow');
-  if(mentorChatRow)mentorChatRow.addEventListener('click',function(){
-    setMentorView('thread')
+  document.querySelectorAll('#mentor [data-chat-kind]').forEach(function(row){
+    row.addEventListener('click',function(){
+      mentorSelectedChat=row.getAttribute('data-chat-kind')||'mentor';
+      setMentorView('thread')
+    })
   });
   var mentorChatBackBtn=el('mentorChatBackBtn');
-  if(mentorChatBackBtn)mentorChatBackBtn.addEventListener('click',function(){
-    setMentorView('list')
-  });
+  if(mentorChatBackBtn)mentorChatBackBtn.addEventListener('click',function(){setMentorView('list')});
   var mentorChatSearch=el('mentorChatSearch');
   if(mentorChatSearch)mentorChatSearch.addEventListener('input',function(){
     var q=String(mentorChatSearch.value||'').trim().toLowerCase();
-    var name=String(el('mentorChatRowName')&&el('mentorChatRowName').textContent||'Mentor BADAI').toLowerCase();
-    var preview=String(el('mentorChatRowPreview')&&el('mentorChatRowPreview').textContent||'').toLowerCase();
-    if(mentorChatRow)mentorChatRow.classList.toggle('hidden',!!q&&!name.includes(q)&&!preview.includes(q))
+    document.querySelectorAll('#mentor [data-chat-kind]').forEach(function(row){
+      row.classList.toggle('hidden',!!q&&!String(row.textContent||'').toLowerCase().includes(q))
+    })
   });
   var input=el('mentorMessageInput');
   if(input){
@@ -2584,7 +2691,8 @@ document.addEventListener('DOMContentLoaded', function(){
         var data=await uploadMentorFile(pending);
         await sendMentorPayload(pending.type&&pending.type.indexOf('image/')===0?'image':'file',text,null,data);
         clearMentorPending();if(note)note.textContent=''
-      }else await sendMentorPayload('text',text,null,null);
+      }else if(mentorSelectedChat==='group') await sendCommunityPayload('text',text,null);
+      else await sendMentorPayload('text',text,null,null);
       if(input){input.value='';mentorGrowInput()}try{localStorage.removeItem(mentorDraftKey)}catch(_){}
     }catch(err){mentorToast(err.message||'Pesan gagal dikirim.')}
     finally{if(btn)btn.disabled=false}
@@ -2595,8 +2703,12 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   document.querySelectorAll('[data-mentor-sticker]').forEach(function(btn){
     btn.addEventListener('click',async function(){
-      try{await sendMentorPayload('sticker',null,btn.getAttribute('data-mentor-sticker'),null);stickerTray&&stickerTray.classList.add('hidden')}
-      catch(err){mentorToast(err.message||'Stiker gagal dikirim.')}
+      try{
+        var emoji=btn.getAttribute('data-mentor-sticker');
+        if(mentorSelectedChat==='group')await sendCommunityPayload('sticker',null,emoji);
+        else if(mentorSelectedChat==='mentor')await sendMentorPayload('sticker',null,emoji,null);
+        stickerTray&&stickerTray.classList.add('hidden')
+      }catch(err){mentorToast(err.message||'Stiker gagal dikirim.')}
     })
   });
   var attachBtn=el('mentorAttachBtn'),attachMenu=el('mentorAttachMenu');
@@ -2651,12 +2763,13 @@ document.addEventListener('DOMContentLoaded', function(){
     var screen=el('mentor');
     if(screen&&screen.classList.contains('active')&&document.visibilityState==='visible'){
       touchMentorMemberPresence(false);
-      refreshMentorOverview().catch(function(){});
-      if(mentorConversationId)loadMentorMessages().catch(function(){});else bootMentor()
+      refreshMentorOverview().catch(function(){});refreshCommunityOverview().catch(function(){});
+      if(mentorView==='thread'&&mentorSelectedChat!=='mentor')loadCommunityMessages(mentorSelectedChat).catch(function(){});
+      else if(mentorConversationId)loadMentorMessages().catch(function(){});else bootMentor()
     }
   },2500);
   setInterval(function(){if(document.visibilityState==='visible')refreshMentorOverview().catch(function(){})},8000);
-  setTimeout(function(){refreshMentorOverview().catch(function(){})},1200);
+  setTimeout(function(){refreshMentorOverview().catch(function(){});refreshCommunityOverview().catch(function(){})},1200);
 
 
   setupAffiliateTabs();syncPlanAccess();setTimeout(resolveRealPlan,250);setTimeout(resolveRealPlan,1500);setTimeout(function(){bootAffiliate(0)},350);
