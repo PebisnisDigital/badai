@@ -2033,87 +2033,44 @@ module.exports = async function handler(req, res) {
   #mentor .mentor-mention-btn{font-weight:700!important;font-size:18px!important}
   #mentor .mentor-mention-btn.hidden{display:none!important}
 
-  /* Composer hardening: prevent hidden tool buttons from occupying CSS-grid cells */
-  #mentor .mentor-composer > .hidden{
-    display:none!important;
-  }
+  /* Composer: Grup BADAI and Chat Mentor share the same visible controls */
+  #mentor .mentor-composer > .hidden{display:none!important}
   #mentor .mentor-composer{
+    grid-template-columns:34px 34px minmax(0,1fr) 38px!important;
     grid-auto-flow:row!important;
     grid-auto-rows:auto!important;
+    gap:5px!important;
     min-height:56px!important;
     height:auto!important;
+    padding:7px 8px!important;
     align-items:end!important;
   }
-  #mentor .mentor-composer textarea{
-    width:100%!important;
-    min-width:0!important;
-    height:38px;
-    margin:0!important;
-    grid-row:1!important;
+  #mentor .mentor-composer #mentorStickerBtn{
+    display:grid!important;grid-column:1!important;grid-row:1!important
   }
-  #mentor .mentor-composer .mentor-send-btn{
-    grid-row:1!important;
-    align-self:end!important;
-    margin:0!important;
+  #mentor .mentor-composer #mentorAttachBtn{
+    display:grid!important;grid-column:2!important;grid-row:1!important
   }
-
-  /* Grup BADAI: emoji + @ + input + kirim */
-  #mentor .mentor-composer[data-chat-kind="group"]{
-    grid-template-columns:34px 34px minmax(0,1fr) 38px!important;
+  #mentor .mentor-composer #mentorMentionBtn{
+    display:none!important
   }
-  #mentor .mentor-composer[data-chat-kind="group"] #mentorStickerBtn{
-    display:grid!important;
-    grid-column:1!important;
-    grid-row:1!important;
+  #mentor .mentor-composer #mentorMessageInput{
+    display:block!important;grid-column:3!important;grid-row:1!important;
+    width:100%!important;min-width:0!important;height:38px;margin:0!important
   }
-  #mentor .mentor-composer[data-chat-kind="group"] #mentorAttachBtn{
-    display:none!important;
+  #mentor .mentor-composer #mentorSendBtn{
+    display:grid!important;grid-column:4!important;grid-row:1!important;
+    align-self:end!important;margin:0!important
   }
-  #mentor .mentor-composer[data-chat-kind="group"] #mentorMentionBtn{
-    display:grid!important;
-    grid-column:2!important;
-    grid-row:1!important;
-  }
-  #mentor .mentor-composer[data-chat-kind="group"] #mentorMessageInput{
-    grid-column:3!important;
-  }
-  #mentor .mentor-composer[data-chat-kind="group"] #mentorSendBtn{
-    grid-column:4!important;
-  }
-
-  /* Chat Mentor: emoji + lampiran + input + kirim */
-  #mentor .mentor-composer[data-chat-kind="mentor"]{
-    grid-template-columns:34px 34px minmax(0,1fr) 38px!important;
-  }
-  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorStickerBtn{
-    display:grid!important;
-    grid-column:1!important;
-    grid-row:1!important;
-  }
-  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorAttachBtn{
-    display:grid!important;
-    grid-column:2!important;
-    grid-row:1!important;
-  }
-  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorMentionBtn{
-    display:none!important;
-  }
-  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorMessageInput{
-    grid-column:3!important;
-  }
-  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorSendBtn{
-    grid-column:4!important;
-  }
-
   @media(max-width:560px){
-    #mentor .mentor-composer[data-chat-kind="group"],
-    #mentor .mentor-composer[data-chat-kind="mentor"]{
+    #mentor .mentor-composer{
       grid-template-columns:32px 32px minmax(0,1fr) 38px!important;
-      gap:5px!important;
-      padding:7px 8px!important;
-      min-height:52px!important;
+      min-height:52px!important
     }
   }
+
+  /* @ mention is typing syntax only; no visible @ toolbar button */
+  #mentor .mentor-mention-btn{display:none!important}
   #mentor .mentor-mention-picker{
     position:absolute;left:10px;right:10px;bottom:58px;z-index:70;
     max-height:270px;overflow-y:auto;padding:6px;border:1px solid #2b3942;border-radius:13px;
@@ -2808,24 +2765,13 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function ensureCommunityMentionUi(){
-    var composer=el('mentorComposer'),input=el('mentorMessageInput'),card=el('mentorChatCard');
-    if(!composer||!input||!card)return;
-    var btn=el('mentorMentionBtn');
-    if(!btn){
-      btn=document.createElement('button');
-      btn.id='mentorMentionBtn';btn.type='button';btn.className='mentor-icon-btn mentor-mention-btn hidden';
-      btn.title='Tag member';btn.setAttribute('aria-label','Tag member');btn.textContent='@';
-      composer.insertBefore(btn,input);
-      btn.addEventListener('click',function(){
-        if(mentorSelectedChat!=='group')return;
-        var start=input.selectionStart==null?input.value.length:input.selectionStart;
-        var end=input.selectionEnd==null?start:input.selectionEnd;
-        var before=input.value.slice(0,start),prefix=(before&&!/\\s$/.test(before))?' @':'@';
-        input.value=input.value.slice(0,start)+prefix+input.value.slice(end);
-        var pos=start+prefix.length;input.setSelectionRange(pos,pos);input.focus();
-        updateCommunityMentionPicker()
-      })
-    }
+    var input=el('mentorMessageInput'),card=el('mentorChatCard');
+    if(!input||!card)return;
+
+    /* @ is a typing command, not a toolbar button. */
+    var staleBtn=el('mentorMentionBtn');
+    if(staleBtn)staleBtn.remove();
+
     var picker=el('mentorMentionPicker');
     if(!picker){
       picker=document.createElement('div');
@@ -3126,18 +3072,18 @@ document.addEventListener('DOMContentLoaded', function(){
     var composer=el('mentorComposer'),stickers=el('mentorStickerTray'),attach=el('mentorAttachMenu');
     if(composer)composer.dataset.chatKind=mentorSelectedChat;
     ensureCommunityMentionUi();
-    var notice=el('mentorReadOnlyNotice'),attachBtn=el('mentorAttachBtn'),stickerBtn=el('mentorStickerBtn'),mentionBtn=el('mentorMentionBtn');
+    var notice=el('mentorReadOnlyNotice'),attachBtn=el('mentorAttachBtn'),stickerBtn=el('mentorStickerBtn');
     if(stickers)stickers.classList.add('hidden');if(attach)attach.classList.add('hidden');clearMentorPending();clearMentorReply();closeCommunityMentionPicker();
     if(kind==='announcement'){
       if(avatar)avatar.textContent='📢';if(name)name.textContent='PENGUMUMAN BADAI';if(sub)sub.textContent='Info resmi dari tim BADAI';
-      if(composer)composer.classList.add('hidden');if(notice)notice.classList.remove('hidden');if(mentionBtn)mentionBtn.classList.add('hidden');
+      if(composer)composer.classList.add('hidden');if(notice)notice.classList.remove('hidden');
     }else if(kind==='group'){
       if(avatar)avatar.textContent='G';if(name)name.textContent='Grup BADAI';if(sub)sub.textContent='Diskusi semua member BADAI';
       if(composer)composer.classList.remove('hidden');if(notice)notice.classList.add('hidden');
-      if(attachBtn)attachBtn.classList.add('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');if(mentionBtn)mentionBtn.classList.remove('hidden');loadCommunityParticipants(false).catch(function(){})
+      if(attachBtn)attachBtn.classList.remove('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');loadCommunityParticipants(false).catch(function(){})
     }else{
       if(avatar)avatar.textContent='M';if(notice)notice.classList.add('hidden');if(composer)composer.classList.remove('hidden');
-      if(attachBtn)attachBtn.classList.remove('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');if(mentionBtn)mentionBtn.classList.add('hidden');
+      if(attachBtn)attachBtn.classList.remove('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');
       refreshMentorOverview().catch(function(){})
     }
   }
@@ -3196,11 +3142,15 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }
 
-  async function sendCommunityPayload(type,body,sticker){
+  async function sendCommunityPayload(type,body,sticker,fileData){
     if(mentorSelectedChat!=='group')return;
     await mentorFetch('/rest/v1/rpc/community_chat_send',{method:'POST',body:JSON.stringify({
       p_channel_slug:'group',p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
-      p_drive_file_id:null,p_drive_web_view_link:null,p_file_name:null,p_file_mime:null,p_file_size:null
+      p_drive_file_id:fileData&&fileData.id?fileData.id:null,
+      p_drive_web_view_link:fileData&&fileData.url?fileData.url:null,
+      p_file_name:fileData&&fileData.name?fileData.name:null,
+      p_file_mime:fileData&&fileData.mime?fileData.mime:null,
+      p_file_size:fileData&&fileData.size?fileData.size:null
     })});
     await loadCommunityMessages('group');await refreshCommunityOverview();mentorScrollBottom(true)
   }
@@ -3348,6 +3298,14 @@ document.addEventListener('DOMContentLoaded', function(){
     var data=await res.json().catch(function(){return null});
     if(!res.ok)throw new Error((data&&(data.error||data.message))||'Upload gagal.');return data
   }
+  async function uploadCommunityFile(file){
+    if(!file)return;if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
+    var s=memberSession();if(!s||!s.access_token)throw new Error('Session member tidak tersedia.');
+    var fd=new FormData();fd.append('file',file);fd.append('channel_slug','group');
+    var res=await fetch('/api/community/upload',{method:'POST',headers:{Authorization:'Bearer '+s.access_token},body:fd});
+    var data=await res.json().catch(function(){return null});
+    if(!res.ok)throw new Error((data&&(data.error||data.message))||'Upload ke Grup BADAI gagal.');return data
+  }
   function clearMentorPending(){
     if(mentorPendingObjectUrl){try{URL.revokeObjectURL(mentorPendingObjectUrl)}catch(_){}}
     mentorPendingObjectUrl='';mentorPendingFile=null;
@@ -3438,11 +3396,17 @@ document.addEventListener('DOMContentLoaded', function(){
     try{
       if(mentorPendingFile){
         var pending=mentorPendingFile;var note=el('mentorUploadNote');if(note)note.textContent='Mengunggah '+pending.name+'...';
-        if(!mentorConversationId)await bootMentor();
-        var data=await uploadMentorFile(pending);
-        await sendMentorPayload(pending.type&&pending.type.indexOf('image/')===0?'image':'file',text,null,data);
+        var messageType=pending.type&&pending.type.indexOf('image/')===0?'image':'file';
+        if(mentorSelectedChat==='group'){
+          var groupData=await uploadCommunityFile(pending);
+          await sendCommunityPayload(messageType,text,null,groupData);
+        }else{
+          if(!mentorConversationId)await bootMentor();
+          var data=await uploadMentorFile(pending);
+          await sendMentorPayload(messageType,text,null,data);
+        }
         clearMentorPending();if(note)note.textContent=''
-      }else if(mentorSelectedChat==='group') await sendCommunityPayload('text',text,null);
+      }else if(mentorSelectedChat==='group') await sendCommunityPayload('text',text,null,null);
       else await sendMentorPayload('text',text,null,null);
       if(input){input.value='';mentorGrowInput()}try{localStorage.removeItem(mentorDraftKey)}catch(_){}
     }catch(err){mentorToast(err.message||'Pesan gagal dikirim.')}
