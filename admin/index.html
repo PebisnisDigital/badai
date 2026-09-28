@@ -4749,8 +4749,61 @@ th,td{padding:14px 12px!important}
 #pageMentor .announcement-thread .mentor-admin-msg .body{
   width:100%!important;
   padding:0!important;
-  font-size:10px!important;
-  line-height:1.42!important;
+  font-size:15px!important;
+  line-height:1.55!important;
+}
+#pageMentor .mentor-announcement-head{
+  width:100%;
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+  margin:-7px -8px 8px;
+  padding:10px 12px;
+  width:calc(100% + 16px);
+  box-sizing:border-box;
+  background:#1b252b;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  border-radius:8px 8px 0 0;
+}
+#pageMentor .mentor-announcement-avatar{
+  position:relative;
+  width:42px;height:42px;
+  display:grid;place-items:center;
+  overflow:visible;
+  border-radius:999px;
+  background:#374248;
+  color:#fff;
+  font-size:15px!important;
+  font-weight:900!important;
+}
+#pageMentor .mentor-announcement-avatar img{
+  width:42px;height:42px;
+  display:block;object-fit:cover;border-radius:999px;
+}
+#pageMentor .mentor-announcement-avatar.verified::after{
+  content:"✓";
+  position:absolute;right:-3px;bottom:-2px;
+  width:15px;height:15px;display:grid;place-items:center;
+  border:2px solid #1b252b;border-radius:999px;
+  background:#ff4fa3;color:#fff;
+  font-size:9px!important;font-weight:950!important;
+  box-sizing:border-box;
+}
+#pageMentor .mentor-announcement-copy{
+  min-width:0;display:grid;gap:3px;
+}
+#pageMentor .mentor-announcement-copy b{
+  color:#25d366!important;
+  font-size:16px!important;
+  line-height:1.15!important;
+  font-weight:900!important;
+}
+#pageMentor .mentor-announcement-copy small{
+  color:#b7c0c5!important;
+  font-size:12px!important;
+  line-height:1.2!important;
+  font-weight:700!important;
 }
 #pageMentor .announcement-thread .mentor-admin-image{
   width:100%!important;
@@ -4768,15 +4821,18 @@ th,td{padding:14px 12px!important}
   background:#111b21!important;
 }
 #pageMentor .announcement-thread .mentor-admin-caption{
-  padding:3px 2px 1px!important;
+  padding:8px 2px 2px!important;
+  font-size:14px!important;
+  line-height:1.5!important;
 }
 #pageMentor .announcement-thread .mentor-admin-file{
   width:100%!important;
   box-sizing:border-box!important;
 }
 #pageMentor .announcement-thread .mentor-admin-meta{
-  margin-top:4px!important;
+  margin-top:6px!important;
   color:#8696a0!important;
+  font-size:10px!important;
 }
 #pageMentor .announcement-thread .mentor-admin-receipt{
   display:none!important;
@@ -4790,6 +4846,9 @@ th,td{padding:14px 12px!important}
     width:96%!important;
     max-width:96%!important;
   }
+  #pageMentor .announcement-thread .mentor-admin-msg .body{font-size:14px!important}
+  #pageMentor .mentor-announcement-copy b{font-size:15px!important}
+  #pageMentor .mentor-announcement-copy small{font-size:11px!important}
 }
 
 /* Group sender identity: initial avatar + bubble */
@@ -4866,13 +4925,14 @@ th,td{padding:14px 12px!important}
   display:inline-block;padding:0 2px;border-radius:3px;color:#53bdeb!important;background:rgba(83,189,235,.11);
   font-weight:500!important
 }
-#pageMentor .group-thread .mentor-admin-composer.community-composer{
-  grid-template-columns:36px minmax(0,1fr) 40px!important
+#pageMentor .community-thread .mentor-admin-composer.community-composer{
+  grid-template-columns:36px 36px minmax(0,1fr) 40px!important
 }
-#pageMentor .group-thread .mentor-admin-composer.community-composer #mentorAdminStickerBtn{grid-column:1!important}
-#pageMentor .group-thread .mentor-admin-composer.community-composer #mentorAdminMentionBtn{display:none!important}
-#pageMentor .group-thread .mentor-admin-composer.community-composer textarea{grid-column:2!important}
-#pageMentor .group-thread .mentor-admin-composer.community-composer #mentorAdminSendBtn{grid-column:3!important}
+#pageMentor .community-thread .mentor-admin-composer.community-composer #mentorAdminStickerBtn{grid-column:1!important}
+#pageMentor .community-thread .mentor-admin-composer.community-composer #mentorAdminAttachBtn{display:grid!important;grid-column:2!important}
+#pageMentor .community-thread .mentor-admin-composer.community-composer #mentorAdminMentionBtn{display:none!important}
+#pageMentor .community-thread .mentor-admin-composer.community-composer textarea{grid-column:3!important}
+#pageMentor .community-thread .mentor-admin-composer.community-composer #mentorAdminSendBtn{grid-column:4!important}
 
 /* iOS-inspired motion across admin + chat */
 .admin-page:not(.hidden){
@@ -9293,7 +9353,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('mentorThreadMeta').textContent=announcement?'Info resmi dari tim BADAI':'Diskusi semua member BADAI';
     $('claimMentorChatBtn')?.classList.add('hidden');
     $('mentorAdminReplyBar')?.classList.add('hidden');
-    $('mentorAdminAttachBtn')?.classList.add('hidden');
+    $('mentorAdminAttachBtn')?.classList.toggle('hidden',!adminCommunityCanSend(slug));
     $('mentorAdminStickerBtn')?.classList.toggle('hidden',!adminCommunityCanSend(slug));
     if(slug==='group')loadMentorAdminParticipants(false).catch(()=>{});
     composer?.classList.toggle('hidden',!adminCommunityCanSend(slug));
@@ -9313,17 +9373,41 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const day=mentorAdminDateKey(m.created_at);
       if(day!==lastDay){html+='<div class="mentor-admin-date">'+mentorAdminDateLabel(m.created_at)+'</div>';lastDay=day}
       const own=String(m.sender_user_id||'')===String(uid),side=own?'mentor':'member';
-      const senderName=m.sender_name||'Member BADAI';
-      const sender=slug==='group'&&!own?'<div class="mentor-community-sender '+mentorAdminSenderTone(senderName)+'">'+esc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</div>':'';
+      const senderName=m.sender_name||'Admin BADAI';
+      const sender=slug==='group'&&!own
+        ? '<div class="mentor-community-sender '+mentorAdminSenderTone(senderName)+'">'+esc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</div>'
+        : '';
+      const senderInitial=String(senderName||'A').trim().charAt(0).toUpperCase()||'A';
+      const announcementAvatar=m.sender_verified&&m.sender_avatar_url
+        ? '<div class="mentor-announcement-avatar verified"><img src="'+esc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
+        : '<div class="mentor-announcement-avatar">'+esc(senderInitial)+'</div>';
+      const announcementHead=slug==='announcement'
+        ? '<div class="mentor-announcement-head">'+announcementAvatar+
+            '<div class="mentor-announcement-copy"><b>'+esc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</b><small>Admin komunitas</small></div>'+
+          '</div>'
+        : '';
+
       let body='';
-      if(m.message_type==='sticker')body='<div class="body">'+esc(m.sticker_key||'✨')+'</div>';
-      else body='<div class="body mentor-wa-formatted">'+(slug==='group'?mentorAdminCommunityFormatText(m.body||''):mentorAdminFormatText(m.body||''))+'</div>';
+      if(m.message_type==='sticker'){
+        body='<div class="body">'+esc(m.sticker_key||'✨')+'</div>';
+      }else if(m.message_type==='image'){
+        const link=esc(m.drive_web_view_link||'#');
+        body='<div class="body"><a class="mentor-admin-image" href="'+link+'" target="_blank" rel="noopener"><img src="'+link+'" alt="'+esc(m.file_name||'Foto')+'" loading="lazy"></a>'+
+          (m.body?'<div class="mentor-admin-caption">'+(slug==='group'?mentorAdminCommunityFormatText(m.body):mentorAdminFormatText(m.body))+'</div>':'')+'</div>';
+      }else if(m.message_type==='file'){
+        const link=esc(m.drive_web_view_link||'#');
+        body='<div class="body"><a class="mentor-admin-file" href="'+link+'" target="_blank" rel="noopener"><span class="mentor-admin-file-icon">📄</span><span class="mentor-admin-file-copy"><b>'+esc(m.file_name||'Dokumen')+'</b><small>'+esc(mentorAdminSize(m.file_size)||String(m.file_mime||'Dokumen'))+'</small></span></a>'+
+          (m.body?'<div class="mentor-admin-caption">'+(slug==='group'?mentorAdminCommunityFormatText(m.body):mentorAdminFormatText(m.body))+'</div>':'')+'</div>';
+      }else{
+        body='<div class="body mentor-wa-formatted">'+(slug==='group'?mentorAdminCommunityFormatText(m.body||''):mentorAdminFormatText(m.body||''))+'</div>';
+      }
+
       const animateMsg=!mentorAdminAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
-      const bubble='<div class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
-        '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+(own?'<span class="mentor-admin-receipt read">✓✓</span>':'')+'</div></div>';
+      const bubble='<div class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+announcementHead+sender+body+
+        '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+(own&&slug!=='announcement'?'<span class="mentor-admin-receipt read">✓✓</span>':'')+'</div></div>';
+
       if(slug==='group'&&!own){
-        const senderInitial=String(senderName||'M').trim().charAt(0).toUpperCase()||'M';
         const tone=mentorAdminSenderTone(senderName);
         const avatar=m.sender_verified&&m.sender_avatar_url
           ? '<div class="mentor-admin-group-initial has-photo verified"><img src="'+esc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
@@ -9357,11 +9441,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(adminCommunityCanSend(slug))setTimeout(()=>$('mentorAdminInput')?.focus(),30)
   }
 
-  async function sendAdminCommunityPayload(type,body,sticker){
+  async function sendAdminCommunityPayload(type,body,sticker,fileData){
     const slug=mentorAdminCommunityChannel;if(!slug)return;
     await api('/rest/v1/rpc/community_chat_send',{method:'POST',body:JSON.stringify({
       p_channel_slug:slug,p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
-      p_drive_file_id:null,p_drive_web_view_link:null,p_file_name:null,p_file_mime:null,p_file_size:null
+      p_drive_file_id:fileData?.id||null,p_drive_web_view_link:fileData?.url||null,p_file_name:fileData?.name||null,
+      p_file_mime:fileData?.mime||null,p_file_size:fileData?.size||null
     })});
     await loadAdminCommunityMessages(slug);await loadMentorCommunityOverview();renderMentorAdminHome()
   }
@@ -9785,6 +9870,22 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const res=await fetch('/api/mentor/upload',{method:'POST',headers:{Authorization:'Bearer '+session.access_token},body:fd});
     const data=await res.json().catch(()=>null);
     if(!res.ok)throw new Error(data?.error||data?.message||'Upload gagal.');return data;
+  }
+
+  async function uploadAdminCommunityFile(file){
+    if(!file)return null;if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
+    if(!['announcement','group'].includes(mentorAdminCommunityChannel))throw new Error('Channel komunitas tidak tersedia.');
+    const fd=new FormData();
+    fd.append('file',file);
+    fd.append('channel_slug',mentorAdminCommunityChannel);
+    const res=await fetch('/api/community/upload',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+session.access_token},
+      body:fd
+    });
+    const data=await res.json().catch(()=>null);
+    if(!res.ok)throw new Error(data?.error||data?.message||'Upload komunitas gagal.');
+    return data;
   }
 
   function clearMentorAdminPending(){
@@ -10229,7 +10330,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   document.querySelectorAll('[data-admin-mentor-sticker]').forEach(btn=>{
     btn.addEventListener('click',async()=>{
       try{
-        if(['announcement','group'].includes(mentorAdminScreen))await sendAdminCommunityPayload('sticker',null,btn.dataset.adminMentorSticker);
+        if(['announcement','group'].includes(mentorAdminScreen))await sendAdminCommunityPayload('sticker',null,btn.dataset.adminMentorSticker,null);
         else await sendMentorAdminPayload('sticker',null,btn.dataset.adminMentorSticker,null);
         $('mentorAdminStickerTray')?.classList.add('hidden');
       }catch(err){mentorAdminToast(err.message||'Stiker gagal dikirim.')}
@@ -10288,11 +10389,17 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       if(mentorAdminPendingFile){
         const pending=mentorAdminPendingFile;
         if($('mentorAdminNote'))$('mentorAdminNote').textContent='Mengunggah '+pending.name+'...';
-        const uploaded=await uploadMentorAdminFile(pending);
-        await sendMentorAdminPayload(pending.type?.startsWith('image/')?'image':'file',value,null,uploaded);
+        const messageType=pending.type?.startsWith('image/')?'image':'file';
+        if(['announcement','group'].includes(mentorAdminScreen)){
+          const uploaded=await uploadAdminCommunityFile(pending);
+          await sendAdminCommunityPayload(messageType,value,null,uploaded);
+        }else{
+          const uploaded=await uploadMentorAdminFile(pending);
+          await sendMentorAdminPayload(messageType,value,null,uploaded);
+        }
         clearMentorAdminPending();
       }else if(['announcement','group'].includes(mentorAdminScreen)){
-        await sendAdminCommunityPayload('text',value,null);
+        await sendAdminCommunityPayload('text',value,null,null);
       }else{
         await sendMentorAdminPayload('text',value,null,null);
       }
