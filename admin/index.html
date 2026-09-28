@@ -6979,8 +6979,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
       const archiveRows = await api('/rest/v1/mentor_archive_batches?select=status&status=in.(pending,uploading,failed)&limit=100').catch(()=>[]);
       const pending = Array.isArray(archiveRows) ? archiveRows.length : 0;
+      const driveState = await fetch('/api/mentor/status').then(r=>r.ok?r.json():null).catch(()=>null);
       if($('mentorDriveStatus')){
-        $('mentorDriveStatus').textContent = pending ? pending + ' ARSIP MENUNGGU' : 'BELUM TERHUBUNG';
+        $('mentorDriveStatus').textContent = driveState?.drive_configured
+          ? (pending ? 'TERHUBUNG • '+pending+' ANTRIAN' : 'TERHUBUNG ✓')
+          : (pending ? pending + ' ARSIP MENUNGGU' : 'BELUM TERHUBUNG');
       }
 
       if(mentorActiveConversation){
