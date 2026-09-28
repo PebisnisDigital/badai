@@ -499,7 +499,7 @@
 
     if(plan !== 'pro'){
       if(affiliateNav) affiliateNav.style.display = 'none';
-      if(footer) footer.style.setProperty('--member-nav-count','5');
+      if(footer) footer.style.setProperty('--member-nav-count','4');
 
       const affiliateScreen = document.getElementById('afiliasi');
       if(affiliateScreen?.classList.contains('active')){
@@ -531,7 +531,7 @@
       const label = affiliateNav.querySelector('.label');
       if(label) label.innerHTML = 'Afiliasi<small class="affiliate-soon-badge">SEGERA HADIR</small>';
     }
-    if(footer) footer.style.setProperty('--member-nav-count','4');
+    if(footer) footer.style.setProperty('--member-nav-count','5');
 
     // Fitur afiliasi sedang dikunci sementara sampai resmi dibuka.
     window.BADAI_AFFILIATE_LINK = '';
