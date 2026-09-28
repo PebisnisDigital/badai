@@ -1955,6 +1955,33 @@ module.exports = async function handler(req, res) {
     75%{opacity:1;transform:scale(1.12)}
     100%{opacity:1;transform:scale(1)}
   }
+  /* Group @mentions */
+  #mentor .mentor-mention-btn{font-weight:700!important;font-size:18px!important}
+  #mentor .mentor-mention-btn.hidden{display:none!important}
+  #mentor .mentor-mention-picker{
+    position:absolute;left:10px;right:10px;bottom:58px;z-index:70;
+    max-height:270px;overflow-y:auto;padding:6px;border:1px solid #2b3942;border-radius:13px;
+    background:#111b21;box-shadow:0 18px 48px rgba(0,0,0,.46);
+    animation:badaiIosTrayIn .2s cubic-bezier(.22,.61,.36,1) both
+  }
+  #mentor .mentor-mention-picker.hidden{display:none!important}
+  #mentor .mentor-mention-item{
+    width:100%;min-height:54px;padding:7px 9px;display:grid;grid-template-columns:40px minmax(0,1fr);
+    align-items:center;gap:9px;border:0;border-radius:9px;background:transparent;color:#e9edef;text-align:left
+  }
+  #mentor .mentor-mention-item:hover,#mentor .mentor-mention-item.active{background:#202c33}
+  #mentor .mentor-mention-avatar{
+    width:38px;height:38px;display:grid;place-items:center;border-radius:999px;background:#374248;color:#fff;
+    font-size:12px!important;font-weight:500!important
+  }
+  #mentor .mentor-mention-copy{min-width:0;display:grid;gap:3px}
+  #mentor .mentor-mention-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px!important;font-weight:500!important}
+  #mentor .mentor-mention-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8696a0;font-size:10px!important}
+  #mentor .mentor-mention{
+    display:inline-block;padding:0 2px;border-radius:3px;color:#53bdeb!important;background:rgba(83,189,235,.11);
+    font-weight:500!important
+  }
+
   /* Clickable chat header + WhatsApp-like info screen */
   #mentor .mentor-chat-card{position:relative!important}
   #mentor .mentor-wa-person,
@@ -2344,6 +2371,10 @@ document.addEventListener('DOMContentLoaded', function(){
   var communityOverviewMap=new Map();
   var communityUnreadTotal=0;
   var communityOverviewBusy=false;
+  var communityParticipants=[];
+  var communityParticipantsLoaded=false;
+  var communityMentionIndex=0;
+  var communityMentionState=null;
   var mentorDraftKey='badai_mentor_draft';
   var mentorMemberPresenceLastTouch=0;
 
@@ -2446,6 +2477,121 @@ document.addEventListener('DOMContentLoaded', function(){
       html+='<div class="mentor-wa-line">'+(line?inline(line):'<br>')+'</div>';i++
     }
     return html
+  }
+
+  function communityFormatText(value){
+    var raw=String(value==null?'':value),tokens=[];
+    communityParticipants
+      .slice()
+      .sort(function(a,b){return String(b.display_name||'').length-String(a.display_name||'').length})
+      .forEach(function(p){
+        var name=String(p.display_name||'').trim();if(!name)return;
+        var escaped=name.replace(/[.*+?^$()|[\]\\{}]/g,'\\  function mentorMessageSummary(m){');
+        var re=new RegExp('(^|[\\s(])@'+escaped+'(?=$|[\\s.,!?;:)\\]])','gi');
+        raw=raw.replace(re,function(match,prefix){
+          var token='BADAIUSERMENTIONTOKEN'+tokens.length+'XZ';
+          tokens.push({token:token,label:match.slice(prefix.length)});
+          return prefix+token
+        })
+      });
+    var html=mentorFormatText(raw);
+    tokens.forEach(function(item){
+      html=html.split(item.token).join('<span class="mentor-mention">'+mentorEsc(item.label)+'</span>')
+    });
+    return html
+  }
+
+  async function loadCommunityParticipants(force){
+    if(communityParticipantsLoaded&&!force)return communityParticipants;
+    try{
+      var rows=await mentorFetch('/rest/v1/rpc/community_chat_participants',{method:'POST',body:JSON.stringify({p_query:null,p_limit:300})});
+      communityParticipants=Array.isArray(rows)?rows:[];
+      communityParticipantsLoaded=true
+    }catch(_){communityParticipants=[]}
+    return communityParticipants
+  }
+
+  function closeCommunityMentionPicker(){
+    var picker=el('mentorMentionPicker');
+    if(picker)picker.classList.add('hidden');
+    communityMentionState=null;communityMentionIndex=0
+  }
+
+  function ensureCommunityMentionUi(){
+    var composer=el('mentorComposer'),input=el('mentorMessageInput'),card=el('mentorChatCard');
+    if(!composer||!input||!card)return;
+    var btn=el('mentorMentionBtn');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.id='mentorMentionBtn';btn.type='button';btn.className='mentor-icon-btn mentor-mention-btn hidden';
+      btn.title='Tag member';btn.setAttribute('aria-label','Tag member');btn.textContent='@';
+      composer.insertBefore(btn,input);
+      btn.addEventListener('click',function(){
+        if(mentorSelectedChat!=='group')return;
+        var start=input.selectionStart==null?input.value.length:input.selectionStart;
+        var end=input.selectionEnd==null?start:input.selectionEnd;
+        var before=input.value.slice(0,start),prefix=(before&&!/\\s$/.test(before))?' @':'@';
+        input.value=input.value.slice(0,start)+prefix+input.value.slice(end);
+        var pos=start+prefix.length;input.setSelectionRange(pos,pos);input.focus();
+        updateCommunityMentionPicker()
+      })
+    }
+    var picker=el('mentorMentionPicker');
+    if(!picker){
+      picker=document.createElement('div');
+      picker.id='mentorMentionPicker';picker.className='mentor-mention-picker hidden';
+      picker.setAttribute('role','listbox');
+      card.appendChild(picker);
+      picker.addEventListener('mousedown',function(e){e.preventDefault()});
+      picker.addEventListener('click',function(e){
+        var item=e.target.closest('[data-community-mention-index]');if(!item)return;
+        chooseCommunityMention(Number(item.getAttribute('data-community-mention-index')||0))
+      })
+    }
+  }
+
+  function communityMentionContext(input){
+    if(!input)return null;
+    var cursor=input.selectionStart==null?input.value.length:input.selectionStart;
+    var before=input.value.slice(0,cursor),at=before.lastIndexOf('@');
+    if(at<0)return null;
+    if(at>0&&!/\\s/.test(before.charAt(at-1)))return null;
+    var query=before.slice(at+1);
+    if(query.indexOf('\\n')>=0||query.length>60)return null;
+    return {at:at,cursor:cursor,query:query.trim().toLowerCase()}
+  }
+
+  async function updateCommunityMentionPicker(){
+    var input=el('mentorMessageInput'),picker=el('mentorMentionPicker');
+    if(!input||!picker||mentorSelectedChat!=='group'){closeCommunityMentionPicker();return}
+    var state=communityMentionContext(input);
+    if(!state){closeCommunityMentionPicker();return}
+    await loadCommunityParticipants(false);
+    var items=communityParticipants.filter(function(p){
+      return !state.query||String(p.display_name||'').toLowerCase().includes(state.query)
+    }).slice(0,8);
+    if(!items.length){closeCommunityMentionPicker();return}
+    communityMentionState={at:state.at,cursor:state.cursor,items:items};
+    communityMentionIndex=Math.min(communityMentionIndex,items.length-1);
+    picker.innerHTML=items.map(function(p,i){
+      var initials=String(p.display_name||'M').trim().split(/\\s+/).slice(0,2).map(function(x){return x.charAt(0)}).join('').toUpperCase();
+      return '<button type="button" class="mentor-mention-item '+(i===communityMentionIndex?'active':'')+'" data-community-mention-index="'+i+'">'+
+        '<span class="mentor-mention-avatar">'+mentorEsc(initials||'M')+'</span>'+
+        '<span class="mentor-mention-copy"><b>'+mentorEsc(p.display_name||'Member BADAI')+'</b><small>'+mentorEsc(p.subtitle||'Member BADAI')+'</small></span>'+
+      '</button>'
+    }).join('');
+    picker.classList.remove('hidden')
+  }
+
+  function chooseCommunityMention(index){
+    var state=communityMentionState,input=el('mentorMessageInput');if(!state||!input)return;
+    var p=state.items[index];if(!p)return;
+    var name=String(p.display_name||'').trim(),before=input.value.slice(0,state.at),after=input.value.slice(state.cursor);
+    var inserted='@'+name+' ';
+    input.value=before+inserted+after;
+    var pos=before.length+inserted.length;input.setSelectionRange(pos,pos);input.focus();
+    closeCommunityMentionPicker();mentorGrowInput();
+    try{localStorage.setItem(mentorDraftKey,input.value||'')}catch(_){}
   }
 
   function mentorMessageSummary(m){
@@ -2685,18 +2831,19 @@ document.addEventListener('DOMContentLoaded', function(){
     mentorSelectedChat=kind||'mentor';
     var avatar=el('mentorWaAvatar'),name=el('mentorWaName'),sub=el('mentorWaSubstatus');
     var composer=el('mentorComposer'),stickers=el('mentorStickerTray'),attach=el('mentorAttachMenu');
-    var notice=el('mentorReadOnlyNotice'),attachBtn=el('mentorAttachBtn'),stickerBtn=el('mentorStickerBtn');
-    if(stickers)stickers.classList.add('hidden');if(attach)attach.classList.add('hidden');clearMentorPending();clearMentorReply();
+    ensureCommunityMentionUi();
+    var notice=el('mentorReadOnlyNotice'),attachBtn=el('mentorAttachBtn'),stickerBtn=el('mentorStickerBtn'),mentionBtn=el('mentorMentionBtn');
+    if(stickers)stickers.classList.add('hidden');if(attach)attach.classList.add('hidden');clearMentorPending();clearMentorReply();closeCommunityMentionPicker();
     if(kind==='announcement'){
       if(avatar)avatar.textContent='📢';if(name)name.textContent='PENGUMUMAN BADAI';if(sub)sub.textContent='Info resmi dari tim BADAI';
-      if(composer)composer.classList.add('hidden');if(notice)notice.classList.remove('hidden');
+      if(composer)composer.classList.add('hidden');if(notice)notice.classList.remove('hidden');if(mentionBtn)mentionBtn.classList.add('hidden');
     }else if(kind==='group'){
       if(avatar)avatar.textContent='G';if(name)name.textContent='Grup BADAI';if(sub)sub.textContent='Diskusi semua member BADAI';
       if(composer)composer.classList.remove('hidden');if(notice)notice.classList.add('hidden');
-      if(attachBtn)attachBtn.classList.add('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');
+      if(attachBtn)attachBtn.classList.add('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');if(mentionBtn)mentionBtn.classList.remove('hidden');loadCommunityParticipants(false).catch(function(){})
     }else{
       if(avatar)avatar.textContent='M';if(notice)notice.classList.add('hidden');if(composer)composer.classList.remove('hidden');
-      if(attachBtn)attachBtn.classList.remove('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');
+      if(attachBtn)attachBtn.classList.remove('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');if(mentionBtn)mentionBtn.classList.add('hidden');
       refreshMentorOverview().catch(function(){})
     }
   }
@@ -2718,7 +2865,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(m.message_type==='sticker')body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
       else if(m.message_type==='image')body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><img src="'+mentorEsc(m.drive_web_view_link||'#')+'" alt="" loading="lazy"></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
       else if(m.message_type==='file')body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><span class="mentor-file-icon">📄</span><span class="mentor-file-copy"><b>'+mentorEsc(m.file_name||'Dokumen')+'</b><small>'+mentorEsc(mentorSize(m.file_size)||String(m.file_mime||'Dokumen'))+'</small></span></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
-      else body='<div class="body mentor-wa-formatted">'+mentorFormatText(m.body||'')+'</div>';
+      else body='<div class="body mentor-wa-formatted">'+(slug==='group'?communityFormatText(m.body||''):mentorFormatText(m.body||''))+'</div>';
       var animateMsg=!mentorAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAnimatedMessageIds.add(m.id);
       html+='<div class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
@@ -2731,6 +2878,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   async function loadCommunityMessages(slug){
     if(!slug||slug==='mentor')return;
+    if(slug==='group')await loadCommunityParticipants(false);
     var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
     renderCommunityMessages(rows||[],slug);
     if(mentorView==='thread'){
@@ -2949,9 +3097,21 @@ document.addEventListener('DOMContentLoaded', function(){
     mentorGrowInput();
     input.addEventListener('input',function(){
       mentorGrowInput();mentorTypingPulse();
+      if(mentorSelectedChat==='group')updateCommunityMentionPicker();else closeCommunityMentionPicker();
       try{localStorage.setItem(mentorDraftKey,input.value||'')}catch(_){}
     });
     input.addEventListener('keydown',function(e){
+      var picker=el('mentorMentionPicker'),open=picker&&!picker.classList.contains('hidden')&&communityMentionState;
+      if(open&&(e.key==='ArrowDown'||e.key==='ArrowUp')){
+        e.preventDefault();
+        var len=communityMentionState.items.length;
+        communityMentionIndex=(communityMentionIndex+(e.key==='ArrowDown'?1:-1)+len)%len;
+        updateCommunityMentionPicker();return
+      }
+      if(open&&(e.key==='Enter'||e.key==='Tab')){
+        e.preventDefault();chooseCommunityMention(communityMentionIndex);return
+      }
+      if(open&&e.key==='Escape'){e.preventDefault();closeCommunityMentionPicker();return}
       var coarse=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
       if(e.key==='Enter'&&!e.shiftKey&&!coarse){e.preventDefault();mentorForm&&mentorForm.requestSubmit()}
     });
