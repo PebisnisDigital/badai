@@ -4593,6 +4593,47 @@ th,td{padding:14px 12px!important}
   #pageMentor .mentor-admin-chat-info-avatar{width:76px;height:76px}
 }
 
+/* WhatsApp-style speech bubbles + sender names */
+#pageMentor .mentor-admin-msg:not(.sticker):not(.system){
+  position:relative!important;
+  border-radius:10px!important;
+  box-shadow:0 1px 1px rgba(0,0,0,.28)!important;
+  overflow:visible!important;
+}
+#pageMentor .mentor-admin-msg.member:not(.sticker):not(.system){
+  border-top-left-radius:3px!important;
+}
+#pageMentor .mentor-admin-msg.mentor:not(.sticker):not(.system){
+  border-top-right-radius:3px!important;
+}
+#pageMentor .mentor-admin-msg.member:not(.sticker):not(.system)::before{
+  content:"";position:absolute;left:-8px;top:0;width:12px;height:16px;
+  background:var(--wa-in);clip-path:polygon(100% 0,100% 100%,0 0);
+  border-top-left-radius:2px;filter:drop-shadow(-1px 1px 0 rgba(0,0,0,.12));
+}
+#pageMentor .mentor-admin-msg.mentor:not(.sticker):not(.system)::before{
+  content:"";position:absolute;right:-8px;top:0;width:12px;height:16px;
+  background:var(--wa-out);clip-path:polygon(0 0,0 100%,100% 0);
+  border-top-right-radius:2px;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.12));
+}
+#pageMentor .mentor-community-sender{
+  margin:0 18px 4px 1px!important;
+  font-size:12px!important;font-weight:600!important;line-height:1.25!important;
+  letter-spacing:-.01em;
+}
+#pageMentor .mentor-community-sender::before{content:"~ ";opacity:.72}
+#pageMentor .mentor-community-sender.tone-0{color:#ff73b9!important}
+#pageMentor .mentor-community-sender.tone-1{color:#53bdeb!important}
+#pageMentor .mentor-community-sender.tone-2{color:#d9a7ff!important}
+#pageMentor .mentor-community-sender.tone-3{color:#ffb86b!important}
+#pageMentor .mentor-community-sender.tone-4{color:#7ee0b8!important}
+#pageMentor .mentor-community-sender.tone-5{color:#ffd166!important}
+#pageMentor .mentor-community-sender.tone-6{color:#8fb8ff!important}
+#pageMentor .mentor-admin-msg.member:not(.sticker):not(.system):has(.mentor-community-sender){
+  padding-top:7px!important;
+}
+#pageMentor .mentor-admin-msg.sticker::before,#pageMentor .mentor-admin-msg.system::before{display:none!important}
+
 /* Group @mentions */
 #pageMentor .mentor-admin-mention-btn{font-weight:700!important;font-size:18px!important}
 #pageMentor .mentor-admin-mention-btn.hidden{display:none!important}
@@ -8793,6 +8834,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if($('mentorAdminNote'))$('mentorAdminNote').textContent=announcement&&!adminCommunityCanSend(slug)?'Hanya Admin, Mentor, dan Super Admin yang dapat mengirim pengumuman.':'';
   }
 
+  function mentorAdminSenderTone(name){
+    const s=String(name||'');let sum=0;
+    for(let i=0;i<s.length;i++)sum=(sum+s.charCodeAt(i)*(i+1))%7;
+    return 'tone-'+sum;
+  }
+
   function renderAdminCommunityMessages(rows,slug){
     const list=$('mentorAdminMessageList');if(!list)return;
     const uid=session?.user?.id||'';let html='',lastDay='';
@@ -8800,7 +8847,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const day=mentorAdminDateKey(m.created_at);
       if(day!==lastDay){html+='<div class="mentor-admin-date">'+mentorAdminDateLabel(m.created_at)+'</div>';lastDay=day}
       const own=String(m.sender_user_id||'')===String(uid),side=own?'mentor':'member';
-      const sender=slug==='group'&&!own?'<div class="mentor-community-sender">'+esc(m.sender_name||'Member BADAI')+'</div>':'';
+      const senderName=m.sender_name||'Member BADAI';
+      const sender=slug==='group'&&!own?'<div class="mentor-community-sender '+mentorAdminSenderTone(senderName)+'">'+esc(senderName)+'</div>':'';
       let body='';
       if(m.message_type==='sticker')body='<div class="body">'+esc(m.sticker_key||'✨')+'</div>';
       else body='<div class="body mentor-wa-formatted">'+(slug==='group'?mentorAdminCommunityFormatText(m.body||''):mentorAdminFormatText(m.body||''))+'</div>';
