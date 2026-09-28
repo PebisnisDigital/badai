@@ -1655,6 +1655,56 @@ module.exports = async function handler(req, res) {
   #mentor .mentor-date-sep{font-weight:400!important}
   #mentor .mentor-attach-choice{font-weight:400!important}
 
+  /* WhatsApp-like per-message actions */
+  #mentor .mentor-msg{position:relative!important}
+  #mentor .mentor-bubble-menu-btn{
+    position:absolute;top:2px;right:3px;z-index:4;width:24px;height:24px;display:grid;place-items:center;
+    border:0;border-radius:999px;background:transparent;color:rgba(233,237,239,.72);font-size:16px!important;
+    opacity:.25;transition:.14s ease
+  }
+  #mentor .mentor-msg:hover .mentor-bubble-menu-btn,
+  #mentor .mentor-bubble-menu-btn:focus{opacity:1;background:rgba(11,20,26,.22)}
+  #mentor .mentor-message-star{position:absolute;top:5px;left:6px;color:#f5c451;font-size:11px}
+  #mentor .mentor-reply-quote{
+    width:100%;display:grid;gap:2px;margin:0 0 6px;padding:6px 8px;border:0;border-left:3px solid #00a884;
+    border-radius:5px;background:rgba(11,20,26,.28);color:inherit;text-align:left
+  }
+  #mentor .mentor-reply-quote b{font:700 12px/1.2 "Roboto",Arial,sans-serif!important;color:#53bdeb}
+  #mentor .mentor-reply-quote span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 12px/1.25 "Roboto",Arial,sans-serif!important;color:#c7d0d5}
+  #mentor .mentor-reaction-chips{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0 -7px 5px}
+  #mentor .mentor-reaction-chip{
+    min-height:22px;padding:2px 7px;border:1px solid #31444e;border-radius:999px;background:#182229;color:#e9edef;
+    font:400 11px/1 "Roboto",Arial,sans-serif!important
+  }
+  #mentor .mentor-reaction-chip.mine{border-color:#00a884;background:#12372f}
+  #mentor .mentor-reaction-chip span{font-size:9px!important;color:#aebac1}
+  #mentor .mentor-reply-bar{
+    display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:8px;padding:7px 10px;
+    border-top:1px solid #26343c;background:#111b21
+  }
+  #mentor .mentor-reply-bar>div{min-width:0;display:grid;gap:2px;padding-left:8px;border-left:3px solid #00a884}
+  #mentor .mentor-reply-bar b{font:700 12px/1.2 "Roboto",Arial,sans-serif!important;color:#53bdeb}
+  #mentor .mentor-reply-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 12px/1.2 "Roboto",Arial,sans-serif!important;color:#aebac1}
+  #mentor .mentor-reply-bar>button{width:30px;height:30px;border:0;border-radius:999px;background:transparent;color:#aebac1;font-size:20px!important}
+  #mentor .mentor-msg-highlight{animation:mentorMsgFlash .9s ease}
+  @keyframes mentorMsgFlash{0%,100%{filter:none}40%{filter:brightness(1.55)}}
+
+  .mentor-message-menu{
+    position:fixed;z-index:10050;width:210px;padding:6px;border:1px solid #303d44;border-radius:12px;
+    background:#111b21;box-shadow:0 18px 48px rgba(0,0,0,.5);font-family:"Roboto",Arial,sans-serif
+  }
+  .mentor-message-menu>button{
+    width:100%;min-height:40px;display:grid;grid-template-columns:28px 1fr;align-items:center;border:0;
+    border-radius:8px;background:transparent;color:#e9edef;text-align:left;padding:0 10px;font-size:14px;font-weight:400
+  }
+  .mentor-message-menu>button:hover{background:#202c33}
+  .mentor-message-menu>button span{font-size:17px}
+  .mentor-message-menu>button.danger{color:#ff9a9a}
+  .mentor-menu-reactions{display:flex;gap:3px;padding:5px 6px 8px}
+  .mentor-menu-reactions.hidden{display:none}
+  .mentor-menu-reactions button{width:30px;height:30px;border:0;border-radius:999px;background:#202c33;font-size:16px}
+  @media(max-width:560px){#mentor .mentor-bubble-menu-btn{opacity:.8}}
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -1970,6 +2020,10 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorPendingFile=null;
   var mentorPendingObjectUrl='';
   var mentorInitialRender=true;
+  var mentorMessageRows=new Map();
+  var mentorUiState=new Map();
+  var mentorReply=null;
+  var mentorMessageMenu=null;
   var mentorDraftKey='badai_mentor_draft';
   var mentorMemberPresenceLastTouch=0;
 
@@ -2074,22 +2128,106 @@ document.addEventListener('DOMContentLoaded', function(){
     return html
   }
 
+  function mentorMessageSummary(m){
+    if(!m)return 'Pesan';
+    if(m.message_type==='sticker')return m.sticker_key||'Stiker';
+    if(m.message_type==='image')return (m.body?m.body+' · ':'')+'Foto';
+    if(m.message_type==='file')return m.body||m.file_name||'Dokumen';
+    return String(m.body||'Pesan').replace(/\s+/g,' ').trim()||'Pesan'
+  }
+  function mentorReactionHtml(state){
+    var counts=state&&state.reaction_counts?state.reaction_counts:{};
+    return Object.keys(counts).map(function(emoji){
+      return '<button type="button" class="mentor-reaction-chip '+(state&&state.my_reaction===emoji?'mine':'')+'" data-mentor-react-chip="'+mentorEsc(emoji)+'">'+mentorEsc(emoji)+' <span>'+Number(counts[emoji]||0)+'</span></button>'
+    }).join('')
+  }
+  function mentorReplyHtml(m,rowMap){
+    if(!m||!m.reply_to_message_id)return '';
+    var target=rowMap.get(m.reply_to_message_id);
+    var label=target?(target.sender_kind==='member'?'Anda':'Mentor'):'Pesan';
+    var summary=target?mentorMessageSummary(target):'Pesan sebelumnya';
+    return '<button type="button" class="mentor-reply-quote" data-mentor-jump-message="'+mentorEsc(m.reply_to_message_id)+'"><b>'+mentorEsc(label)+'</b><span>'+mentorEsc(summary.slice(0,120))+'</span></button>'
+  }
+  function closeMentorMessageMenu(){
+    if(mentorMessageMenu){mentorMessageMenu.remove();mentorMessageMenu=null}
+  }
+  function setMentorReply(messageId){
+    var m=mentorMessageRows.get(messageId);if(!m)return;
+    mentorReply={id:m.id,summary:mentorMessageSummary(m)};
+    var bar=el('mentorReplyBar');
+    if(bar){
+      var title=el('mentorReplyTitle'),txt=el('mentorReplyText');
+      if(title)title.textContent='Membalas '+(m.sender_kind==='member'?'pesan Anda':'Mentor');
+      if(txt)txt.textContent=mentorReply.summary.slice(0,130);
+      bar.classList.remove('hidden')
+    }
+    el('mentorMessageInput')&&el('mentorMessageInput').focus()
+  }
+  function clearMentorReply(){mentorReply=null;el('mentorReplyBar')&&el('mentorReplyBar').classList.add('hidden')}
+  async function mentorMessageAction(messageId,action,emoji){
+    var m=mentorMessageRows.get(messageId);if(!m)return;
+    var state=mentorUiState.get(messageId)||{};
+    if(action==='reply'){setMentorReply(messageId);return}
+    if(action==='copy'){
+      var text=mentorMessageSummary(m);
+      try{await navigator.clipboard.writeText(text);mentorToast('Pesan disalin')}catch(_){mentorToast('Gagal menyalin pesan')}
+      return
+    }
+    if(action==='react'){
+      var next=state.my_reaction===emoji?'':emoji;
+      await mentorFetch('/rest/v1/rpc/mentor_message_react',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_emoji:next||null})});
+      mentorLastKey='';await loadMentorMessages();return
+    }
+    if(action==='star'){
+      await mentorFetch('/rest/v1/rpc/mentor_message_star',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_star:!state.starred})});
+      mentorLastKey='';await loadMentorMessages();mentorToast(state.starred?'Bintang dihapus':'Pesan diberi bintang');return
+    }
+    if(action==='delete'){
+      await mentorFetch('/rest/v1/rpc/mentor_message_hide',{method:'POST',body:JSON.stringify({p_message_id:messageId})});
+      mentorLastKey='';await loadMentorMessages();mentorToast('Pesan dihapus dari tampilan');return
+    }
+  }
+  function openMentorMessageMenu(button,messageId){
+    closeMentorMessageMenu();
+    var state=mentorUiState.get(messageId)||{};
+    var menu=document.createElement('div');
+    menu.className='mentor-message-menu';menu.dataset.messageId=messageId;
+    menu.innerHTML=
+      '<button type="button" data-msg-action="reply"><span>↩</span>Balas</button>'+
+      '<button type="button" data-msg-action="copy"><span>▣</span>Salin</button>'+
+      '<button type="button" data-msg-action="reaction"><span>☺</span>Reaksi</button>'+
+      '<div class="mentor-menu-reactions hidden">'+['👍','❤️','😂','😮','😢','🙏'].map(function(x){return '<button type="button" data-msg-emoji="'+x+'">'+x+'</button>'}).join('')+'</div>'+
+      '<button type="button" data-msg-action="star"><span>☆</span>'+(state.starred?'Hapus bintang':'Beri bintang')+'</button>'+
+      '<button type="button" class="danger" data-msg-action="delete"><span>⌫</span>Hapus</button>';
+    document.body.appendChild(menu);
+    var r=button.getBoundingClientRect(),mw=210,mh=280;
+    menu.style.left=Math.max(8,Math.min(window.innerWidth-mw-8,r.right-mw))+'px';
+    menu.style.top=Math.max(8,Math.min(window.innerHeight-mh-8,r.bottom+5))+'px';
+    mentorMessageMenu=menu
+  }
+
   function renderMentorMessages(rows){
     var list=el('mentorMessageList');if(!list)return;
     var wasNear=mentorNearBottom(list);
-    var key=(rows||[]).map(function(x){return x.id}).join(',')+'|'+String(mentorLastReadAt||'');
+    rows=rows||[];
+    mentorMessageRows=new Map(rows.map(function(x){return [x.id,x]}));
+    var visible=rows.filter(function(x){var s=mentorUiState.get(x.id);return !(s&&s.hidden)});
+    var stateKey=Array.from(mentorUiState.values()).map(function(x){return x.message_id+':'+JSON.stringify(x.reaction_counts||{})+':'+String(x.my_reaction||'')+':'+String(x.starred)+':'+String(x.hidden)}).join('|');
+    var key=visible.map(function(x){return x.id}).join(',')+'|'+stateKey+'|'+String(mentorLastReadAt||'');
     if(key===mentorLastKey)return;
     var hadMessages=mentorLastKey!=='';
     mentorLastKey=key;
-    if(!rows||!rows.length){
+    if(!visible.length){
       list.innerHTML='<div class="mentor-empty">Belum ada percakapan. Kirim pertanyaan pertama kamu 👇</div>';
       return
     }
     var html='',lastDay='';
-    rows.forEach(function(m){
+    visible.forEach(function(m){
       var day=mentorDateKey(m.created_at);
       if(day!==lastDay){html+='<div class="mentor-date-sep">'+mentorDateLabel(m.created_at)+'</div>';lastDay=day}
       var body='',label=m.file_name||'Lampiran',link=m.drive_web_view_link||'#';
+      var state=mentorUiState.get(m.id)||{};
+      var reply=mentorReplyHtml(m,mentorMessageRows);
       if(m.message_type==='sticker'){
         body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
       }else if(m.message_type==='image'){
@@ -2102,8 +2240,12 @@ document.addEventListener('DOMContentLoaded', function(){
         body='<div class="body mentor-wa-formatted">'+mentorFormatText(m.body||'')+'</div>';
       }
       var receipt=m.sender_kind==='member'?mentorReceipt(m.created_at):'';
-      html+='<div class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+'">'+body+
-        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+receipt+'</div></div>'
+      var reactions=mentorReactionHtml(state);
+      html+='<div id="mentor-msg-'+mentorEsc(m.id)+'" class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+'" data-message-id="'+mentorEsc(m.id)+'">'+
+        '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+mentorEsc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
+        (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
+        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+receipt+'</div>'+
+        (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>'
     });
     list.innerHTML=html;
     if(mentorInitialRender||wasNear){mentorScrollBottom(true)}
@@ -2179,7 +2321,9 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   async function loadMentorMessages(){
     if(!mentorConversationId)return;
-    var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,created_at&order=created_at.desc&limit=80');
+    var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,created_at&order=created_at.desc&limit=80');
+    var states=await mentorFetch('/rest/v1/rpc/mentor_message_ui_state',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){return []});
+    mentorUiState=new Map((states||[]).map(function(x){return [x.message_id,x]}));
     rows=(rows||[]).reverse();renderMentorMessages(rows);
     var screen=el('mentor');
     if(screen&&screen.classList.contains('active')){
@@ -2206,12 +2350,13 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   async function sendMentorPayload(type,body,sticker,fileData){
     if(!mentorConversationId)await bootMentor();if(!mentorConversationId)return;
-    await mentorFetch('/rest/v1/rpc/mentor_send_message',{method:'POST',body:JSON.stringify({
+    await mentorFetch('/rest/v1/rpc/mentor_send_message_v2',{method:'POST',body:JSON.stringify({
       p_conversation_id:mentorConversationId,p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
       p_drive_file_id:fileData&&fileData.id?fileData.id:null,p_drive_web_view_link:fileData&&fileData.url?fileData.url:null,
       p_file_name:fileData&&fileData.name?fileData.name:null,p_file_mime:fileData&&fileData.mime?fileData.mime:null,
-      p_file_size:fileData&&fileData.size?fileData.size:null
+      p_file_size:fileData&&fileData.size?fileData.size:null,p_reply_to_message_id:mentorReply&&mentorReply.id?mentorReply.id:null
     })});
+    clearMentorReply();
     mentorSetTyping(false);mentorLastKey='';await loadMentorMessages();mentorScrollBottom(true)
   }
   async function uploadMentorFile(file){
@@ -2306,6 +2451,40 @@ document.addEventListener('DOMContentLoaded', function(){
     var picker=el(id);if(picker)picker.addEventListener('change',function(){var file=picker.files&&picker.files[0];if(file)setMentorPending(file)})
   });
   el('mentorPendingCancel')&&el('mentorPendingCancel').addEventListener('click',clearMentorPending);
+  el('mentorReplyCancel')&&el('mentorReplyCancel').addEventListener('click',clearMentorReply);
+
+  var mentorMessageList=el('mentorMessageList');
+  if(mentorMessageList)mentorMessageList.addEventListener('click',async function(e){
+    var menuBtn=e.target.closest?e.target.closest('[data-mentor-message-menu]'):null;
+    if(menuBtn){e.stopPropagation();openMentorMessageMenu(menuBtn,menuBtn.getAttribute('data-mentor-message-menu'));return}
+    var chip=e.target.closest?e.target.closest('[data-mentor-react-chip]'):null;
+    if(chip){
+      var bubble=chip.closest('[data-message-id]');
+      if(bubble){try{await mentorMessageAction(bubble.getAttribute('data-message-id'),'react',chip.getAttribute('data-mentor-react-chip'))}catch(err){mentorToast(err.message||'Reaksi gagal')}}
+      return
+    }
+    var jump=e.target.closest?e.target.closest('[data-mentor-jump-message]'):null;
+    if(jump){
+      var node=document.getElementById('mentor-msg-'+jump.getAttribute('data-mentor-jump-message'));
+      if(node){node.scrollIntoView({behavior:'smooth',block:'center'});node.classList.add('mentor-msg-highlight');setTimeout(function(){node.classList.remove('mentor-msg-highlight')},900)}
+    }
+  });
+
+  document.addEventListener('click',async function(e){
+    var menu=e.target.closest?e.target.closest('.mentor-message-menu'):null;
+    if(menu&&mentorMessageMenu){
+      var id=mentorMessageMenu.dataset.messageId;
+      var actionNode=e.target.closest?e.target.closest('[data-msg-action]'):null;
+      var emojiNode=e.target.closest?e.target.closest('[data-msg-emoji]'):null;
+      var action=actionNode?actionNode.getAttribute('data-msg-action'):'';
+      var emoji=emojiNode?emojiNode.getAttribute('data-msg-emoji'):'';
+      if(action==='reaction'){var picker=mentorMessageMenu.querySelector('.mentor-menu-reactions');if(picker)picker.classList.toggle('hidden');return}
+      if(emoji){try{await mentorMessageAction(id,'react',emoji)}catch(err){mentorToast(err.message||'Reaksi gagal')}closeMentorMessageMenu();return}
+      if(action){try{await mentorMessageAction(id,action)}catch(err){mentorToast(err.message||'Aksi pesan gagal')}closeMentorMessageMenu();return}
+    }
+    if(!(e.target.closest&&e.target.closest('[data-mentor-message-menu]')))closeMentorMessageMenu()
+  });
+
   el('mentorJumpLatest')&&el('mentorJumpLatest').addEventListener('click',function(){mentorScrollBottom(true,true)});
   var messageList=el('mentorMessageList');
   if(messageList)messageList.addEventListener('scroll',function(){
