@@ -1620,7 +1620,7 @@ module.exports = async function handler(req, res) {
   /* Roboto inside Mentor chat only, closer to WhatsApp's neutral UI feel */
   #mentor .mentor-chat-card,
   #mentor .mentor-chat-card *{
-    font-family:"Roboto",Arial,sans-serif!important;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;
   }
   #mentor .mentor-wa-inline-code,
   #mentor .mentor-wa-code,
@@ -1669,12 +1669,12 @@ module.exports = async function handler(req, res) {
     width:100%;display:grid;gap:2px;margin:0 0 6px;padding:6px 8px;border:0;border-left:3px solid #00a884;
     border-radius:5px;background:rgba(11,20,26,.28);color:inherit;text-align:left
   }
-  #mentor .mentor-reply-quote b{font:700 12px/1.2 "Roboto",Arial,sans-serif!important;color:#53bdeb}
-  #mentor .mentor-reply-quote span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 12px/1.25 "Roboto",Arial,sans-serif!important;color:#c7d0d5}
+  #mentor .mentor-reply-quote b{font:700 12px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;color:#53bdeb}
+  #mentor .mentor-reply-quote span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 12px/1.25 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;color:#c7d0d5}
   #mentor .mentor-reaction-chips{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0 -7px 5px}
   #mentor .mentor-reaction-chip{
     min-height:22px;padding:2px 7px;border:1px solid #31444e;border-radius:999px;background:#182229;color:#e9edef;
-    font:400 11px/1 "Roboto",Arial,sans-serif!important
+    font:400 11px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important
   }
   #mentor .mentor-reaction-chip.mine{border-color:#00a884;background:#12372f}
   #mentor .mentor-reaction-chip span{font-size:9px!important;color:#aebac1}
@@ -1683,15 +1683,15 @@ module.exports = async function handler(req, res) {
     border-top:1px solid #26343c;background:#111b21
   }
   #mentor .mentor-reply-bar>div{min-width:0;display:grid;gap:2px;padding-left:8px;border-left:3px solid #00a884}
-  #mentor .mentor-reply-bar b{font:700 12px/1.2 "Roboto",Arial,sans-serif!important;color:#53bdeb}
-  #mentor .mentor-reply-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 12px/1.2 "Roboto",Arial,sans-serif!important;color:#aebac1}
+  #mentor .mentor-reply-bar b{font:700 12px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;color:#53bdeb}
+  #mentor .mentor-reply-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 12px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;color:#aebac1}
   #mentor .mentor-reply-bar>button{width:30px;height:30px;border:0;border-radius:999px;background:transparent;color:#aebac1;font-size:20px!important}
   #mentor .mentor-msg-highlight{animation:mentorMsgFlash .9s ease}
   @keyframes mentorMsgFlash{0%,100%{filter:none}40%{filter:brightness(1.55)}}
 
   .mentor-message-menu{
     position:fixed;z-index:10050;width:210px;padding:6px;border:1px solid #303d44;border-radius:12px;
-    background:#111b21;box-shadow:0 18px 48px rgba(0,0,0,.5);font-family:"Roboto",Arial,sans-serif
+    background:#111b21;box-shadow:0 18px 48px rgba(0,0,0,.5);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif
   }
   .mentor-message-menu>button{
     width:100%;min-height:40px;display:grid;grid-template-columns:28px 1fr;align-items:center;border:0;
