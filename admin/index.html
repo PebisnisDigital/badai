@@ -4593,6 +4593,40 @@ th,td{padding:14px 12px!important}
   #pageMentor .mentor-admin-chat-info-avatar{width:76px;height:76px}
 }
 
+/* Group @mentions */
+#pageMentor .mentor-admin-mention-btn{font-weight:700!important;font-size:18px!important}
+#pageMentor .mentor-admin-mention-btn.hidden{display:none!important}
+#pageMentor .mentor-admin-mention-picker{
+  position:absolute;left:10px;right:10px;bottom:58px;z-index:95;
+  max-height:270px;overflow-y:auto;padding:6px;border:1px solid #2b3942;border-radius:13px;
+  background:#111b21;box-shadow:0 18px 48px rgba(0,0,0,.46);
+  animation:badaiAdminTrayIn .2s cubic-bezier(.22,.61,.36,1) both
+}
+#pageMentor .mentor-admin-mention-picker.hidden{display:none!important}
+#pageMentor .mentor-admin-mention-item{
+  width:100%;min-height:54px;padding:7px 9px;display:grid;grid-template-columns:40px minmax(0,1fr);
+  align-items:center;gap:9px;border:0;border-radius:9px;background:transparent;color:#e9edef;text-align:left
+}
+#pageMentor .mentor-admin-mention-item:hover,#pageMentor .mentor-admin-mention-item.active{background:#202c33}
+#pageMentor .mentor-admin-mention-avatar{
+  width:38px;height:38px;display:grid;place-items:center;border-radius:999px;background:#374248;color:#fff;
+  font-size:12px!important;font-weight:500!important
+}
+#pageMentor .mentor-admin-mention-copy{min-width:0;display:grid;gap:3px}
+#pageMentor .mentor-admin-mention-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px!important;font-weight:500!important}
+#pageMentor .mentor-admin-mention-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8696a0;font-size:10px!important}
+#pageMentor .mentor-mention{
+  display:inline-block;padding:0 2px;border-radius:3px;color:#53bdeb!important;background:rgba(83,189,235,.11);
+  font-weight:500!important
+}
+#pageMentor .group-thread .mentor-admin-composer.community-composer{
+  grid-template-columns:36px 36px minmax(0,1fr) 40px!important
+}
+#pageMentor .group-thread .mentor-admin-composer.community-composer #mentorAdminStickerBtn{grid-column:1!important}
+#pageMentor .group-thread .mentor-admin-composer.community-composer #mentorAdminMentionBtn{grid-column:2!important}
+#pageMentor .group-thread .mentor-admin-composer.community-composer textarea{grid-column:3!important}
+#pageMentor .group-thread .mentor-admin-composer.community-composer #mentorAdminSendBtn{grid-column:4!important}
+
 /* iOS-inspired motion across admin + chat */
 .admin-page:not(.hidden){
   animation:badaiAdminScreenIn .28s cubic-bezier(.22,.61,.36,1) both;
@@ -5873,6 +5907,10 @@ th,td{padding:14px 12px!important}
   let mentorAdminScreen = 'home';
   let mentorAdminCommunityChannel = '';
   let mentorCommunityOverviewMap = new Map();
+  let mentorAdminParticipants = [];
+  let mentorAdminParticipantsLoaded = false;
+  let mentorAdminMentionIndex = 0;
+  let mentorAdminMentionState = null;
   let mentorInboxQuery = '';
   let mentorUnreadOnly = false;
   let currentFinanceType = 'profitloss';
@@ -8575,6 +8613,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function updateMentorThreadHeader(){
     const row=mentorActiveConversation;if(!row)return;
+    closeMentorAdminMentionPicker();
+    $('mentorAdminMentionBtn')?.classList.add('hidden');
     const view=$('mentorThreadView'),composer=$('mentorAdminComposer');
     view?.classList.remove('community-thread','announcement-thread','group-thread');
     composer?.classList.remove('community-composer');
@@ -8733,7 +8773,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function setAdminCommunityChrome(slug){
     const announcement=slug==='announcement';
-    const view=$('mentorThreadView'),composer=$('mentorAdminComposer');
+    ensureMentorAdminMentionUi();
+    const view=$('mentorThreadView'),composer=$('mentorAdminComposer'),mentionBtn=$('mentorAdminMentionBtn');
+    closeMentorAdminMentionPicker();
     view?.classList.add('community-thread');
     view?.classList.toggle('announcement-thread',announcement);
     view?.classList.toggle('group-thread',!announcement);
@@ -8745,6 +8787,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('mentorAdminReplyBar')?.classList.add('hidden');
     $('mentorAdminAttachBtn')?.classList.add('hidden');
     $('mentorAdminStickerBtn')?.classList.toggle('hidden',!adminCommunityCanSend(slug));
+    mentionBtn?.classList.toggle('hidden',slug!=='group'||!adminCommunityCanSend(slug));
+    if(slug==='group')loadMentorAdminParticipants(false).catch(()=>{});
     composer?.classList.toggle('hidden',!adminCommunityCanSend(slug));
     if($('mentorAdminNote'))$('mentorAdminNote').textContent=announcement&&!adminCommunityCanSend(slug)?'Hanya Admin, Mentor, dan Super Admin yang dapat mengirim pengumuman.':'';
   }
@@ -8759,7 +8803,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const sender=slug==='group'&&!own?'<div class="mentor-community-sender">'+esc(m.sender_name||'Member BADAI')+'</div>':'';
       let body='';
       if(m.message_type==='sticker')body='<div class="body">'+esc(m.sticker_key||'✨')+'</div>';
-      else body='<div class="body mentor-wa-formatted">'+mentorAdminFormatText(m.body||'')+'</div>';
+      else body='<div class="body mentor-wa-formatted">'+(slug==='group'?mentorAdminCommunityFormatText(m.body||''):mentorAdminFormatText(m.body||''))+'</div>';
       const animateMsg=!mentorAdminAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
       html+='<div class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
@@ -8771,6 +8815,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function loadAdminCommunityMessages(slug){
     if(!slug)return;
+    if(slug==='group')await loadMentorAdminParticipants(false);
     const rows=await api('/rest/v1/rpc/community_chat_messages_list',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:150})})||[];
     renderAdminCommunityMessages(rows,slug);
     await api('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(()=>{});
@@ -8937,6 +8982,120 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       html+='<div class="mentor-wa-line">'+(line?inline(line):'<br>')+'</div>';i++;
     }
     return html;
+  }
+
+  function mentorAdminCommunityFormatText(value){
+    let raw=String(value==null?'':value),tokens=[];
+    mentorAdminParticipants
+      .slice()
+      .sort((a,b)=>String(b.display_name||'').length-String(a.display_name||'').length)
+      .forEach(p=>{
+        const name=String(p.display_name||'').trim();if(!name)return;
+        const escaped=name.replace(/[.*+?^$()|[\]\\{}]/g,'\\  function mentorAdminMessageSummary(m){');
+        const re=new RegExp('(^|[\\s(])@'+escaped+'(?=$|[\\s.,!?;:)\\]])','gi');
+        raw=raw.replace(re,(match,prefix)=>{
+          const token='BADAIADMINMENTIONTOKEN'+tokens.length+'XZ';
+          tokens.push({token,label:match.slice(prefix.length)});
+          return prefix+token;
+        });
+      });
+    let html=mentorAdminFormatText(raw);
+    tokens.forEach(item=>{
+      html=html.split(item.token).join('<span class="mentor-mention">'+esc(item.label)+'</span>');
+    });
+    return html;
+  }
+
+  async function loadMentorAdminParticipants(force=false){
+    if(mentorAdminParticipantsLoaded&&!force)return mentorAdminParticipants;
+    try{
+      const rows=await api('/rest/v1/rpc/community_chat_participants',{method:'POST',body:JSON.stringify({p_query:null,p_limit:300})});
+      mentorAdminParticipants=Array.isArray(rows)?rows:[];
+      mentorAdminParticipantsLoaded=true;
+    }catch(_){mentorAdminParticipants=[]}
+    return mentorAdminParticipants;
+  }
+
+  function closeMentorAdminMentionPicker(){
+    $('mentorAdminMentionPicker')?.classList.add('hidden');
+    mentorAdminMentionState=null;mentorAdminMentionIndex=0;
+  }
+
+  function ensureMentorAdminMentionUi(){
+    const composer=$('mentorAdminComposer'),input=$('mentorAdminInput'),view=$('mentorThreadView');
+    if(!composer||!input||!view)return;
+    let btn=$('mentorAdminMentionBtn');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.id='mentorAdminMentionBtn';btn.type='button';btn.className='mentor-admin-icon mentor-admin-mention-btn hidden';
+      btn.title='Tag member';btn.setAttribute('aria-label','Tag member');btn.textContent='@';
+      composer.insertBefore(btn,input);
+      btn.addEventListener('click',()=>{
+        if(mentorAdminScreen!=='group')return;
+        const start=input.selectionStart==null?input.value.length:input.selectionStart;
+        const end=input.selectionEnd==null?start:input.selectionEnd;
+        const before=input.value.slice(0,start),prefix=(before&&!/\\s$/.test(before))?' @':'@';
+        input.value=input.value.slice(0,start)+prefix+input.value.slice(end);
+        const pos=start+prefix.length;input.setSelectionRange(pos,pos);input.focus();
+        updateMentorAdminMentionPicker();
+      });
+    }
+    let picker=$('mentorAdminMentionPicker');
+    if(!picker){
+      picker=document.createElement('div');
+      picker.id='mentorAdminMentionPicker';picker.className='mentor-admin-mention-picker hidden';
+      picker.setAttribute('role','listbox');
+      view.appendChild(picker);
+      picker.addEventListener('mousedown',e=>e.preventDefault());
+      picker.addEventListener('click',e=>{
+        const item=e.target.closest('[data-admin-community-mention-index]');if(!item)return;
+        chooseMentorAdminMention(Number(item.dataset.adminCommunityMentionIndex||0));
+      });
+    }
+  }
+
+  function mentorAdminMentionContext(input){
+    if(!input)return null;
+    const cursor=input.selectionStart==null?input.value.length:input.selectionStart;
+    const before=input.value.slice(0,cursor),at=before.lastIndexOf('@');
+    if(at<0)return null;
+    if(at>0&&!/\\s/.test(before.charAt(at-1)))return null;
+    const query=before.slice(at+1);
+    if(query.includes('\\n')||query.length>60)return null;
+    return {at,cursor,query:query.trim().toLowerCase()};
+  }
+
+  async function updateMentorAdminMentionPicker(){
+    const input=$('mentorAdminInput'),picker=$('mentorAdminMentionPicker');
+    if(!input||!picker||mentorAdminScreen!=='group'){closeMentorAdminMentionPicker();return}
+    const state=mentorAdminMentionContext(input);
+    if(!state){closeMentorAdminMentionPicker();return}
+    await loadMentorAdminParticipants(false);
+    const items=mentorAdminParticipants.filter(p=>
+      !state.query||String(p.display_name||'').toLowerCase().includes(state.query)
+    ).slice(0,8);
+    if(!items.length){closeMentorAdminMentionPicker();return}
+    mentorAdminMentionState={at:state.at,cursor:state.cursor,items};
+    mentorAdminMentionIndex=Math.min(mentorAdminMentionIndex,items.length-1);
+    picker.innerHTML=items.map((p,i)=>{
+      const initials=String(p.display_name||'M').trim().split(/\\s+/).slice(0,2).map(x=>x.charAt(0)).join('').toUpperCase();
+      return '<button type="button" class="mentor-admin-mention-item '+(i===mentorAdminMentionIndex?'active':'')+'" data-admin-community-mention-index="'+i+'">'+
+        '<span class="mentor-admin-mention-avatar">'+esc(initials||'M')+'</span>'+
+        '<span class="mentor-admin-mention-copy"><b>'+esc(p.display_name||'Member BADAI')+'</b><small>'+esc(p.subtitle||'Member BADAI')+'</small></span>'+
+      '</button>';
+    }).join('');
+    picker.classList.remove('hidden');
+  }
+
+  function chooseMentorAdminMention(index){
+    const state=mentorAdminMentionState,input=$('mentorAdminInput');if(!state||!input)return;
+    const p=state.items[index];if(!p)return;
+    const name=String(p.display_name||'').trim(),before=input.value.slice(0,state.at),after=input.value.slice(state.cursor);
+    const inserted='@'+name+' ';
+    input.value=before+inserted+after;
+    const pos=before.length+inserted.length;input.setSelectionRange(pos,pos);input.focus();
+    closeMentorAdminMentionPicker();mentorAdminGrowInput();
+    const key=mentorAdminDraftKey();if(key){try{localStorage.setItem(key,input.value||'')}catch(_){}}
   }
 
   function mentorAdminMessageSummary(m){
@@ -9580,9 +9739,22 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   if(mentorAdminInput){
     mentorAdminInput.addEventListener('input',()=>{
       mentorAdminGrowInput();mentorAdminTypingPulse();
+      if(mentorAdminScreen==='group')updateMentorAdminMentionPicker();else closeMentorAdminMentionPicker();
       const key=mentorAdminDraftKey();if(key){try{localStorage.setItem(key,mentorAdminInput.value||'')}catch(_){}}
     });
     mentorAdminInput.addEventListener('keydown',e=>{
+      const picker=$('mentorAdminMentionPicker');
+      const open=picker&&!picker.classList.contains('hidden')&&mentorAdminMentionState;
+      if(open&&(e.key==='ArrowDown'||e.key==='ArrowUp')){
+        e.preventDefault();
+        const len=mentorAdminMentionState.items.length;
+        mentorAdminMentionIndex=(mentorAdminMentionIndex+(e.key==='ArrowDown'?1:-1)+len)%len;
+        updateMentorAdminMentionPicker();return;
+      }
+      if(open&&(e.key==='Enter'||e.key==='Tab')){
+        e.preventDefault();chooseMentorAdminMention(mentorAdminMentionIndex);return;
+      }
+      if(open&&e.key==='Escape'){e.preventDefault();closeMentorAdminMentionPicker();return}
       const coarse=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
       if(e.key==='Enter'&&!e.shiftKey&&!coarse){e.preventDefault();$('mentorAdminComposer')?.requestSubmit()}
     });
