@@ -8316,8 +8316,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const totalMentor=mentorConversations.length;
     const items=[
       {kind:'announcement',name:'PENGUMUMAN BADAI',avatar:'📢',preview:announcement.last_message||'Info resmi dari tim BADAI',time:announcement.last_message_at,unread:Number(announcement.unread_count||0),cls:'announcement'},
-      {kind:'mentor',name:'Mentor BADAI',avatar:'M',preview:totalMentor?totalMentor+' percakapan member':'Direct message member dengan Mentor BADAI',time:mentorConversations.reduce((v,r)=>!v||new Date(r.last_message_at||0)>new Date(v)?r.last_message_at:v,null),unread:mentorUnread,cls:''},
-      {kind:'group',name:'Grup BADAI',avatar:'G',preview:group.last_message||'Diskusi bersama semua member BADAI',time:group.last_message_at,unread:Number(group.unread_count||0),cls:'group'}
+      {kind:'group',name:'Grup BADAI',avatar:'G',preview:group.last_message||'Diskusi bersama semua member BADAI',time:group.last_message_at,unread:Number(group.unread_count||0),cls:'group'},
+      {kind:'mentor',name:'Mentor BADAI',avatar:'M',preview:totalMentor?totalMentor+' percakapan member':'Direct message member dengan Mentor BADAI',time:mentorConversations.reduce((v,r)=>!v||new Date(r.last_message_at||0)>new Date(v)?r.last_message_at:v,null),unread:mentorUnread,cls:''}
     ];
     const q=String(mentorInboxQuery||'').trim().toLowerCase();
     const shown=items.filter(x=>!q||[x.name,x.preview].join(' ').toLowerCase().includes(q));
