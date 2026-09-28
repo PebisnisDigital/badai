@@ -1713,6 +1713,12 @@ document.addEventListener('DOMContentLoaded', function(){
       mentorConversationId=row&&row.conversation_id?row.conversation_id:'';
       if(!mentorConversationId)throw new Error('Percakapan belum tersedia');
       if(status){status.textContent='● MENTOR ONLINE';status.classList.add('online')}
+      fetch('/api/mentor/status').then(function(r){return r.ok?r.json():null}).then(function(info){
+        var note=el('mentorUploadNote');if(!note)return;
+        note.textContent=info&&info.drive_configured
+          ? 'Gambar/file langsung disimpan ke Google Drive BADAI.'
+          : 'Chat teks dan stiker sudah aktif. Gambar/file menunggu koneksi Google Drive dari Admin.';
+      }).catch(function(){});
       await loadMentorMessages()
     }catch(err){
       if(status){status.textContent='GAGAL TERHUBUNG';status.classList.remove('online')}
