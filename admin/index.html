@@ -7032,19 +7032,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       currentTeam.full_name = fullName;
     }else{
       if(!canManageTeamRow(row)) throw new Error('Tidak punya izin mengedit akun ini.');
-      await api('/rest/v1/admin_team_members?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({full_name:fullName})
+      await api('/rest/v1/rpc/admin_update_team_name', {
+        method:'POST',
+        body:JSON.stringify({
+          p_team_id:id,
+          p_full_name:fullName
+        })
       });
-
-      if(row.auth_user_id){
-        await api('/rest/v1/profiles?id=eq.' + encodeURIComponent(row.auth_user_id), {
-          method:'PATCH',
-          headers:{'Prefer':'return=minimal'},
-          body:JSON.stringify({full_name:fullName})
-        }).catch(()=>{});
-      }
     }
 
     $('teamEditStatus').textContent = '✓ Perubahan berhasil disimpan.';
