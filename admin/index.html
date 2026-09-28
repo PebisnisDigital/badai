@@ -7663,8 +7663,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   $('refreshMentorInboxBtn')?.addEventListener('click', () => loadMentorInbox());
   $('mentorConnectDriveBtn')?.addEventListener('click', async () => {
-    const btn=$('mentorConnectDriveBtn');
-    if(btn) btn.disabled=true;
+    const btn=$('mentorConnectDriveBtn');if(btn)btn.disabled=true;
     try{
       const res=await fetch('/api/mentor/google/connect',{
         method:'POST',
@@ -7672,81 +7671,112 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         body:'{}'
       });
       const data=await res.json().catch(()=>null);
-      if(!res.ok) throw new Error(data?.error || 'Gagal memulai koneksi Google Drive.');
-      if(!data?.url) throw new Error('Link otorisasi Google tidak tersedia.');
+      if(!res.ok)throw new Error(data?.error||'Gagal memulai koneksi Google Drive.');
+      if(!data?.url)throw new Error('Link otorisasi Google tidak tersedia.');
       location.href=data.url;
     }catch(err){
-      $('mentorAdminNote').textContent='✕ '+(err.message || 'Gagal menyambungkan Google Drive.');
-      if(btn) btn.disabled=false;
-    }
-  });
-  $('mentorInboxList')?.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-mentor-conversation]');
-    if(btn) openMentorConversation(btn.dataset.mentorConversation);
-  });
-  $('claimMentorChatBtn')?.addEventListener('click', async () => {
-    try{ await claimMentorConversation(); }
-    catch(err){ $('mentorAdminNote').textContent = '✕ ' + (err.message || 'Gagal mengambil chat.'); }
-  });
-  $('mentorAdminStickerBtn')?.addEventListener('click', () => {
-    $('mentorAdminStickerTray')?.classList.toggle('hidden');
-  });
-  document.querySelectorAll('[data-admin-mentor-sticker]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      try{
-        await sendMentorAdminPayload('sticker',null,btn.dataset.adminMentorSticker,null);
-        $('mentorAdminStickerTray')?.classList.add('hidden');
-      }catch(err){
-        $('mentorAdminNote').textContent = '✕ ' + (err.message || 'Stiker gagal dikirim.');
-      }
-    });
-  });
-  $('mentorAdminComposer')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const input = $('mentorAdminInput');
-    const value = String(input?.value || '').trim();
-    if(!value) return;
-    const btn = $('mentorAdminSendBtn');
-    if(btn) btn.disabled = true;
-    try{
-      await sendMentorAdminPayload('text',value,null,null);
-      if(input) input.value = '';
-      $('mentorAdminNote').textContent = '';
-    }catch(err){
-      $('mentorAdminNote').textContent = '✕ ' + (err.message || 'Pesan gagal dikirim.');
-    }finally{
-      if(btn) btn.disabled = false;
-    }
-  });
-  $('mentorAdminFileInput')?.addEventListener('change', async () => {
-    const input = $('mentorAdminFileInput');
-    const file = input?.files?.[0];
-    if(!file) return;
-    $('mentorAdminNote').textContent = 'Mengunggah '+file.name+' ke Google Drive...';
-    try{
-      const uploaded = await uploadMentorAdminFile(file);
-      await sendMentorAdminPayload(file.type?.startsWith('image/')?'image':'file',null,null,uploaded);
-      $('mentorAdminNote').textContent = '✓ File berhasil disimpan ke Google Drive.';
-    }catch(err){
-      $('mentorAdminNote').textContent = '✕ ' + (err.message || 'Upload gagal.');
-    }finally{
-      if(input) input.value = '';
+      if($('mentorAdminNote'))$('mentorAdminNote').textContent='✕ '+(err.message||'Gagal menyambungkan Google Drive.');
+      if(btn)btn.disabled=false;
     }
   });
 
+  $('mentorInboxList')?.addEventListener('click',e=>{
+    const btn=e.target.closest('[data-mentor-conversation]');
+    if(btn)openMentorConversation(btn.dataset.mentorConversation);
+  });
+
+  $('claimMentorChatBtn')?.addEventListener('click',async()=>{
+    try{await claimMentorConversation()}
+    catch(err){if($('mentorAdminNote'))$('mentorAdminNote').textContent='✕ '+(err.message||'Gagal mengambil chat.')}
+  });
+
+  $('mentorAdminStickerBtn')?.addEventListener('click',()=>{
+    $('mentorAdminStickerTray')?.classList.toggle('hidden');
+    $('mentorAdminAttachMenu')?.classList.add('hidden');
+  });
+
+  document.querySelectorAll('[data-admin-mentor-sticker]').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      try{
+        await sendMentorAdminPayload('sticker',null,btn.dataset.adminMentorSticker,null);
+        $('mentorAdminStickerTray')?.classList.add('hidden');
+      }catch(err){mentorAdminToast(err.message||'Stiker gagal dikirim.')}
+    });
+  });
+
+  $('mentorAdminAttachBtn')?.addEventListener('click',()=>{
+    $('mentorAdminAttachMenu')?.classList.toggle('hidden');
+    $('mentorAdminStickerTray')?.classList.add('hidden');
+  });
+
+  ['mentorAdminImageInput','mentorAdminFileInput'].forEach(id=>{
+    $(id)?.addEventListener('change',()=>{
+      const file=$(id)?.files?.[0];if(file)setMentorAdminPending(file);
+    });
+  });
+
+  $('mentorAdminPendingCancel')?.addEventListener('click',clearMentorAdminPending);
+
+  const mentorAdminInput=$('mentorAdminInput');
+  if(mentorAdminInput){
+    mentorAdminInput.addEventListener('input',()=>{
+      mentorAdminGrowInput();mentorAdminTypingPulse();
+      const key=mentorAdminDraftKey();if(key){try{localStorage.setItem(key,mentorAdminInput.value||'')}catch(_){}}
+    });
+    mentorAdminInput.addEventListener('keydown',e=>{
+      const coarse=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
+      if(e.key==='Enter'&&!e.shiftKey&&!coarse){e.preventDefault();$('mentorAdminComposer')?.requestSubmit()}
+    });
+    mentorAdminInput.addEventListener('paste',e=>{
+      const items=e.clipboardData?.items?Array.from(e.clipboardData.items):[];
+      const imageItem=items.find(x=>x.type?.startsWith('image/'));
+      if(imageItem){const file=imageItem.getAsFile();if(file){e.preventDefault();setMentorAdminPending(file)}}
+    });
+  }
+
+  $('mentorAdminComposer')?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const input=$('mentorAdminInput'),value=String(input?.value||'').trim();
+    if(!value&&!mentorAdminPendingFile)return;
+    const btn=$('mentorAdminSendBtn');if(btn)btn.disabled=true;
+    try{
+      if(mentorAdminPendingFile){
+        const pending=mentorAdminPendingFile;
+        if($('mentorAdminNote'))$('mentorAdminNote').textContent='Mengunggah '+pending.name+'...';
+        const uploaded=await uploadMentorAdminFile(pending);
+        await sendMentorAdminPayload(pending.type?.startsWith('image/')?'image':'file',value,null,uploaded);
+        clearMentorAdminPending();
+      }else{
+        await sendMentorAdminPayload('text',value,null,null);
+      }
+      if(input){input.value='';mentorAdminGrowInput()}
+      const key=mentorAdminDraftKey();if(key){try{localStorage.removeItem(key)}catch(_){}}
+      if($('mentorAdminNote'))$('mentorAdminNote').textContent='';
+    }catch(err){
+      mentorAdminToast(err.message||'Pesan gagal dikirim.');
+      if($('mentorAdminNote'))$('mentorAdminNote').textContent='✕ '+(err.message||'Pesan gagal dikirim.');
+    }finally{if(btn)btn.disabled=false}
+  });
+
+  $('mentorAdminJumpLatest')?.addEventListener('click',()=>mentorAdminScrollBottom(true));
+  $('mentorAdminMessageList')?.addEventListener('scroll',()=>{
+    const list=$('mentorAdminMessageList'),jump=$('mentorAdminJumpLatest');
+    if(list&&jump)jump.classList.toggle('hidden',mentorAdminNearBottom(list));
+  });
+
   if(!mentorAdminPollTimer){
-    mentorAdminPollTimer = setInterval(() => {
-      const page = $('pageMentor');
-      if(page && !page.classList.contains('hidden') && document.visibilityState === 'visible'){
+    mentorAdminPollTimer=setInterval(()=>{
+      const page=$('pageMentor');
+      if(page&&!page.classList.contains('hidden')&&document.visibilityState==='visible'){
         touchMentorPresence().catch(()=>{});
         loadMentorInbox().catch(()=>{});
       }
-    },4000);
+    },2500);
   }
-  setInterval(() => {
-    if(document.visibilityState === 'visible') refreshMentorAdminUnread().catch(()=>{});
-  },10000);
-  setTimeout(() => refreshMentorAdminUnread().catch(()=>{}),1500);
+  setInterval(()=>{
+    if(document.visibilityState==='visible')refreshMentorAdminUnread().catch(()=>{});
+  },8000);
+  setTimeout(()=>refreshMentorAdminUnread().catch(()=>{}),1500);
 
   function setMarketingCategoryTab(tab){
     document.querySelectorAll('[data-marketing-tab]').forEach(btn => {
