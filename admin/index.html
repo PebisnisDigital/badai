@@ -6961,6 +6961,170 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   }
 
+  function mentorAdminTime(value){
+    try{
+      return new Intl.DateTimeFormat('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value));
+    }catch(_){ return ''; }
+  }
+
+  async function loadMentorInbox(){
+    if(!allowedPages().includes('mentor')) return;
+
+    try{
+      mentorConversations = await api('/rest/v1/rpc/admin_mentor_conversations',{
+        method:'POST',
+        body:JSON.stringify({})
+      }) || [];
+      renderMentorInbox();
+
+      const archiveRows = await api('/rest/v1/mentor_archive_batches?select=status&status=in.(pending,uploading,failed)&limit=100').catch(()=>[]);
+      const pending = Array.isArray(archiveRows) ? archiveRows.length : 0;
+      if($('mentorDriveStatus')){
+        $('mentorDriveStatus').textContent = pending ? pending + ' ARSIP MENUNGGU' : 'BELUM TERHUBUNG';
+      }
+
+      if(mentorActiveConversation){
+        const fresh = mentorConversations.find(x=>x.conversation_id===mentorActiveConversation.conversation_id);
+        if(fresh) mentorActiveConversation = fresh;
+        await loadMentorAdminMessages();
+      }
+    }catch(err){
+      if($('mentorInboxList')) $('mentorInboxList').innerHTML = '<div class="empty">✕ '+esc(err.message || 'Gagal memuat Inbox Mentor.')+'</div>';
+    }
+  }
+
+  function renderMentorInbox(){
+    if($('mentorInboxCount')) $('mentorInboxCount').textContent = mentorConversations.length + ' percakapan';
+    if(!$('mentorInboxList')) return;
+
+    if(!mentorConversations.length){
+      $('mentorInboxList').innerHTML = '<div class="empty">Belum ada percakapan Mentor.</div>';
+      return;
+    }
+
+    $('mentorInboxList').innerHTML = mentorConversations.map(row => {
+      const active = mentorActiveConversation?.conversation_id === row.conversation_id;
+      const assigned = row.assigned_name ? 'Mentor: ' + row.assigned_name : 'Belum diambil mentor';
+      return '<button type="button" class="mentor-inbox-item '+(active?'active':'')+'" data-mentor-conversation="'+row.conversation_id+'">' +
+        '<div><b>'+esc(row.member_name || 'Member BADAI')+'</b>' +
+        '<span>'+esc(row.member_plan || '-')+' • '+esc(assigned)+'</span>' +
+        '<span>'+esc(row.member_email || '')+' • '+esc(mentorAdminTime(row.last_message_at))+'</span></div>' +
+        (Number(row.unread_count||0)>0?'<span class="mentor-unread">'+Number(row.unread_count||0)+'</span>':'') +
+      '</button>';
+    }).join('');
+  }
+
+  async function openMentorConversation(id){
+    const row = mentorConversations.find(x=>x.conversation_id===id);
+    if(!row) return;
+    mentorActiveConversation = row;
+    renderMentorInbox();
+
+    $('mentorThreadEmpty')?.classList.add('hidden');
+    $('mentorThreadView')?.classList.remove('hidden');
+    if($('mentorThreadName')) $('mentorThreadName').textContent = row.member_name || 'Member BADAI';
+    if($('mentorThreadMeta')){
+      $('mentorThreadMeta').textContent =
+        (row.member_email || '-') + ' • ' +
+        (row.member_plan || '-') + ' • ' +
+        (row.assigned_name ? 'Ditangani ' + row.assigned_name : 'Belum ada mentor');
+    }
+    if($('claimMentorChatBtn')){
+      const mine = row.assigned_team_id === currentTeam?.id;
+      $('claimMentorChatBtn').textContent = mine ? 'CHAT SAYA ✓' : 'AMBIL CHAT';
+      $('claimMentorChatBtn').disabled = mine;
+    }
+
+    await loadMentorAdminMessages();
+  }
+
+  async function loadMentorAdminMessages(){
+    if(!mentorActiveConversation?.conversation_id) return;
+    const id = mentorActiveConversation.conversation_id;
+    const rows = await api(
+      '/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+
+      '&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,created_at&order=created_at.desc&limit=80'
+    ) || [];
+
+    const list = $('mentorAdminMessageList');
+    if(list){
+      const ordered = rows.slice().reverse();
+      list.innerHTML = ordered.length ? ordered.map(m => {
+        const who = m.sender_kind === 'mentor' ? 'MENTOR' : (m.sender_kind === 'member' ? 'MEMBER' : 'BADAI');
+        let body = '';
+        if(m.message_type === 'sticker'){
+          body = '<div class="body">'+esc(m.sticker_key || '✨')+'</div>';
+        }else if(m.message_type === 'image' || m.message_type === 'file'){
+          body = '<div class="body"><a href="'+esc(m.drive_web_view_link || '#')+'" target="_blank" rel="noopener">📎 '+esc(m.file_name || 'Lampiran')+'</a></div>';
+        }else{
+          body = '<div class="body">'+esc(m.body || '')+'</div>';
+        }
+        return '<div class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+'">' +
+          '<span class="who">'+who+'</span>'+body+
+          '<span class="time">'+esc(mentorAdminTime(m.created_at))+'</span></div>';
+      }).join('') : '<div class="empty">Belum ada pesan.</div>';
+      list.scrollTop = list.scrollHeight;
+    }
+
+    await api('/rest/v1/rpc/mentor_mark_read',{
+      method:'POST',
+      body:JSON.stringify({p_conversation_id:id})
+    }).catch(()=>{});
+  }
+
+  async function sendMentorAdminPayload(type, body, sticker, fileData){
+    if(!mentorActiveConversation?.conversation_id) throw new Error('Pilih percakapan member dulu.');
+
+    await api('/rest/v1/rpc/mentor_send_message',{
+      method:'POST',
+      body:JSON.stringify({
+        p_conversation_id:mentorActiveConversation.conversation_id,
+        p_message_type:type,
+        p_body:body || null,
+        p_sticker_key:sticker || null,
+        p_drive_file_id:fileData?.id || null,
+        p_drive_web_view_link:fileData?.url || null,
+        p_file_name:fileData?.name || null,
+        p_file_mime:fileData?.mime || null,
+        p_file_size:fileData?.size || null
+      })
+    });
+
+    await loadMentorAdminMessages();
+    await loadMentorInbox();
+  }
+
+  async function uploadMentorAdminFile(file){
+    if(!file) return null;
+    if(file.size > 10*1024*1024) throw new Error('File maksimal 10 MB.');
+
+    const fd = new FormData();
+    fd.append('file',file);
+    fd.append('conversation_id',mentorActiveConversation?.conversation_id || '');
+
+    const res = await fetch('/api/mentor/upload',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+session.access_token},
+      body:fd
+    });
+    const data = await res.json().catch(()=>null);
+    if(!res.ok) throw new Error(data?.error || data?.message || 'Google Drive belum terhubung.');
+    return data;
+  }
+
+  async function claimMentorConversation(){
+    if(!mentorActiveConversation?.conversation_id) return;
+    await api('/rest/v1/rpc/admin_assign_mentor',{
+      method:'POST',
+      body:JSON.stringify({
+        p_conversation_id:mentorActiveConversation.conversation_id,
+        p_team_id:currentTeam.id
+      })
+    });
+    await loadMentorInbox();
+    await openMentorConversation(mentorActiveConversation.conversation_id);
+  }
+
   async function loadTeamMembers(){
     teamMembers = await api(
       '/rest/v1/admin_team_members?select=id,auth_user_id,full_name,email,role,status,created_at&order=created_at.asc'
