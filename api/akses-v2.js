@@ -1573,6 +1573,50 @@ module.exports = async function handler(req, res) {
     #mentor .mentor-composer textarea{font-size:15px!important}
   }
 
+  /* WhatsApp-style rich text formatting inside member chat */
+  #mentor .mentor-wa-formatted,
+  #mentor .mentor-image-caption{white-space:normal!important}
+  #mentor .mentor-wa-line{min-height:1.2em}
+  #mentor .mentor-wa-formatted strong,
+  #mentor .mentor-image-caption strong{font-weight:900!important}
+  #mentor .mentor-wa-formatted em,
+  #mentor .mentor-image-caption em{font-style:italic}
+  #mentor .mentor-wa-formatted del,
+  #mentor .mentor-image-caption del{text-decoration-thickness:1.5px}
+  #mentor .mentor-wa-inline-code{
+    display:inline-block;
+    padding:1px 5px;
+    border-radius:4px;
+    background:rgba(0,0,0,.28);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
+    font-size:.92em;
+  }
+  #mentor .mentor-wa-code{
+    margin:5px 0;
+    padding:8px 10px;
+    overflow-x:auto;
+    border-radius:6px;
+    background:rgba(0,0,0,.32);
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+  }
+  #mentor .mentor-wa-code code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
+    font-size:.9em;
+  }
+  #mentor .mentor-wa-list{
+    margin:4px 0 4px 22px;
+    padding:0;
+  }
+  #mentor .mentor-wa-list li{margin:2px 0;padding-left:2px}
+  #mentor .mentor-wa-quote{
+    margin:4px 0;
+    padding:3px 0 3px 9px;
+    border-left:3px solid #00a884;
+    color:inherit;
+    opacity:.94;
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -1947,6 +1991,51 @@ document.addEventListener('DOMContentLoaded', function(){
       el('mentorJumpLatest')&&el('mentorJumpLatest').classList.add('hidden')
     }
   }
+  function mentorFormatText(value){
+    var safe=mentorEsc(value==null?'':String(value)).replace(/\r\n?/g,'\n');
+    var blocks=[];
+    safe=safe.replace(/```([\s\S]*?)```/g,function(_,code){
+      var token='@@BADAI_WA_CODE_'+blocks.length+'@@';
+      blocks.push('<pre class="mentor-wa-code"><code>'+code.replace(/^\n|\n$/g,'')+'</code></pre>');
+      return token
+    });
+    function inline(text){
+      var out=String(text||'');
+      out=out.replace(/`([^`\n]+)`/g,'<code class="mentor-wa-inline-code">$1</code>');
+      out=out.replace(/\*([^*\n]+)\*/g,'<strong>$1</strong>');
+      out=out.replace(/_([^_\n]+)_/g,'<em>$1</em>');
+      out=out.replace(/~([^~\n]+)~/g,'<del>$1</del>');
+      out=out.replace(/@@BADAI_WA_CODE_(\d+)@@/g,function(_,i){return blocks[Number(i)]||''});
+      return out
+    }
+    var lines=safe.split('\n'),html='',i=0;
+    while(i<lines.length){
+      var line=lines[i];
+      if(/^[-*]\s+/.test(line)){
+        html+='<ul class="mentor-wa-list">';
+        while(i<lines.length&&/^[-*]\s+/.test(lines[i])){
+          html+='<li>'+inline(lines[i].replace(/^[-*]\s+/,''))+'</li>';i++
+        }
+        html+='</ul>';continue
+      }
+      if(/^\d+\.\s+/.test(line)){
+        html+='<ol class="mentor-wa-list">';
+        while(i<lines.length&&/^\d+\.\s+/.test(lines[i])){
+          html+='<li>'+inline(lines[i].replace(/^\d+\.\s+/,''))+'</li>';i++
+        }
+        html+='</ol>';continue
+      }
+      if(/^&gt;\s+/.test(line)){
+        html+='<blockquote class="mentor-wa-quote">'+inline(line.replace(/^&gt;\s+/,''))+'</blockquote>';i++;continue
+      }
+      if(/^@@BADAI_WA_CODE_\d+@@$/.test(line.trim())){
+        html+=inline(line.trim());i++;continue
+      }
+      html+='<div class="mentor-wa-line">'+(line?inline(line):'<br>')+'</div>';i++
+    }
+    return html
+  }
+
   function renderMentorMessages(rows){
     var list=el('mentorMessageList');if(!list)return;
     var wasNear=mentorNearBottom(list);
@@ -1967,12 +2056,12 @@ document.addEventListener('DOMContentLoaded', function(){
         body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
       }else if(m.message_type==='image'){
         body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(link)+'" target="_blank" rel="noopener"><img src="'+mentorEsc(link)+'" alt="'+mentorEsc(label)+'" loading="lazy"></a>'+
-          (m.body?'<div class="mentor-image-caption">'+mentorEsc(m.body)+'</div>':'')+'</div>';
+          (m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
       }else if(m.message_type==='file'){
         body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(link)+'" target="_blank" rel="noopener"><span class="mentor-file-icon">📄</span><span class="mentor-file-copy"><b>'+mentorEsc(label)+'</b><small>'+mentorEsc(mentorSize(m.file_size)||String(m.file_mime||'Dokumen'))+'</small></span></a>'+
-          (m.body?'<div class="mentor-image-caption">'+mentorEsc(m.body)+'</div>':'')+'</div>';
+          (m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
       }else{
-        body='<div class="body">'+mentorEsc(m.body||'')+'</div>';
+        body='<div class="body mentor-wa-formatted">'+mentorFormatText(m.body||'')+'</div>';
       }
       var receipt=m.sender_kind==='member'?mentorReceipt(m.created_at):'';
       html+='<div class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+'">'+body+
