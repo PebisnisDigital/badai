@@ -1549,6 +1549,30 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  /* XL typography for every textual element inside Member Mentor Chat */
+  #mentor .mentor-wa-person strong{font-size:16px!important}
+  #mentor .mentor-wa-person span{font-size:12px!important}
+  #mentor .mentor-msg .body{font-size:16px!important;line-height:1.45!important}
+  #mentor .mentor-msg-meta{font-size:10px!important}
+  #mentor .mentor-date-sep{font-size:11px!important}
+  #mentor .mentor-image-caption{font-size:14px!important}
+  #mentor .mentor-file-copy b{font-size:13px!important}
+  #mentor .mentor-file-copy small{font-size:10px!important}
+  #mentor .mentor-attach-choice{font-size:12px!important}
+  #mentor .mentor-pending-meta strong{font-size:13px!important}
+  #mentor .mentor-pending-meta span{font-size:11px!important}
+  #mentor .mentor-composer textarea{font-size:15px!important}
+  #mentor .mentor-upload-note{font-size:10px!important}
+  #mentor .mentor-empty{font-size:14px!important}
+  #mentor .mentor-member-status{font-size:11px!important}
+  #mentor .mentor-sticker-tray button{font-size:24px!important}
+  @media(max-width:560px){
+    #mentor .mentor-wa-person strong{font-size:15px!important}
+    #mentor .mentor-wa-person span{font-size:11px!important}
+    #mentor .mentor-msg .body{font-size:16px!important}
+    #mentor .mentor-composer textarea{font-size:15px!important}
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
