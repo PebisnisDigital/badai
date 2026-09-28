@@ -26,9 +26,10 @@ module.exports = async function handler(req, res) {
   #chapterGrid .card{padding-bottom:11px!important}
 
   .footer{
+    --member-nav-count:5;
     background:rgba(0,0,0,.98)!important;border-top:1px solid #1f1f1f!important;
     box-shadow:0 -8px 24px rgba(0,0,0,.18)!important;
-    grid-template-columns:repeat(var(--member-nav-count,4),minmax(0,1fr))!important;
+    grid-template-columns:repeat(var(--member-nav-count,5),minmax(0,1fr))!important;
     gap:4px!important;
     padding-left:6px!important;
     padding-right:6px!important;
@@ -78,7 +79,7 @@ module.exports = async function handler(req, res) {
 
   .badai-member-header{
     position:sticky;top:0;z-index:80;width:100%;min-height:64px;display:grid;
-    grid-template-columns:auto minmax(0,1fr);align-items:center;gap:14px;padding:8px 14px;
+    grid-template-columns:1fr;align-items:center;gap:0;padding:8px 14px;
     background:rgba(7,7,7,.97);border-bottom:1px solid #242424;
     backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
   }
@@ -112,6 +113,8 @@ module.exports = async function handler(req, res) {
     background:#0c140f;border:1px solid #28563a;color:#79eaa0
   }
   .badai-member-header-action span{font-size:11px;line-height:1}
+  .badai-member-header-actions{display:none!important}
+  .badai-member-header-logo{justify-self:start}
 
   .badai-pemula-intro{
     min-width:0;min-height:122px;display:grid;gap:15px;align-content:center;
@@ -1326,8 +1329,18 @@ module.exports = async function handler(req, res) {
   .mentor-member-status.online{border-color:#28573a;color:#78dfa0;background:#0c1710}
   .mentor-member-status.offline{border-color:#4a3f32;color:#d7b784;background:#17120d}
   #mentorNavButton{position:relative}
-  .mentor-nav-badge{position:absolute;top:4px;right:13%;min-width:17px;height:17px;padding:0 4px;display:grid;place-items:center;border:2px solid #090909;border-radius:999px;background:#ff4fa3;color:#111;font:950 7px/1 "Nunito",Arial,sans-serif;box-sizing:border-box}
-  .mentor-nav-badge.hidden{display:none}
+  .footer #mentorNavButton .mentor-nav-badge{
+    position:absolute!important;
+    top:3px!important;
+    right:calc(50% - 24px)!important;
+    min-width:18px!important;height:18px!important;padding:0 5px!important;
+    display:grid!important;place-items:center!important;
+    border:2px solid #080808!important;border-radius:999px!important;
+    background:#25d366!important;color:#0b141a!important;
+    font:800 9px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;
+    box-sizing:border-box
+  }
+  .mentor-nav-badge.hidden{display:none!important}
   .mentor-chat-card{margin-top:12px;border:1px solid #292929;border-radius:18px;background:#080808;overflow:hidden}
   .mentor-message-list{height:min(58vh,520px);min-height:350px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:radial-gradient(circle at 50% -20%,#1c0c15 0,#090909 36%,#060606 100%)}
   .mentor-empty{margin:auto;color:#7d7d7d;text-align:center;font:800 11px/1.5 "Nunito",Arial,sans-serif}
@@ -1926,10 +1939,6 @@ module.exports = async function handler(req, res) {
     const headerMarkup = String.raw`
 <header class="badai-member-header" aria-label="Header Member Area BADAI">
   <a class="badai-member-header-logo" href="/akses" aria-label="BADAI Member Area"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"></a>
-  <div class="badai-member-header-actions" aria-label="Bantuan Member">
-    <a id="mentorNavButton" class="badai-member-header-action mentor" data-screen="mentor" href="#mentor" onclick="show('mentor'); return false;" aria-label="Hubungi Mentor"><span>💬</span> HUBUNGI MENTOR<span id="mentorUnreadBadge" class="mentor-nav-badge hidden">0</span></a>
-    <a class="badai-member-header-action group" href="https://chat.whatsapp.com/Jhj7EJy1fFdLoqMk3gxXsP" target="_blank" rel="noopener noreferrer"><span>↗</span> MASUK GRUP</a>
-  </div>
 </header>`;
 
     const enhancement = String.raw`
@@ -2045,7 +2054,7 @@ document.addEventListener('DOMContentLoaded', function(){
   renderMemberMaterials('profitRouteGrid',untungMaterials,'Materi Untung',11);
 
   [
-    ['kelas','Pemula','fi fi-rr-square-1'],['jaluruntung','Untung','fi fi-rr-square-2'],['afiliasi','Afiliasi','fi fi-rr-square-3'],['akun','Akun','fi fi-rr-square-4']
+    ['kelas','Pemula','fi fi-rr-square-1'],['jaluruntung','Untung','fi fi-rr-square-2'],['afiliasi','Afiliasi','fi fi-rr-square-3'],['akun','Akun','fi fi-rr-square-4'],['mentor','Mentor','fi fi-rr-square-5']
   ].forEach(function(menu){var button=document.querySelector('.footer [data-screen="'+menu[0]+'"]');if(!button)return;var label=button.querySelector('.label');var emoji=button.querySelector('.emoji');if(label)label.textContent=menu[1];if(emoji)emoji.innerHTML='<i class="'+menu[2]+'" aria-hidden="true"></i>'});
 
   function lockAffiliateNav(){
