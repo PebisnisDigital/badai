@@ -3395,6 +3395,15 @@ th,td{padding:14px 12px!important}
 .mentor-admin-composer button[type="submit"]{width:36px!important;height:36px!important;min-height:36px!important;padding:0!important;border-radius:999px!important;font-size:14px!important}
 #mentorAdminNote{min-height:0!important;margin:0!important;padding:0 8px!important;border:0!important;background:#121212!important;color:#777!important;font-size:6.5px!important}
 @media(max-width:760px){.mentor-admin-layout{grid-template-columns:1fr}.mentor-admin-messages{height:calc(100dvh - 360px)!important;min-height:340px}}
+
+.mentor-thread-back{display:none;width:30px;height:30px;border:0;border-radius:999px;background:transparent;color:#fff;font-size:18px;place-items:center}
+@media(max-width:760px){
+  .mentor-admin-layout .mentor-thread-panel{display:none}
+  .mentor-admin-layout.thread-open .mentor-inbox-panel{display:none}
+  .mentor-admin-layout.thread-open .mentor-thread-panel{display:block}
+  .mentor-thread-back{display:grid}
+  .mentor-thread-head{grid-template-columns:30px minmax(0,1fr) auto}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -4018,7 +4027,7 @@ th,td{padding:14px 12px!important}
         <div class="stat mentor-drive-stat"><span>GOOGLE DRIVE</span><strong id="mentorDriveStatus">BELUM TERHUBUNG</strong><small id="mentorDriveAccount">Pesan tidak dihapus sebelum arsip terverifikasi</small><button id="mentorConnectDriveBtn" class="hidden" type="button">SAMBUNGKAN GOOGLE DRIVE</button></div>
       </div>
 
-      <div class="mentor-admin-layout">
+      <div id="mentorAdminLayout" class="mentor-admin-layout">
         <aside class="mentor-inbox-panel">
           <div class="mentor-inbox-head">
             <div><b>INBOX MEMBER</b><span id="mentorInboxCount">0 percakapan</span></div>
@@ -4033,6 +4042,7 @@ th,td{padding:14px 12px!important}
           <div id="mentorThreadEmpty" class="mentor-thread-empty">Pilih member dari Inbox untuk membuka percakapan.</div>
           <div id="mentorThreadView" class="hidden">
             <div class="mentor-thread-head">
+              <button id="mentorThreadBackBtn" class="mentor-thread-back" type="button" aria-label="Kembali">←</button>
               <div class="mentor-thread-person">
                 <div id="mentorThreadAvatar" class="mentor-thread-avatar">M</div>
                 <div class="mentor-thread-copy">
@@ -7232,6 +7242,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function openMentorConversation(id){
     const row=mentorConversations.find(x=>x.conversation_id===id);if(!row)return;
     mentorActiveConversation=row;mentorAdminLastKey='';mentorAdminInitialRender=true;renderMentorInbox();
+    $('mentorAdminLayout')?.classList.add('thread-open');
     $('mentorThreadEmpty')?.classList.add('hidden');$('mentorThreadView')?.classList.remove('hidden');updateMentorThreadHeader();
     clearMentorAdminPending();
     const input=$('mentorAdminInput');
@@ -7683,6 +7694,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   $('mentorInboxList')?.addEventListener('click',e=>{
     const btn=e.target.closest('[data-mentor-conversation]');
     if(btn)openMentorConversation(btn.dataset.mentorConversation);
+  });
+
+  $('mentorThreadBackBtn')?.addEventListener('click',()=>{
+    mentorAdminSetTyping(false);
+    $('mentorAdminLayout')?.classList.remove('thread-open');
   });
 
   $('claimMentorChatBtn')?.addEventListener('click',async()=>{
