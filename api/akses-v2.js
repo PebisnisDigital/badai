@@ -96,10 +96,18 @@ module.exports = async function handler(req, res) {
     transition:transform .18s ease,border-color .18s ease,background .18s ease
   }
   .badai-member-header-action:hover{transform:translateY(-1px)}
-  .badai-member-header-action.admin{
-    background:#25d366;border:1px solid #25d366;color:#07170d;
+  .badai-member-header-action.mentor{
+    position:relative;background:#25d366;border:1px solid #25d366;color:#07170d;
     box-shadow:0 7px 18px rgba(37,211,102,.15)
   }
+  .badai-member-header-action.mentor .mentor-nav-badge{
+    position:absolute!important;top:-5px!important;right:-5px!important;
+    min-width:18px!important;height:18px!important;padding:0 4px!important;
+    display:grid!important;place-items:center!important;border:2px solid #070707!important;
+    border-radius:999px!important;background:#ff4fa3!important;color:#111!important;
+    font:950 7px/1 "Nunito",Arial,sans-serif!important
+  }
+  .badai-member-header-action.mentor .mentor-nav-badge.hidden{display:none!important}
   .badai-member-header-action.group{
     background:#0c140f;border:1px solid #28563a;color:#79eaa0
   }
@@ -1482,7 +1490,7 @@ module.exports = async function handler(req, res) {
 <header class="badai-member-header" aria-label="Header Member Area BADAI">
   <a class="badai-member-header-logo" href="/akses" aria-label="BADAI Member Area"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"></a>
   <div class="badai-member-header-actions" aria-label="Bantuan Member">
-    <a class="badai-member-header-action admin" href="https://wa.me/62881022445869?text=Halo%20Admin%20BADAI%2C%20saya%20butuh%20bantuan%20di%20Member%20Area." target="_blank" rel="noopener noreferrer"><span>●</span> HUBUNGI ADMIN</a>
+    <a id="mentorNavButton" class="badai-member-header-action mentor" data-screen="mentor" href="#mentor" onclick="show('mentor'); return false;" aria-label="Hubungi Mentor"><span>💬</span> HUBUNGI MENTOR<span id="mentorUnreadBadge" class="mentor-nav-badge hidden">0</span></a>
     <a class="badai-member-header-action group" href="https://chat.whatsapp.com/Jhj7EJy1fFdLoqMk3gxXsP" target="_blank" rel="noopener noreferrer"><span>↗</span> MASUK GRUP</a>
   </div>
 </header>`;
@@ -2023,7 +2031,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorNav=el('mentorNavButton');
   if(mentorNav)mentorNav.addEventListener('click',function(){
     if(typeof Notification!=='undefined'&&Notification.permission==='default'){try{Notification.requestPermission().catch(function(){})}catch(_){}}
-    setTimeout(bootMentor,30)
+    setTimeout(function(){bootMentor();var input=el('mentorMessageInput');if(input)input.focus()},30)
   });
   var input=el('mentorMessageInput');
   if(input){
