@@ -3979,6 +3979,88 @@ th,td{padding:14px 12px!important}
   #pageMentor .mentor-admin-msg{max-width:84%!important}
   #pageMentor .mentor-thread-head{padding:7px 9px!important}
 }
+
+/* Collapsible WhatsApp-style chat rail */
+#pageMentor .mentor-admin-layout,
+#pageMentor .mentor-inbox-panel,
+#pageMentor .mentor-inbox-item{
+  transition:grid-template-columns .2s ease,width .2s ease,padding .2s ease,background .14s ease;
+}
+#mentorInboxCollapseBtn{
+  font-size:20px!important;
+  line-height:1!important;
+  font-weight:500!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed{
+  grid-template-columns:72px minmax(0,1fr)!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-head{
+  justify-content:center!important;
+  padding:9px 6px!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-head>div:first-child,
+#pageMentor .mentor-admin-layout.inbox-collapsed #mentorUnreadFilterBtn,
+#pageMentor .mentor-admin-layout.inbox-collapsed #refreshMentorInboxBtn,
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-search{
+  display:none!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-head-actions{
+  width:100%;
+  justify-content:center!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed #mentorInboxCollapseBtn{
+  transform:rotate(180deg);
+  background:#2a3942!important;
+  color:#dce3e7!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-list{
+  padding-top:5px!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-item{
+  min-height:58px!important;
+  grid-template-columns:1fr!important;
+  place-items:center!important;
+  padding:7px 5px!important;
+  border-bottom:1px solid #1f2a30!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-item .mentor-inbox-avatar{
+  width:42px!important;
+  height:42px!important;
+  margin:0!important;
+  border:2px solid transparent!important;
+  font-size:11px!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-item.active .mentor-inbox-avatar{
+  border-color:var(--wa-bright)!important;
+  box-shadow:0 0 0 2px rgba(37,211,102,.10);
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-main,
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-side{
+  display:none!important;
+}
+#pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-item:hover{
+  background:#202c33!important;
+}
+@media(max-width:760px){
+  #mentorInboxCollapseBtn{display:none!important}
+  #pageMentor .mentor-admin-layout.inbox-collapsed{grid-template-columns:1fr!important}
+  #pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-head>div:first-child,
+  #pageMentor .mentor-admin-layout.inbox-collapsed #mentorUnreadFilterBtn,
+  #pageMentor .mentor-admin-layout.inbox-collapsed #refreshMentorInboxBtn,
+  #pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-search{
+    display:initial!important;
+  }
+  #pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-head{justify-content:space-between!important;padding:9px 12px!important}
+  #pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-head-actions{width:auto}
+  #pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-item{
+    min-height:64px!important;
+    padding:8px 10px!important;
+    grid-template-columns:40px minmax(0,1fr) auto!important;
+    place-items:initial!important;
+  }
+  #pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-main,
+  #pageMentor .mentor-admin-layout.inbox-collapsed .mentor-inbox-side{display:grid!important}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -4607,6 +4689,7 @@ th,td{padding:14px 12px!important}
           <div class="mentor-inbox-head">
             <div><b>Chat</b><span id="mentorInboxCount">0 percakapan</span></div>
             <div class="mentor-inbox-head-actions">
+              <button id="mentorInboxCollapseBtn" type="button" aria-expanded="true" title="Tutup daftar chat">‹</button>
               <button id="mentorUnreadFilterBtn" type="button" aria-pressed="false" title="Tampilkan yang belum dibaca">●</button>
               <button id="refreshMentorInboxBtn" type="button" title="Muat ulang">↻</button>
             </div>
@@ -7846,7 +7929,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const unread=Number(row.unread_count||0);
       const preview=row.member_typing?'mengetik...':((row.last_message_sender_kind==='mentor'?'Anda: ':'')+(row.last_message_preview||'Belum ada pesan'));
       const assigned=row.assigned_name?('Ditangani '+row.assigned_name):'Belum diambil mentor';
-      return '<button type="button" class="mentor-inbox-item '+(active?'active ':'')+(unread?'unread':'')+'" data-mentor-conversation="'+row.conversation_id+'">'+
+      return '<button type="button" title="'+esc(row.member_name||'Member BADAI')+'" class="mentor-inbox-item '+(active?'active ':'')+(unread?'unread':'')+'" data-mentor-conversation="'+row.conversation_id+'">'+
         '<div class="mentor-inbox-avatar">'+esc(mentorInitials(row.member_name))+'</div>'+
         '<div class="mentor-inbox-main"><div class="mentor-inbox-top"><b>'+esc(row.member_name||'Member BADAI')+'</b></div>'+
         '<span class="mentor-inbox-preview '+(row.member_typing?'typing':'')+'">'+esc(preview)+'</span>'+
@@ -8300,6 +8383,32 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     panel?.classList.toggle('hidden',!willOpen);
     btn?.setAttribute('aria-expanded',String(Boolean(willOpen)));
     btn?.classList.toggle('active',Boolean(willOpen));
+  });
+
+  function setMentorInboxCollapsed(collapsed){
+    const layout=$('mentorAdminLayout'),btn=$('mentorInboxCollapseBtn');
+    if(!layout||!btn)return;
+    const desktop=!(window.matchMedia&&window.matchMedia('(max-width:760px)').matches);
+    const on=Boolean(collapsed&&desktop);
+    layout.classList.toggle('inbox-collapsed',on);
+    btn.setAttribute('aria-expanded',String(!on));
+    btn.setAttribute('title',on?'Buka daftar chat':'Tutup daftar chat');
+    try{localStorage.setItem('badai_admin_chat_inbox_collapsed',on?'1':'0')}catch(_){}
+  }
+
+  $('mentorInboxCollapseBtn')?.addEventListener('click',()=>{
+    const layout=$('mentorAdminLayout');
+    setMentorInboxCollapsed(!layout?.classList.contains('inbox-collapsed'));
+  });
+
+  try{
+    setMentorInboxCollapsed(localStorage.getItem('badai_admin_chat_inbox_collapsed')==='1');
+  }catch(_){setMentorInboxCollapsed(false)}
+
+  window.addEventListener('resize',()=>{
+    if(window.matchMedia&&window.matchMedia('(max-width:760px)').matches){
+      $('mentorAdminLayout')?.classList.remove('inbox-collapsed');
+    }
   });
 
   $('mentorInboxSearch')?.addEventListener('input',e=>{
