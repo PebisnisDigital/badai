@@ -1994,14 +1994,14 @@ document.addEventListener('DOMContentLoaded', function(){
   function mentorFormatText(value){
     var safe=mentorEsc(value==null?'':String(value)).replace(/\r\n?/g,'\n');
     var blocks=[];
-    safe=safe.replace(/```([\s\S]*?)```/g,function(_,code){
+    safe=safe.replace(new RegExp('\\x60\\x60\\x60([\\s\\S]*?)\\x60\\x60\\x60','g'),function(_,code){
       var token='@@BADAI_WA_CODE_'+blocks.length+'@@';
       blocks.push('<pre class="mentor-wa-code"><code>'+code.replace(/^\n|\n$/g,'')+'</code></pre>');
       return token
     });
     function inline(text){
       var out=String(text||'');
-      out=out.replace(/`([^`\n]+)`/g,'<code class="mentor-wa-inline-code">$1</code>');
+      out=out.replace(new RegExp('\\x60([^\\x60\\n]+)\\x60','g'),'<code class="mentor-wa-inline-code">$1</code>');
       out=out.replace(/\*([^*\n]+)\*/g,'<strong>$1</strong>');
       out=out.replace(/_([^_\n]+)_/g,'<em>$1</em>');
       out=out.replace(/~([^~\n]+)~/g,'<del>$1</del>');
