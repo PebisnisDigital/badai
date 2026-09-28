@@ -4183,6 +4183,58 @@ th,td{padding:14px 12px!important}
 #pageMentor .mentor-admin-date{font-weight:400!important}
 #pageMentor .mentor-admin-attach-choice,
 #pageMentor #claimMentorChatBtn{font-weight:400!important}
+
+/* WhatsApp-like per-message actions */
+#pageMentor .mentor-admin-msg{position:relative!important}
+#pageMentor .mentor-bubble-menu-btn{
+  position:absolute;top:2px;right:3px;z-index:4;width:24px;height:24px;
+  display:grid;place-items:center;border:0;border-radius:999px;background:transparent;
+  color:rgba(233,237,239,.7);font-size:16px!important;opacity:0;transition:.14s ease
+}
+#pageMentor .mentor-admin-msg:hover .mentor-bubble-menu-btn,
+#pageMentor .mentor-bubble-menu-btn:focus{opacity:1;background:rgba(11,20,26,.22)}
+#pageMentor .mentor-message-star{position:absolute;top:5px;left:6px;color:#f5c451;font-size:11px}
+#pageMentor .mentor-reply-quote{
+  width:100%;display:grid;gap:2px;margin:0 0 6px;padding:6px 8px;border:0;border-left:3px solid #00a884;
+  border-radius:5px;background:rgba(11,20,26,.28);color:inherit;text-align:left
+}
+#pageMentor .mentor-reply-quote b{font:700 11px/1.2 "Roboto",Arial,sans-serif!important;color:#53bdeb}
+#pageMentor .mentor-reply-quote span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 11px/1.25 "Roboto",Arial,sans-serif!important;color:#c7d0d5}
+#pageMentor .mentor-reaction-chips{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0 -7px 5px}
+#pageMentor .mentor-reaction-chip{
+  min-height:22px;padding:2px 7px;border:1px solid #31444e;border-radius:999px;background:#182229;color:#e9edef;
+  font:400 11px/1 "Roboto",Arial,sans-serif!important
+}
+#pageMentor .mentor-reaction-chip.mine{border-color:#00a884;background:#12372f}
+#pageMentor .mentor-reaction-chip span{font-size:9px!important;color:#aebac1}
+#pageMentor .mentor-reply-bar{
+  display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:8px;padding:7px 10px;
+  border-top:1px solid #26343c;background:#111b21
+}
+#pageMentor .mentor-reply-bar>div{min-width:0;display:grid;gap:2px;padding-left:8px;border-left:3px solid #00a884}
+#pageMentor .mentor-reply-bar b{font:700 11px/1.2 "Roboto",Arial,sans-serif!important;color:#53bdeb}
+#pageMentor .mentor-reply-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 11px/1.2 "Roboto",Arial,sans-serif!important;color:#aebac1}
+#pageMentor .mentor-reply-bar>button{width:30px;height:30px;border:0;border-radius:999px;background:transparent;color:#aebac1;font-size:20px!important}
+#pageMentor .mentor-msg-highlight{animation:mentorMsgFlash .9s ease}
+@keyframes mentorMsgFlash{0%,100%{filter:none}40%{filter:brightness(1.55)}}
+
+.mentor-message-menu{
+  position:fixed;z-index:10050;width:210px;padding:6px;border:1px solid #303d44;border-radius:12px;
+  background:#111b21;box-shadow:0 18px 48px rgba(0,0,0,.5);font-family:"Roboto",Arial,sans-serif
+}
+.mentor-message-menu>button{
+  width:100%;min-height:40px;display:grid;grid-template-columns:28px 1fr;align-items:center;
+  border:0;border-radius:8px;background:transparent;color:#e9edef;text-align:left;padding:0 10px;font-size:14px;font-weight:400
+}
+.mentor-message-menu>button:hover{background:#202c33}
+.mentor-message-menu>button span{font-size:17px}
+.mentor-message-menu>button.danger{color:#ff9a9a}
+.mentor-menu-reactions{display:flex;gap:3px;padding:5px 6px 8px}
+.mentor-menu-reactions.hidden{display:none}
+.mentor-menu-reactions button{width:30px;height:30px;border:0;border-radius:999px;background:#202c33;font-size:16px}
+@media(max-width:760px){
+  #pageMentor .mentor-bubble-menu-btn{opacity:.8}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -4862,6 +4914,10 @@ th,td{padding:14px 12px!important}
               <div class="mentor-admin-pending-copy"><b id="mentorAdminPendingName">Lampiran</b><span id="mentorAdminPendingSize"></span></div>
               <button id="mentorAdminPendingCancel" type="button">×</button>
             </div>
+            <div id="mentorAdminReplyBar" class="mentor-reply-bar hidden">
+              <div><b id="mentorAdminReplyTitle">Membalas pesan</b><span id="mentorAdminReplyText"></span></div>
+              <button id="mentorAdminReplyCancel" type="button" aria-label="Batalkan balasan">×</button>
+            </div>
             <form id="mentorAdminComposer" class="mentor-admin-composer">
               <button id="mentorAdminStickerBtn" type="button" class="mentor-admin-icon" title="Kirim stiker" aria-label="Kirim stiker">☺</button>
               <button id="mentorAdminAttachBtn" type="button" class="mentor-admin-icon" title="Kirim file" aria-label="Kirim file">📎</button>
@@ -5297,6 +5353,10 @@ th,td{padding:14px 12px!important}
   let mentorAdminPendingObjectUrl = '';
   let mentorAdminLastKey = '';
   let mentorAdminInitialRender = true;
+  let mentorAdminMessageRows = new Map();
+  let mentorAdminUiState = new Map();
+  let mentorAdminReply = null;
+  let mentorAdminMessageMenu = null;
   let mentorInboxQuery = '';
   let mentorUnreadOnly = false;
   let currentFinanceType = 'profitloss';
@@ -8123,20 +8183,117 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return html;
   }
 
+  function mentorAdminMessageSummary(m){
+    if(!m)return 'Pesan';
+    if(m.message_type==='sticker')return m.sticker_key||'Stiker';
+    if(m.message_type==='image')return (m.body?m.body+' · ':'')+'Foto';
+    if(m.message_type==='file')return m.body||m.file_name||'Dokumen';
+    return String(m.body||'Pesan').replace(/\s+/g,' ').trim()||'Pesan';
+  }
+
+  function mentorAdminReactionHtml(state){
+    const counts=state?.reaction_counts||{};
+    return Object.entries(counts).map(([emoji,count])=>
+      '<button type="button" class="mentor-reaction-chip '+(state?.my_reaction===emoji?'mine':'')+'" data-mentor-react-chip="'+esc(emoji)+'">'+esc(emoji)+' <span>'+Number(count||0)+'</span></button>'
+    ).join('');
+  }
+
+  function mentorAdminReplyHtml(m,rowMap){
+    if(!m?.reply_to_message_id)return '';
+    const target=rowMap.get(m.reply_to_message_id);
+    const label=target?(target.sender_kind==='mentor'?'Anda':'Member'):'Pesan';
+    const summary=target?mentorAdminMessageSummary(target):'Pesan sebelumnya';
+    return '<button type="button" class="mentor-reply-quote" data-mentor-jump-message="'+esc(m.reply_to_message_id)+'"><b>'+esc(label)+'</b><span>'+esc(summary.slice(0,120))+'</span></button>';
+  }
+
+  function closeMentorAdminMessageMenu(){
+    if(mentorAdminMessageMenu){mentorAdminMessageMenu.remove();mentorAdminMessageMenu=null}
+  }
+
+  function setMentorAdminReply(messageId){
+    const m=mentorAdminMessageRows.get(messageId);if(!m)return;
+    mentorAdminReply={id:m.id,summary:mentorAdminMessageSummary(m)};
+    const bar=$('mentorAdminReplyBar');
+    if(bar){
+      $('mentorAdminReplyTitle').textContent='Membalas '+(m.sender_kind==='mentor'?'pesan Anda':'Member');
+      $('mentorAdminReplyText').textContent=mentorAdminReply.summary.slice(0,130);
+      bar.classList.remove('hidden');
+    }
+    $('mentorAdminInput')?.focus();
+  }
+
+  function clearMentorAdminReply(){
+    mentorAdminReply=null;
+    $('mentorAdminReplyBar')?.classList.add('hidden');
+  }
+
+  async function mentorAdminMessageAction(messageId,action,emoji){
+    const m=mentorAdminMessageRows.get(messageId);if(!m)return;
+    const state=mentorAdminUiState.get(messageId)||{};
+    if(action==='reply'){setMentorAdminReply(messageId);return}
+    if(action==='copy'){
+      const text=mentorAdminMessageSummary(m);
+      try{await navigator.clipboard.writeText(text);mentorAdminToast('Pesan disalin')}catch(_){mentorAdminToast('Gagal menyalin pesan')}
+      return;
+    }
+    if(action==='react'){
+      const next=state.my_reaction===emoji?'':emoji;
+      await api('/rest/v1/rpc/mentor_message_react',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_emoji:next||null})});
+      mentorAdminLastKey='';await loadMentorAdminMessages(false);return;
+    }
+    if(action==='star'){
+      await api('/rest/v1/rpc/mentor_message_star',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_star:!state.starred})});
+      mentorAdminLastKey='';await loadMentorAdminMessages(false);mentorAdminToast(state.starred?'Bintang dihapus':'Pesan diberi bintang');return;
+    }
+    if(action==='delete'){
+      await api('/rest/v1/rpc/mentor_message_hide',{method:'POST',body:JSON.stringify({p_message_id:messageId})});
+      mentorAdminLastKey='';await loadMentorAdminMessages(false);mentorAdminToast('Pesan dihapus dari tampilan');return;
+    }
+  }
+
+  function openMentorAdminMessageMenu(button,messageId){
+    closeMentorAdminMessageMenu();
+    const state=mentorAdminUiState.get(messageId)||{};
+    const menu=document.createElement('div');
+    menu.className='mentor-message-menu';
+    menu.dataset.messageId=messageId;
+    menu.innerHTML=
+      '<button type="button" data-msg-action="reply"><span>↩</span>Balas</button>'+
+      '<button type="button" data-msg-action="copy"><span>▣</span>Salin</button>'+
+      '<button type="button" data-msg-action="reaction"><span>☺</span>Reaksi</button>'+
+      '<div class="mentor-menu-reactions hidden">'+['👍','❤️','😂','😮','😢','🙏'].map(x=>'<button type="button" data-msg-emoji="'+x+'">'+x+'</button>').join('')+'</div>'+
+      '<button type="button" data-msg-action="star"><span>☆</span>'+(state.starred?'Hapus bintang':'Beri bintang')+'</button>'+
+      '<button type="button" class="danger" data-msg-action="delete"><span>⌫</span>Hapus</button>';
+    document.body.appendChild(menu);
+    const r=button.getBoundingClientRect();
+    const mw=210,mh=280;
+    const left=Math.max(8,Math.min(window.innerWidth-mw-8,r.right-mw));
+    const top=Math.max(8,Math.min(window.innerHeight-mh-8,r.bottom+5));
+    menu.style.left=left+'px';menu.style.top=top+'px';
+    mentorAdminMessageMenu=menu;
+  }
+
   async function loadMentorAdminMessages(forceScroll=false){
     if(!mentorActiveConversation?.conversation_id)return;
     const id=mentorActiveConversation.conversation_id;
-    const rows=await api('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,created_at&order=created_at.desc&limit=100')||[];
-    const ordered=rows.slice().reverse(),list=$('mentorAdminMessageList');
+    const rows=await api('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,created_at&order=created_at.desc&limit=100')||[];
+    const uiRows=await api('/rest/v1/rpc/mentor_message_ui_state',{method:'POST',body:JSON.stringify({p_conversation_id:id})}).catch(()=>[])||[];
+    mentorAdminUiState=new Map(uiRows.map(x=>[x.message_id,x]));
+    const ordered=rows.slice().reverse();
+    mentorAdminMessageRows=new Map(ordered.map(x=>[x.id,x]));
+    const visible=ordered.filter(m=>!mentorAdminUiState.get(m.id)?.hidden),list=$('mentorAdminMessageList');
     if(list){
       const wasNear=mentorAdminNearBottom(list);
-      const key=id+'|'+ordered.map(m=>m.id).join(',')+'|'+String(mentorActiveConversation.member_last_read_at||'');
+      const stateKey=uiRows.map(x=>x.message_id+':'+JSON.stringify(x.reaction_counts||{})+':'+String(x.my_reaction||'')+':'+String(x.starred)+':'+String(x.hidden)).join('|');
+      const key=id+'|'+visible.map(m=>m.id).join(',')+'|'+stateKey+'|'+String(mentorActiveConversation.member_last_read_at||'');
       if(key!==mentorAdminLastKey){
         mentorAdminLastKey=key;let html='',lastDay='';
-        ordered.forEach(m=>{
+        visible.forEach(m=>{
           const day=mentorAdminDateKey(m.created_at);
           if(day!==lastDay){html+='<div class="mentor-admin-date">'+mentorAdminDateLabel(m.created_at)+'</div>';lastDay=day}
           let body='',link=esc(m.drive_web_view_link||'#'),label=esc(m.file_name||'Lampiran');
+          const state=mentorAdminUiState.get(m.id)||{};
+          const reply=mentorAdminReplyHtml(m,mentorAdminMessageRows);
           if(m.message_type==='sticker'){
             body='<div class="body">'+esc(m.sticker_key||'✨')+'</div>';
           }else if(m.message_type==='image'){
@@ -8149,8 +8306,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
             body='<div class="body mentor-wa-formatted">'+mentorAdminFormatText(m.body||'')+'</div>';
           }
           const receipt=m.sender_kind==='mentor'?mentorAdminReceipt(m.created_at):'';
-          html+='<div class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+'">'+body+
-            '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+receipt+'</div></div>';
+          const reactions=mentorAdminReactionHtml(state);
+          html+='<div id="mentor-msg-'+esc(m.id)+'" class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+'" data-message-id="'+esc(m.id)+'">'+
+            '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+esc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
+            (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
+            '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+receipt+'</div>'+
+            (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>';
         });
         list.innerHTML=html||'<div class="empty">Belum ada pesan.</div>';
         if(forceScroll||mentorAdminInitialRender||wasNear)mentorAdminScrollBottom(true);
@@ -8174,11 +8335,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function sendMentorAdminPayload(type,body,sticker,fileData){
     if(!mentorActiveConversation?.conversation_id)throw new Error('Pilih percakapan member dulu.');
-    await api('/rest/v1/rpc/mentor_send_message',{method:'POST',body:JSON.stringify({
+    await api('/rest/v1/rpc/mentor_send_message_v2',{method:'POST',body:JSON.stringify({
       p_conversation_id:mentorActiveConversation.conversation_id,p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
       p_drive_file_id:fileData?.id||null,p_drive_web_view_link:fileData?.url||null,p_file_name:fileData?.name||null,
-      p_file_mime:fileData?.mime||null,p_file_size:fileData?.size||null
+      p_file_mime:fileData?.mime||null,p_file_size:fileData?.size||null,p_reply_to_message_id:mentorAdminReply?.id||null
     })});
+    clearMentorAdminReply();
     mentorAdminSetTyping(false);mentorAdminLastKey='';
     await loadMentorAdminMessages(true);await loadMentorInbox();
   }
@@ -8692,6 +8854,43 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       mentorAdminToast(err.message||'Pesan gagal dikirim.');
       if($('mentorAdminNote'))$('mentorAdminNote').textContent='✕ '+(err.message||'Pesan gagal dikirim.');
     }finally{if(btn)btn.disabled=false}
+  });
+
+  $('mentorAdminReplyCancel')?.addEventListener('click',clearMentorAdminReply);
+
+  $('mentorAdminMessageList')?.addEventListener('click',async e=>{
+    const menuBtn=e.target.closest('[data-mentor-message-menu]');
+    if(menuBtn){e.stopPropagation();openMentorAdminMessageMenu(menuBtn,menuBtn.dataset.mentorMessageMenu);return}
+    const chip=e.target.closest('[data-mentor-react-chip]');
+    if(chip){
+      const bubble=chip.closest('[data-message-id]');
+      if(bubble){try{await mentorAdminMessageAction(bubble.dataset.messageId,'react',chip.dataset.mentorReactChip)}catch(err){mentorAdminToast(err.message||'Reaksi gagal')}}
+      return;
+    }
+    const jump=e.target.closest('[data-mentor-jump-message]');
+    if(jump){
+      const node=document.getElementById('mentor-msg-'+jump.dataset.mentorJumpMessage);
+      if(node){node.scrollIntoView({behavior:'smooth',block:'center'});node.classList.add('mentor-msg-highlight');setTimeout(()=>node.classList.remove('mentor-msg-highlight'),900)}
+    }
+  });
+
+  document.addEventListener('click',async e=>{
+    const menu=e.target.closest('.mentor-message-menu');
+    if(menu&&mentorAdminMessageMenu){
+      const id=mentorAdminMessageMenu.dataset.messageId;
+      const action=e.target.closest('[data-msg-action]')?.dataset.msgAction;
+      const emoji=e.target.closest('[data-msg-emoji]')?.dataset.msgEmoji;
+      if(action==='reaction'){mentorAdminMessageMenu.querySelector('.mentor-menu-reactions')?.classList.toggle('hidden');return}
+      if(emoji){
+        try{await mentorAdminMessageAction(id,'react',emoji)}catch(err){mentorAdminToast(err.message||'Reaksi gagal')}
+        closeMentorAdminMessageMenu();return;
+      }
+      if(action){
+        try{await mentorAdminMessageAction(id,action)}catch(err){mentorAdminToast(err.message||'Aksi pesan gagal')}
+        closeMentorAdminMessageMenu();return;
+      }
+    }
+    if(!e.target.closest('[data-mentor-message-menu]'))closeMentorAdminMessageMenu();
   });
 
   $('mentorAdminJumpLatest')?.addEventListener('click',()=>mentorAdminScrollBottom(true,true));
