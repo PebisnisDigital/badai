@@ -1777,6 +1777,9 @@ module.exports = async function handler(req, res) {
     flex:0 0 auto;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;
     border-radius:999px;background:#25d366;color:#0b141a;font-size:10px!important;font-weight:700!important
   }
+  #mentor .mentor-chat-row-bottom>b.hidden{
+    display:none!important;
+  }
   #mentor .mentor-chat-back{
     width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;
     border:0;border-radius:999px;background:transparent;color:#d1d7db;
