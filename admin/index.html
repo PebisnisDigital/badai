@@ -3496,6 +3496,56 @@ th,td{padding:14px 12px!important}
   .admin-header-chat{min-height:34px;padding:0 9px;gap:5px;font-size:7.8px;white-space:nowrap}
   .admin-header-chat svg{width:14px;height:14px}
 }
+
+/* Chat Member admin — WhatsApp-like UX */
+#pageMentor{--wa-bg:#0b141a;--wa-panel:#111b21;--wa-header:#202c33;--wa-in:#202c33;--wa-out:#005c4b;--wa-green:#00a884;--wa-bright:#25d366;--wa-text:#e9edef;--wa-muted:#8696a0}
+.mentor-chat-page-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 9px}
+.mentor-chat-page-head>div{display:grid;gap:2px}
+.mentor-chat-page-head span{color:#ff75b8;font-size:7px;font-weight:950;letter-spacing:.11em}
+.mentor-chat-page-head h2{margin:0;color:#fff;font:900 20px/1.05 "Raleway",Arial,sans-serif}
+#mentorChatSettingsBtn{width:34px;height:34px;border:1px solid #31444e;border-radius:999px;background:#202c33;color:#aebac1;font-size:14px;cursor:pointer}
+#mentorChatSettingsBtn.active{background:#123d34;border-color:#19735e;color:#25d366}
+#pageMentor .mentor-admin-status-grid{margin:0 0 9px!important}
+#pageMentor .mentor-admin-layout{gap:0!important;min-height:calc(100dvh - 190px)!important;border:1px solid #26343c!important;border-radius:14px!important;overflow:hidden!important;background:var(--wa-bg)!important}
+#pageMentor .mentor-inbox-panel,#pageMentor .mentor-thread-panel{border:0!important;border-radius:0!important}
+#pageMentor .mentor-inbox-panel{border-right:1px solid #26343c!important}
+#pageMentor .mentor-inbox-head{min-height:58px!important;padding:8px 10px!important}
+.mentor-inbox-head-actions{display:flex!important;align-items:center;gap:4px!important}
+#pageMentor .mentor-inbox-head button{width:31px!important;min-width:31px!important;height:31px!important;min-height:31px!important;padding:0!important;border:0!important;border-radius:999px!important;background:transparent!important;color:#aebac1!important;font-size:15px!important}
+#pageMentor .mentor-inbox-head button:hover,#pageMentor .mentor-inbox-head button.active{background:#2a3942!important;color:#25d366!important}
+.mentor-inbox-search{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:center;margin:7px 8px;padding:0 9px;min-height:38px;border-radius:9px;background:#202c33;color:#8696a0}
+.mentor-inbox-search span{font-size:15px;transform:rotate(-18deg)}
+.mentor-inbox-search input{width:100%;min-width:0;border:0!important;outline:0!important;background:transparent!important;color:#e9edef!important;font:700 9.5px/1 "Nunito",Arial,sans-serif!important}
+.mentor-inbox-search input::placeholder{color:#8696a0}
+#pageMentor .mentor-inbox-list{max-height:calc(100dvh - 310px)!important;min-height:420px!important;overflow:auto!important}
+#pageMentor .mentor-inbox-item{min-height:67px!important;padding:9px 10px!important}
+#pageMentor .mentor-inbox-item.unread .mentor-inbox-top b{font-weight:950!important;color:#fff!important}
+#pageMentor .mentor-inbox-item.unread .mentor-inbox-preview{color:#d4dbe0!important;font-weight:850!important}
+#pageMentor .mentor-inbox-time.fresh{color:#25d366!important;font-weight:900!important}
+.mentor-inbox-empty{padding:32px 14px;color:#8696a0;text-align:center;font-size:9px;line-height:1.5}
+#pageMentor .mentor-thread-head{min-height:58px!important}
+#pageMentor .mentor-thread-empty{min-height:calc(100dvh - 310px)!important;background:
+ radial-gradient(circle at 15px 17px,rgba(134,150,160,.045) 0 1.2px,transparent 1.4px) 0 0/58px 58px,
+ var(--wa-bg)!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:8px!important}
+.mentor-thread-empty-mark{width:66px;height:66px;display:grid;place-items:center;border-radius:999px;background:#202c33;font-size:28px}
+.mentor-thread-empty b{color:#d9e0e4;font-size:13px}
+.mentor-thread-empty span{max-width:270px;color:#8696a0;font-size:8px;line-height:1.5}
+#pageMentor .mentor-admin-messages{height:calc(100dvh - 354px)!important;min-height:430px!important}
+#pageMentor .mentor-admin-composer{position:sticky;bottom:0;z-index:5}
+#pageMentor .mentor-admin-icon{font-size:19px!important}
+#pageMentor #mentorAdminSendBtn{background:#00a884!important;box-shadow:none!important}
+#pageMentor #mentorAdminSendBtn:disabled{opacity:.55!important}
+#pageMentor .mentor-admin-msg{font-family:"Nunito",Arial,sans-serif}
+#pageMentor .mentor-admin-msg.member{border-bottom-left-radius:2px!important}
+#pageMentor .mentor-admin-msg.mentor{border-bottom-right-radius:2px!important}
+@media(max-width:760px){
+  .mentor-chat-page-head{margin-bottom:6px}
+  #pageMentor .mentor-admin-layout{min-height:calc(100dvh - 150px)!important;border-radius:12px!important}
+  #pageMentor .mentor-inbox-panel{border-right:0!important}
+  #pageMentor .mentor-inbox-list{max-height:calc(100dvh - 250px)!important;min-height:calc(100dvh - 250px)!important}
+  #pageMentor .mentor-admin-messages{height:calc(100dvh - 258px)!important;min-height:360px!important}
+  #pageMentor .mentor-thread-empty{min-height:calc(100dvh - 250px)!important}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -4105,14 +4155,15 @@ th,td{padding:14px 12px!important}
     </section>
 
     <section id="pageMentor" class="admin-page hidden">
-      <div class="page-title">
+      <div class="mentor-chat-page-head">
         <div>
-          <h2>Mentor</h2>
-          <p>Inbox konsultasi member BADAI. Chat aktif disimpan maksimal 7 hari sebelum diarsipkan ke Google Drive.</p>
+          <span>BADAI</span>
+          <h2>Chat Member</h2>
         </div>
+        <button id="mentorChatSettingsBtn" type="button" aria-expanded="false" title="Pengaturan Chat">⚙</button>
       </div>
 
-      <div class="mentor-admin-status-grid">
+      <div id="mentorOpsPanel" class="mentor-admin-status-grid hidden">
         <div class="stat"><span>HOT STORAGE</span><strong>7 HARI</strong><small>Supabase untuk chat aktif</small></div>
         <div class="stat"><span>ARSIP HARIAN</span><strong>00.05 WIB</strong><small>Disiapkan otomatis tiap malam</small></div>
         <div class="stat mentor-drive-stat"><span>GOOGLE DRIVE</span><strong id="mentorDriveStatus">BELUM TERHUBUNG</strong><small id="mentorDriveAccount">Pesan tidak dihapus sebelum arsip terverifikasi</small><button id="mentorConnectDriveBtn" class="hidden" type="button">SAMBUNGKAN GOOGLE DRIVE</button></div>
@@ -4121,8 +4172,15 @@ th,td{padding:14px 12px!important}
       <div id="mentorAdminLayout" class="mentor-admin-layout">
         <aside class="mentor-inbox-panel">
           <div class="mentor-inbox-head">
-            <div><b>INBOX MEMBER</b><span id="mentorInboxCount">0 percakapan</span></div>
-            <button id="refreshMentorInboxBtn" type="button">REFRESH</button>
+            <div><b>Chat</b><span id="mentorInboxCount">0 percakapan</span></div>
+            <div class="mentor-inbox-head-actions">
+              <button id="mentorUnreadFilterBtn" type="button" aria-pressed="false" title="Tampilkan yang belum dibaca">●</button>
+              <button id="refreshMentorInboxBtn" type="button" title="Muat ulang">↻</button>
+            </div>
+          </div>
+          <div class="mentor-inbox-search">
+            <span>⌕</span>
+            <input id="mentorInboxSearch" type="search" autocomplete="off" placeholder="Cari chat atau member"/>
           </div>
           <div id="mentorInboxList" class="mentor-inbox-list">
             <div class="empty">Belum ada percakapan Mentor.</div>
@@ -4130,7 +4188,7 @@ th,td{padding:14px 12px!important}
         </aside>
 
         <section class="mentor-thread-panel">
-          <div id="mentorThreadEmpty" class="mentor-thread-empty">Pilih member dari Inbox untuk membuka percakapan.</div>
+          <div id="mentorThreadEmpty" class="mentor-thread-empty"><div class="mentor-thread-empty-mark">💬</div><b>Chat Member BADAI</b><span>Pilih percakapan di sebelah kiri untuk mulai membalas member.</span></div>
           <div id="mentorThreadView" class="hidden">
             <div class="mentor-thread-head">
               <button id="mentorThreadBackBtn" class="mentor-thread-back" type="button" aria-label="Kembali">←</button>
@@ -4601,6 +4659,8 @@ th,td{padding:14px 12px!important}
   let mentorAdminPendingObjectUrl = '';
   let mentorAdminLastKey = '';
   let mentorAdminInitialRender = true;
+  let mentorInboxQuery = '';
+  let mentorUnreadOnly = false;
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
   let membershipRenewals = [];
@@ -7315,22 +7375,46 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   }
 
-  function renderMentorInbox(){
-    if($('mentorInboxCount'))$('mentorInboxCount').textContent=mentorConversations.length+' percakapan';
-    if(!$('mentorInboxList'))return;
-    if(!mentorConversations.length){$('mentorInboxList').innerHTML='<div class="empty">Belum ada percakapan Mentor.</div>';return}
+  function mentorInboxStamp(value){
+    if(!value)return '';
+    try{
+      const d=new Date(value),now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
+      if(mentorAdminDateKey(d)===mentorAdminDateKey(now))return mentorAdminClock(d);
+      if(mentorAdminDateKey(d)===mentorAdminDateKey(y))return 'Kemarin';
+      return new Intl.DateTimeFormat('id-ID',{day:'2-digit',month:'2-digit',year:d.getFullYear()!==now.getFullYear()?'2-digit':undefined}).format(d);
+    }catch(_){return ''}
+  }
 
-    $('mentorInboxList').innerHTML=mentorConversations.map(row=>{
+  function renderMentorInbox(){
+    const list=$('mentorInboxList');if(!list)return;
+    const query=String(mentorInboxQuery||'').trim().toLowerCase();
+    const rows=mentorConversations.filter(row=>{
+      if(mentorUnreadOnly&&Number(row.unread_count||0)<1)return false;
+      if(!query)return true;
+      const hay=[row.member_name,row.member_email,row.member_plan,row.last_message_preview,row.assigned_name].filter(Boolean).join(' ').toLowerCase();
+      return hay.includes(query);
+    });
+    if($('mentorInboxCount')){
+      $('mentorInboxCount').textContent=(query||mentorUnreadOnly)
+        ? rows.length+' dari '+mentorConversations.length+' chat'
+        : mentorConversations.length+' percakapan';
+    }
+    if(!rows.length){
+      list.innerHTML='<div class="mentor-inbox-empty">'+(query?'Chat tidak ditemukan.':(mentorUnreadOnly?'Tidak ada chat yang belum dibaca.':'Belum ada percakapan member.'))+'</div>';
+      return;
+    }
+
+    list.innerHTML=rows.map(row=>{
       const active=mentorActiveConversation?.conversation_id===row.conversation_id;
       const unread=Number(row.unread_count||0);
       const preview=row.member_typing?'mengetik...':((row.last_message_sender_kind==='mentor'?'Anda: ':'')+(row.last_message_preview||'Belum ada pesan'));
       const assigned=row.assigned_name?('Ditangani '+row.assigned_name):'Belum diambil mentor';
-      return '<button type="button" class="mentor-inbox-item '+(active?'active':'')+'" data-mentor-conversation="'+row.conversation_id+'">'+
+      return '<button type="button" class="mentor-inbox-item '+(active?'active ':'')+(unread?'unread':'')+'" data-mentor-conversation="'+row.conversation_id+'">'+
         '<div class="mentor-inbox-avatar">'+esc(mentorInitials(row.member_name))+'</div>'+
         '<div class="mentor-inbox-main"><div class="mentor-inbox-top"><b>'+esc(row.member_name||'Member BADAI')+'</b></div>'+
         '<span class="mentor-inbox-preview '+(row.member_typing?'typing':'')+'">'+esc(preview)+'</span>'+
         '<span class="mentor-inbox-assigned">'+esc(assigned)+'</span></div>'+
-        '<div class="mentor-inbox-side"><span class="mentor-inbox-time">'+esc(mentorAdminClock(row.last_message_at))+'</span>'+
+        '<div class="mentor-inbox-side"><span class="mentor-inbox-time '+(unread?'fresh':'')+'">'+esc(mentorInboxStamp(row.last_message_at))+'</span>'+
         (unread>0?'<span class="mentor-unread">'+(unread>99?'99+':unread)+'</span>':'')+'</div></button>';
     }).join('');
   }
@@ -7348,6 +7432,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const input=$('mentorAdminInput');
     if(input){try{input.value=localStorage.getItem(mentorAdminDraftKey())||''}catch(_){input.value=''}mentorAdminGrowInput()}
     await loadMentorAdminMessages(true);
+    setTimeout(()=>$('mentorAdminInput')?.focus(),30);
   }
 
   async function loadMentorAdminMessages(forceScroll=false){
@@ -7772,6 +7857,27 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     touchMentorPresence(true).catch(()=>{});
   });
 
+  $('mentorChatSettingsBtn')?.addEventListener('click',()=>{
+    const panel=$('mentorOpsPanel'),btn=$('mentorChatSettingsBtn');
+    const willOpen=panel?.classList.contains('hidden');
+    panel?.classList.toggle('hidden',!willOpen);
+    btn?.setAttribute('aria-expanded',String(Boolean(willOpen)));
+    btn?.classList.toggle('active',Boolean(willOpen));
+  });
+
+  $('mentorInboxSearch')?.addEventListener('input',e=>{
+    mentorInboxQuery=String(e.target.value||'');
+    renderMentorInbox();
+  });
+
+  $('mentorUnreadFilterBtn')?.addEventListener('click',()=>{
+    mentorUnreadOnly=!mentorUnreadOnly;
+    const btn=$('mentorUnreadFilterBtn');
+    btn?.classList.toggle('active',mentorUnreadOnly);
+    btn?.setAttribute('aria-pressed',String(mentorUnreadOnly));
+    renderMentorInbox();
+  });
+
   $('refreshMentorInboxBtn')?.addEventListener('click', () => loadMentorInbox());
   $('mentorConnectDriveBtn')?.addEventListener('click', async () => {
     const btn=$('mentorConnectDriveBtn');if(btn)btn.disabled=true;
@@ -7878,6 +7984,25 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   $('mentorAdminMessageList')?.addEventListener('scroll',()=>{
     const list=$('mentorAdminMessageList'),jump=$('mentorAdminJumpLatest');
     if(list&&jump)jump.classList.toggle('hidden',mentorAdminNearBottom(list));
+  });
+
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('#mentorAdminStickerBtn')&&!e.target.closest('#mentorAdminStickerTray')){
+      $('mentorAdminStickerTray')?.classList.add('hidden');
+    }
+    if(!e.target.closest('#mentorAdminAttachBtn')&&!e.target.closest('#mentorAdminAttachMenu')){
+      $('mentorAdminAttachMenu')?.classList.add('hidden');
+    }
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){
+      $('mentorAdminStickerTray')?.classList.add('hidden');
+      $('mentorAdminAttachMenu')?.classList.add('hidden');
+      if(window.matchMedia&&window.matchMedia('(max-width:760px)').matches&&$('mentorAdminLayout')?.classList.contains('thread-open')){
+        mentorAdminSetTyping(false);
+        $('mentorAdminLayout')?.classList.remove('thread-open');
+      }
+    }
   });
 
   if(!mentorAdminPollTimer){
