@@ -468,6 +468,48 @@ async function handleMentorUpload(req,res){
 }
 
 
+async function handleCommunityUpload(req,res){
+  if(!(await mentorDriveConfigured())){
+    return res.status(503).json({error:'Google Drive BADAI belum terhubung.'});
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const user=await verifySupabaseBearer(token);
+  if(!user?.id) return res.status(401).json({error:'Session tidak valid.'});
+
+  const parsed=await parseMentorMultipart(req);
+  const channelSlug=String(parsed.fields.channel_slug||'group').trim().toLowerCase();
+  if(channelSlug!=='group') return res.status(400).json({error:'Channel komunitas tidak valid.'});
+
+  const profileCheck=await fetch(
+    SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(user.id)+'&member_status=eq.active&select=id',
+    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  );
+  const profiles=profileCheck.ok?await profileCheck.json().catch(()=>[]):[];
+  if(!profileCheck.ok || !profiles?.length){
+    return res.status(403).json({error:'Akses Grup BADAI tidak aktif.'});
+  }
+
+  const drive=await driveClient();
+  const communityRoot=await findOrCreateDriveFolder(drive,'COMMUNITY-ATTACHMENTS',MENTOR_DRIVE_FOLDER_ID);
+  const groupFolder=await findOrCreateDriveFolder(drive,'GROUP-BADAI',communityRoot);
+  const userFolder=await findOrCreateDriveFolder(drive,String(user.id),groupFolder);
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  const fileName=stamp+'__'+safeDriveName(parsed.file.name);
+  const saved=await uploadDriveBuffer(drive,userFolder,fileName,parsed.file.mime,parsed.file.buffer);
+
+  return res.status(200).json({
+    ok:true,
+    id:saved.id,
+    name:parsed.file.name,
+    mime:parsed.file.mime,
+    size:parsed.file.size,
+    url:signedMentorFileUrl(saved.id)
+  });
+}
+
+
 async function handleProfileAvatarUpload(req,res){
   if(!(await mentorDriveConfigured())){
     return res.status(503).json({error:'Google Drive BADAI belum terhubung.'});
@@ -630,6 +672,10 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/api/mentor/file' && req.method === 'GET') {
       return await handleMentorFile(req,res);
+    }
+
+    if (pathname === '/api/community/upload' && req.method === 'POST') {
+      return await handleCommunityUpload(req,res);
     }
 
     if (pathname === '/api/profile/avatar' && req.method === 'POST') {
