@@ -9365,9 +9365,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const preview=row.member_typing?'mengetik...':((row.last_message_sender_kind==='mentor'?'Anda: ':'')+(row.last_message_preview||'Belum ada pesan'));
       const assigned=row.assigned_name?('Ditangani '+row.assigned_name):'Belum diambil mentor';
       return '<button type="button" title="'+esc(row.member_name||'Member BADAI')+'" class="mentor-inbox-item '+(active?'active ':'')+(unread?'unread':'')+'" data-mentor-conversation="'+row.conversation_id+'">'+
-        (row.member_avatar_key
-          ? '<div class="mentor-inbox-avatar has-photo"><img src="'+esc(row.member_avatar_key)+'" alt="" loading="lazy"></div>'
-          : '<div class="mentor-inbox-avatar">'+esc(mentorInitials(row.member_name))+'</div>')+
+        '<div class="mentor-inbox-avatar has-photo"><img src="'+esc(badaiPresetAvatarUrl(row.member_avatar_key))+'" alt="" loading="lazy"></div>'+
         '<div class="mentor-inbox-main"><div class="mentor-inbox-top"><b>'+esc(row.member_name||'Member BADAI')+'</b></div>'+
         '<span class="mentor-inbox-preview '+(row.member_typing?'typing':'')+'">'+esc(preview)+'</span>'+
         '<span class="mentor-inbox-assigned">'+esc(assigned)+'</span></div>'+
