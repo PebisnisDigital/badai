@@ -2024,8 +2024,56 @@ module.exports = async function handler(req, res) {
   #mentor .mentor-chat-card.announcement-thread .mentor-msg .body{
     width:100%!important;
     padding:0!important;
-    font-size:12px!important;
-    line-height:1.42!important;
+    font-size:17px!important;
+    line-height:1.55!important;
+  }
+  #mentor .mentor-announcement-head{
+    width:calc(100% + 16px);
+    display:grid;
+    grid-template-columns:46px minmax(0,1fr);
+    gap:11px;
+    align-items:center;
+    margin:-7px -8px 9px;
+    padding:11px 12px;
+    box-sizing:border-box;
+    background:#1b252b;
+    border-bottom:1px solid rgba(255,255,255,.06);
+    border-radius:8px 8px 0 0;
+  }
+  #mentor .mentor-announcement-avatar{
+    position:relative;
+    width:46px;height:46px;
+    display:grid;place-items:center;
+    border-radius:999px;
+    background:#374248;color:#fff;
+    font-size:16px!important;font-weight:900!important;
+  }
+  #mentor .mentor-announcement-avatar img{
+    width:46px;height:46px;display:block;object-fit:cover;border-radius:999px;
+  }
+  #mentor .mentor-announcement-avatar.verified::after{
+    content:"✓";
+    position:absolute;right:-3px;bottom:-2px;
+    width:16px;height:16px;display:grid;place-items:center;
+    border:2px solid #1b252b;border-radius:999px;
+    background:#ff4fa3;color:#fff;
+    font-size:9px!important;font-weight:950!important;
+    box-sizing:border-box;
+  }
+  #mentor .mentor-announcement-copy{
+    min-width:0;display:grid;gap:3px;
+  }
+  #mentor .mentor-announcement-copy b{
+    color:#25d366!important;
+    font-size:18px!important;
+    line-height:1.15!important;
+    font-weight:900!important;
+  }
+  #mentor .mentor-announcement-copy small{
+    color:#b7c0c5!important;
+    font-size:13px!important;
+    line-height:1.2!important;
+    font-weight:700!important;
   }
   #mentor .mentor-chat-card.announcement-thread .mentor-msg-image{
     width:100%!important;
@@ -2043,7 +2091,9 @@ module.exports = async function handler(req, res) {
     background:#111b21!important;
   }
   #mentor .mentor-chat-card.announcement-thread .mentor-image-caption{
-    padding:3px 2px 1px!important;
+    padding:9px 2px 2px!important;
+    font-size:16px!important;
+    line-height:1.5!important;
   }
   #mentor .mentor-chat-card.announcement-thread .mentor-msg-file{
     width:100%!important;
@@ -2053,8 +2103,9 @@ module.exports = async function handler(req, res) {
     background:rgba(11,20,26,.5)!important;
   }
   #mentor .mentor-chat-card.announcement-thread .mentor-msg-meta{
-    margin-top:4px!important;
+    margin-top:6px!important;
     color:#8696a0!important;
+    font-size:11px!important;
   }
   #mentor .mentor-chat-card.announcement-thread .mentor-receipt{
     display:none!important;
@@ -2068,6 +2119,9 @@ module.exports = async function handler(req, res) {
       width:96%!important;
       max-width:96%!important;
     }
+    #mentor .mentor-chat-card.announcement-thread .mentor-msg .body{font-size:16px!important}
+    #mentor .mentor-announcement-copy b{font-size:17px!important}
+    #mentor .mentor-announcement-copy small{font-size:12px!important}
   }
 
   /* Group sender identity: initial avatar + bubble */
@@ -3196,6 +3250,15 @@ document.addEventListener('DOMContentLoaded', function(){
       var own=String(m.sender_user_id||'')===String(uid||''),side=own?'member':'mentor';
       var senderName=m.sender_name||'Member BADAI';
       var sender=(slug==='group'&&!own)?'<div class="mentor-community-sender '+communitySenderTone(senderName)+'">'+mentorEsc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</div>':'';
+      var senderInitial=String(senderName||'A').trim().charAt(0).toUpperCase()||'A';
+      var announcementAvatar=m.sender_verified&&m.sender_avatar_url
+        ? '<div class="mentor-announcement-avatar verified"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
+        : '<div class="mentor-announcement-avatar">'+mentorEsc(senderInitial)+'</div>';
+      var announcementHead=slug==='announcement'
+        ? '<div class="mentor-announcement-head">'+announcementAvatar+
+            '<div class="mentor-announcement-copy"><b>'+mentorEsc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</b><small>Admin komunitas</small></div>'+
+          '</div>'
+        : '';
       var body='';
       if(m.message_type==='sticker')body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
       else if(m.message_type==='image')body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><img src="'+mentorEsc(m.drive_web_view_link||'#')+'" alt="" loading="lazy"></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
@@ -3203,10 +3266,9 @@ document.addEventListener('DOMContentLoaded', function(){
       else body='<div class="body mentor-wa-formatted">'+(slug==='group'?communityFormatText(m.body||''):mentorFormatText(m.body||''))+'</div>';
       var animateMsg=!mentorAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAnimatedMessageIds.add(m.id);
-      var bubble='<div class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
-        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own?'<span class="mentor-receipt read">✓✓</span>':'')+'</div></div>';
+      var bubble='<div class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+announcementHead+sender+body+
+        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own&&slug!=='announcement'?'<span class="mentor-receipt read">✓✓</span>':'')+'</div></div>';
       if(slug==='group'&&!own){
-        var senderInitial=String(senderName||'M').trim().charAt(0).toUpperCase()||'M';
         var tone=communitySenderTone(senderName);
         var avatar=m.sender_verified&&m.sender_avatar_url
           ? '<div class="mentor-group-initial has-photo verified"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
