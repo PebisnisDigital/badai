@@ -6534,6 +6534,11 @@ th,td{padding:14px 12px!important}
   let mentorAdminMentionState = null;
   let mentorInboxQuery = '';
   let mentorUnreadOnly = false;
+  let mentorAdminFeature = 'chat';
+  let mentorAutoReplyRules = [];
+  let mentorAutoReplyLogs = [];
+  let mentorAutoEditingMedia = null;
+  let mentorAutoPendingFile = null;
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
   let membershipRenewals = [];
@@ -6995,7 +7000,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
     if(page === 'finance') loadFinanceTransactions();
     if(page === 'marketing') loadMarketing();
-    if(page === 'mentor') loadMentorInbox();
+    if(page === 'mentor'){
+      loadMentorInbox();
+      loadMentorAutoReplyRules().catch(()=>{});
+    }
     if(page === 'team'){
       populateAdminSelfSettings();
       loadTeamMembers();
@@ -9340,6 +9348,267 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return 'terakhir dilihat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(new Date(value));
   }
 
+  function mentorAutoTimeShort(value){
+    const raw=String(value||'');
+    return raw ? raw.slice(0,5) : '';
+  }
+
+  function mentorAutoDateTime(value){
+    if(!value)return '-';
+    try{return new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'}).format(new Date(value))}
+    catch(_){return String(value)}
+  }
+
+  function mentorAutoKeywordList(value){
+    return String(value||'').split(/[\n,]+/).map(x=>x.trim().toLowerCase()).filter(Boolean);
+  }
+
+  function mentorAutoRulePayload(rule,activeOverride){
+    return {
+      p_id:rule?.id||null,
+      p_name:rule?.name||'Auto Reply',
+      p_keywords:Array.isArray(rule?.keywords)?rule.keywords:[],
+      p_match_type:rule?.match_type||'contains',
+      p_reply_message_type:rule?.reply_message_type||'text',
+      p_reply_text:rule?.reply_text||null,
+      p_drive_file_id:rule?.drive_file_id||null,
+      p_drive_web_view_link:rule?.drive_web_view_link||null,
+      p_file_name:rule?.file_name||null,
+      p_file_mime:rule?.file_mime||null,
+      p_file_size:rule?.file_size==null?null:Number(rule.file_size),
+      p_priority:Number(rule?.priority??100),
+      p_cooldown_minutes:Number(rule?.cooldown_minutes??10),
+      p_active_start_time:rule?.active_start_time||null,
+      p_active_end_time:rule?.active_end_time||null,
+      p_is_active:activeOverride===undefined?Boolean(rule?.is_active):Boolean(activeOverride)
+    };
+  }
+
+  function renderMentorAutoReplyRules(){
+    const list=$('mentorAutoRuleList');if(!list)return;
+    const active=mentorAutoReplyRules.filter(r=>r.is_active).length;
+    const triggered=mentorAutoReplyRules.reduce((sum,r)=>sum+Number(r.trigger_count||0),0);
+    if($('mentorAutoStatActive'))$('mentorAutoStatActive').textContent=String(active);
+    if($('mentorAutoStatTotal'))$('mentorAutoStatTotal').textContent=String(mentorAutoReplyRules.length);
+    if($('mentorAutoStatTriggered'))$('mentorAutoStatTriggered').textContent=String(triggered);
+    if($('mentorAutoActiveBadge')){
+      $('mentorAutoActiveBadge').textContent=String(active);
+      $('mentorAutoActiveBadge').classList.toggle('hidden',active<1);
+    }
+    list.innerHTML=mentorAutoReplyRules.map(r=>{
+      const kws=r.match_type==='fallback'
+        ? '<span>FALLBACK</span>'
+        : (r.keywords||[]).slice(0,8).map(k=>'<span>'+esc(k)+'</span>').join('');
+      const schedule=r.active_start_time&&r.active_end_time
+        ? mentorAutoTimeShort(r.active_start_time)+'–'+mentorAutoTimeShort(r.active_end_time)+' WIB'
+        : '24 JAM';
+      const typeLabel=r.reply_message_type==='image'?'FOTO':r.reply_message_type==='file'?'FILE':'TEKS';
+      return '<article class="mentor-auto-rule '+(r.is_active?'':'inactive')+'" data-auto-rule="'+esc(r.id)+'">'+
+        '<div class="mentor-auto-rule-main">'+
+          '<div class="mentor-auto-rule-top"><b>'+esc(r.name)+'</b>'+
+            '<span class="mentor-auto-pill '+(r.is_active?'active':'')+'">'+(r.is_active?'AKTIF':'NONAKTIF')+'</span>'+
+            '<span class="mentor-auto-pill">'+esc(r.match_type==='contains'?'MENGANDUNG':r.match_type==='exact'?'PERSIS':'FALLBACK')+'</span>'+
+            '<span class="mentor-auto-pill">'+typeLabel+'</span></div>'+
+          '<div class="mentor-auto-keywords">'+kws+'</div>'+
+          '<div class="mentor-auto-preview">'+esc((r.reply_text||'').slice(0,260))+(r.file_name?'\n📎 '+esc(r.file_name):'')+'</div>'+
+          '<div class="mentor-auto-rule-meta"><span>Prioritas '+Number(r.priority||0)+'</span><span>Cooldown '+Number(r.cooldown_minutes||0)+' menit</span><span>'+schedule+'</span><span>Terpicu '+Number(r.trigger_count||0)+'x</span></div>'+
+        '</div>'+
+        '<div class="mentor-auto-rule-actions">'+
+          '<button class="primary" type="button" data-auto-action="edit" data-id="'+esc(r.id)+'">EDIT</button>'+
+          '<button type="button" data-auto-action="toggle" data-id="'+esc(r.id)+'">'+(r.is_active?'NONAKTIFKAN':'AKTIFKAN')+'</button>'+
+          '<button class="danger" type="button" data-auto-action="delete" data-id="'+esc(r.id)+'">HAPUS</button>'+
+        '</div>'+
+      '</article>';
+    }).join('')||'<div class="empty">Belum ada Auto Reply. Klik + BUAT AUTO REPLY untuk mulai.</div>';
+  }
+
+  async function loadMentorAutoReplyRules(){
+    const rows=await api('/rest/v1/rpc/admin_mentor_autoreply_rules',{method:'POST',body:'{}'})||[];
+    mentorAutoReplyRules=rows;
+    renderMentorAutoReplyRules();
+    return rows;
+  }
+
+  function syncMentorAutoModalFields(){
+    const fallback=$('mentorAutoMatchType')?.value==='fallback';
+    $('mentorAutoKeywordField')?.classList.toggle('hidden',fallback);
+    const media=$('mentorAutoReplyType')?.value!=='text';
+    $('mentorAutoMediaField')?.classList.toggle('hidden',!media);
+    const info=$('mentorAutoMediaInfo');
+    if(info){
+      if(mentorAutoPendingFile)info.textContent='File baru: '+mentorAutoPendingFile.name+' • '+mentorAdminSize(mentorAutoPendingFile.size);
+      else if(mentorAutoEditingMedia?.id)info.textContent='Lampiran tersimpan: '+(mentorAutoEditingMedia.name||'File')+' • '+mentorAdminSize(mentorAutoEditingMedia.size);
+      else info.textContent='Belum ada lampiran.';
+    }
+  }
+
+  function closeMentorAutoReplyModal(){
+    $('mentorAutoReplyModal')?.classList.add('hidden');
+    mentorAutoPendingFile=null;
+    mentorAutoEditingMedia=null;
+    if($('mentorAutoMediaInput'))$('mentorAutoMediaInput').value='';
+  }
+
+  function openMentorAutoReplyModal(rule=null,sourceMessage=null){
+    mentorAutoPendingFile=null;
+    mentorAutoEditingMedia=null;
+    if($('mentorAutoId'))$('mentorAutoId').value=rule?.id||'';
+    if($('mentorAutoModalTitle'))$('mentorAutoModalTitle').textContent=rule?'Edit Auto Reply':'Buat Auto Reply';
+    if($('mentorAutoName'))$('mentorAutoName').value=rule?.name||(sourceMessage?'Balasan dari chat':'');
+    if($('mentorAutoMatchType'))$('mentorAutoMatchType').value=rule?.match_type||'contains';
+    if($('mentorAutoStatus'))$('mentorAutoStatus').value=(rule?.is_active===false)?'inactive':'active';
+    if($('mentorAutoKeywords'))$('mentorAutoKeywords').value=(rule?.keywords||[]).join(', ');
+    if($('mentorAutoReplyText'))$('mentorAutoReplyText').value=rule?.reply_text||sourceMessage?.body||'';
+    const sourceType=['text','image','file'].includes(sourceMessage?.message_type)?sourceMessage.message_type:'text';
+    if($('mentorAutoReplyType'))$('mentorAutoReplyType').value=rule?.reply_message_type||sourceType;
+    if($('mentorAutoCooldown'))$('mentorAutoCooldown').value=String(rule?.cooldown_minutes??10);
+    if($('mentorAutoPriority'))$('mentorAutoPriority').value=String(rule?.priority??100);
+    if($('mentorAutoStartTime'))$('mentorAutoStartTime').value=mentorAutoTimeShort(rule?.active_start_time);
+    if($('mentorAutoEndTime'))$('mentorAutoEndTime').value=mentorAutoTimeShort(rule?.active_end_time);
+    if($('mentorAutoFormStatus'))$('mentorAutoFormStatus').textContent='';
+
+    const mediaSource=rule||sourceMessage;
+    if(mediaSource?.drive_file_id){
+      mentorAutoEditingMedia={
+        id:mediaSource.drive_file_id,
+        url:mediaSource.drive_web_view_link||'',
+        name:mediaSource.file_name||'Lampiran',
+        mime:mediaSource.file_mime||'application/octet-stream',
+        size:Number(mediaSource.file_size||0)
+      };
+    }
+    syncMentorAutoModalFields();
+    $('mentorAutoReplyModal')?.classList.remove('hidden');
+    setTimeout(()=>$('mentorAutoName')?.focus(),30);
+  }
+
+  async function uploadMentorAutoReplyMedia(file){
+    if(!file)return null;
+    if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
+    const fd=new FormData();fd.append('file',file);
+    const res=await fetch('/api/mentor/autoreply/upload',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+session.access_token},
+      body:fd
+    });
+    const data=await res.json().catch(()=>null);
+    if(!res.ok)throw new Error(data?.error||'Upload lampiran Auto Reply gagal.');
+    return data;
+  }
+
+  async function saveMentorAutoReply(){
+    const btn=$('mentorAutoSaveBtn');
+    const name=String($('mentorAutoName')?.value||'').trim();
+    const matchType=$('mentorAutoMatchType')?.value||'contains';
+    const replyType=$('mentorAutoReplyType')?.value||'text';
+    const replyText=String($('mentorAutoReplyText')?.value||'').trim();
+    const keywords=mentorAutoKeywordList($('mentorAutoKeywords')?.value||'');
+    const start=$('mentorAutoStartTime')?.value||'';
+    const end=$('mentorAutoEndTime')?.value||'';
+    if(name.length<2)throw new Error('Nama Auto Reply wajib diisi.');
+    if(matchType!=='fallback'&&!keywords.length)throw new Error('Isi minimal satu kata kunci.');
+    if(replyType==='text'&&!replyText)throw new Error('Isi balasan wajib diisi.');
+    if(Boolean(start)!==Boolean(end))throw new Error('Jam aktif harus diisi lengkap: mulai dan selesai.');
+
+    let media=mentorAutoEditingMedia;
+    if(replyType!=='text'&&mentorAutoPendingFile){
+      if($('mentorAutoFormStatus'))$('mentorAutoFormStatus').textContent='Mengunggah lampiran...';
+      media=await uploadMentorAutoReplyMedia(mentorAutoPendingFile);
+    }
+    if(replyType!=='text'&&!media?.id)throw new Error('Pilih foto atau file untuk tipe balasan ini.');
+    if(replyType==='text')media=null;
+
+    const old=btn?.textContent||'SIMPAN AUTO REPLY';
+    if(btn){btn.disabled=true;btn.textContent='MENYIMPAN...'}
+    try{
+      await api('/rest/v1/rpc/admin_mentor_autoreply_save',{
+        method:'POST',
+        body:JSON.stringify({
+          p_id:$('mentorAutoId')?.value||null,
+          p_name:name,
+          p_keywords:keywords,
+          p_match_type:matchType,
+          p_reply_message_type:replyType,
+          p_reply_text:replyText||null,
+          p_drive_file_id:media?.id||null,
+          p_drive_web_view_link:media?.url||null,
+          p_file_name:media?.name||null,
+          p_file_mime:media?.mime||null,
+          p_file_size:media?.size||null,
+          p_priority:Number($('mentorAutoPriority')?.value||100),
+          p_cooldown_minutes:Number($('mentorAutoCooldown')?.value||10),
+          p_active_start_time:start||null,
+          p_active_end_time:end||null,
+          p_is_active:$('mentorAutoStatus')?.value!=='inactive'
+        })
+      });
+      closeMentorAutoReplyModal();
+      await loadMentorAutoReplyRules();
+      mentorAdminToast('Auto Reply berhasil disimpan');
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old}
+    }
+  }
+
+  async function toggleMentorAutoReply(id){
+    const rule=mentorAutoReplyRules.find(r=>r.id===id);if(!rule)return;
+    await api('/rest/v1/rpc/admin_mentor_autoreply_save',{
+      method:'POST',body:JSON.stringify(mentorAutoRulePayload(rule,!rule.is_active))
+    });
+    await loadMentorAutoReplyRules();
+    mentorAdminToast(rule.is_active?'Auto Reply dinonaktifkan':'Auto Reply diaktifkan');
+  }
+
+  async function deleteMentorAutoReply(id){
+    const rule=mentorAutoReplyRules.find(r=>r.id===id);if(!rule)return;
+    if(!window.confirm('Hapus Auto Reply "'+rule.name+'"? Riwayat chat yang sudah terkirim tetap disimpan.'))return;
+    await api('/rest/v1/rpc/admin_mentor_autoreply_delete',{method:'POST',body:JSON.stringify({p_id:id})});
+    await loadMentorAutoReplyRules();
+    mentorAdminToast('Auto Reply dihapus');
+  }
+
+  function renderMentorAutoReplyLogs(){
+    const list=$('mentorAutoLogList');if(!list)return;
+    list.innerHTML=mentorAutoReplyLogs.map(row=>
+      '<article class="mentor-auto-log">'+
+        '<div class="mentor-auto-log-head"><b>'+esc(row.member_name||'Member BADAI')+' • '+esc(row.rule_name||'Auto Reply')+'</b><span>'+esc(mentorAutoDateTime(row.created_at))+'</span></div>'+
+        '<div class="mentor-auto-rule-meta"><span>Keyword: '+esc(row.matched_keyword||'Fallback')+'</span></div>'+
+        '<div class="mentor-auto-log-grid">'+
+          '<div><span>PESAN MEMBER</span><p>'+esc(row.incoming_text||'-')+'</p></div>'+
+          '<div><span>BALASAN OTOMATIS</span><p>'+esc(row.reply_text||'Lampiran otomatis')+'</p></div>'+
+        '</div>'+
+      '</article>'
+    ).join('')||'<div class="empty">Belum ada Auto Reply yang terpicu.</div>';
+  }
+
+  async function loadMentorAutoReplyLogs(){
+    const rows=await api('/rest/v1/rpc/admin_mentor_autoreply_logs',{
+      method:'POST',body:JSON.stringify({p_limit:200})
+    })||[];
+    mentorAutoReplyLogs=rows;
+    renderMentorAutoReplyLogs();
+  }
+
+  function switchMentorAdminFeature(feature){
+    mentorAdminFeature=['chat','autoreply','log'].includes(feature)?feature:'chat';
+    document.querySelectorAll('[data-mentor-feature]').forEach(btn=>{
+      btn.classList.toggle('active',btn.dataset.mentorFeature===mentorAdminFeature);
+    });
+    const isChat=mentorAdminFeature==='chat';
+    $('mentorAdminLayout')?.classList.toggle('hidden',!isChat);
+    if(!isChat){
+      $('mentorOpsPanel')?.classList.add('hidden');
+      $('mentorChatSettingsBtn')?.setAttribute('aria-expanded','false');
+      $('mentorChatSettingsBtn')?.classList.remove('active');
+    }
+    $('mentorChatSettingsBtn')?.classList.toggle('hidden',!isChat);
+    $('mentorAutoReplyPanel')?.classList.toggle('hidden',mentorAdminFeature!=='autoreply');
+    $('mentorAutoReplyLogPanel')?.classList.toggle('hidden',mentorAdminFeature!=='log');
+    if(mentorAdminFeature==='chat')loadMentorInbox().catch(()=>{});
+    if(mentorAdminFeature==='autoreply')loadMentorAutoReplyRules().catch(err=>mentorAdminToast(err.message||'Gagal memuat Auto Reply'));
+    if(mentorAdminFeature==='log')loadMentorAutoReplyLogs().catch(err=>mentorAdminToast(err.message||'Gagal memuat log'));
+  }
+
   function mentorAdminToast(message){
     let node=$('mentorAdminToast');
     if(!node){node=document.createElement('div');node.id='mentorAdminToast';node.className='mentor-admin-toast';document.body.appendChild(node)}
@@ -10123,6 +10392,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const m=mentorAdminMessageRows.get(messageId);if(!m)return;
     const state=mentorAdminUiState.get(messageId)||{};
     if(action==='reply'){setMentorAdminReply(messageId);return}
+    if(action==='autoreply'){openMentorAutoReplyModal(null,m);return}
     if(action==='copy'){
       const text=mentorAdminMessageSummary(m);
       try{await navigator.clipboard.writeText(text);mentorAdminToast('Pesan disalin')}catch(_){mentorAdminToast('Gagal menyalin pesan')}
@@ -10149,8 +10419,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const menu=document.createElement('div');
     menu.className='mentor-message-menu';
     menu.dataset.messageId=messageId;
+    const message=mentorAdminMessageRows.get(messageId);
+    const autoReplyAction=message&&message.sender_kind==='mentor'&&!message.is_auto_reply&&['text','image','file'].includes(message.message_type)
+      ? '<button type="button" data-msg-action="autoreply"><span>⚡</span>Jadikan Auto Reply</button>'
+      : '';
     menu.innerHTML=
       '<button type="button" data-msg-action="reply"><span>↩</span>Balas</button>'+
+      autoReplyAction+
       '<button type="button" data-msg-action="copy"><span>▣</span>Salin</button>'+
       '<button type="button" data-msg-action="reaction"><span>☺</span>Reaksi</button>'+
       '<div class="mentor-menu-reactions hidden">'+['👍','❤️','😂','😮','😢','🙏'].map(x=>'<button type="button" data-msg-emoji="'+x+'">'+x+'</button>').join('')+'</div>'+
@@ -10168,7 +10443,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadMentorAdminMessages(forceScroll=false){
     if(!mentorActiveConversation?.conversation_id)return;
     const id=mentorActiveConversation.conversation_id;
-    const rows=await api('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,created_at&order=created_at.desc&limit=100')||[];
+    const rows=await api('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+'&select=id,sender_kind,message_type,body,sticker_key,drive_file_id,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,is_auto_reply,autoreply_rule_id,created_at&order=created_at.desc&limit=100')||[];
     const uiRows=await api('/rest/v1/rpc/mentor_message_ui_state',{method:'POST',body:JSON.stringify({p_conversation_id:id})}).catch(()=>[])||[];
     mentorAdminUiState=new Map(uiRows.map(x=>[x.message_id,x]));
     const ordered=rows.slice().reverse();
@@ -10203,7 +10478,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
           if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
           html+='<div id="mentor-msg-'+esc(m.id)+'" class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorAdminSelectedIds.has(String(m.id))?' chat-selected':'')+'" data-message-id="'+esc(m.id)+'">'+
             '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+esc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
-            (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
+            (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+
+            (m.is_auto_reply?'<span class="mentor-auto-badge" title="Dikirim otomatis">AUTO</span>':'')+reply+body+
             '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+receipt+'</div>'+
             (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>';
         });
@@ -10624,6 +10900,44 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     btn?.setAttribute('aria-expanded',String(Boolean(willOpen)));
     btn?.classList.toggle('active',Boolean(willOpen));
   });
+
+  document.querySelectorAll('[data-mentor-feature]').forEach(btn=>{
+    btn.addEventListener('click',()=>switchMentorAdminFeature(btn.dataset.mentorFeature));
+  });
+  $('mentorAutoCreateBtn')?.addEventListener('click',()=>openMentorAutoReplyModal());
+  $('mentorAutoLogRefreshBtn')?.addEventListener('click',()=>loadMentorAutoReplyLogs().catch(err=>mentorAdminToast(err.message||'Gagal memuat log')));
+  $('mentorAutoModalClose')?.addEventListener('click',closeMentorAutoReplyModal);
+  $('mentorAutoCancelBtn')?.addEventListener('click',closeMentorAutoReplyModal);
+  $('mentorAutoReplyModal')?.addEventListener('click',e=>{if(e.target===$('mentorAutoReplyModal'))closeMentorAutoReplyModal()});
+  $('mentorAutoMatchType')?.addEventListener('change',syncMentorAutoModalFields);
+  $('mentorAutoReplyType')?.addEventListener('change',syncMentorAutoModalFields);
+  $('mentorAutoMediaInput')?.addEventListener('change',e=>{
+    mentorAutoPendingFile=e.target.files?.[0]||null;
+    if(mentorAutoPendingFile){
+      if($('mentorAutoReplyType'))$('mentorAutoReplyType').value=mentorAutoPendingFile.type?.startsWith('image/')?'image':'file';
+    }
+    syncMentorAutoModalFields();
+  });
+  $('mentorAutoMediaRemove')?.addEventListener('click',()=>{
+    mentorAutoPendingFile=null;mentorAutoEditingMedia=null;
+    if($('mentorAutoMediaInput'))$('mentorAutoMediaInput').value='';
+    syncMentorAutoModalFields();
+  });
+  $('mentorAutoSaveBtn')?.addEventListener('click',async()=>{
+    try{await saveMentorAutoReply()}
+    catch(err){if($('mentorAutoFormStatus'))$('mentorAutoFormStatus').textContent='✕ '+(err.message||'Gagal menyimpan Auto Reply.')}
+  });
+  $('mentorAutoRuleList')?.addEventListener('click',async e=>{
+    const btn=e.target.closest('[data-auto-action]');if(!btn)return;
+    const id=btn.dataset.id,action=btn.dataset.autoAction;
+    try{
+      if(action==='edit'){
+        const rule=mentorAutoReplyRules.find(r=>r.id===id);if(rule)openMentorAutoReplyModal(rule);
+      }else if(action==='toggle')await toggleMentorAutoReply(id);
+      else if(action==='delete')await deleteMentorAutoReply(id);
+    }catch(err){mentorAdminToast(err.message||'Gagal mengatur Auto Reply')}
+  });
+  switchMentorAdminFeature('chat');
 
   function setMentorInboxCollapsed(){
     const layout=$('mentorAdminLayout'),btn=$('mentorInboxCollapseBtn');
