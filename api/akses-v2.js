@@ -1308,6 +1308,49 @@ module.exports = async function handler(req, res) {
     }
   }
 
+
+  #mentor{padding-bottom:105px!important}
+  .mentor-member-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:16px 4px 12px;border-bottom:1px solid #2c2027}
+  .mentor-member-head h1{margin:4px 0 6px;color:#fff;font:900 28px/1 "Raleway",Arial,sans-serif;letter-spacing:-.03em}
+  .mentor-member-head p{margin:0;max-width:520px;color:#aaa;font:700 12px/1.55 "Nunito",Arial,sans-serif}
+  .mentor-kicker{color:#ff77ba;font:950 9px/1 "Nunito",Arial,sans-serif;letter-spacing:.1em}
+  .mentor-member-status{flex:0 0 auto;padding:7px 10px;border:1px solid #343434;border-radius:999px;background:#101010;color:#aaa;font:900 8px/1 "Nunito",Arial,sans-serif}
+  .mentor-member-status.online{border-color:#28573a;color:#78dfa0;background:#0c1710}
+  .mentor-chat-card{margin-top:12px;border:1px solid #292929;border-radius:18px;background:#080808;overflow:hidden}
+  .mentor-message-list{height:min(58vh,520px);min-height:350px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:radial-gradient(circle at 50% -20%,#1c0c15 0,#090909 36%,#060606 100%)}
+  .mentor-empty{margin:auto;color:#7d7d7d;text-align:center;font:800 11px/1.5 "Nunito",Arial,sans-serif}
+  .mentor-msg{max-width:82%;padding:9px 11px;border-radius:14px;display:grid;gap:4px}
+  .mentor-msg.member{align-self:flex-end;background:#ff4fa3;color:#111;border-bottom-right-radius:4px}
+  .mentor-msg.mentor{align-self:flex-start;background:#171717;color:#fff;border:1px solid #2b2b2b;border-bottom-left-radius:4px}
+  .mentor-msg.system{align-self:center;background:#161016;color:#d3a7bd;border:1px solid #3d2833;text-align:center}
+  .mentor-msg .who{font:950 7px/1 "Nunito",Arial,sans-serif;letter-spacing:.07em;opacity:.75}
+  .mentor-msg .body{white-space:pre-wrap;overflow-wrap:anywhere;font:750 12px/1.42 "Nunito",Arial,sans-serif}
+  .mentor-msg .time{justify-self:end;font:800 7px/1 "Nunito",Arial,sans-serif;opacity:.6}
+  .mentor-msg.sticker .body{font-size:34px;line-height:1.1}
+  .mentor-msg-file{display:flex;align-items:center;gap:8px;color:inherit;text-decoration:none;font-weight:900}
+  .mentor-sticker-tray{display:flex;gap:7px;padding:9px 10px;border-top:1px solid #242424;overflow:auto;background:#0c0c0c}
+  .mentor-sticker-tray.hidden{display:none}
+  .mentor-sticker-tray button{flex:0 0 auto;width:40px;height:40px;border:1px solid #303030;border-radius:11px;background:#151515;font-size:21px;cursor:pointer}
+  .mentor-composer{display:grid;grid-template-columns:38px 38px minmax(0,1fr) auto;gap:7px;padding:9px;border-top:1px solid #242424;background:#0b0b0b;align-items:end}
+  .mentor-icon-btn{width:38px;height:38px;display:grid;place-items:center;border:1px solid #303030;border-radius:11px;background:#151515;color:#fff;font-size:18px;cursor:pointer;box-sizing:border-box}
+  .mentor-composer textarea{min-height:38px;max-height:110px;resize:none;padding:10px 11px;border:1px solid #303030;border-radius:12px;background:#111;color:#fff;outline:none;font:750 11px/1.4 "Nunito",Arial,sans-serif;box-sizing:border-box}
+  .mentor-composer textarea:focus{border-color:#ff4fa3}
+  .mentor-send-btn{min-height:38px;padding:0 13px;border:0;border-radius:11px;background:#ff4fa3;color:#111;font:950 9px/1 "Raleway",Arial,sans-serif;cursor:pointer}
+  .mentor-upload-note{padding:0 10px 10px;color:#6f6f6f;font:700 7.5px/1.4 "Nunito",Arial,sans-serif;background:#0b0b0b}
+  .mentor-archive-note{margin-top:10px;padding:11px 12px;border:1px solid #2b2230;border-radius:13px;background:#100c0f;display:grid;gap:4px}
+  .mentor-archive-note b{color:#ff8fc5;font:950 8px/1 "Nunito",Arial,sans-serif;letter-spacing:.08em}
+  .mentor-archive-note span{color:#8d8288;font:700 9px/1.45 "Nunito",Arial,sans-serif}
+  @media(max-width:560px){
+    .mentor-member-head{display:grid}
+    .mentor-member-head h1{font-size:23px}
+    .mentor-member-status{justify-self:start}
+    .mentor-message-list{height:52vh;min-height:310px;padding:10px}
+    .mentor-composer{grid-template-columns:34px 34px minmax(0,1fr) auto;gap:5px;padding:7px}
+    .mentor-icon-btn{width:34px;height:36px}
+    .mentor-send-btn{min-height:36px;padding:0 9px;font-size:8px}
+    .mentor-msg{max-width:88%}
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -1609,6 +1652,144 @@ document.addEventListener('DOMContentLoaded', function(){
     if(plan)applyResolvedPlan(plan)
   });
   var codeNode=el('affiliateCode');if(codeNode&&typeof MutationObserver!=='undefined')new MutationObserver(function(){affiliateRenderedCode='';bootAffiliate(0)}).observe(codeNode,{childList:true,subtree:true,characterData:true});
+
+
+  var mentorConversationId='';
+  var mentorPollTimer=null;
+  var mentorLastKey='';
+
+  function mentorEsc(value){
+    return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]
+    })
+  }
+  function mentorHeaders(json){
+    var s=memberSession();
+    var h={apikey:SUPABASE_KEY,Authorization:'Bearer '+(s&&s.access_token?s.access_token:'')};
+    if(json!==false)h['Content-Type']='application/json';
+    return h
+  }
+  async function mentorFetch(path,options){
+    var res=await fetch(SUPABASE_URL+path,Object.assign({},options||{},{headers:Object.assign(mentorHeaders(true),(options&&options.headers)||{})}));
+    var text=await res.text(),data=null;
+    if(text){try{data=JSON.parse(text)}catch(_){data=text}}
+    if(!res.ok)throw new Error((data&&(data.message||data.error||data.msg))||'Gagal memuat Mentor');
+    return data
+  }
+  function mentorTime(value){
+    try{return new Intl.DateTimeFormat('id-ID',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'}).format(new Date(value))}catch(_){return ''}
+  }
+  function renderMentorMessages(rows){
+    var list=el('mentorMessageList');if(!list)return;
+    var key=(rows||[]).map(function(x){return x.id}).join(',');
+    if(key===mentorLastKey)return;
+    mentorLastKey=key;
+    if(!rows||!rows.length){list.innerHTML='<div class="mentor-empty">Belum ada percakapan. Kirim pertanyaan pertama kamu 👇</div>';return}
+    list.innerHTML=rows.map(function(m){
+      var who=m.sender_kind==='mentor'?'MENTOR BADAI':m.sender_kind==='member'?'KAMU':'BADAI';
+      var body='';
+      if(m.message_type==='sticker')body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
+      else if(m.message_type==='image'||m.message_type==='file'){
+        var label=m.file_name||'Lampiran';
+        var link=m.drive_web_view_link||'#';
+        body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(link)+'" target="_blank" rel="noopener">📎 '+mentorEsc(label)+'</a></div>';
+      }else body='<div class="body">'+mentorEsc(m.body||'')+'</div>';
+      return '<div class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+'"><span class="who">'+who+'</span>'+body+'<span class="time">'+mentorTime(m.created_at)+'</span></div>'
+    }).join('');
+    list.scrollTop=list.scrollHeight
+  }
+  async function loadMentorMessages(){
+    if(!mentorConversationId)return;
+    var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,created_at&order=created_at.desc&limit=60');
+    rows=(rows||[]).reverse();
+    renderMentorMessages(rows);
+    mentorFetch('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){})
+  }
+  async function bootMentor(){
+    var status=el('mentorMemberStatus');if(status){status.textContent='Menghubungkan...';status.classList.remove('online')}
+    try{
+      var rows=await mentorFetch('/rest/v1/rpc/mentor_get_or_create_conversation',{method:'POST',body:'{}'});
+      var row=Array.isArray(rows)?rows[0]:rows;
+      mentorConversationId=row&&row.conversation_id?row.conversation_id:'';
+      if(!mentorConversationId)throw new Error('Percakapan belum tersedia');
+      if(status){status.textContent='● MENTOR ONLINE';status.classList.add('online')}
+      await loadMentorMessages()
+    }catch(err){
+      if(status){status.textContent='GAGAL TERHUBUNG';status.classList.remove('online')}
+      var list=el('mentorMessageList');if(list)list.innerHTML='<div class="mentor-empty">'+mentorEsc(err.message||'Gagal membuka Mentor')+'</div>'
+    }
+  }
+  async function sendMentorPayload(type,body,sticker,fileData){
+    if(!mentorConversationId)await bootMentor();
+    if(!mentorConversationId)return;
+    await mentorFetch('/rest/v1/rpc/mentor_send_message',{
+      method:'POST',
+      body:JSON.stringify({
+        p_conversation_id:mentorConversationId,
+        p_message_type:type,
+        p_body:body||null,
+        p_sticker_key:sticker||null,
+        p_drive_file_id:fileData&&fileData.id?fileData.id:null,
+        p_drive_web_view_link:fileData&&fileData.url?fileData.url:null,
+        p_file_name:fileData&&fileData.name?fileData.name:null,
+        p_file_mime:fileData&&fileData.mime?fileData.mime:null,
+        p_file_size:fileData&&fileData.size?fileData.size:null
+      })
+    });
+    mentorLastKey='';
+    await loadMentorMessages()
+  }
+  async function uploadMentorFile(file){
+    if(!file)return;
+    if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
+    var s=memberSession();if(!s||!s.access_token)throw new Error('Session member tidak tersedia.');
+    var fd=new FormData();fd.append('file',file);fd.append('conversation_id',mentorConversationId||'');
+    var res=await fetch('/api/mentor/upload',{method:'POST',headers:{Authorization:'Bearer '+s.access_token},body:fd});
+    var data=await res.json().catch(function(){return null});
+    if(!res.ok)throw new Error((data&&(data.error||data.message))||'Google Drive belum terhubung.');
+    return data
+  }
+
+  var mentorNav=el('mentorNavButton');
+  if(mentorNav)mentorNav.addEventListener('click',function(){setTimeout(bootMentor,30)});
+  var mentorForm=el('mentorComposer');
+  if(mentorForm)mentorForm.addEventListener('submit',async function(e){
+    e.preventDefault();var input=el('mentorMessageInput');var text=String(input&&input.value||'').trim();if(!text)return;
+    var btn=el('mentorSendBtn');if(btn)btn.disabled=true;
+    try{await sendMentorPayload('text',text,null,null);if(input)input.value=''}
+    catch(err){alert(err.message||'Pesan gagal dikirim.')}
+    finally{if(btn)btn.disabled=false}
+  });
+  var stickerBtn=el('mentorStickerBtn'),stickerTray=el('mentorStickerTray');
+  if(stickerBtn&&stickerTray)stickerBtn.addEventListener('click',function(){stickerTray.classList.toggle('hidden')});
+  document.querySelectorAll('[data-mentor-sticker]').forEach(function(btn){
+    btn.addEventListener('click',async function(){
+      try{await sendMentorPayload('sticker',null,btn.getAttribute('data-mentor-sticker'),null);stickerTray&&stickerTray.classList.add('hidden')}
+      catch(err){alert(err.message||'Stiker gagal dikirim.')}
+    })
+  });
+  var fileInput=el('mentorFileInput');
+  if(fileInput)fileInput.addEventListener('change',async function(){
+    var file=fileInput.files&&fileInput.files[0];if(!file)return;
+    var note=el('mentorUploadNote');if(note)note.textContent='Mengunggah '+file.name+' ke Google Drive...';
+    try{
+      if(!mentorConversationId)await bootMentor();
+      var data=await uploadMentorFile(file);
+      await sendMentorPayload(file.type&&file.type.indexOf('image/')===0?'image':'file',null,null,data);
+      if(note)note.textContent='File berhasil disimpan di Google Drive.'
+    }catch(err){
+      if(note)note.textContent=err.message||'Google Drive belum terhubung.';
+      alert(err.message||'Upload gagal.')
+    }finally{fileInput.value=''}
+  });
+  mentorPollTimer=setInterval(function(){
+    var screen=el('mentor');
+    if(screen&&screen.classList.contains('active')&&document.visibilityState==='visible'){
+      if(mentorConversationId)loadMentorMessages().catch(function(){})
+      else bootMentor()
+    }
+  },4000);
+
 
   setupAffiliateTabs();syncPlanAccess();setTimeout(resolveRealPlan,250);setTimeout(resolveRealPlan,1500);setTimeout(function(){bootAffiliate(0)},350);
 });
