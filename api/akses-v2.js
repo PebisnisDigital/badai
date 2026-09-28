@@ -1341,6 +1341,7 @@ module.exports = async function handler(req, res) {
     box-sizing:border-box
   }
   .mentor-nav-badge.hidden{display:none!important}
+  .footer #mentorNavButton .mentor-nav-badge.hidden{display:none!important}
   .mentor-chat-card{margin-top:12px;border:1px solid #292929;border-radius:18px;background:#080808;overflow:hidden}
   .mentor-message-list{height:min(58vh,520px);min-height:350px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:radial-gradient(circle at 50% -20%,#1c0c15 0,#090909 36%,#060606 100%)}
   .mentor-empty{margin:auto;color:#7d7d7d;text-align:center;font:800 11px/1.5 "Nunito",Arial,sans-serif}
