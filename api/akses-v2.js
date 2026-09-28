@@ -1617,6 +1617,17 @@ module.exports = async function handler(req, res) {
     opacity:.94;
   }
 
+  /* Roboto inside Mentor chat only, closer to WhatsApp's neutral UI feel */
+  #mentor .mentor-chat-card,
+  #mentor .mentor-chat-card *{
+    font-family:"Roboto",Arial,sans-serif!important;
+  }
+  #mentor .mentor-wa-inline-code,
+  #mentor .mentor-wa-code,
+  #mentor .mentor-wa-code code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
