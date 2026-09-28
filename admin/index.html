@@ -3308,6 +3308,8 @@ th,td{padding:14px 12px!important}
 #pageMentor .mentor-chat-select-bar.hidden{display:none}
 #pageMentor .mentor-chat-select-bar button{min-height:34px;border:0;border-radius:9px;background:#2a3942;color:#e9edef;font-weight:900;cursor:pointer}
 #pageMentor .mentor-chat-select-bar .delete-selected{padding:0 12px;background:#ff4fa3;color:#111}
+#pageMentor .mentor-chat-select-bar .delete-selected.permanent{background:#e5484d!important;color:#fff!important}
+#pageMentor .mentor-chat-manage-menu button.permanent{color:#ff7b82}
 #pageMentor .mentor-chat-select-bar b{font-size:10px;color:#e9edef}
 #pageMentor #mentorThreadView.chat-select-mode .mentor-admin-msg[data-message-id]{cursor:pointer!important;outline:1px solid transparent;position:relative}
 #pageMentor #mentorThreadView.chat-select-mode .mentor-admin-msg[data-message-id]::after{
@@ -9379,6 +9381,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   let mentorAdminSelectMode=false;
+  let mentorAdminPermanentMode=false;
   const mentorAdminSelectedIds=new Set();
 
   function adminCurrentManageScope(){
@@ -9398,7 +9401,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       menu=document.createElement('div');
       menu.id='mentorAdminChatManageMenu';menu.className='mentor-chat-manage-menu hidden';
       menu.innerHTML='<button type="button" data-admin-chat-manage="clear" class="danger">⌫ <span>Bersihkan semua chat</span></button>'+
-        '<button type="button" data-admin-chat-manage="select">☑ <span>Hapus beberapa chat</span></button>';
+        '<button type="button" data-admin-chat-manage="select">☑ <span>Hapus beberapa chat</span></button>'+
+        '<button id="mentorAdminPermanentOption" type="button" data-admin-chat-manage="permanent" class="permanent hidden">⚠ <span>Hapus permanen</span></button>';
       view.appendChild(menu);
     }
     let bar=$('mentorAdminChatSelectBar');
@@ -9407,6 +9411,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       bar.innerHTML='<button type="button" id="mentorAdminSelectCancel">×</button><b><span id="mentorAdminSelectedCount">0</span> pesan dipilih</b><button type="button" id="mentorAdminDeleteSelected" class="delete-selected">HAPUS</button>';
       view.appendChild(bar);
     }
+    $('mentorAdminPermanentOption')?.classList.toggle('hidden',!['owner','super_admin'].includes(currentTeam?.role));
   }
 
   function updateAdminChatSelectionUi(){
@@ -9414,13 +9419,23 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('mentorThreadView')?.classList.toggle('chat-select-mode',mentorAdminSelectMode);
     $('mentorAdminChatSelectBar')?.classList.toggle('hidden',!mentorAdminSelectMode);
     if($('mentorAdminSelectedCount'))$('mentorAdminSelectedCount').textContent=String(mentorAdminSelectedIds.size);
+    const deleteBtn=$('mentorAdminDeleteSelected');
+    if(deleteBtn){
+      deleteBtn.textContent=mentorAdminPermanentMode?'HAPUS PERMANEN':'HAPUS';
+      deleteBtn.classList.toggle('permanent',mentorAdminPermanentMode);
+    }
     document.querySelectorAll('#mentorAdminMessageList .mentor-admin-msg[data-message-id]').forEach(node=>{
       node.classList.toggle('chat-selected',mentorAdminSelectedIds.has(node.dataset.messageId));
     });
   }
 
   function closeAdminChatManageMenu(){$('mentorAdminChatManageMenu')?.classList.add('hidden')}
-  function exitAdminChatSelection(){mentorAdminSelectMode=false;mentorAdminSelectedIds.clear();updateAdminChatSelectionUi()}
+  function exitAdminChatSelection(){
+    mentorAdminSelectMode=false;
+    mentorAdminPermanentMode=false;
+    mentorAdminSelectedIds.clear();
+    updateAdminChatSelectionUi()
+  }
 
   async function reloadManagedAdminChat(){
     mentorAdminLastKey='';
@@ -9437,6 +9452,46 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     await api('/rest/v1/rpc/chat_clear_for_me',{method:'POST',body:JSON.stringify({p_scope_kind:scope.kind,p_scope_key:scope.key})});
     exitAdminChatSelection();closeAdminChatManageMenu();mentorAdminLastKey='';
     await reloadManagedAdminChat();mentorAdminToast('Chat sudah dibersihkan dari akun ini');
+  }
+
+  async function permanentlyDeleteSelectedAdminChat(){
+    if(!['owner','super_admin'].includes(currentTeam?.role)){
+      throw new Error('Hanya Owner atau Super Admin yang dapat menghapus permanen.');
+    }
+    if(!mentorAdminSelectedIds.size){mentorAdminToast('Pilih minimal satu pesan.');return}
+    const scope=adminCurrentManageScope();if(!scope)return;
+    const ids=Array.from(mentorAdminSelectedIds);
+
+    const confirmText=window.prompt(
+      'PERINGATAN: '+ids.length+' pesan akan dihapus permanen dari sistem. Foto/file yang terkait juga akan dihapus dari Google Drive.\n\nKetik: HAPUS PERMANEN'
+    );
+    if(confirmText!=='HAPUS PERMANEN'){
+      mentorAdminToast('Hapus permanen dibatalkan.');
+      return;
+    }
+
+    const response=await fetch('/api/admin/chat/permanent-delete',{
+      method:'POST',
+      headers:{
+        Authorization:'Bearer '+session.access_token,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        scope_kind:scope.kind,
+        message_ids:ids
+      })
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||'Gagal menghapus permanen.');
+
+    exitAdminChatSelection();
+    mentorAdminLastKey='';
+    await reloadManagedAdminChat();
+
+    let message=String(data.deleted_messages||ids.length)+' pesan dihapus permanen';
+    if(Number(data.drive_deleted||0)>0)message+=' • '+Number(data.drive_deleted)+' file Drive dibersihkan';
+    if(Number(data.drive_failed||0)>0)message+=' • '+Number(data.drive_failed)+' file masuk antrean ulang';
+    mentorAdminToast(message);
   }
 
   async function deleteSelectedAdminChat(){
@@ -10437,13 +10492,29 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     try{
       if(btn.dataset.adminChatManage==='clear')await clearCurrentAdminChat();
       if(btn.dataset.adminChatManage==='select'){
-        closeAdminChatManageMenu();mentorAdminSelectMode=true;mentorAdminSelectedIds.clear();updateAdminChatSelectionUi();
+        closeAdminChatManageMenu();
+        mentorAdminPermanentMode=false;
+        mentorAdminSelectMode=true;
+        mentorAdminSelectedIds.clear();
+        updateAdminChatSelectionUi();
+      }
+      if(btn.dataset.adminChatManage==='permanent'){
+        if(!['owner','super_admin'].includes(currentTeam?.role))throw new Error('Hanya Owner atau Super Admin.');
+        closeAdminChatManageMenu();
+        mentorAdminPermanentMode=true;
+        mentorAdminSelectMode=true;
+        mentorAdminSelectedIds.clear();
+        updateAdminChatSelectionUi();
+        mentorAdminToast('Pilih pesan yang benar-benar ingin dihapus permanen.');
       }
     }catch(err){mentorAdminToast(err.message||'Gagal mengatur chat.')}
   });
   $('mentorAdminSelectCancel')?.addEventListener('click',exitAdminChatSelection);
   $('mentorAdminDeleteSelected')?.addEventListener('click',async()=>{
-    try{await deleteSelectedAdminChat()}catch(err){mentorAdminToast(err.message||'Gagal menghapus pesan.')}
+    try{
+      if(mentorAdminPermanentMode)await permanentlyDeleteSelectedAdminChat();
+      else await deleteSelectedAdminChat();
+    }catch(err){mentorAdminToast(err.message||'Gagal menghapus pesan.')}
   });
 
   $('claimMentorChatBtn')?.addEventListener('click',async()=>{
