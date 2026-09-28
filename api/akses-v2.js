@@ -1360,6 +1360,74 @@ module.exports = async function handler(req, res) {
     .mentor-msg{max-width:88%}
   }
 
+
+  /* Mentor chat: familiar WhatsApp-style behavior, BADAI visual identity */
+  .mentor-chat-card{position:relative;border-radius:15px!important;background:#0b0b0b!important;border:1px solid #292929!important;overflow:hidden!important}
+  .mentor-wa-head{height:58px;display:flex;align-items:center;gap:10px;padding:8px 11px;border-bottom:1px solid #242424;background:#121212}
+  .mentor-wa-avatar{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:999px;background:linear-gradient(145deg,#ff4fa3,#a92367);color:#fff;font:950 16px/1 "Raleway",Arial,sans-serif}
+  .mentor-wa-person{min-width:0;display:grid;gap:3px}
+  .mentor-wa-person strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font:900 12px/1.1 "Nunito",Arial,sans-serif}
+  .mentor-wa-person span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#939393;font:750 8px/1.1 "Nunito",Arial,sans-serif}
+  .mentor-wa-person span.typing{color:#78dfa0}
+  .mentor-message-wrap{position:relative}
+  .mentor-message-list{height:min(60vh,560px)!important;min-height:380px!important;padding:14px 10px!important;gap:3px!important;background:
+    radial-gradient(circle at 12px 12px,rgba(255,255,255,.018) 1.2px,transparent 1.5px) 0 0/24px 24px,
+    linear-gradient(180deg,#0c0c0c,#080808)!important;scroll-behavior:smooth}
+  .mentor-date-sep{align-self:center;margin:8px 0 6px;padding:5px 9px;border-radius:8px;background:#1a1719;color:#aaa;font:850 7px/1 "Nunito",Arial,sans-serif;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .mentor-msg{position:relative;max-width:79%!important;padding:6px 7px 4px!important;border-radius:8px!important;display:block!important;box-shadow:0 1px 1px rgba(0,0,0,.22)}
+  .mentor-msg.member{align-self:flex-end!important;background:#512039!important;color:#fff!important;border:0!important;border-top-right-radius:2px!important}
+  .mentor-msg.mentor{align-self:flex-start!important;background:#202020!important;color:#f7f7f7!important;border:0!important;border-top-left-radius:2px!important}
+  .mentor-msg.system{align-self:center!important;background:#171317!important;color:#d6b3c4!important}
+  .mentor-msg .who{display:none!important}
+  .mentor-msg .body{font:650 11.5px/1.36 "Nunito",Arial,sans-serif!important;padding:1px 2px 0}
+  .mentor-msg-meta{display:flex;align-items:center;justify-content:flex-end;gap:3px;min-height:11px;margin-top:1px;padding-left:20px;color:rgba(255,255,255,.56);font:750 6.8px/1 "Nunito",Arial,sans-serif}
+  .mentor-receipt{font-size:8px;letter-spacing:-2px;color:#a7a7a7;padding-right:2px}
+  .mentor-receipt.read{color:#55b9ff}
+  .mentor-msg.sticker{background:transparent!important;box-shadow:none!important;padding:3px!important}
+  .mentor-msg.sticker .body{font-size:38px!important;line-height:1.08!important}
+  .mentor-msg.sticker .mentor-msg-meta{padding:2px 4px;border-radius:7px;background:rgba(0,0,0,.35)}
+  .mentor-msg-image img{width:min(290px,100%)!important;max-height:330px!important;border-radius:6px!important;border:0!important}
+  .mentor-msg-image span{display:none}
+  .mentor-image-caption{padding:6px 3px 1px;font:650 11px/1.35 "Nunito",Arial,sans-serif}
+  .mentor-msg-file{min-width:190px;padding:8px;border-radius:7px;background:rgba(0,0,0,.18);text-decoration:none!important}
+  .mentor-file-icon{width:31px;height:31px;display:grid;place-items:center;border-radius:999px;background:#333;font-size:14px}
+  .mentor-file-copy{display:grid;gap:2px;min-width:0}
+  .mentor-file-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px}
+  .mentor-file-copy small{font-size:6.5px;opacity:.65}
+  .mentor-jump-latest{position:absolute;right:12px;bottom:12px;z-index:3;width:36px;height:36px;border:1px solid #343434;border-radius:999px;background:#202020;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.45);font-size:18px;cursor:pointer}
+  .mentor-jump-latest.hidden{display:none}
+  .mentor-sticker-tray{padding:8px 9px!important;background:#151515!important;border-top:1px solid #282828!important}
+  .mentor-sticker-tray button{background:#202020!important;border-color:#303030!important}
+  .mentor-attach-menu{display:flex;gap:9px;padding:9px 10px;border-top:1px solid #292929;background:#151515}
+  .mentor-attach-menu.hidden{display:none}
+  .mentor-attach-choice{flex:1;min-height:45px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid #303030;border-radius:10px;background:#202020;color:#fff;font:850 9px/1 "Nunito",Arial,sans-serif;cursor:pointer}
+  .mentor-attach-choice.image{color:#ff9dce}.mentor-attach-choice.file{color:#d8c6ff}
+  .mentor-pending-attachment{display:grid;grid-template-columns:48px minmax(0,1fr) 30px;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid #292929;background:#171717}
+  .mentor-pending-attachment.hidden{display:none}
+  .mentor-pending-preview{width:48px;height:48px;display:grid;place-items:center;border-radius:7px;background:#252525;overflow:hidden;font-size:20px}
+  .mentor-pending-preview img{width:100%;height:100%;object-fit:cover}
+  .mentor-pending-meta{min-width:0;display:grid;gap:3px}
+  .mentor-pending-meta strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:9px}
+  .mentor-pending-meta span{color:#888;font-size:7px}
+  .mentor-pending-attachment>button{width:28px;height:28px;border:0;border-radius:999px;background:#292929;color:#bbb;font-size:17px;cursor:pointer}
+  .mentor-composer{grid-template-columns:34px 34px minmax(0,1fr) 38px!important;gap:5px!important;padding:7px 8px!important;background:#121212!important;align-items:end!important}
+  .mentor-icon-btn{width:34px!important;height:38px!important;border:0!important;border-radius:999px!important;background:transparent!important;color:#a8a8a8!important;font-size:19px!important}
+  #mentorAttachBtn{transform:rotate(-28deg);font-size:21px!important}
+  .mentor-composer textarea{min-height:38px!important;max-height:108px!important;border:0!important;border-radius:20px!important;background:#262626!important;padding:10px 13px!important;color:#fff!important;font:650 11.5px/1.35 "Nunito",Arial,sans-serif!important;overflow-y:auto!important}
+  .mentor-composer textarea:focus{box-shadow:0 0 0 1px #45333c inset!important}
+  .mentor-send-btn{width:38px!important;height:38px!important;min-height:38px!important;padding:0!important;display:grid!important;place-items:center!important;border-radius:999px!important;background:#ff4fa3!important;color:#111!important;font-size:15px!important}
+  .mentor-send-btn:disabled{opacity:.55}
+  .mentor-upload-note{min-height:0!important;padding:0 10px!important;background:#121212!important;color:#777!important;font-size:6.5px!important;line-height:1.2!important}
+  .mentor-archive-note{display:none!important}
+  @media(max-width:560px){
+    .mentor-member-head{padding-bottom:8px!important}
+    .mentor-member-head p{display:none}
+    .mentor-message-list{height:calc(100dvh - 330px)!important;min-height:330px!important}
+    .mentor-msg{max-width:86%!important}
+    .mentor-composer{grid-template-columns:32px 32px minmax(0,1fr) 38px!important}
+    .mentor-icon-btn{width:32px!important}
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -1670,6 +1738,12 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorUnreadCount=0;
   var mentorOverviewBusy=false;
   var mentorToastTimer=null;
+  var mentorLastReadAt=null;
+  var mentorTypingTimer=null;
+  var mentorPendingFile=null;
+  var mentorPendingObjectUrl='';
+  var mentorInitialRender=true;
+  var mentorDraftKey='badai_mentor_draft';
 
   function mentorEsc(value){
     return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
@@ -1689,73 +1763,115 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!res.ok)throw new Error((data&&(data.message||data.error||data.msg))||'Gagal memuat Mentor');
     return data
   }
-  function mentorTime(value){
-    try{return new Intl.DateTimeFormat('id-ID',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'}).format(new Date(value))}catch(_){return ''}
+  function mentorClock(value){
+    try{return new Intl.DateTimeFormat('id-ID',{hour:'2-digit',minute:'2-digit'}).format(new Date(value))}catch(_){return ''}
+  }
+  function mentorDateKey(value){
+    try{
+      var d=new Date(value);
+      return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')
+    }catch(_){return ''}
+  }
+  function mentorDateLabel(value){
+    try{
+      var d=new Date(value),now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
+      if(mentorDateKey(d)===mentorDateKey(now))return 'HARI INI';
+      if(mentorDateKey(d)===mentorDateKey(y))return 'KEMARIN';
+      return new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'long',year:d.getFullYear()!==now.getFullYear()?'numeric':undefined}).format(d).toUpperCase()
+    }catch(_){return ''}
+  }
+  function mentorSize(bytes){
+    bytes=Number(bytes||0);if(!bytes)return '';
+    if(bytes<1024)return bytes+' B';
+    if(bytes<1024*1024)return Math.round(bytes/1024)+' KB';
+    return (bytes/(1024*1024)).toFixed(1)+' MB'
+  }
+  function mentorReceipt(createdAt){
+    var read=mentorLastReadAt&&new Date(mentorLastReadAt).getTime()>=new Date(createdAt).getTime();
+    return '<span class="mentor-receipt '+(read?'read':'')+'" title="'+(read?'Dibaca':'Terkirim')+'">✓✓</span>'
+  }
+  function mentorNearBottom(list){
+    return !list || list.scrollHeight-list.scrollTop-list.clientHeight<90
+  }
+  function mentorScrollBottom(force){
+    var list=el('mentorMessageList');if(!list)return;
+    if(force||mentorNearBottom(list)){list.scrollTop=list.scrollHeight;el('mentorJumpLatest')&&el('mentorJumpLatest').classList.add('hidden')}
   }
   function renderMentorMessages(rows){
     var list=el('mentorMessageList');if(!list)return;
-    var key=(rows||[]).map(function(x){return x.id}).join(',');
+    var wasNear=mentorNearBottom(list);
+    var key=(rows||[]).map(function(x){return x.id}).join(',')+'|'+String(mentorLastReadAt||'');
     if(key===mentorLastKey)return;
+    var hadMessages=mentorLastKey!=='';
     mentorLastKey=key;
-    if(!rows||!rows.length){list.innerHTML='<div class="mentor-empty">Belum ada percakapan. Kirim pertanyaan pertama kamu 👇</div>';return}
-    list.innerHTML=rows.map(function(m){
-      var who=m.sender_kind==='mentor'?'MENTOR BADAI':m.sender_kind==='member'?'KAMU':'BADAI';
-      var body='';
-      if(m.message_type==='sticker')body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
-      else if(m.message_type==='image'||m.message_type==='file'){
-        var label=m.file_name||'Lampiran';
-        var link=m.drive_web_view_link||'#';
-        if(m.message_type==='image'){
-          body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(link)+'" target="_blank" rel="noopener"><img src="'+mentorEsc(link)+'" alt="'+mentorEsc(label)+'" loading="lazy"><span>🖼 '+mentorEsc(label)+'</span></a></div>';
-        }else{
-          body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(link)+'" target="_blank" rel="noopener">📎 '+mentorEsc(label)+'</a></div>';
-        }
-      }else body='<div class="body">'+mentorEsc(m.body||'')+'</div>';
-      return '<div class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+'"><span class="who">'+who+'</span>'+body+'<span class="time">'+mentorTime(m.created_at)+'</span></div>'
-    }).join('');
-    list.scrollTop=list.scrollHeight
+    if(!rows||!rows.length){
+      list.innerHTML='<div class="mentor-empty">Belum ada percakapan. Kirim pertanyaan pertama kamu 👇</div>';
+      return
+    }
+    var html='',lastDay='';
+    rows.forEach(function(m){
+      var day=mentorDateKey(m.created_at);
+      if(day!==lastDay){html+='<div class="mentor-date-sep">'+mentorDateLabel(m.created_at)+'</div>';lastDay=day}
+      var body='',label=m.file_name||'Lampiran',link=m.drive_web_view_link||'#';
+      if(m.message_type==='sticker'){
+        body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
+      }else if(m.message_type==='image'){
+        body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(link)+'" target="_blank" rel="noopener"><img src="'+mentorEsc(link)+'" alt="'+mentorEsc(label)+'" loading="lazy"></a>'+
+          (m.body?'<div class="mentor-image-caption">'+mentorEsc(m.body)+'</div>':'')+'</div>';
+      }else if(m.message_type==='file'){
+        body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(link)+'" target="_blank" rel="noopener"><span class="mentor-file-icon">📄</span><span class="mentor-file-copy"><b>'+mentorEsc(label)+'</b><small>'+mentorEsc(mentorSize(m.file_size)||String(m.file_mime||'Dokumen'))+'</small></span></a>'+
+          (m.body?'<div class="mentor-image-caption">'+mentorEsc(m.body)+'</div>':'')+'</div>';
+      }else{
+        body='<div class="body">'+mentorEsc(m.body||'')+'</div>';
+      }
+      var receipt=m.sender_kind==='member'?mentorReceipt(m.created_at):'';
+      html+='<div class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+'">'+body+
+        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+receipt+'</div></div>'
+    });
+    list.innerHTML=html;
+    if(mentorInitialRender||wasNear){mentorScrollBottom(true)}
+    else if(hadMessages){el('mentorJumpLatest')&&el('mentorJumpLatest').classList.remove('hidden')}
+    mentorInitialRender=false
   }
   function mentorToast(message){
     var node=el('mentorToast');
-    if(!node){
-      node=document.createElement('div');
-      node.id='mentorToast';
-      node.className='mentor-toast';
-      document.body.appendChild(node);
-    }
-    node.textContent=message;
-    node.classList.add('show');
-    clearTimeout(mentorToastTimer);
-    mentorToastTimer=setTimeout(function(){node.classList.remove('show')},3200);
+    if(!node){node=document.createElement('div');node.id='mentorToast';node.className='mentor-toast';document.body.appendChild(node)}
+    node.textContent=message;node.classList.add('show');clearTimeout(mentorToastTimer);
+    mentorToastTimer=setTimeout(function(){node.classList.remove('show')},3200)
   }
-
   function mentorRelativeLastSeen(value){
-    if(!value)return 'Mentor sedang offline';
+    if(!value)return 'offline';
     var sec=Math.max(0,Math.floor((Date.now()-new Date(value).getTime())/1000));
-    if(sec<120)return 'Mentor baru saja aktif';
-    var min=Math.floor(sec/60);
-    if(min<60)return 'Terakhir aktif '+min+' menit lalu';
-    var hour=Math.floor(min/60);
-    return 'Terakhir aktif '+hour+' jam lalu';
+    if(sec<120)return 'terakhir dilihat baru saja';
+    var min=Math.floor(sec/60);if(min<60)return 'terakhir dilihat '+min+' menit lalu';
+    var hour=Math.floor(min/60);if(hour<24)return 'terakhir dilihat '+hour+' jam lalu';
+    return 'terakhir dilihat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(new Date(value))
   }
-
   function setMentorUnread(count){
     count=Math.max(0,Number(count||0));
     var badge=el('mentorUnreadBadge');
-    if(badge){
-      badge.textContent=count>99?'99+':String(count);
-      badge.classList.toggle('hidden',count<1);
-    }
-    if(mentorUnreadInitialized && count>mentorUnreadCount){
+    if(badge){badge.textContent=count>99?'99+':String(count);badge.classList.toggle('hidden',count<1)}
+    if(mentorUnreadInitialized&&count>mentorUnreadCount){
       mentorToast('💬 Ada pesan baru dari Mentor BADAI');
-      if(typeof Notification!=='undefined' && Notification.permission==='granted' && document.visibilityState!=='visible'){
+      if(typeof Notification!=='undefined'&&Notification.permission==='granted'&&document.visibilityState!=='visible'){
         try{new Notification('Mentor BADAI',{body:'Ada balasan baru dari mentor.'})}catch(_){}
       }
     }
-    mentorUnreadCount=count;
-    mentorUnreadInitialized=true;
+    mentorUnreadCount=count;mentorUnreadInitialized=true
   }
-
+  function setMentorStatus(row){
+    var status=el('mentorMemberStatus'),sub=el('mentorWaSubstatus'),name=el('mentorWaName');
+    if(name)name.textContent=row&&row.assigned_name?row.assigned_name:'Mentor BADAI';
+    var text='offline',typing=false,online=false;
+    if(row&&row.mentor_typing){text='sedang mengetik...';typing=true;online=true}
+    else if(row&&row.mentor_online){text='online';online=true}
+    else if(row){text=mentorRelativeLastSeen(row.mentor_last_seen_at)}
+    if(sub){sub.textContent=text;sub.classList.toggle('typing',typing)}
+    if(status){
+      status.textContent=typing?'MENGETIK...':(online?'● MENTOR ONLINE':'○ MENTOR OFFLINE');
+      status.classList.toggle('online',online);status.classList.toggle('offline',!online)
+    }
+  }
   async function refreshMentorOverview(){
     if(mentorOverviewBusy)return;
     mentorOverviewBusy=true;
@@ -1765,133 +1881,161 @@ document.addEventListener('DOMContentLoaded', function(){
       if(!row)return;
       if(row.conversation_id&&!mentorConversationId)mentorConversationId=row.conversation_id;
       setMentorUnread(row.unread_count||0);
-
-      var status=el('mentorMemberStatus');
-      if(status){
-        if(row.mentor_online){
-          status.textContent='● MENTOR ONLINE';
-          status.classList.add('online');
-          status.classList.remove('offline');
-          status.title=row.assigned_name?('Mentor: '+row.assigned_name):'Mentor BADAI sedang aktif';
-        }else{
-          status.textContent='○ '+mentorRelativeLastSeen(row.mentor_last_seen_at);
-          status.classList.remove('online');
-          status.classList.add('offline');
-          status.title=row.assigned_name?('Mentor: '+row.assigned_name):'';
-        }
-      }
+      if(String(row.mentor_last_read_at||'')!==String(mentorLastReadAt||'')){mentorLastReadAt=row.mentor_last_read_at||null;mentorLastKey=''}
+      setMentorStatus(row)
     }catch(_){}
     finally{mentorOverviewBusy=false}
   }
-
+  async function mentorSetTyping(value){
+    if(!mentorConversationId)return;
+    mentorFetch('/rest/v1/rpc/mentor_set_typing',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId,p_is_typing:Boolean(value)})}).catch(function(){})
+  }
+  function mentorTypingPulse(){
+    mentorSetTyping(true);clearTimeout(mentorTypingTimer);
+    mentorTypingTimer=setTimeout(function(){mentorSetTyping(false)},3200)
+  }
   async function loadMentorMessages(){
     if(!mentorConversationId)return;
-    var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,created_at&order=created_at.desc&limit=60');
-    rows=(rows||[]).reverse();
-    renderMentorMessages(rows);
-    await mentorFetch('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){});
+    var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,created_at&order=created_at.desc&limit=80');
+    rows=(rows||[]).reverse();renderMentorMessages(rows);
     var screen=el('mentor');
-    if(screen&&screen.classList.contains('active'))setMentorUnread(0);
-    refreshMentorOverview().catch(function(){})
+    if(screen&&screen.classList.contains('active')){
+      await mentorFetch('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){});
+      setMentorUnread(0)
+    }
   }
   async function bootMentor(){
-    var status=el('mentorMemberStatus');if(status){status.textContent='Menghubungkan...';status.classList.remove('online')}
+    var status=el('mentorMemberStatus');if(status){status.textContent='Menghubungkan...';status.classList.remove('online','offline')}
     try{
       var rows=await mentorFetch('/rest/v1/rpc/mentor_get_or_create_conversation',{method:'POST',body:'{}'});
-      var row=Array.isArray(rows)?rows[0]:rows;
-      mentorConversationId=row&&row.conversation_id?row.conversation_id:'';
+      var row=Array.isArray(rows)?rows[0]:rows;mentorConversationId=row&&row.conversation_id?row.conversation_id:'';
       if(!mentorConversationId)throw new Error('Percakapan belum tersedia');
-      await refreshMentorOverview();
+      await refreshMentorOverview();await loadMentorMessages();
       fetch('/api/mentor/status').then(function(r){return r.ok?r.json():null}).then(function(info){
         var note=el('mentorUploadNote');if(!note)return;
-        note.textContent=info&&info.drive_configured
-          ? 'Gambar/file langsung disimpan ke Google Drive BADAI.'
-          : 'Chat teks dan stiker sudah aktif. Gambar/file menunggu koneksi Google Drive dari Admin.';
-      }).catch(function(){});
-      await loadMentorMessages()
+        note.textContent=info&&info.drive_configured?'':'Lampiran sementara belum tersedia.'
+      }).catch(function(){})
     }catch(err){
-      if(status){status.textContent='GAGAL TERHUBUNG';status.classList.remove('online');status.classList.remove('offline')}
+      if(status){status.textContent='GAGAL TERHUBUNG';status.classList.remove('online','offline')}
       var list=el('mentorMessageList');if(list)list.innerHTML='<div class="mentor-empty">'+mentorEsc(err.message||'Gagal membuka Mentor')+'</div>'
     }
   }
   async function sendMentorPayload(type,body,sticker,fileData){
-    if(!mentorConversationId)await bootMentor();
-    if(!mentorConversationId)return;
-    await mentorFetch('/rest/v1/rpc/mentor_send_message',{
-      method:'POST',
-      body:JSON.stringify({
-        p_conversation_id:mentorConversationId,
-        p_message_type:type,
-        p_body:body||null,
-        p_sticker_key:sticker||null,
-        p_drive_file_id:fileData&&fileData.id?fileData.id:null,
-        p_drive_web_view_link:fileData&&fileData.url?fileData.url:null,
-        p_file_name:fileData&&fileData.name?fileData.name:null,
-        p_file_mime:fileData&&fileData.mime?fileData.mime:null,
-        p_file_size:fileData&&fileData.size?fileData.size:null
-      })
-    });
-    mentorLastKey='';
-    await loadMentorMessages()
+    if(!mentorConversationId)await bootMentor();if(!mentorConversationId)return;
+    await mentorFetch('/rest/v1/rpc/mentor_send_message',{method:'POST',body:JSON.stringify({
+      p_conversation_id:mentorConversationId,p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
+      p_drive_file_id:fileData&&fileData.id?fileData.id:null,p_drive_web_view_link:fileData&&fileData.url?fileData.url:null,
+      p_file_name:fileData&&fileData.name?fileData.name:null,p_file_mime:fileData&&fileData.mime?fileData.mime:null,
+      p_file_size:fileData&&fileData.size?fileData.size:null
+    })});
+    mentorSetTyping(false);mentorLastKey='';await loadMentorMessages();mentorScrollBottom(true)
   }
   async function uploadMentorFile(file){
-    if(!file)return;
-    if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
+    if(!file)return;if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
     var s=memberSession();if(!s||!s.access_token)throw new Error('Session member tidak tersedia.');
     var fd=new FormData();fd.append('file',file);fd.append('conversation_id',mentorConversationId||'');
     var res=await fetch('/api/mentor/upload',{method:'POST',headers:{Authorization:'Bearer '+s.access_token},body:fd});
     var data=await res.json().catch(function(){return null});
-    if(!res.ok)throw new Error((data&&(data.error||data.message))||'Google Drive belum terhubung.');
-    return data
+    if(!res.ok)throw new Error((data&&(data.error||data.message))||'Upload gagal.');return data
+  }
+  function clearMentorPending(){
+    if(mentorPendingObjectUrl){try{URL.revokeObjectURL(mentorPendingObjectUrl)}catch(_){}}
+    mentorPendingObjectUrl='';mentorPendingFile=null;
+    var box=el('mentorPendingAttachment');if(box)box.classList.add('hidden');
+    var image=el('mentorImageInput'),file=el('mentorFileInput');if(image)image.value='';if(file)file.value=''
+  }
+  function setMentorPending(file){
+    if(!file)return;if(file.size>10*1024*1024){mentorToast('File maksimal 10 MB');return}
+    clearMentorPending();mentorPendingFile=file;
+    var box=el('mentorPendingAttachment'),preview=el('mentorPendingPreview');
+    if(box)box.classList.remove('hidden');
+    if(el('mentorPendingName'))el('mentorPendingName').textContent=file.name||'Lampiran';
+    if(el('mentorPendingSize'))el('mentorPendingSize').textContent=mentorSize(file.size);
+    if(preview){
+      if(file.type&&file.type.indexOf('image/')===0){
+        mentorPendingObjectUrl=URL.createObjectURL(file);preview.innerHTML='<img src="'+mentorEsc(mentorPendingObjectUrl)+'" alt="">'
+      }else preview.textContent='📄'
+    }
+    el('mentorAttachMenu')&&el('mentorAttachMenu').classList.add('hidden');
+    el('mentorMessageInput')&&el('mentorMessageInput').focus()
+  }
+  function mentorGrowInput(){
+    var input=el('mentorMessageInput');if(!input)return;
+    input.style.height='38px';input.style.height=Math.min(input.scrollHeight,108)+'px'
   }
 
   var mentorNav=el('mentorNavButton');
   if(mentorNav)mentorNav.addEventListener('click',function(){
-    if(typeof Notification!=='undefined'&&Notification.permission==='default'){
-      try{Notification.requestPermission().catch(function(){})}catch(_){}
-    }
+    if(typeof Notification!=='undefined'&&Notification.permission==='default'){try{Notification.requestPermission().catch(function(){})}catch(_){}}
     setTimeout(bootMentor,30)
   });
+  var input=el('mentorMessageInput');
+  if(input){
+    try{input.value=localStorage.getItem(mentorDraftKey)||''}catch(_){}
+    mentorGrowInput();
+    input.addEventListener('input',function(){
+      mentorGrowInput();mentorTypingPulse();
+      try{localStorage.setItem(mentorDraftKey,input.value||'')}catch(_){}
+    });
+    input.addEventListener('keydown',function(e){
+      var coarse=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
+      if(e.key==='Enter'&&!e.shiftKey&&!coarse){e.preventDefault();mentorForm&&mentorForm.requestSubmit()}
+    });
+    input.addEventListener('paste',function(e){
+      var items=e.clipboardData&&e.clipboardData.items?Array.from(e.clipboardData.items):[];
+      var imageItem=items.find(function(x){return x.type&&x.type.indexOf('image/')===0});
+      if(imageItem){var file=imageItem.getAsFile();if(file){e.preventDefault();setMentorPending(file)}}
+    })
+  }
   var mentorForm=el('mentorComposer');
   if(mentorForm)mentorForm.addEventListener('submit',async function(e){
-    e.preventDefault();var input=el('mentorMessageInput');var text=String(input&&input.value||'').trim();if(!text)return;
+    e.preventDefault();
+    var text=String(input&&input.value||'').trim();if(!text&&!mentorPendingFile)return;
     var btn=el('mentorSendBtn');if(btn)btn.disabled=true;
-    try{await sendMentorPayload('text',text,null,null);if(input)input.value=''}
-    catch(err){alert(err.message||'Pesan gagal dikirim.')}
+    try{
+      if(mentorPendingFile){
+        var pending=mentorPendingFile;var note=el('mentorUploadNote');if(note)note.textContent='Mengunggah '+pending.name+'...';
+        if(!mentorConversationId)await bootMentor();
+        var data=await uploadMentorFile(pending);
+        await sendMentorPayload(pending.type&&pending.type.indexOf('image/')===0?'image':'file',text,null,data);
+        clearMentorPending();if(note)note.textContent=''
+      }else await sendMentorPayload('text',text,null,null);
+      if(input){input.value='';mentorGrowInput()}try{localStorage.removeItem(mentorDraftKey)}catch(_){}
+    }catch(err){mentorToast(err.message||'Pesan gagal dikirim.')}
     finally{if(btn)btn.disabled=false}
   });
   var stickerBtn=el('mentorStickerBtn'),stickerTray=el('mentorStickerTray');
-  if(stickerBtn&&stickerTray)stickerBtn.addEventListener('click',function(){stickerTray.classList.toggle('hidden')});
+  if(stickerBtn&&stickerTray)stickerBtn.addEventListener('click',function(){
+    stickerTray.classList.toggle('hidden');el('mentorAttachMenu')&&el('mentorAttachMenu').classList.add('hidden')
+  });
   document.querySelectorAll('[data-mentor-sticker]').forEach(function(btn){
     btn.addEventListener('click',async function(){
       try{await sendMentorPayload('sticker',null,btn.getAttribute('data-mentor-sticker'),null);stickerTray&&stickerTray.classList.add('hidden')}
-      catch(err){alert(err.message||'Stiker gagal dikirim.')}
+      catch(err){mentorToast(err.message||'Stiker gagal dikirim.')}
     })
   });
-  var fileInput=el('mentorFileInput');
-  if(fileInput)fileInput.addEventListener('change',async function(){
-    var file=fileInput.files&&fileInput.files[0];if(!file)return;
-    var note=el('mentorUploadNote');if(note)note.textContent='Mengunggah '+file.name+' ke Google Drive...';
-    try{
-      if(!mentorConversationId)await bootMentor();
-      var data=await uploadMentorFile(file);
-      await sendMentorPayload(file.type&&file.type.indexOf('image/')===0?'image':'file',null,null,data);
-      if(note)note.textContent='File berhasil disimpan di Google Drive.'
-    }catch(err){
-      if(note)note.textContent=err.message||'Google Drive belum terhubung.';
-      alert(err.message||'Upload gagal.')
-    }finally{fileInput.value=''}
+  var attachBtn=el('mentorAttachBtn'),attachMenu=el('mentorAttachMenu');
+  if(attachBtn&&attachMenu)attachBtn.addEventListener('click',function(){
+    attachMenu.classList.toggle('hidden');stickerTray&&stickerTray.classList.add('hidden')
   });
+  ['mentorImageInput','mentorFileInput'].forEach(function(id){
+    var picker=el(id);if(picker)picker.addEventListener('change',function(){var file=picker.files&&picker.files[0];if(file)setMentorPending(file)})
+  });
+  el('mentorPendingCancel')&&el('mentorPendingCancel').addEventListener('click',clearMentorPending);
+  el('mentorJumpLatest')&&el('mentorJumpLatest').addEventListener('click',function(){mentorScrollBottom(true)});
+  var messageList=el('mentorMessageList');
+  if(messageList)messageList.addEventListener('scroll',function(){
+    var jump=el('mentorJumpLatest');if(jump)jump.classList.toggle('hidden',mentorNearBottom(messageList))
+  });
+
   mentorPollTimer=setInterval(function(){
     var screen=el('mentor');
     if(screen&&screen.classList.contains('active')&&document.visibilityState==='visible'){
-      if(mentorConversationId)loadMentorMessages().catch(function(){})
-      else bootMentor()
+      refreshMentorOverview().catch(function(){});
+      if(mentorConversationId)loadMentorMessages().catch(function(){});else bootMentor()
     }
-  },4000);
-  setInterval(function(){
-    if(document.visibilityState==='visible')refreshMentorOverview().catch(function(){})
-  },10000);
+  },2500);
+  setInterval(function(){if(document.visibilityState==='visible')refreshMentorOverview().catch(function(){})},8000);
   setTimeout(function(){refreshMentorOverview().catch(function(){})},1200);
 
 
