@@ -1816,6 +1816,102 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  /* iOS-inspired motion: quick, soft, springy */
+  .screen.active{
+    animation:badaiIosScreenIn .28s cubic-bezier(.22,.61,.36,1) both;
+  }
+  #mentor.mentor-chat-thread-mode .mentor-chat-card{
+    animation:badaiIosPushIn .34s cubic-bezier(.22,.61,.36,1) both;
+    transform-origin:right center;
+  }
+  #mentor.mentor-chat-list-mode .mentor-chat-home{
+    animation:badaiIosPopIn .32s cubic-bezier(.22,.61,.36,1) both;
+    transform-origin:left center;
+  }
+  #mentor .mentor-chat-row{
+    transition:transform .18s cubic-bezier(.22,.61,.36,1),background .18s ease,opacity .18s ease!important;
+  }
+  #mentor .mentor-chat-row:active{transform:scale(.985)}
+  #mentor .mentor-chat-back,
+  #mentor .mentor-icon-btn,
+  #mentor .mentor-composer button[type="submit"],
+  #mentor .mentor-reaction-chip{
+    transition:transform .16s cubic-bezier(.22,.61,.36,1),background .16s ease,opacity .16s ease!important;
+  }
+  #mentor .mentor-chat-back:active,
+  #mentor .mentor-icon-btn:active,
+  #mentor .mentor-composer button[type="submit"]:active,
+  #mentor .mentor-reaction-chip:active{transform:scale(.9)}
+  #mentor .mentor-msg-new{
+    animation:badaiIosBubbleIn .32s cubic-bezier(.18,.89,.32,1.24) both;
+  }
+  #mentor .mentor-msg.member.mentor-msg-new{transform-origin:right bottom}
+  #mentor .mentor-msg.mentor.mentor-msg-new{transform-origin:left bottom}
+  #mentor .mentor-reaction-chips{animation:badaiIosReactionIn .22s cubic-bezier(.22,.61,.36,1) both}
+  .mentor-message-menu{
+    transform-origin:top right;
+    animation:badaiIosMenuIn .2s cubic-bezier(.22,.61,.36,1) both;
+  }
+  #mentor .mentor-sticker-tray:not(.hidden),
+  #mentor .mentor-attach-menu:not(.hidden),
+  #mentor .mentor-pending-attachment:not(.hidden),
+  #mentor .mentor-reply-bar:not(.hidden){
+    animation:badaiIosTrayIn .24s cubic-bezier(.22,.61,.36,1) both;
+  }
+  #mentor .mentor-chat-row-bottom>b:not(.hidden){
+    animation:badaiIosBadgeIn .3s cubic-bezier(.18,.89,.32,1.35) both;
+  }
+  @keyframes badaiIosScreenIn{
+    from{opacity:0;transform:translate3d(10px,0,0) scale(.995)}
+    to{opacity:1;transform:none}
+  }
+  @keyframes badaiIosPushIn{
+    from{opacity:.2;transform:translate3d(11%,0,0) scale(.985)}
+    to{opacity:1;transform:none}
+  }
+  @keyframes badaiIosPopIn{
+    from{opacity:.3;transform:translate3d(-7%,0,0) scale(.99)}
+    to{opacity:1;transform:none}
+  }
+  @keyframes badaiIosBubbleIn{
+    0%{opacity:0;transform:translate3d(0,10px,0) scale(.92)}
+    70%{opacity:1;transform:translate3d(0,-1px,0) scale(1.015)}
+    100%{opacity:1;transform:none}
+  }
+  @keyframes badaiIosMenuIn{
+    from{opacity:0;transform:translate3d(0,-5px,0) scale(.94)}
+    to{opacity:1;transform:none}
+  }
+  @keyframes badaiIosTrayIn{
+    from{opacity:0;transform:translate3d(0,10px,0)}
+    to{opacity:1;transform:none}
+  }
+  @keyframes badaiIosReactionIn{
+    from{opacity:0;transform:scale(.88)}
+    to{opacity:1;transform:none}
+  }
+  @keyframes badaiIosBadgeIn{
+    0%{opacity:0;transform:scale(.55)}
+    75%{opacity:1;transform:scale(1.12)}
+    100%{opacity:1;transform:scale(1)}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .screen.active,
+    #mentor.mentor-chat-thread-mode .mentor-chat-card,
+    #mentor.mentor-chat-list-mode .mentor-chat-home,
+    #mentor .mentor-msg-new,
+    #mentor .mentor-reaction-chips,
+    .mentor-message-menu,
+    #mentor .mentor-sticker-tray:not(.hidden),
+    #mentor .mentor-attach-menu:not(.hidden),
+    #mentor .mentor-pending-attachment:not(.hidden),
+    #mentor .mentor-reply-bar:not(.hidden),
+    #mentor .mentor-chat-row-bottom>b:not(.hidden){
+      animation:none!important;
+      transition:none!important;
+    }
+  }
+
 </style>`;
 
     const headerMarkup = String.raw`
@@ -2135,6 +2231,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorUiState=new Map();
   var mentorReply=null;
   var mentorMessageMenu=null;
+  var mentorAnimatedMessageIds=new Set();
   var mentorView='list';
   var mentorSelectedChat='mentor';
   var communityOverviewMap=new Map();
@@ -2356,7 +2453,9 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       var receipt=m.sender_kind==='member'?mentorReceipt(m.created_at):'';
       var reactions=mentorReactionHtml(state);
-      html+='<div id="mentor-msg-'+mentorEsc(m.id)+'" class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+'" data-message-id="'+mentorEsc(m.id)+'">'+
+      var animateMsg=!mentorAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
+      if(animateMsg)mentorAnimatedMessageIds.add(m.id);
+      html+='<div id="mentor-msg-'+mentorEsc(m.id)+'" class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'" data-message-id="'+mentorEsc(m.id)+'">'+
         '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+mentorEsc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
         (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
         '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+receipt+'</div>'+
@@ -2448,7 +2547,9 @@ document.addEventListener('DOMContentLoaded', function(){
       else if(m.message_type==='image')body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><img src="'+mentorEsc(m.drive_web_view_link||'#')+'" alt="" loading="lazy"></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
       else if(m.message_type==='file')body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><span class="mentor-file-icon">📄</span><span class="mentor-file-copy"><b>'+mentorEsc(m.file_name||'Dokumen')+'</b><small>'+mentorEsc(mentorSize(m.file_size)||String(m.file_mime||'Dokumen'))+'</small></span></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
       else body='<div class="body mentor-wa-formatted">'+mentorFormatText(m.body||'')+'</div>';
-      html+='<div class="mentor-msg '+side+' '+mentorEsc(m.message_type)+'">'+sender+body+
+      var animateMsg=!mentorAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
+      if(animateMsg)mentorAnimatedMessageIds.add(m.id);
+      html+='<div class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+'">'+sender+body+
         '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own?'<span class="mentor-receipt read">✓✓</span>':'')+'</div></div>'
     });
     list.innerHTML=html;
