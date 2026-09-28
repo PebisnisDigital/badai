@@ -3404,6 +3404,60 @@ th,td{padding:14px 12px!important}
   .mentor-thread-back{display:grid}
   .mentor-thread-head{grid-template-columns:30px minmax(0,1fr) auto}
 }
+
+/* Mentor WhatsApp-like dark visual theme */
+#pageMentor{--wa-bg:#0b141a;--wa-panel:#111b21;--wa-header:#202c33;--wa-input:#2a3942;--wa-in:#202c33;--wa-out:#005c4b;--wa-green:#00a884;--wa-green-bright:#25d366;--wa-text:#e9edef;--wa-muted:#8696a0}
+#pageMentor .mentor-inbox-panel,
+#pageMentor .mentor-thread-panel{background:var(--wa-panel)!important;border-color:#26343c!important}
+#pageMentor .mentor-inbox-head,
+#pageMentor .mentor-thread-head{background:var(--wa-header)!important;border-color:#283943!important}
+#pageMentor .mentor-inbox-list{background:var(--wa-panel)!important}
+#pageMentor .mentor-inbox-item{border-bottom-color:#222d34!important}
+#pageMentor .mentor-inbox-item:hover,
+#pageMentor .mentor-inbox-item.active{background:#202c33!important}
+#pageMentor .mentor-inbox-avatar{background:#374248!important;border:2px solid rgba(255,79,163,.8)!important}
+#pageMentor .mentor-inbox-preview{color:var(--wa-muted)!important}
+#pageMentor .mentor-inbox-preview.typing{color:var(--wa-green-bright)!important}
+#pageMentor .mentor-inbox-assigned,
+#pageMentor .mentor-inbox-time{color:#667781!important}
+#pageMentor .mentor-unread,
+#tabMentor .mentor-tab-badge{background:var(--wa-green-bright)!important;color:#0b141a!important;border-color:#111b21!important}
+#pageMentor .mentor-thread-avatar{background:#374248!important;border:2px solid rgba(255,79,163,.8)!important}
+#pageMentor .mentor-thread-copy b{color:var(--wa-text)!important}
+#pageMentor .mentor-thread-copy span{color:var(--wa-muted)!important}
+#pageMentor .mentor-thread-copy span.typing{color:var(--wa-green-bright)!important}
+#pageMentor .mentor-admin-messages{
+  background-color:var(--wa-bg)!important;
+  background-image:
+    radial-gradient(circle at 15px 17px,rgba(134,150,160,.055) 0 1.2px,transparent 1.4px),
+    radial-gradient(circle at 42px 48px,rgba(134,150,160,.04) 0 1px,transparent 1.3px),
+    linear-gradient(45deg,transparent 46%,rgba(134,150,160,.018) 47% 53%,transparent 54%),
+    linear-gradient(-45deg,transparent 46%,rgba(134,150,160,.014) 47% 53%,transparent 54%)!important;
+  background-size:58px 58px,72px 72px,94px 94px,118px 118px!important;
+}
+#pageMentor .mentor-admin-date{background:#182229!important;color:#d1d7db!important}
+#pageMentor .mentor-admin-msg.member{background:var(--wa-in)!important;color:var(--wa-text)!important}
+#pageMentor .mentor-admin-msg.mentor{background:var(--wa-out)!important;color:#e9edef!important}
+#pageMentor .mentor-admin-meta{color:#aebac1!important}
+#pageMentor .mentor-admin-receipt.read{color:#53bdeb!important}
+#pageMentor .mentor-admin-file{background:rgba(11,20,26,.36)!important}
+#pageMentor .mentor-admin-file-icon{background:#3b4a54!important}
+#pageMentor .mentor-admin-jump{background:var(--wa-header)!important;border-color:#31444e!important;color:#d1d7db!important}
+#pageMentor .mentor-admin-stickers,
+#pageMentor .mentor-admin-attach-menu,
+#pageMentor .mentor-admin-pending{background:var(--wa-panel)!important;border-top-color:#26343c!important}
+#pageMentor .mentor-admin-stickers button,
+#pageMentor .mentor-admin-attach-choice{background:var(--wa-header)!important;border-color:#31444e!important}
+#pageMentor .mentor-admin-pending-preview{background:var(--wa-input)!important}
+#pageMentor .mentor-admin-composer{background:var(--wa-bg)!important;border-top-color:#26343c!important}
+#pageMentor .mentor-admin-icon{color:#8696a0!important}
+#pageMentor .mentor-admin-composer textarea{background:var(--wa-header)!important;color:var(--wa-text)!important;box-shadow:none!important}
+#pageMentor .mentor-admin-composer textarea::placeholder{color:#8696a0!important}
+#pageMentor .mentor-admin-composer button[type="submit"]{background:var(--wa-green)!important;color:#fff!important}
+#pageMentor #mentorAdminNote{background:var(--wa-bg)!important;color:#667781!important}
+#pageMentor .mentor-thread-back{color:#d1d7db!important}
+#pageMentor .mentor-inbox-head button,
+#pageMentor .mentor-thread-head button{border-color:#34534a!important;background:#14251f!important;color:#77d7b0!important}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
