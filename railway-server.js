@@ -485,21 +485,49 @@ async function handleCommunityUpload(req,res){
 
   const parsed=await parseMentorMultipart(req);
   const channelSlug=String(parsed.fields.channel_slug||'group').trim().toLowerCase();
-  if(channelSlug!=='group') return res.status(400).json({error:'Channel komunitas tidak valid.'});
+  if(!['group','announcement'].includes(channelSlug)){
+    return res.status(400).json({error:'Channel komunitas tidak valid.'});
+  }
 
-  const profileCheck=await fetch(
-    SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(user.id)+'&member_status=eq.active&select=id',
-    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  const authHeaders={apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token};
+  const [teamCheck,profileCheck]=await Promise.all([
+    fetch(
+      SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&select=role&limit=1',
+      {headers:authHeaders}
+    ),
+    fetch(
+      SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(user.id)+'&member_status=eq.active&select=id,membership_lifecycle_status&limit=1',
+      {headers:authHeaders}
+    )
+  ]);
+
+  const teamRows=teamCheck.ok?await teamCheck.json().catch(()=>[]):[];
+  const profileRows=profileCheck.ok?await profileCheck.json().catch(()=>[]):[];
+  const role=String(teamRows?.[0]?.role||'');
+  const staffRoles=['owner','super_admin','admin','mentor','sales','finance','marketing'];
+  const announcementRoles=['owner','super_admin','admin','mentor'];
+  const isStaff=staffRoles.includes(role);
+  const isAnnouncementStaff=announcementRoles.includes(role);
+  const memberRow=profileRows?.[0]||null;
+  const isActiveMember=Boolean(
+    memberRow && ['active','grace'].includes(String(memberRow.membership_lifecycle_status||'active'))
   );
-  const profiles=profileCheck.ok?await profileCheck.json().catch(()=>[]):[];
-  if(!profileCheck.ok || !profiles?.length){
+
+  if(channelSlug==='announcement' && !isAnnouncementStaff){
+    return res.status(403).json({error:'Hanya Admin BADAI yang dapat mengirim lampiran Pengumuman.'});
+  }
+  if(channelSlug==='group' && !isStaff && !isActiveMember){
     return res.status(403).json({error:'Akses Grup BADAI tidak aktif.'});
   }
 
   const drive=await driveClient();
   const communityRoot=await findOrCreateDriveFolder(drive,'COMMUNITY-ATTACHMENTS',MENTOR_DRIVE_FOLDER_ID);
-  const groupFolder=await findOrCreateDriveFolder(drive,'GROUP-BADAI',communityRoot);
-  const userFolder=await findOrCreateDriveFolder(drive,String(user.id),groupFolder);
+  const channelFolder=await findOrCreateDriveFolder(
+    drive,
+    channelSlug==='announcement'?'PENGUMUMAN-BADAI':'GROUP-BADAI',
+    communityRoot
+  );
+  const userFolder=await findOrCreateDriveFolder(drive,String(user.id),channelFolder);
   const stamp=new Date().toISOString().replace(/[:.]/g,'-');
   const fileName=stamp+'__'+safeDriveName(parsed.file.name);
   const saved=await uploadDriveBuffer(drive,userFolder,fileName,parsed.file.mime,parsed.file.buffer);
@@ -513,7 +541,6 @@ async function handleCommunityUpload(req,res){
     url:signedMentorFileUrl(saved.id)
   });
 }
-
 
 async function handleProfileAvatarUpload(req,res){
   if(!(await mentorDriveConfigured())){
