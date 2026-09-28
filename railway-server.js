@@ -18,6 +18,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL || 'https://tlvxlekqrllkvcpgwmic.s
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 const MENTOR_ARCHIVE_SECRET = process.env.MENTOR_ARCHIVE_SECRET || '';
 const MENTOR_DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_MENTOR_FOLDER_ID || '';
+const GOOGLE_OAUTH_REDIRECT_URI = process.env.GOOGLE_OAUTH_REDIRECT_URI || 'https://badai.up.railway.app/api/mentor/google/callback';
 
 const MIME = {
   '.html':'text/html; charset=utf-8',
@@ -124,13 +125,41 @@ function serveStatic(req, res, pathname){
   }
 }
 
+let mentorGoogleOauthCache={loadedAt:0,refreshToken:'',googleEmail:'',connectedAt:null};
+
+async function loadStoredGoogleOauth(force){
+  if(!MENTOR_ARCHIVE_SECRET || !SUPABASE_ANON_KEY) return mentorGoogleOauthCache;
+  if(!force && mentorGoogleOauthCache.loadedAt && Date.now()-mentorGoogleOauthCache.loadedAt<60000){
+    return mentorGoogleOauthCache;
+  }
+  try{
+    const rows=await supabaseRpc('mentor_google_oauth_get',{p_worker_secret:MENTOR_ARCHIVE_SECRET});
+    const row=Array.isArray(rows)?rows[0]:rows;
+    mentorGoogleOauthCache={
+      loadedAt:Date.now(),
+      refreshToken:String(row?.refresh_token||''),
+      googleEmail:String(row?.google_email||''),
+      connectedAt:row?.connected_at||null
+    };
+  }catch(error){
+    console.warn('Mentor Google OAuth cache:',error?.message||error);
+    mentorGoogleOauthCache={loadedAt:Date.now(),refreshToken:'',googleEmail:'',connectedAt:null};
+  }
+  return mentorGoogleOauthCache;
+}
+
 async function createDriveAuth(){
-  const refreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || '';
   const clientId = process.env.GOOGLE_CLIENT_ID || '';
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+  let refreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || '';
+
+  if(!refreshToken && clientId && clientSecret){
+    const stored=await loadStoredGoogleOauth(false);
+    refreshToken=stored.refreshToken||'';
+  }
 
   if(refreshToken && clientId && clientSecret){
-    const oauth = new google.auth.OAuth2(clientId,clientSecret);
+    const oauth = new google.auth.OAuth2(clientId,clientSecret,GOOGLE_OAUTH_REDIRECT_URI);
     oauth.setCredentials({refresh_token:refreshToken});
     return oauth;
   }
@@ -148,14 +177,15 @@ async function createDriveAuth(){
   return null;
 }
 
-function mentorDriveConfigured(){
-  return Boolean(
-    MENTOR_DRIVE_FOLDER_ID &&
-    (
-      (process.env.GOOGLE_DRIVE_REFRESH_TOKEN && process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) ||
-      process.env.GOOGLE_SERVICE_ACCOUNT_JSON
-    )
-  );
+async function mentorDriveConfigured(){
+  if(!MENTOR_DRIVE_FOLDER_ID) return false;
+  if(process.env.GOOGLE_SERVICE_ACCOUNT_JSON) return true;
+  const clientId=process.env.GOOGLE_CLIENT_ID||'';
+  const clientSecret=process.env.GOOGLE_CLIENT_SECRET||'';
+  if(!clientId || !clientSecret) return false;
+  if(process.env.GOOGLE_DRIVE_REFRESH_TOKEN) return true;
+  const stored=await loadStoredGoogleOauth(false);
+  return Boolean(stored.refreshToken);
 }
 
 async function driveClient(){
@@ -205,6 +235,117 @@ async function supabaseRpc(name,body,authorization){
   if(text){try{data=JSON.parse(text)}catch{data=text}}
   if(!res.ok) throw new Error((data&&(data.message||data.error||data.msg))||('RPC '+name+' gagal'));
   return data;
+}
+
+async function verifyAdminBearer(token){
+  const user=await verifySupabaseBearer(token);
+  if(!user?.id) return null;
+  const res=await fetch(
+    SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&select=id,role,status&limit=1',
+    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  );
+  if(!res.ok) return null;
+  const rows=await res.json().catch(()=>[]);
+  const team=rows?.[0]||null;
+  if(!team || !['owner','super_admin'].includes(team.role)) return null;
+  return {user,team};
+}
+
+function googleOauthState(){
+  const ts=String(Date.now());
+  const sig=crypto.createHmac('sha256',MENTOR_ARCHIVE_SECRET).update('google-oauth:'+ts).digest('hex');
+  return ts+'.'+sig;
+}
+
+function verifyGoogleOauthState(value){
+  const raw=String(value||'');
+  const dot=raw.indexOf('.');
+  if(dot<1 || !MENTOR_ARCHIVE_SECRET) return false;
+  const ts=raw.slice(0,dot);
+  const sig=raw.slice(dot+1);
+  const age=Date.now()-Number(ts);
+  if(!Number.isFinite(age) || age<0 || age>15*60*1000) return false;
+  const expected=crypto.createHmac('sha256',MENTOR_ARCHIVE_SECRET).update('google-oauth:'+ts).digest('hex');
+  try{return crypto.timingSafeEqual(Buffer.from(sig),Buffer.from(expected))}catch{return false}
+}
+
+async function handleGoogleOauthConnect(req,res){
+  const clientId=process.env.GOOGLE_CLIENT_ID||'';
+  const clientSecret=process.env.GOOGLE_CLIENT_SECRET||'';
+  if(!clientId || !clientSecret){
+    return res.status(503).json({error:'Google OAuth Client ID/Secret belum dipasang di Railway.'});
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const adminUser=await verifyAdminBearer(token);
+  if(!adminUser) return res.status(403).json({error:'Hanya Owner atau Super Admin yang dapat menyambungkan Google Drive.'});
+
+  const oauth=new google.auth.OAuth2(clientId,clientSecret,GOOGLE_OAUTH_REDIRECT_URI);
+  const url=oauth.generateAuthUrl({
+    access_type:'offline',
+    prompt:'consent',
+    include_granted_scopes:true,
+    state:googleOauthState(),
+    scope:[
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'openid'
+    ]
+  });
+  return res.status(200).json({ok:true,url});
+}
+
+async function handleGoogleOauthCallback(req,res){
+  const clientId=process.env.GOOGLE_CLIENT_ID||'';
+  const clientSecret=process.env.GOOGLE_CLIENT_SECRET||'';
+  const code=String(req.query.code||'');
+  const state=String(req.query.state||'');
+  const oauthError=String(req.query.error||'');
+
+  if(oauthError){
+    res.statusCode=302;
+    res.setHeader('Location','/admin?mentor_drive=error&reason='+encodeURIComponent(oauthError));
+    return res.end();
+  }
+  if(!clientId || !clientSecret || !code || !verifyGoogleOauthState(state)){
+    return res.status(400).send('Otorisasi Google Drive tidak valid atau sudah kedaluwarsa.');
+  }
+
+  const oauth=new google.auth.OAuth2(clientId,clientSecret,GOOGLE_OAUTH_REDIRECT_URI);
+  const tokenResult=await oauth.getToken(code);
+  const tokens=tokenResult.tokens||{};
+  oauth.setCredentials(tokens);
+
+  let refreshToken=String(tokens.refresh_token||'');
+  if(!refreshToken){
+    const stored=await loadStoredGoogleOauth(true);
+    refreshToken=stored.refreshToken||'';
+  }
+  if(!refreshToken) return res.status(400).send('Google tidak memberikan refresh token. Ulangi sambungan dan izinkan akses Drive.');
+
+  let googleEmail='';
+  try{
+    const oauth2=google.oauth2({version:'v2',auth:oauth});
+    const me=await oauth2.userinfo.get();
+    googleEmail=String(me.data?.email||'');
+  }catch(_){}
+
+  await supabaseRpc('mentor_google_oauth_set',{
+    p_worker_secret:MENTOR_ARCHIVE_SECRET,
+    p_refresh_token:refreshToken,
+    p_google_email:googleEmail||null,
+    p_scope:String(tokens.scope||'')||null
+  });
+  mentorGoogleOauthCache={loadedAt:Date.now(),refreshToken,googleEmail,connectedAt:new Date().toISOString()};
+
+  // Verify that the selected Drive folder is actually reachable before declaring success.
+  const drive=await driveClient();
+  await drive.files.get({fileId:MENTOR_DRIVE_FOLDER_ID,fields:'id,name',supportsAllDrives:true});
+
+  res.statusCode=302;
+  res.setHeader('Location','/admin?mentor_drive=connected');
+  return res.end();
 }
 
 function parseMentorMultipart(req){
@@ -287,7 +428,7 @@ async function uploadDriveBuffer(drive,parentId,name,mime,buffer){
 }
 
 async function handleMentorUpload(req,res){
-  if(!mentorDriveConfigured()){
+  if(!(await mentorDriveConfigured())){
     return res.status(503).json({
       error:'Google Drive Mentor belum terhubung. Chat teks dan stiker sudah aktif; file/gambar akan aktif setelah koneksi Drive dipasang.'
     });
@@ -330,7 +471,7 @@ async function handleMentorFile(req,res){
   const fileId=String(req.query.id||'');
   const sig=String(req.query.sig||'');
   if(!verifyMentorFileSignature(fileId,sig)) return res.status(403).send('Link file tidak valid.');
-  if(!mentorDriveConfigured()) return res.status(503).send('Google Drive Mentor belum terhubung.');
+  if(!(await mentorDriveConfigured())) return res.status(503).send('Google Drive Mentor belum terhubung.');
 
   const drive=await driveClient();
   const meta=await drive.files.get({fileId,fields:'name,mimeType,size',supportsAllDrives:true});
@@ -362,7 +503,7 @@ async function finishArchiveBatch(batchId,success,payload){
 
 let mentorArchiveBusy=false;
 async function runMentorArchiveWorker(){
-  if(mentorArchiveBusy || !mentorDriveConfigured() || !SUPABASE_ANON_KEY || !MENTOR_ARCHIVE_SECRET) return;
+  if(mentorArchiveBusy || !(await mentorDriveConfigured()) || !SUPABASE_ANON_KEY || !MENTOR_ARCHIVE_SECRET) return;
   mentorArchiveBusy=true;
   let batch=null;
   try{
@@ -422,12 +563,23 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (pathname === '/api/mentor/status') {
+      const stored=await loadStoredGoogleOauth(false);
       return res.status(200).json({
         ok:true,
-        drive_configured:mentorDriveConfigured(),
+        drive_configured:await mentorDriveConfigured(),
+        oauth_client_configured:Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+        connected_account:stored.googleEmail ? stored.googleEmail.replace(/^(.{2}).*(@.*)$/,'$1***$2') : '',
         hot_storage_days:7,
         archive_time:'00:05 WIB'
       });
+    }
+
+    if (pathname === '/api/mentor/google/connect' && req.method === 'POST') {
+      return await handleGoogleOauthConnect(req,res);
+    }
+
+    if (pathname === '/api/mentor/google/callback' && req.method === 'GET') {
+      return await handleGoogleOauthCallback(req,res);
     }
 
     if (pathname === '/api/mentor/upload' && req.method === 'POST') {
@@ -469,7 +621,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('BADAI-STAGING listening on port ' + PORT);
-  console.log('Mentor Drive configured:', mentorDriveConfigured());
+  mentorDriveConfigured().then(v=>console.log('Mentor Drive configured:',v)).catch(()=>{});
   setTimeout(() => runMentorArchiveWorker().catch(()=>{}), 15000);
   setInterval(() => runMentorArchiveWorker().catch(()=>{}), 5*60*1000);
 });
