@@ -7440,6 +7440,70 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     btn.addEventListener('click', () => switchPage(btn.dataset.page));
   });
 
+  $('refreshMentorInboxBtn')?.addEventListener('click', () => loadMentorInbox());
+  $('mentorInboxList')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-mentor-conversation]');
+    if(btn) openMentorConversation(btn.dataset.mentorConversation);
+  });
+  $('claimMentorChatBtn')?.addEventListener('click', async () => {
+    try{ await claimMentorConversation(); }
+    catch(err){ $('mentorAdminNote').textContent = '✕ ' + (err.message || 'Gagal mengambil chat.'); }
+  });
+  $('mentorAdminStickerBtn')?.addEventListener('click', () => {
+    $('mentorAdminStickerTray')?.classList.toggle('hidden');
+  });
+  document.querySelectorAll('[data-admin-mentor-sticker]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try{
+        await sendMentorAdminPayload('sticker',null,btn.dataset.adminMentorSticker,null);
+        $('mentorAdminStickerTray')?.classList.add('hidden');
+      }catch(err){
+        $('mentorAdminNote').textContent = '✕ ' + (err.message || 'Stiker gagal dikirim.');
+      }
+    });
+  });
+  $('mentorAdminComposer')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = $('mentorAdminInput');
+    const value = String(input?.value || '').trim();
+    if(!value) return;
+    const btn = $('mentorAdminSendBtn');
+    if(btn) btn.disabled = true;
+    try{
+      await sendMentorAdminPayload('text',value,null,null);
+      if(input) input.value = '';
+      $('mentorAdminNote').textContent = '';
+    }catch(err){
+      $('mentorAdminNote').textContent = '✕ ' + (err.message || 'Pesan gagal dikirim.');
+    }finally{
+      if(btn) btn.disabled = false;
+    }
+  });
+  $('mentorAdminFileInput')?.addEventListener('change', async () => {
+    const input = $('mentorAdminFileInput');
+    const file = input?.files?.[0];
+    if(!file) return;
+    $('mentorAdminNote').textContent = 'Mengunggah '+file.name+' ke Google Drive...';
+    try{
+      const uploaded = await uploadMentorAdminFile(file);
+      await sendMentorAdminPayload(file.type?.startsWith('image/')?'image':'file',null,null,uploaded);
+      $('mentorAdminNote').textContent = '✓ File berhasil disimpan ke Google Drive.';
+    }catch(err){
+      $('mentorAdminNote').textContent = '✕ ' + (err.message || 'Upload gagal.');
+    }finally{
+      if(input) input.value = '';
+    }
+  });
+
+  if(!mentorAdminPollTimer){
+    mentorAdminPollTimer = setInterval(() => {
+      const page = $('pageMentor');
+      if(page && !page.classList.contains('hidden') && document.visibilityState === 'visible'){
+        loadMentorInbox().catch(()=>{});
+      }
+    },4000);
+  }
+
   function setMarketingCategoryTab(tab){
     document.querySelectorAll('[data-marketing-tab]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.marketingTab === tab);
