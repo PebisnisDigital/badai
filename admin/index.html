@@ -3964,13 +3964,19 @@ th,td{padding:14px 12px!important}
           <div id="mentorThreadEmpty" class="mentor-thread-empty">Pilih member dari Inbox untuk membuka percakapan.</div>
           <div id="mentorThreadView" class="hidden">
             <div class="mentor-thread-head">
-              <div>
-                <b id="mentorThreadName">Member</b>
-                <span id="mentorThreadMeta">-</span>
+              <div class="mentor-thread-person">
+                <div id="mentorThreadAvatar" class="mentor-thread-avatar">M</div>
+                <div class="mentor-thread-copy">
+                  <b id="mentorThreadName">Member</b>
+                  <span id="mentorThreadMeta">-</span>
+                </div>
               </div>
               <button id="claimMentorChatBtn" type="button">AMBIL CHAT</button>
             </div>
-            <div id="mentorAdminMessageList" class="mentor-admin-messages"></div>
+            <div class="mentor-admin-message-wrap">
+              <div id="mentorAdminMessageList" class="mentor-admin-messages"></div>
+              <button id="mentorAdminJumpLatest" class="mentor-admin-jump hidden" type="button" aria-label="Ke pesan terbaru">↓</button>
+            </div>
             <div id="mentorAdminStickerTray" class="mentor-admin-stickers hidden">
               <button type="button" data-admin-mentor-sticker="👍">👍</button>
               <button type="button" data-admin-mentor-sticker="🙏">🙏</button>
@@ -3981,13 +3987,22 @@ th,td{padding:14px 12px!important}
               <button type="button" data-admin-mentor-sticker="💪">💪</button>
               <button type="button" data-admin-mentor-sticker="🎉">🎉</button>
             </div>
+            <div id="mentorAdminAttachMenu" class="mentor-admin-attach-menu hidden">
+              <label class="mentor-admin-attach-choice">🖼 <span>Foto</span><input id="mentorAdminImageInput" type="file" accept="image/*" hidden/></label>
+              <label class="mentor-admin-attach-choice">📎 <span>Dokumen</span><input id="mentorAdminFileInput" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt" hidden/></label>
+            </div>
+            <div id="mentorAdminPending" class="mentor-admin-pending hidden">
+              <div id="mentorAdminPendingPreview" class="mentor-admin-pending-preview"></div>
+              <div class="mentor-admin-pending-copy"><b id="mentorAdminPendingName">Lampiran</b><span id="mentorAdminPendingSize"></span></div>
+              <button id="mentorAdminPendingCancel" type="button">×</button>
+            </div>
             <form id="mentorAdminComposer" class="mentor-admin-composer">
               <button id="mentorAdminStickerBtn" type="button" class="mentor-admin-icon">☺</button>
-              <label class="mentor-admin-icon">＋<input id="mentorAdminFileInput" type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt" hidden/></label>
-              <textarea id="mentorAdminInput" rows="1" maxlength="4000" placeholder="Balas member..."></textarea>
-              <button id="mentorAdminSendBtn" type="submit">KIRIM</button>
+              <button id="mentorAdminAttachBtn" type="button" class="mentor-admin-icon">⌕</button>
+              <textarea id="mentorAdminInput" rows="1" maxlength="4000" placeholder="Ketik pesan"></textarea>
+              <button id="mentorAdminSendBtn" type="submit" aria-label="Kirim">➤</button>
             </form>
-            <div id="mentorAdminNote" class="team-status-note">Lampiran langsung ke Google Drive setelah koneksi Drive diaktifkan.</div>
+            <div id="mentorAdminNote" class="team-status-note"></div>
           </div>
         </section>
       </div>
