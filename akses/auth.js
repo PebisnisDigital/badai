@@ -146,6 +146,10 @@
     const name = document.getElementById('memberAccountName');
     const email = document.getElementById('memberAccountEmail');
     const wa = document.getElementById('memberAccountWa');
+    const birthPlace = document.getElementById('memberBirthPlace');
+    const birthDate = document.getElementById('memberBirthDate');
+    const fullAddress = document.getElementById('memberFullAddress');
+    const marketingConsent = document.getElementById('memberMarketingConsent');
     const password = document.getElementById('memberAccountPassword');
     const passwordConfirm = document.getElementById('memberAccountPasswordConfirm');
     const displayName = document.getElementById('memberProfileDisplayName');
@@ -159,6 +163,13 @@
       email.setAttribute('aria-readonly','true');
     }
     if(wa) wa.value = profile?.whatsapp || user?.user_metadata?.whatsapp || '';
+    if(birthPlace) birthPlace.value = profile?.birth_place || '';
+    if(birthDate){
+      birthDate.value = profile?.birth_date || '';
+      birthDate.max = new Date().toISOString().slice(0,10);
+    }
+    if(fullAddress) fullAddress.value = profile?.full_address || '';
+    if(marketingConsent) marketingConsent.checked = Boolean(profile?.marketing_consent);
     if(password) password.value = '';
     if(passwordConfirm) passwordConfirm.value = '';
     if(displayName) displayName.textContent = resolvedName;
@@ -174,6 +185,10 @@
 
     const name = document.getElementById('memberAccountName')?.value.trim() || '';
     const wa = normalizeWhatsapp(document.getElementById('memberAccountWa')?.value || '');
+    const birthPlace = document.getElementById('memberBirthPlace')?.value.trim() || '';
+    const birthDate = document.getElementById('memberBirthDate')?.value || null;
+    const fullAddress = document.getElementById('memberFullAddress')?.value.trim() || '';
+    const marketingConsent = Boolean(document.getElementById('memberMarketingConsent')?.checked);
     const saveBtn = document.getElementById('memberAccountSave');
 
     if(name.length < 2 || name.length > 100){
@@ -181,6 +196,18 @@
     }
     if(!/^62\d{8,13}$/.test(wa)){
       throw new Error('Nomor WhatsApp belum valid.');
+    }
+    if(birthPlace.length > 120){
+      throw new Error('Tempat lahir maksimal 120 karakter.');
+    }
+    if(fullAddress.length > 1000){
+      throw new Error('Alamat maksimal 1000 karakter.');
+    }
+    if(birthDate){
+      const today = new Date().toISOString().slice(0,10);
+      if(birthDate > today || birthDate < '1900-01-01'){
+        throw new Error('Tanggal lahir tidak valid.');
+      }
     }
 
     const oldText = saveBtn?.textContent || 'SIMPAN DATA';
@@ -191,15 +218,26 @@
     setAccountStatus('Menyimpan data profil...', '');
 
     try{
-      const rows = await api('/rest/v1/rpc/member_profile_update', {
+      const rows = await api('/rest/v1/rpc/member_profile_update_v2', {
         method:'POST',
-        body:JSON.stringify({p_full_name:name,p_whatsapp:wa})
+        body:JSON.stringify({
+          p_full_name:name,
+          p_whatsapp:wa,
+          p_birth_place:birthPlace || null,
+          p_birth_date:birthDate || null,
+          p_full_address:fullAddress || null,
+          p_marketing_consent:marketingConsent
+        })
       });
       const fresh = Array.isArray(rows) ? rows[0] : rows;
 
       currentProfile = Object.assign({}, currentProfile || {}, fresh || {}, {
         full_name:name,
-        whatsapp:wa
+        whatsapp:wa,
+        birth_place:birthPlace || null,
+        birth_date:birthDate || null,
+        full_address:fullAddress || null,
+        marketing_consent:marketingConsent
       });
 
       try{
@@ -897,7 +935,7 @@
     try{
       const rows = await api(
         '/rest/v1/profiles?id=eq.' + encodeURIComponent(currentUser.id) +
-        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at,avatar_url'
+        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at,avatar_key,birth_place,birth_date,full_address,marketing_consent,marketing_consent_at'
       );
 
       const freshProfile = rows?.[0];
@@ -941,7 +979,7 @@
 
       const rows = await api(
         '/rest/v1/profiles?id=eq.' + encodeURIComponent(userId) +
-        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at,avatar_url'
+        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at,avatar_key,birth_place,birth_date,full_address,marketing_consent,marketing_consent_at'
       );
 
       const profile = rows?.[0];
