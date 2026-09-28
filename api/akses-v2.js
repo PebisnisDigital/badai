@@ -1498,108 +1498,53 @@ module.exports = async function handler(req, res) {
   #mentor .mentor-member-status.offline{border-color:#3b4a54!important;color:#8696a0!important;background:#111b21!important}
   #mentor .mentor-nav-badge{background:var(--wa-green-bright)!important;border-color:#0b141a!important;color:#0b141a!important}
 
-  /* MENTOR PHONE PREVIEW — desktop/tablet */
-  @media(min-width:561px){
-    #mentor .mentor-member-head{
-      width:min(390px,100%);
-      margin:0 auto 8px;
-      box-sizing:border-box;
-    }
-    #mentor .mentor-chat-card{
-      position:relative;
-      width:min(390px,100%);
-      height:clamp(620px,76vh,780px);
-      min-height:0!important;
-      margin:16px auto 24px!important;
-      display:flex;
-      flex-direction:column;
-      border:10px solid #050607!important;
-      border-radius:44px!important;
-      outline:1px solid #343a3f;
-      overflow:hidden!important;
-      box-sizing:border-box;
-      box-shadow:
-        0 28px 80px rgba(0,0,0,.58),
-        0 0 0 2px #111518,
-        inset 0 0 0 1px rgba(255,255,255,.04)!important;
-    }
-    #mentor .mentor-chat-card::before{
-      content:"";
-      position:absolute;
-      z-index:25;
-      top:7px;
-      left:50%;
-      width:104px;
-      height:24px;
-      transform:translateX(-50%);
-      border-radius:999px;
-      background:#050607;
-      box-shadow:inset 0 0 0 1px #111518,0 1px 3px rgba(0,0,0,.55);
-      pointer-events:none;
-    }
-    #mentor .mentor-chat-card::after{
-      content:"";
-      position:absolute;
-      z-index:26;
-      top:15px;
-      left:calc(50% + 34px);
-      width:6px;
-      height:6px;
-      border-radius:50%;
-      background:#17272f;
-      box-shadow:0 0 0 1px #0b1115;
-      pointer-events:none;
-    }
-    #mentor .mentor-wa-head{
-      flex:0 0 auto;
-      height:76px!important;
-      min-height:76px;
-      padding:24px 11px 8px!important;
-      box-sizing:border-box;
-    }
-    #mentor .mentor-message-wrap{
-      flex:1 1 auto;
-      min-height:0;
-      display:flex;
-      position:relative;
-    }
-    #mentor .mentor-message-list{
-      flex:1 1 auto;
-      height:100%!important;
-      min-height:0!important;
-      max-height:none!important;
-    }
-    #mentor .mentor-sticker-tray,
-    #mentor .mentor-attach-menu,
-    #mentor .mentor-pending-attachment,
-    #mentor .mentor-composer,
-    #mentor .mentor-upload-note{flex:0 0 auto}
-    #mentor .mentor-sticker-tray{scrollbar-width:none}
-    #mentor .mentor-sticker-tray::-webkit-scrollbar{display:none}
+  /* MENTOR STATIC CHAT — normal web UI, scrolling stays inside chat */
+  #mentor .mentor-chat-card{
+    width:100%;
+    max-width:none;
+    height:clamp(500px,68dvh,680px);
+    min-height:0!important;
+    margin:12px 0 0!important;
+    display:flex;
+    flex-direction:column;
+    border-width:1px!important;
+    border-radius:15px!important;
+    outline:0;
+    overflow:hidden!important;
+    box-sizing:border-box;
   }
-
-  /* On a real phone, use the screen directly instead of nesting a fake phone */
+  #mentor .mentor-wa-head{flex:0 0 auto}
+  #mentor .mentor-message-wrap{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;
+    overflow:hidden;
+    position:relative;
+  }
+  #mentor .mentor-message-list{
+    flex:1 1 auto;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  #mentor .mentor-sticker-tray,
+  #mentor .mentor-attach-menu,
+  #mentor .mentor-pending-attachment,
+  #mentor .mentor-composer,
+  #mentor .mentor-upload-note{flex:0 0 auto}
   @media(max-width:560px){
     #mentor .mentor-chat-card{
-      width:100%;
-      height:auto;
-      margin:8px 0 0!important;
-      border-width:1px!important;
+      height:calc(100dvh - 245px);
+      min-height:360px!important;
+      margin-top:8px!important;
       border-radius:14px!important;
-      outline:0;
-      box-shadow:none!important;
     }
-    #mentor .mentor-chat-card::before,
-    #mentor .mentor-chat-card::after{display:none}
-    #mentor .mentor-wa-head{
-      height:58px!important;
-      min-height:58px;
-      padding:8px 11px!important;
-    }
-    #mentor .mentor-message-wrap{display:block}
     #mentor .mentor-message-list{
-      height:calc(100dvh - 330px)!important;
-      min-height:330px!important;
+      height:auto!important;
+      min-height:0!important;
       max-height:none!important;
     }
   }
