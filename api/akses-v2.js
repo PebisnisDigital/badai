@@ -2021,6 +2021,14 @@ module.exports = async function handler(req, res) {
   #mentor .mentor-group-initial.tone-6{background:#213654;color:#9fc3ff}
   #mentor .mentor-group-initial.has-photo{padding:0!important;overflow:hidden;background:#374248!important;color:transparent!important}
   #mentor .mentor-group-initial img{display:block;width:100%;height:100%;object-fit:cover;border-radius:999px}
+  #mentor .mentor-group-initial,
+  #mentor .mentor-mention-avatar{position:relative}
+  #mentor .mentor-group-initial.verified::after,
+  #mentor .mentor-mention-avatar.verified::after{
+    content:"✓";position:absolute;right:-3px;bottom:-2px;width:13px;height:13px;display:grid;place-items:center;
+    border:2px solid #0b141a;border-radius:999px;background:#ff4fa3;color:#fff;
+    font-size:8px!important;font-weight:900!important;line-height:1!important;box-sizing:border-box
+  }
   #mentor .mentor-mention-avatar.has-photo{padding:0!important;overflow:hidden;background:#374248!important;color:transparent!important}
   #mentor .mentor-mention-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:999px}
   @media(max-width:560px){
@@ -2089,6 +2097,10 @@ module.exports = async function handler(req, res) {
   }
   #mentor .mentor-mention-copy{min-width:0;display:grid;gap:3px}
   #mentor .mentor-mention-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px!important;font-weight:500!important}
+  #mentor .badai-pink-verified-inline{
+    display:inline-grid;place-items:center;width:13px;height:13px;margin-left:3px;vertical-align:-2px;
+    border-radius:999px;background:#ff4fa3;color:#fff;font-size:8px!important;font-weight:900!important
+  }
   #mentor .mentor-mention-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8696a0;font-size:10px!important}
   #mentor .mentor-mention{
     display:inline-block;padding:0 2px;border-radius:3px;color:#53bdeb!important;background:rgba(83,189,235,.11);
@@ -2143,34 +2155,55 @@ module.exports = async function handler(req, res) {
     #mentor .mentor-chat-info-avatar{width:76px;height:76px}
   }
 
-  /* Profile photo editor: image bytes live on Google Drive, not Supabase Storage */
+  /* Member Avatar BADAI: five static preset characters, no member photo uploads */
   #akun .badai-profile-avatar-card{
-    margin:0 0 12px;padding:14px;display:grid;grid-template-columns:68px minmax(0,1fr) auto;
+    margin:0 0 12px;padding:14px;display:grid;grid-template-columns:76px minmax(0,1fr) auto;
     align-items:center;gap:12px;border:1px solid #292929;border-radius:18px;background:#101010
   }
   #akun .badai-profile-avatar-preview{
-    width:68px;height:68px;display:grid;place-items:center;overflow:hidden;border-radius:999px;
-    border:2px solid #ff4fa3;background:#26343c;color:#fff;font-size:22px!important;font-weight:700!important
+    width:76px;height:76px;display:grid;place-items:center;overflow:hidden;border-radius:999px;
+    border:2px solid #ff4fa3;background:#16232b;box-shadow:0 0 0 4px rgba(255,79,163,.08)
   }
   #akun .badai-profile-avatar-preview img{width:100%;height:100%;object-fit:cover}
   #akun .badai-profile-avatar-copy{min-width:0;display:grid;gap:4px}
   #akun .badai-profile-avatar-copy b{color:#fff;font-size:14px!important;font-weight:700!important}
   #akun .badai-profile-avatar-copy span{color:#8f8f8f;font-size:10px!important;line-height:1.4}
+  #akun .badai-avatar-choice-grid{
+    grid-column:1/-1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:4px
+  }
+  #akun .badai-avatar-choice{
+    min-width:0;padding:7px 5px 6px;display:grid;justify-items:center;gap:5px;border:1px solid #292929;
+    border-radius:13px;background:#0a0f13;color:#aaa;cursor:pointer;transition:.16s ease
+  }
+  #akun .badai-avatar-choice:hover{border-color:#6b3b54;background:#13191d}
+  #akun .badai-avatar-choice.selected{
+    border-color:#ff4fa3;background:#1a1016;box-shadow:0 0 0 2px rgba(255,79,163,.11)
+  }
+  #akun .badai-avatar-choice img{
+    width:52px;height:52px;border-radius:999px;object-fit:cover;background:#16232b
+  }
+  #akun .badai-avatar-choice span{
+    width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    color:inherit;font-size:7px!important;font-weight:850!important;letter-spacing:.02em
+  }
+  #akun .badai-avatar-choice.selected span{color:#ff8fc5}
   #akun .badai-profile-avatar-actions{display:flex;align-items:center;gap:7px}
   #akun .badai-profile-avatar-btn{
     min-height:38px;padding:0 12px;border:0;border-radius:11px;background:#ff4fa3;color:#111;
     font-size:10px!important;font-weight:800!important;cursor:pointer
   }
   #akun .badai-profile-avatar-btn:disabled{opacity:.55;cursor:wait}
-  #akun .badai-profile-avatar-status{grid-column:2/-1;color:#8696a0;font-size:9px!important;line-height:1.35}
+  #akun .badai-profile-avatar-status{grid-column:1/-1;color:#8696a0;font-size:9px!important;line-height:1.35}
   #akun .badai-profile-avatar-status.ok{color:#72d79a}
   #akun .badai-profile-avatar-status.err{color:#ff9292}
   @media(max-width:520px){
-    #akun .badai-profile-avatar-card{grid-template-columns:58px minmax(0,1fr);gap:10px}
-    #akun .badai-profile-avatar-preview{width:58px;height:58px}
+    #akun .badai-profile-avatar-card{grid-template-columns:64px minmax(0,1fr);gap:10px}
+    #akun .badai-profile-avatar-preview{width:64px;height:64px}
     #akun .badai-profile-avatar-actions{grid-column:2}
-    #akun .badai-profile-avatar-status{grid-column:1/-1}
+    #akun .badai-avatar-choice-grid{grid-template-columns:repeat(5,minmax(50px,1fr));overflow-x:auto;padding-bottom:4px}
+    #akun .badai-avatar-choice img{width:46px;height:46px}
   }
+
 
   @media(prefers-reduced-motion:reduce){
     .screen.active,
@@ -2211,16 +2244,12 @@ document.addEventListener('DOMContentLoaded', function(){
   function memberSession(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')}catch(_){return null}}
 
 
-  function badaiAvatarInitials(name){
-    return String(name||'M').trim().split(/\s+/).slice(0,2).map(function(x){return x.charAt(0)}).join('').toUpperCase()||'M'
-  }
-  function badaiAvatarPreview(url,name){
-    var node=el('badaiProfileAvatarPreview');if(!node)return;
-    if(url){
-      node.innerHTML='<img src="'+mentorEsc(url)+'" alt="Foto profil" loading="lazy">';
-    }else{
-      node.textContent=badaiAvatarInitials(name)
-    }
+  var BADAI_AVATAR_KEYS=['male-korea','male-peci','female-longhair','female-shorthair','female-hijab'];
+  var badaiSelectedAvatarKey='male-korea';
+
+  function badaiAvatarUrl(key){
+    key=BADAI_AVATAR_KEYS.indexOf(String(key||''))>=0?String(key):'male-korea';
+    return '/avatars/'+key+'.svg'
   }
   function badaiAvatarStatus(message,type){
     var node=el('badaiProfileAvatarStatus');if(!node)return;
@@ -2228,89 +2257,67 @@ document.addEventListener('DOMContentLoaded', function(){
     node.classList.remove('ok','err');
     if(type)node.classList.add(type)
   }
-  function badaiLoadImage(file){
-    if(window.createImageBitmap)return createImageBitmap(file);
-    return new Promise(function(resolve,reject){
-      var img=new Image(),url=URL.createObjectURL(file);
-      img.onload=function(){URL.revokeObjectURL(url);resolve(img)};
-      img.onerror=function(){URL.revokeObjectURL(url);reject(new Error('Foto tidak dapat dibaca.'))};
-      img.src=url
+  function badaiSetAvatarSelection(key){
+    key=BADAI_AVATAR_KEYS.indexOf(String(key||''))>=0?String(key):'male-korea';
+    badaiSelectedAvatarKey=key;
+    var preview=el('badaiProfileAvatarPreview');
+    if(preview)preview.innerHTML='<img src="'+badaiAvatarUrl(key)+'" alt="Avatar BADAI" loading="eager">';
+    document.querySelectorAll('#badaiAvatarChoices [data-avatar-key]').forEach(function(btn){
+      var selected=btn.getAttribute('data-avatar-key')===key;
+      btn.classList.toggle('selected',selected);
+      btn.setAttribute('aria-pressed',selected?'true':'false')
     })
-  }
-  async function badaiCompressAvatar(file){
-    if(!file||!String(file.type||'').startsWith('image/'))throw new Error('Pilih file foto.');
-    if(file.size>12*1024*1024)throw new Error('Foto awal maksimal 12 MB.');
-    var img=await badaiLoadImage(file);
-    var w=img.width||img.naturalWidth||0,h=img.height||img.naturalHeight||0;
-    if(!w||!h)throw new Error('Ukuran foto tidak terbaca.');
-    var side=Math.min(w,h),sx=(w-side)/2,sy=(h-side)/2;
-    var canvas=document.createElement('canvas');canvas.width=256;canvas.height=256;
-    var ctx=canvas.getContext('2d',{alpha:false});
-    ctx.drawImage(img,sx,sy,side,side,0,0,256,256);
-    if(img.close)try{img.close()}catch(_){}
-    var blob=await new Promise(function(resolve){canvas.toBlob(resolve,'image/webp',0.82)});
-    if(!blob)throw new Error('Gagal mengecilkan foto.');
-    return new File([blob],'avatar.webp',{type:'image/webp'})
   }
   async function badaiLoadMyAvatar(){
     var s=memberSession();
     if(!s||!s.access_token||!s.user||!s.user.id)return;
     try{
-      var response=await fetch(SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(s.user.id)+'&select=full_name,avatar_url',{
+      var response=await fetch(SUPABASE_URL+'/rest/v1/profiles?id=eq.'+encodeURIComponent(s.user.id)+'&select=full_name,avatar_key',{
         headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+s.access_token}
       });
       var rows=await response.json().catch(function(){return []});
       var row=Array.isArray(rows)?rows[0]:null;
-      badaiAvatarPreview(row&&row.avatar_url,row&&row.full_name)
-    }catch(_){}
+      badaiSetAvatarSelection(row&&row.avatar_key);
+      if(row&&row.full_name&&el('memberProfileDisplayName'))el('memberProfileDisplayName').textContent=row.full_name
+    }catch(_){badaiSetAvatarSelection('male-korea')}
   }
   function ensureProfileAvatarEditor(){
-    var account=el('akun');if(!account)return;
-    var card=el('badaiProfileAvatarCard');
-    if(!card){
-      var form=account.querySelector('.account-card');if(!form)return;
-      card=document.createElement('div');
-      card.id='badaiProfileAvatarCard';card.className='badai-profile-avatar-card';
-      card.innerHTML=
-        '<div id="badaiProfileAvatarPreview" class="badai-profile-avatar-preview">M</div>'+
-        '<div class="badai-profile-avatar-copy"><b id="memberProfileDisplayName">Member BADAI</b><span id="memberProfileDisplayMeta">Profil Member BADAI</span></div>'+
-        '<div class="badai-profile-avatar-actions"><button id="badaiProfileAvatarBtn" type="button" class="badai-profile-avatar-btn">GANTI FOTO</button><input id="badaiProfileAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>'+
-        '<div id="badaiProfileAvatarStatus" class="badai-profile-avatar-status">Foto tampil di Grup BADAI dan Chat Mentor.</div>';
-      form.parentNode.insertBefore(card,form);
-    }
-
-    var btn=el('badaiProfileAvatarBtn'),input=el('badaiProfileAvatarInput');
-    if(!btn||!input)return;
-    if(btn.dataset.avatarBound==='1'){
-      badaiLoadMyAvatar();
-      return;
-    }
-    btn.dataset.avatarBound='1';
-
-    btn.addEventListener('click',function(){input.click()});
-    input.addEventListener('change',async function(){
-      var file=input.files&&input.files[0];if(!file)return;
-      btn.disabled=true;badaiAvatarStatus('Memproses foto...');
-      try{
-        var compressed=await badaiCompressAvatar(file);
-        badaiAvatarStatus('Mengunggah foto...');
-        var s=memberSession();
-        if(!s||!s.access_token)throw new Error('Sesi login habis. Silakan login ulang.');
-        var fd=new FormData();fd.append('file',compressed,'avatar.webp');
-        var response=await fetch('/api/profile/avatar',{method:'POST',headers:{Authorization:'Bearer '+s.access_token},body:fd});
-        var data=await response.json().catch(function(){return {}});
-        if(!response.ok)throw new Error(data.error||'Upload foto gagal.');
-        badaiAvatarPreview(data.avatar_url,(s.user&&s.user.user_metadata&&s.user.user_metadata.full_name)||'Member');
-        badaiAvatarStatus('Foto profil sudah diperbarui.','ok');
-        communityParticipantsLoaded=false;
-        loadCommunityParticipants(true).catch(function(){});
-        if(mentorSelectedChat==='group')loadCommunityMessages('group').catch(function(){})
-      }catch(err){
-        badaiAvatarStatus(err.message||'Upload foto gagal.','err')
-      }finally{
-        btn.disabled=false;input.value=''
-      }
+    var card=el('badaiProfileAvatarCard');if(!card)return;
+    document.querySelectorAll('#badaiAvatarChoices [data-avatar-key]').forEach(function(btn){
+      if(btn.dataset.avatarBound==='1')return;
+      btn.dataset.avatarBound='1';
+      btn.addEventListener('click',function(){
+        badaiSetAvatarSelection(btn.getAttribute('data-avatar-key'));
+        badaiAvatarStatus('Pilihan avatar belum disimpan.')
+      })
     });
+    var saveBtn=el('badaiProfileAvatarSave');
+    if(saveBtn&&saveBtn.dataset.avatarBound!=='1'){
+      saveBtn.dataset.avatarBound='1';
+      saveBtn.addEventListener('click',async function(){
+        var s=memberSession();
+        if(!s||!s.access_token){badaiAvatarStatus('Sesi login habis. Silakan login ulang.','err');return}
+        var old=saveBtn.textContent;saveBtn.disabled=true;saveBtn.textContent='MENYIMPAN...';
+        badaiAvatarStatus('Menyimpan Avatar BADAI...');
+        try{
+          var response=await fetch(SUPABASE_URL+'/rest/v1/rpc/member_avatar_set',{
+            method:'POST',
+            headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+s.access_token,'Content-Type':'application/json'},
+            body:JSON.stringify({p_avatar_key:badaiSelectedAvatarKey})
+          });
+          var data=await response.json().catch(function(){return null});
+          if(!response.ok)throw new Error((data&&(data.message||data.error))||'Gagal menyimpan avatar.');
+          badaiAvatarStatus('Avatar BADAI berhasil diperbarui.','ok');
+          communityParticipantsLoaded=false;
+          loadCommunityParticipants(true).catch(function(){});
+          if(mentorSelectedChat==='group')loadCommunityMessages('group').catch(function(){})
+        }catch(err){
+          badaiAvatarStatus(err.message||'Gagal menyimpan avatar.','err')
+        }finally{
+          saveBtn.disabled=false;saveBtn.textContent=old
+        }
+      })
+    }
     badaiLoadMyAvatar()
   }
 
@@ -2323,7 +2330,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var accountTitle=akun.querySelector('.account-head h1');
     var accountDesc=akun.querySelector('.account-head p');
     if(accountTitle)accountTitle.textContent='Akun BADAI';
-    if(accountDesc)accountDesc.textContent='Kelola data dan keamanan akun Member BADAI.';
+    if(accountDesc)accountDesc.textContent='Kelola avatar, data, dan keamanan akun Member BADAI.';
     ensureProfileAvatarEditor();
   }
 
@@ -2751,7 +2758,7 @@ document.addEventListener('DOMContentLoaded', function(){
   async function loadCommunityParticipants(force){
     if(communityParticipantsLoaded&&!force)return communityParticipants;
     try{
-      var rows=await mentorFetch('/rest/v1/rpc/community_chat_participants_v2',{method:'POST',body:JSON.stringify({p_query:null,p_limit:300})});
+      var rows=await mentorFetch('/rest/v1/rpc/community_chat_participants_v3',{method:'POST',body:JSON.stringify({p_query:null,p_limit:300})});
       communityParticipants=Array.isArray(rows)?rows:[];
       communityParticipantsLoaded=true
     }catch(_){communityParticipants=[]}
@@ -2811,12 +2818,14 @@ document.addEventListener('DOMContentLoaded', function(){
     communityMentionIndex=Math.min(communityMentionIndex,items.length-1);
     picker.innerHTML=items.map(function(p,i){
       var initials=String(p.display_name||'M').trim().split(/\\s+/).slice(0,2).map(function(x){return x.charAt(0)}).join('').toUpperCase();
-      var avatar=p.avatar_url
-        ? '<span class="mentor-mention-avatar has-photo"><img src="'+mentorEsc(p.avatar_url)+'" alt="" loading="lazy"></span>'
-        : '<span class="mentor-mention-avatar">'+mentorEsc(initials||'M')+'</span>';
+      var avatar=p.verified&&p.avatar_url
+        ? '<span class="mentor-mention-avatar has-photo verified"><img src="'+mentorEsc(p.avatar_url)+'" alt="" loading="lazy"></span>'
+        : p.avatar_key
+          ? '<span class="mentor-mention-avatar has-photo"><img src="'+mentorEsc(badaiAvatarUrl(p.avatar_key))+'" alt="" loading="lazy"></span>'
+          : '<span class="mentor-mention-avatar">'+mentorEsc(initials||'M')+'</span>';
       return '<button type="button" class="mentor-mention-item '+(i===communityMentionIndex?'active':'')+'" data-community-mention-index="'+i+'">'+
         avatar+
-        '<span class="mentor-mention-copy"><b>'+mentorEsc(p.display_name||'Member BADAI')+'</b><small>'+mentorEsc(p.subtitle||'Member BADAI')+'</small></span>'+
+        '<span class="mentor-mention-copy"><b>'+mentorEsc(p.display_name||'Member BADAI')+(p.verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</b><small>'+mentorEsc(p.subtitle||'Member BADAI')+'</small></span>'+
       '</button>'
     }).join('');
     picker.classList.remove('hidden')
@@ -3107,7 +3116,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(day!==lastDay){html+='<div class="mentor-date-sep">'+mentorDateLabel(m.created_at)+'</div>';lastDay=day}
       var own=String(m.sender_user_id||'')===String(uid||''),side=own?'member':'mentor';
       var senderName=m.sender_name||'Member BADAI';
-      var sender=(slug==='group'&&!own)?'<div class="mentor-community-sender '+communitySenderTone(senderName)+'">'+mentorEsc(senderName)+'</div>':'';
+      var sender=(slug==='group'&&!own)?'<div class="mentor-community-sender '+communitySenderTone(senderName)+'">'+mentorEsc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</div>':'';
       var body='';
       if(m.message_type==='sticker')body='<div class="body">'+mentorEsc(m.sticker_key||'✨')+'</div>';
       else if(m.message_type==='image')body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><img src="'+mentorEsc(m.drive_web_view_link||'#')+'" alt="" loading="lazy"></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
@@ -3120,9 +3129,11 @@ document.addEventListener('DOMContentLoaded', function(){
       if(slug==='group'&&!own){
         var senderInitial=String(senderName||'M').trim().charAt(0).toUpperCase()||'M';
         var tone=communitySenderTone(senderName);
-        var avatar=m.sender_avatar_url
-          ? '<div class="mentor-group-initial has-photo"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
-          : '<div class="mentor-group-initial '+tone+'">'+mentorEsc(senderInitial)+'</div>';
+        var avatar=m.sender_verified&&m.sender_avatar_url
+          ? '<div class="mentor-group-initial has-photo verified"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
+          : m.sender_avatar_key
+            ? '<div class="mentor-group-initial has-photo"><img src="'+mentorEsc(badaiAvatarUrl(m.sender_avatar_key))+'" alt="" loading="lazy"></div>'
+            : '<div class="mentor-group-initial '+tone+'">'+mentorEsc(senderInitial)+'</div>';
         html+='<div class="mentor-group-message-row">'+avatar+bubble+'</div>'
       }else html+=bubble
     });
@@ -3134,7 +3145,7 @@ document.addEventListener('DOMContentLoaded', function(){
   async function loadCommunityMessages(slug){
     if(!slug||slug==='mentor')return;
     if(slug==='group')await loadCommunityParticipants(false);
-    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list_v2',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
+    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list_v3',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
     renderCommunityMessages(rows||[],slug);
     if(mentorView==='thread'){
       await mentorFetch('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(function(){});
