@@ -1316,6 +1316,10 @@ module.exports = async function handler(req, res) {
   .mentor-kicker{color:#ff77ba;font:950 9px/1 "Nunito",Arial,sans-serif;letter-spacing:.1em}
   .mentor-member-status{flex:0 0 auto;padding:7px 10px;border:1px solid #343434;border-radius:999px;background:#101010;color:#aaa;font:900 8px/1 "Nunito",Arial,sans-serif}
   .mentor-member-status.online{border-color:#28573a;color:#78dfa0;background:#0c1710}
+  .mentor-member-status.offline{border-color:#4a3f32;color:#d7b784;background:#17120d}
+  #mentorNavButton{position:relative}
+  .mentor-nav-badge{position:absolute;top:4px;right:13%;min-width:17px;height:17px;padding:0 4px;display:grid;place-items:center;border:2px solid #090909;border-radius:999px;background:#ff4fa3;color:#111;font:950 7px/1 "Nunito",Arial,sans-serif;box-sizing:border-box}
+  .mentor-nav-badge.hidden{display:none}
   .mentor-chat-card{margin-top:12px;border:1px solid #292929;border-radius:18px;background:#080808;overflow:hidden}
   .mentor-message-list{height:min(58vh,520px);min-height:350px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:radial-gradient(circle at 50% -20%,#1c0c15 0,#090909 36%,#060606 100%)}
   .mentor-empty{margin:auto;color:#7d7d7d;text-align:center;font:800 11px/1.5 "Nunito",Arial,sans-serif}
@@ -1328,6 +1332,11 @@ module.exports = async function handler(req, res) {
   .mentor-msg .time{justify-self:end;font:800 7px/1 "Nunito",Arial,sans-serif;opacity:.6}
   .mentor-msg.sticker .body{font-size:34px;line-height:1.1}
   .mentor-msg-file{display:flex;align-items:center;gap:8px;color:inherit;text-decoration:none;font-weight:900}
+  .mentor-msg-image{display:grid;gap:6px;color:inherit;text-decoration:none}
+  .mentor-msg-image img{display:block;width:min(260px,100%);max-height:300px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:#111}
+  .mentor-msg-image span{font-size:8px;font-weight:900;opacity:.8}
+  .mentor-toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,16px);z-index:9999;max-width:min(92vw,430px);padding:10px 13px;border:1px solid #63324d;border-radius:12px;background:#180f15;color:#fff;box-shadow:0 16px 44px rgba(0,0,0,.42);font:850 10px/1.4 "Nunito",Arial,sans-serif;opacity:0;pointer-events:none;transition:.22s ease}
+  .mentor-toast.show{opacity:1;transform:translate(-50%,0)}
   .mentor-sticker-tray{display:flex;gap:7px;padding:9px 10px;border-top:1px solid #242424;overflow:auto;background:#0c0c0c}
   .mentor-sticker-tray.hidden{display:none}
   .mentor-sticker-tray button{flex:0 0 auto;width:40px;height:40px;border:1px solid #303030;border-radius:11px;background:#151515;font-size:21px;cursor:pointer}
@@ -1657,6 +1666,10 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorConversationId='';
   var mentorPollTimer=null;
   var mentorLastKey='';
+  var mentorUnreadInitialized=false;
+  var mentorUnreadCount=0;
+  var mentorOverviewBusy=false;
+  var mentorToastTimer=null;
 
   function mentorEsc(value){
     return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
@@ -1692,18 +1705,94 @@ document.addEventListener('DOMContentLoaded', function(){
       else if(m.message_type==='image'||m.message_type==='file'){
         var label=m.file_name||'Lampiran';
         var link=m.drive_web_view_link||'#';
-        body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(link)+'" target="_blank" rel="noopener">📎 '+mentorEsc(label)+'</a></div>';
+        if(m.message_type==='image'){
+          body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(link)+'" target="_blank" rel="noopener"><img src="'+mentorEsc(link)+'" alt="'+mentorEsc(label)+'" loading="lazy"><span>🖼 '+mentorEsc(label)+'</span></a></div>';
+        }else{
+          body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(link)+'" target="_blank" rel="noopener">📎 '+mentorEsc(label)+'</a></div>';
+        }
       }else body='<div class="body">'+mentorEsc(m.body||'')+'</div>';
       return '<div class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+'"><span class="who">'+who+'</span>'+body+'<span class="time">'+mentorTime(m.created_at)+'</span></div>'
     }).join('');
     list.scrollTop=list.scrollHeight
   }
+  function mentorToast(message){
+    var node=el('mentorToast');
+    if(!node){
+      node=document.createElement('div');
+      node.id='mentorToast';
+      node.className='mentor-toast';
+      document.body.appendChild(node);
+    }
+    node.textContent=message;
+    node.classList.add('show');
+    clearTimeout(mentorToastTimer);
+    mentorToastTimer=setTimeout(function(){node.classList.remove('show')},3200);
+  }
+
+  function mentorRelativeLastSeen(value){
+    if(!value)return 'Mentor sedang offline';
+    var sec=Math.max(0,Math.floor((Date.now()-new Date(value).getTime())/1000));
+    if(sec<120)return 'Mentor baru saja aktif';
+    var min=Math.floor(sec/60);
+    if(min<60)return 'Terakhir aktif '+min+' menit lalu';
+    var hour=Math.floor(min/60);
+    return 'Terakhir aktif '+hour+' jam lalu';
+  }
+
+  function setMentorUnread(count){
+    count=Math.max(0,Number(count||0));
+    var badge=el('mentorUnreadBadge');
+    if(badge){
+      badge.textContent=count>99?'99+':String(count);
+      badge.classList.toggle('hidden',count<1);
+    }
+    if(mentorUnreadInitialized && count>mentorUnreadCount){
+      mentorToast('💬 Ada pesan baru dari Mentor BADAI');
+      if(typeof Notification!=='undefined' && Notification.permission==='granted' && document.visibilityState!=='visible'){
+        try{new Notification('Mentor BADAI',{body:'Ada balasan baru dari mentor.'})}catch(_){}
+      }
+    }
+    mentorUnreadCount=count;
+    mentorUnreadInitialized=true;
+  }
+
+  async function refreshMentorOverview(){
+    if(mentorOverviewBusy)return;
+    mentorOverviewBusy=true;
+    try{
+      var rows=await mentorFetch('/rest/v1/rpc/mentor_member_overview',{method:'POST',body:'{}'});
+      var row=Array.isArray(rows)?rows[0]:rows;
+      if(!row)return;
+      if(row.conversation_id&&!mentorConversationId)mentorConversationId=row.conversation_id;
+      setMentorUnread(row.unread_count||0);
+
+      var status=el('mentorMemberStatus');
+      if(status){
+        if(row.mentor_online){
+          status.textContent='● MENTOR ONLINE';
+          status.classList.add('online');
+          status.classList.remove('offline');
+          status.title=row.assigned_name?('Mentor: '+row.assigned_name):'Mentor BADAI sedang aktif';
+        }else{
+          status.textContent='○ '+mentorRelativeLastSeen(row.mentor_last_seen_at);
+          status.classList.remove('online');
+          status.classList.add('offline');
+          status.title=row.assigned_name?('Mentor: '+row.assigned_name):'';
+        }
+      }
+    }catch(_){}
+    finally{mentorOverviewBusy=false}
+  }
+
   async function loadMentorMessages(){
     if(!mentorConversationId)return;
     var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,created_at&order=created_at.desc&limit=60');
     rows=(rows||[]).reverse();
     renderMentorMessages(rows);
-    mentorFetch('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){})
+    await mentorFetch('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){});
+    var screen=el('mentor');
+    if(screen&&screen.classList.contains('active'))setMentorUnread(0);
+    refreshMentorOverview().catch(function(){})
   }
   async function bootMentor(){
     var status=el('mentorMemberStatus');if(status){status.textContent='Menghubungkan...';status.classList.remove('online')}
@@ -1712,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var row=Array.isArray(rows)?rows[0]:rows;
       mentorConversationId=row&&row.conversation_id?row.conversation_id:'';
       if(!mentorConversationId)throw new Error('Percakapan belum tersedia');
-      if(status){status.textContent='● MENTOR ONLINE';status.classList.add('online')}
+      await refreshMentorOverview();
       fetch('/api/mentor/status').then(function(r){return r.ok?r.json():null}).then(function(info){
         var note=el('mentorUploadNote');if(!note)return;
         note.textContent=info&&info.drive_configured
@@ -1721,7 +1810,7 @@ document.addEventListener('DOMContentLoaded', function(){
       }).catch(function(){});
       await loadMentorMessages()
     }catch(err){
-      if(status){status.textContent='GAGAL TERHUBUNG';status.classList.remove('online')}
+      if(status){status.textContent='GAGAL TERHUBUNG';status.classList.remove('online');status.classList.remove('offline')}
       var list=el('mentorMessageList');if(list)list.innerHTML='<div class="mentor-empty">'+mentorEsc(err.message||'Gagal membuka Mentor')+'</div>'
     }
   }
@@ -1757,7 +1846,12 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   var mentorNav=el('mentorNavButton');
-  if(mentorNav)mentorNav.addEventListener('click',function(){setTimeout(bootMentor,30)});
+  if(mentorNav)mentorNav.addEventListener('click',function(){
+    if(typeof Notification!=='undefined'&&Notification.permission==='default'){
+      try{Notification.requestPermission().catch(function(){})}catch(_){}
+    }
+    setTimeout(bootMentor,30)
+  });
   var mentorForm=el('mentorComposer');
   if(mentorForm)mentorForm.addEventListener('submit',async function(e){
     e.preventDefault();var input=el('mentorMessageInput');var text=String(input&&input.value||'').trim();if(!text)return;
@@ -1795,6 +1889,10 @@ document.addEventListener('DOMContentLoaded', function(){
       else bootMentor()
     }
   },4000);
+  setInterval(function(){
+    if(document.visibilityState==='visible')refreshMentorOverview().catch(function(){})
+  },10000);
+  setTimeout(function(){refreshMentorOverview().catch(function(){})},1200);
 
 
   setupAffiliateTabs();syncPlanAccess();setTimeout(resolveRealPlan,250);setTimeout(resolveRealPlan,1500);setTimeout(function(){bootAffiliate(0)},350);
