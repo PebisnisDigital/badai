@@ -2521,13 +2521,13 @@ document.addEventListener('DOMContentLoaded', function(){
   function setMentorStatus(row){
     var status=el('mentorMemberStatus'),sub=el('mentorWaSubstatus'),name=el('mentorWaName');
     var displayName=row&&row.assigned_name?row.assigned_name:'Mentor BADAI';
-    if(name)name.textContent=displayName;
+    if(mentorSelectedChat==='mentor'&&name)name.textContent=displayName;
     if(el('mentorChatRowName'))el('mentorChatRowName').textContent=displayName;
     var text='offline',typing=false,online=false;
     if(row&&row.mentor_typing){text='sedang mengetik...';typing=true;online=true}
     else if(row&&row.mentor_online){text='online';online=true}
     else if(row){text=mentorRelativeLastSeen(row.mentor_last_seen_at)}
-    if(sub){sub.textContent=text;sub.classList.toggle('typing',typing)}
+    if(mentorSelectedChat==='mentor'&&sub){sub.textContent=text;sub.classList.toggle('typing',typing)}
     var rowPreview=el('mentorChatRowPreview');
     if(rowPreview&&typing)rowPreview.textContent='sedang mengetik...';
     if(status){
