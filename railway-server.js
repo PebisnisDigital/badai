@@ -542,6 +542,96 @@ async function handleCommunityUpload(req,res){
   });
 }
 
+async function processAdminMediaDeleteQueue(token,limit=100){
+  const auth='Bearer '+token;
+  const pending=await supabaseRpc('admin_media_delete_queue_pending',{p_limit:limit},auth);
+  const rows=Array.isArray(pending)?pending:[];
+  if(!rows.length) return {processed:0,deleted:0,failed:0};
+
+  let drive=null;
+  try{
+    if(await mentorDriveConfigured()) drive=await driveClient();
+  }catch(_){drive=null}
+
+  let deleted=0,failed=0;
+  for(const row of rows){
+    let ok=false,errorText='';
+    if(!drive){
+      errorText='Google Drive belum terhubung.';
+    }else{
+      try{
+        await drive.files.delete({
+          fileId:String(row.drive_file_id||''),
+          supportsAllDrives:true
+        });
+        ok=true;
+      }catch(error){
+        const code=Number(error?.code||error?.response?.status||0);
+        if(code===404 || code===410){
+          ok=true;
+        }else{
+          errorText=String(error?.message||'Gagal menghapus file dari Google Drive.');
+        }
+      }
+    }
+
+    try{
+      await supabaseRpc('admin_media_delete_queue_mark',{
+        p_queue_id:row.id,
+        p_success:ok,
+        p_error:ok?null:errorText
+      },auth);
+    }catch(markError){
+      console.warn('Media delete queue mark:',markError?.message||markError);
+    }
+
+    if(ok)deleted++;else failed++;
+  }
+  return {processed:rows.length,deleted,failed};
+}
+
+async function handleAdminPermanentChatDelete(req,res){
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const adminUser=await verifyAdminBearer(token);
+  if(!adminUser){
+    return res.status(403).json({error:'Hanya Owner atau Super Admin yang dapat menghapus chat permanen.'});
+  }
+
+  const scopeKind=String(req.body?.scope_kind||'').trim().toLowerCase();
+  const rawIds=Array.isArray(req.body?.message_ids)?req.body.message_ids:[];
+  const ids=rawIds
+    .map(v=>String(v||'').trim())
+    .filter(v=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v))
+    .slice(0,200);
+
+  if(!['community','mentor'].includes(scopeKind)){
+    return res.status(400).json({error:'Jenis chat tidak valid.'});
+  }
+  if(!ids.length){
+    return res.status(400).json({error:'Pilih minimal satu pesan.'});
+  }
+
+  const prepared=await supabaseRpc('admin_chat_permanent_delete_prepare',{
+    p_scope_kind:scopeKind,
+    p_message_ids:ids
+  },'Bearer '+token);
+  const row=Array.isArray(prepared)?prepared[0]:prepared;
+  const cleanup=await processAdminMediaDeleteQueue(token,100).catch(error=>({
+    processed:0,deleted:0,failed:0,error:String(error?.message||error)
+  }));
+
+  return res.status(200).json({
+    ok:true,
+    deleted_messages:Number(row?.deleted_count||0),
+    queued_files:Number(row?.queued_files||0),
+    drive_deleted:Number(cleanup?.deleted||0),
+    drive_failed:Number(cleanup?.failed||0),
+    cleanup_error:cleanup?.error||null
+  });
+}
+
+
 async function handleProfileAvatarUpload(req,res){
   if(!(await mentorDriveConfigured())){
     return res.status(503).json({error:'Google Drive BADAI belum terhubung.'});
@@ -721,6 +811,10 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/api/profile/avatar' && req.method === 'POST') {
       return await handleProfileAvatarUpload(req,res);
+    }
+
+    if (pathname === '/api/admin/chat/permanent-delete' && req.method === 'POST') {
+      return await handleAdminPermanentChatDelete(req,res);
     }
 
     if (pathname === '/admin' || pathname === '/admin/' || pathname === '/api/admin-v5') {
