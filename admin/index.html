@@ -7065,247 +7065,278 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   }
 
-  function mentorAdminTime(value){
+  function mentorAdminClock(value){
+    try{return new Intl.DateTimeFormat('id-ID',{hour:'2-digit',minute:'2-digit'}).format(new Date(value))}catch(_){return ''}
+  }
+
+  function mentorAdminDateKey(value){
     try{
-      return new Intl.DateTimeFormat('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(value));
-    }catch(_){ return ''; }
+      const d=new Date(value);
+      return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    }catch(_){return ''}
+  }
+
+  function mentorAdminDateLabel(value){
+    try{
+      const d=new Date(value),now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
+      if(mentorAdminDateKey(d)===mentorAdminDateKey(now)) return 'HARI INI';
+      if(mentorAdminDateKey(d)===mentorAdminDateKey(y)) return 'KEMARIN';
+      return new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'long',year:d.getFullYear()!==now.getFullYear()?'numeric':undefined}).format(d).toUpperCase();
+    }catch(_){return ''}
+  }
+
+  function mentorAdminSize(bytes){
+    bytes=Number(bytes||0);if(!bytes)return '';
+    if(bytes<1024)return bytes+' B';
+    if(bytes<1024*1024)return Math.round(bytes/1024)+' KB';
+    return (bytes/(1024*1024)).toFixed(1)+' MB';
+  }
+
+  function mentorInitials(name){
+    return String(name||'M').trim().split(/\s+/).slice(0,2).map(x=>x.charAt(0)).join('').toUpperCase()||'M';
+  }
+
+  function mentorAdminRelative(value){
+    if(!value)return 'offline';
+    const sec=Math.max(0,Math.floor((Date.now()-new Date(value).getTime())/1000));
+    if(sec<120)return 'terakhir dilihat baru saja';
+    const min=Math.floor(sec/60);if(min<60)return 'terakhir dilihat '+min+' menit lalu';
+    const hour=Math.floor(min/60);if(hour<24)return 'terakhir dilihat '+hour+' jam lalu';
+    return 'terakhir dilihat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(new Date(value));
   }
 
   function mentorAdminToast(message){
     let node=$('mentorAdminToast');
-    if(!node){
-      node=document.createElement('div');
-      node.id='mentorAdminToast';
-      node.className='mentor-admin-toast';
-      document.body.appendChild(node);
-    }
-    node.textContent=message;
-    node.classList.add('show');
-    clearTimeout(mentorAdminToastTimer);
+    if(!node){node=document.createElement('div');node.id='mentorAdminToast';node.className='mentor-admin-toast';document.body.appendChild(node)}
+    node.textContent=message;node.classList.add('show');clearTimeout(mentorAdminToastTimer);
     mentorAdminToastTimer=setTimeout(()=>node.classList.remove('show'),3200);
   }
 
   function setMentorAdminUnread(count){
     count=Math.max(0,Number(count||0));
     const badge=$('mentorAdminBadge');
-    if(badge){
-      badge.textContent=count>99?'99+':String(count);
-      badge.classList.toggle('hidden',count<1);
-    }
-    if(mentorAdminUnreadInitialized && count>mentorAdminUnreadCount){
+    if(badge){badge.textContent=count>99?'99+':String(count);badge.classList.toggle('hidden',count<1)}
+    if(mentorAdminUnreadInitialized&&count>mentorAdminUnreadCount){
       mentorAdminToast('💬 Ada pesan baru dari member BADAI');
-      if(typeof Notification!=='undefined' && Notification.permission==='granted' && document.visibilityState!=='visible'){
+      if(typeof Notification!=='undefined'&&Notification.permission==='granted'&&document.visibilityState!=='visible'){
         try{new Notification('Mentor BADAI',{body:'Ada pertanyaan baru dari member.'})}catch(_){}
       }
     }
-    mentorAdminUnreadCount=count;
-    mentorAdminUnreadInitialized=true;
+    mentorAdminUnreadCount=count;mentorAdminUnreadInitialized=true;
   }
 
   async function refreshMentorAdminUnread(){
-    if(!allowedPages().includes('mentor')) return;
+    if(!allowedPages().includes('mentor'))return;
     try{
-      const rows=await api('/rest/v1/rpc/admin_mentor_unread_total',{
-        method:'POST',
-        body:JSON.stringify({})
-      }) || [];
-      const row=Array.isArray(rows)?rows[0]:rows;
-      setMentorAdminUnread(row?.unread_total || 0);
+      const rows=await api('/rest/v1/rpc/admin_mentor_unread_total',{method:'POST',body:JSON.stringify({})})||[];
+      const row=Array.isArray(rows)?rows[0]:rows;setMentorAdminUnread(row?.unread_total||0);
     }catch(_){}
   }
 
   async function touchMentorPresence(force=false){
-    if(!allowedPages().includes('mentor')) return;
-    const now=Date.now();
-    if(!force && now-mentorPresenceLastTouch<20000) return;
+    if(!allowedPages().includes('mentor'))return;
+    const now=Date.now();if(!force&&now-mentorPresenceLastTouch<20000)return;
     mentorPresenceLastTouch=now;
-    try{
-      await api('/rest/v1/rpc/mentor_touch_presence',{
-        method:'POST',
-        body:JSON.stringify({})
-      });
-    }catch(_){}
+    try{await api('/rest/v1/rpc/mentor_touch_presence',{method:'POST',body:JSON.stringify({})})}catch(_){}
+  }
+
+  function mentorAdminReceipt(createdAt){
+    const read=mentorActiveConversation?.member_last_read_at&&
+      new Date(mentorActiveConversation.member_last_read_at).getTime()>=new Date(createdAt).getTime();
+    return '<span class="mentor-admin-receipt '+(read?'read':'')+'" title="'+(read?'Dibaca':'Terkirim')+'">✓✓</span>';
+  }
+
+  function mentorAdminNearBottom(list){
+    return !list||list.scrollHeight-list.scrollTop-list.clientHeight<90;
+  }
+
+  function mentorAdminScrollBottom(force){
+    const list=$('mentorAdminMessageList');if(!list)return;
+    if(force||mentorAdminNearBottom(list)){list.scrollTop=list.scrollHeight;$('mentorAdminJumpLatest')?.classList.add('hidden')}
+  }
+
+  function mentorThreadStatus(row){
+    if(!row)return '';
+    if(row.member_typing)return 'sedang mengetik...';
+    if(row.member_online)return 'online';
+    return mentorAdminRelative(row.member_presence_at);
+  }
+
+  function updateMentorThreadHeader(){
+    const row=mentorActiveConversation;if(!row)return;
+    if($('mentorThreadName'))$('mentorThreadName').textContent=row.member_name||'Member BADAI';
+    if($('mentorThreadAvatar'))$('mentorThreadAvatar').textContent=mentorInitials(row.member_name);
+    if($('mentorThreadMeta')){
+      $('mentorThreadMeta').textContent=mentorThreadStatus(row);
+      $('mentorThreadMeta').classList.toggle('typing',Boolean(row.member_typing));
+      $('mentorThreadMeta').title=(row.member_email||'-')+' • '+(row.member_plan||'-');
+    }
+    if($('claimMentorChatBtn')){
+      const mine=row.assigned_team_id===currentTeam?.id;
+      $('claimMentorChatBtn').textContent=mine?'CHAT SAYA ✓':'AMBIL CHAT';
+      $('claimMentorChatBtn').disabled=mine;
+    }
   }
 
   async function loadMentorInbox(){
-    if(!allowedPages().includes('mentor')) return;
-
+    if(!allowedPages().includes('mentor'))return;
     try{
-      mentorConversations = await api('/rest/v1/rpc/admin_mentor_conversations',{
-        method:'POST',
-        body:JSON.stringify({})
-      }) || [];
-      renderMentorInbox();
+      mentorConversations=await api('/rest/v1/rpc/admin_mentor_conversations',{method:'POST',body:JSON.stringify({})})||[];
+      if(mentorActiveConversation){
+        const fresh=mentorConversations.find(x=>x.conversation_id===mentorActiveConversation.conversation_id);
+        if(fresh)mentorActiveConversation=fresh;
+      }
+      renderMentorInbox();updateMentorThreadHeader();
       setMentorAdminUnread(mentorConversations.reduce((sum,row)=>sum+Number(row.unread_count||0),0));
 
-      const archiveRows = await api('/rest/v1/mentor_archive_batches?select=status&status=in.(pending,uploading,failed)&limit=100').catch(()=>[]);
-      const pending = Array.isArray(archiveRows) ? archiveRows.length : 0;
-      const driveState = await fetch('/api/mentor/status').then(r=>r.ok?r.json():null).catch(()=>null);
-      if($('mentorDriveStatus')){
-        $('mentorDriveStatus').textContent = driveState?.drive_configured
-          ? (pending ? 'TERHUBUNG • '+pending+' ANTRIAN' : 'TERHUBUNG ✓')
-          : (pending ? pending + ' ARSIP MENUNGGU' : 'BELUM TERHUBUNG');
-      }
-      if($('mentorDriveAccount')){
-        $('mentorDriveAccount').textContent = driveState?.drive_configured
-          ? ('Akun: '+(driveState.connected_account || 'Google Drive aktif'))
-          : (driveState?.oauth_client_configured
-              ? 'Siap dihubungkan ke akun Google.'
-              : 'OAuth Google belum disiapkan di Railway.');
-      }
+      const archiveRows=await api('/rest/v1/mentor_archive_batches?select=status&status=in.(pending,uploading,failed)&limit=100').catch(()=>[]);
+      const pending=Array.isArray(archiveRows)?archiveRows.length:0;
+      const driveState=await fetch('/api/mentor/status').then(r=>r.ok?r.json():null).catch(()=>null);
+      if($('mentorDriveStatus'))$('mentorDriveStatus').textContent=driveState?.drive_configured?(pending?'TERHUBUNG • '+pending+' ANTRIAN':'TERHUBUNG ✓'):(pending?pending+' ARSIP MENUNGGU':'BELUM TERHUBUNG');
+      if($('mentorDriveAccount'))$('mentorDriveAccount').textContent=driveState?.drive_configured?('Akun: '+(driveState.connected_account||'Google Drive aktif')):(driveState?.oauth_client_configured?'Siap dihubungkan ke akun Google.':'OAuth Google belum disiapkan di Railway.');
       if($('mentorConnectDriveBtn')){
-        $('mentorConnectDriveBtn').classList.toggle('hidden', Boolean(driveState?.drive_configured) || !['owner','super_admin'].includes(currentTeam?.role));
-        $('mentorConnectDriveBtn').disabled = !driveState?.oauth_client_configured;
-        $('mentorConnectDriveBtn').textContent = driveState?.oauth_client_configured
-          ? 'SAMBUNGKAN GOOGLE DRIVE'
-          : 'BUTUH GOOGLE OAUTH';
+        $('mentorConnectDriveBtn').classList.toggle('hidden',Boolean(driveState?.drive_configured)||!['owner','super_admin'].includes(currentTeam?.role));
+        $('mentorConnectDriveBtn').disabled=!driveState?.oauth_client_configured;
+        $('mentorConnectDriveBtn').textContent=driveState?.oauth_client_configured?'SAMBUNGKAN GOOGLE DRIVE':'BUTUH GOOGLE OAUTH';
       }
-
-      if(mentorActiveConversation){
-        const fresh = mentorConversations.find(x=>x.conversation_id===mentorActiveConversation.conversation_id);
-        if(fresh) mentorActiveConversation = fresh;
-        await loadMentorAdminMessages();
-      }
+      if(mentorActiveConversation)await loadMentorAdminMessages(false);
     }catch(err){
-      if($('mentorInboxList')) $('mentorInboxList').innerHTML = '<div class="empty">✕ '+esc(err.message || 'Gagal memuat Inbox Mentor.')+'</div>';
+      if($('mentorInboxList'))$('mentorInboxList').innerHTML='<div class="empty">✕ '+esc(err.message||'Gagal memuat Inbox Mentor.')+'</div>';
     }
   }
 
   function renderMentorInbox(){
-    if($('mentorInboxCount')) $('mentorInboxCount').textContent = mentorConversations.length + ' percakapan';
-    if(!$('mentorInboxList')) return;
+    if($('mentorInboxCount'))$('mentorInboxCount').textContent=mentorConversations.length+' percakapan';
+    if(!$('mentorInboxList'))return;
+    if(!mentorConversations.length){$('mentorInboxList').innerHTML='<div class="empty">Belum ada percakapan Mentor.</div>';return}
 
-    if(!mentorConversations.length){
-      $('mentorInboxList').innerHTML = '<div class="empty">Belum ada percakapan Mentor.</div>';
-      return;
-    }
-
-    $('mentorInboxList').innerHTML = mentorConversations.map(row => {
-      const active = mentorActiveConversation?.conversation_id === row.conversation_id;
-      const assigned = row.assigned_name ? 'Mentor: ' + row.assigned_name : 'Belum diambil mentor';
-      return '<button type="button" class="mentor-inbox-item '+(active?'active':'')+'" data-mentor-conversation="'+row.conversation_id+'">' +
-        '<div><b>'+esc(row.member_name || 'Member BADAI')+'</b>' +
-        '<span>'+esc(row.member_plan || '-')+' • '+esc(assigned)+'</span>' +
-        '<span>'+esc(row.member_email || '')+' • '+esc(mentorAdminTime(row.last_message_at))+'</span></div>' +
-        (Number(row.unread_count||0)>0?'<span class="mentor-unread">'+Number(row.unread_count||0)+'</span>':'') +
-      '</button>';
+    $('mentorInboxList').innerHTML=mentorConversations.map(row=>{
+      const active=mentorActiveConversation?.conversation_id===row.conversation_id;
+      const unread=Number(row.unread_count||0);
+      const preview=row.member_typing?'mengetik...':((row.last_message_sender_kind==='mentor'?'Anda: ':'')+(row.last_message_preview||'Belum ada pesan'));
+      const assigned=row.assigned_name?('Ditangani '+row.assigned_name):'Belum diambil mentor';
+      return '<button type="button" class="mentor-inbox-item '+(active?'active':'')+'" data-mentor-conversation="'+row.conversation_id+'">'+
+        '<div class="mentor-inbox-avatar">'+esc(mentorInitials(row.member_name))+'</div>'+
+        '<div class="mentor-inbox-main"><div class="mentor-inbox-top"><b>'+esc(row.member_name||'Member BADAI')+'</b></div>'+
+        '<span class="mentor-inbox-preview '+(row.member_typing?'typing':'')+'">'+esc(preview)+'</span>'+
+        '<span class="mentor-inbox-assigned">'+esc(assigned)+'</span></div>'+
+        '<div class="mentor-inbox-side"><span class="mentor-inbox-time">'+esc(mentorAdminClock(row.last_message_at))+'</span>'+
+        (unread>0?'<span class="mentor-unread">'+(unread>99?'99+':unread)+'</span>':'')+'</div></button>';
     }).join('');
   }
 
-  async function openMentorConversation(id){
-    const row = mentorConversations.find(x=>x.conversation_id===id);
-    if(!row) return;
-    mentorActiveConversation = row;
-    renderMentorInbox();
-
-    $('mentorThreadEmpty')?.classList.add('hidden');
-    $('mentorThreadView')?.classList.remove('hidden');
-    if($('mentorThreadName')) $('mentorThreadName').textContent = row.member_name || 'Member BADAI';
-    if($('mentorThreadMeta')){
-      $('mentorThreadMeta').textContent =
-        (row.member_email || '-') + ' • ' +
-        (row.member_plan || '-') + ' • ' +
-        (row.assigned_name ? 'Ditangani ' + row.assigned_name : 'Belum ada mentor');
-    }
-    if($('claimMentorChatBtn')){
-      const mine = row.assigned_team_id === currentTeam?.id;
-      $('claimMentorChatBtn').textContent = mine ? 'CHAT SAYA ✓' : 'AMBIL CHAT';
-      $('claimMentorChatBtn').disabled = mine;
-    }
-
-    await loadMentorAdminMessages();
+  function mentorAdminDraftKey(){
+    return mentorActiveConversation?.conversation_id?('badai_mentor_admin_draft_'+mentorActiveConversation.conversation_id):'';
   }
 
-  async function loadMentorAdminMessages(){
-    if(!mentorActiveConversation?.conversation_id) return;
-    const id = mentorActiveConversation.conversation_id;
-    const rows = await api(
-      '/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+
-      '&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,created_at&order=created_at.desc&limit=80'
-    ) || [];
+  async function openMentorConversation(id){
+    const row=mentorConversations.find(x=>x.conversation_id===id);if(!row)return;
+    mentorActiveConversation=row;mentorAdminLastKey='';mentorAdminInitialRender=true;renderMentorInbox();
+    $('mentorThreadEmpty')?.classList.add('hidden');$('mentorThreadView')?.classList.remove('hidden');updateMentorThreadHeader();
+    clearMentorAdminPending();
+    const input=$('mentorAdminInput');
+    if(input){try{input.value=localStorage.getItem(mentorAdminDraftKey())||''}catch(_){input.value=''}mentorAdminGrowInput()}
+    await loadMentorAdminMessages(true);
+  }
 
-    const list = $('mentorAdminMessageList');
+  async function loadMentorAdminMessages(forceScroll=false){
+    if(!mentorActiveConversation?.conversation_id)return;
+    const id=mentorActiveConversation.conversation_id;
+    const rows=await api('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,created_at&order=created_at.desc&limit=100')||[];
+    const ordered=rows.slice().reverse(),list=$('mentorAdminMessageList');
     if(list){
-      const ordered = rows.slice().reverse();
-      list.innerHTML = ordered.length ? ordered.map(m => {
-        const who = m.sender_kind === 'mentor' ? 'MENTOR' : (m.sender_kind === 'member' ? 'MEMBER' : 'BADAI');
-        let body = '';
-        if(m.message_type === 'sticker'){
-          body = '<div class="body">'+esc(m.sticker_key || '✨')+'</div>';
-        }else if(m.message_type === 'image' || m.message_type === 'file'){
-          const link=esc(m.drive_web_view_link || '#');
-          const label=esc(m.file_name || 'Lampiran');
-          body = m.message_type === 'image'
-            ? '<div class="body"><a class="mentor-admin-image" href="'+link+'" target="_blank" rel="noopener"><img src="'+link+'" alt="'+label+'" loading="lazy"><span>🖼 '+label+'</span></a></div>'
-            : '<div class="body"><a href="'+link+'" target="_blank" rel="noopener">📎 '+label+'</a></div>';
-        }else{
-          body = '<div class="body">'+esc(m.body || '')+'</div>';
-        }
-        return '<div class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+'">' +
-          '<span class="who">'+who+'</span>'+body+
-          '<span class="time">'+esc(mentorAdminTime(m.created_at))+'</span></div>';
-      }).join('') : '<div class="empty">Belum ada pesan.</div>';
-      list.scrollTop = list.scrollHeight;
+      const wasNear=mentorAdminNearBottom(list);
+      const key=id+'|'+ordered.map(m=>m.id).join(',')+'|'+String(mentorActiveConversation.member_last_read_at||'');
+      if(key!==mentorAdminLastKey){
+        mentorAdminLastKey=key;let html='',lastDay='';
+        ordered.forEach(m=>{
+          const day=mentorAdminDateKey(m.created_at);
+          if(day!==lastDay){html+='<div class="mentor-admin-date">'+mentorAdminDateLabel(m.created_at)+'</div>';lastDay=day}
+          let body='',link=esc(m.drive_web_view_link||'#'),label=esc(m.file_name||'Lampiran');
+          if(m.message_type==='sticker'){
+            body='<div class="body">'+esc(m.sticker_key||'✨')+'</div>';
+          }else if(m.message_type==='image'){
+            body='<div class="body"><a class="mentor-admin-image" href="'+link+'" target="_blank" rel="noopener"><img src="'+link+'" alt="'+label+'" loading="lazy"></a>'+
+              (m.body?'<div class="mentor-admin-caption">'+esc(m.body)+'</div>':'')+'</div>';
+          }else if(m.message_type==='file'){
+            body='<div class="body"><a class="mentor-admin-file" href="'+link+'" target="_blank" rel="noopener"><span class="mentor-admin-file-icon">📄</span><span class="mentor-admin-file-copy"><b>'+label+'</b><small>'+esc(mentorAdminSize(m.file_size)||String(m.file_mime||'Dokumen'))+'</small></span></a>'+
+              (m.body?'<div class="mentor-admin-caption">'+esc(m.body)+'</div>':'')+'</div>';
+          }else{
+            body='<div class="body">'+esc(m.body||'')+'</div>';
+          }
+          const receipt=m.sender_kind==='mentor'?mentorAdminReceipt(m.created_at):'';
+          html+='<div class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+'">'+body+
+            '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+receipt+'</div></div>';
+        });
+        list.innerHTML=html||'<div class="empty">Belum ada pesan.</div>';
+        if(forceScroll||mentorAdminInitialRender||wasNear)mentorAdminScrollBottom(true);
+        else $('mentorAdminJumpLatest')?.classList.remove('hidden');
+        mentorAdminInitialRender=false;
+      }
     }
-
-    await api('/rest/v1/rpc/mentor_mark_read',{
-      method:'POST',
-      body:JSON.stringify({p_conversation_id:id})
-    }).catch(()=>{});
+    await api('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:id})}).catch(()=>{});
     refreshMentorAdminUnread().catch(()=>{});
   }
 
-  async function sendMentorAdminPayload(type, body, sticker, fileData){
-    if(!mentorActiveConversation?.conversation_id) throw new Error('Pilih percakapan member dulu.');
+  async function mentorAdminSetTyping(value){
+    if(!mentorActiveConversation?.conversation_id)return;
+    api('/rest/v1/rpc/mentor_set_typing',{method:'POST',body:JSON.stringify({p_conversation_id:mentorActiveConversation.conversation_id,p_is_typing:Boolean(value)})}).catch(()=>{});
+  }
 
-    await api('/rest/v1/rpc/mentor_send_message',{
-      method:'POST',
-      body:JSON.stringify({
-        p_conversation_id:mentorActiveConversation.conversation_id,
-        p_message_type:type,
-        p_body:body || null,
-        p_sticker_key:sticker || null,
-        p_drive_file_id:fileData?.id || null,
-        p_drive_web_view_link:fileData?.url || null,
-        p_file_name:fileData?.name || null,
-        p_file_mime:fileData?.mime || null,
-        p_file_size:fileData?.size || null
-      })
-    });
+  function mentorAdminTypingPulse(){
+    mentorAdminSetTyping(true);clearTimeout(mentorAdminTypingTimer);
+    mentorAdminTypingTimer=setTimeout(()=>mentorAdminSetTyping(false),3200);
+  }
 
-    await loadMentorAdminMessages();
-    await loadMentorInbox();
+  async function sendMentorAdminPayload(type,body,sticker,fileData){
+    if(!mentorActiveConversation?.conversation_id)throw new Error('Pilih percakapan member dulu.');
+    await api('/rest/v1/rpc/mentor_send_message',{method:'POST',body:JSON.stringify({
+      p_conversation_id:mentorActiveConversation.conversation_id,p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
+      p_drive_file_id:fileData?.id||null,p_drive_web_view_link:fileData?.url||null,p_file_name:fileData?.name||null,
+      p_file_mime:fileData?.mime||null,p_file_size:fileData?.size||null
+    })});
+    mentorAdminSetTyping(false);mentorAdminLastKey='';
+    await loadMentorAdminMessages(true);await loadMentorInbox();
   }
 
   async function uploadMentorAdminFile(file){
-    if(!file) return null;
-    if(file.size > 10*1024*1024) throw new Error('File maksimal 10 MB.');
+    if(!file)return null;if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
+    const fd=new FormData();fd.append('file',file);fd.append('conversation_id',mentorActiveConversation?.conversation_id||'');
+    const res=await fetch('/api/mentor/upload',{method:'POST',headers:{Authorization:'Bearer '+session.access_token},body:fd});
+    const data=await res.json().catch(()=>null);
+    if(!res.ok)throw new Error(data?.error||data?.message||'Upload gagal.');return data;
+  }
 
-    const fd = new FormData();
-    fd.append('file',file);
-    fd.append('conversation_id',mentorActiveConversation?.conversation_id || '');
+  function clearMentorAdminPending(){
+    if(mentorAdminPendingObjectUrl){try{URL.revokeObjectURL(mentorAdminPendingObjectUrl)}catch(_){}}
+    mentorAdminPendingObjectUrl='';mentorAdminPendingFile=null;$('mentorAdminPending')?.classList.add('hidden');
+    if($('mentorAdminImageInput'))$('mentorAdminImageInput').value='';if($('mentorAdminFileInput'))$('mentorAdminFileInput').value='';
+  }
 
-    const res = await fetch('/api/mentor/upload',{
-      method:'POST',
-      headers:{'Authorization':'Bearer '+session.access_token},
-      body:fd
-    });
-    const data = await res.json().catch(()=>null);
-    if(!res.ok) throw new Error(data?.error || data?.message || 'Google Drive belum terhubung.');
-    return data;
+  function setMentorAdminPending(file){
+    if(!file)return;if(file.size>10*1024*1024){mentorAdminToast('File maksimal 10 MB');return}
+    clearMentorAdminPending();mentorAdminPendingFile=file;$('mentorAdminPending')?.classList.remove('hidden');
+    if($('mentorAdminPendingName'))$('mentorAdminPendingName').textContent=file.name||'Lampiran';
+    if($('mentorAdminPendingSize'))$('mentorAdminPendingSize').textContent=mentorAdminSize(file.size);
+    const preview=$('mentorAdminPendingPreview');
+    if(preview){
+      if(file.type?.startsWith('image/')){mentorAdminPendingObjectUrl=URL.createObjectURL(file);preview.innerHTML='<img src="'+esc(mentorAdminPendingObjectUrl)+'" alt="">'}
+      else preview.textContent='📄';
+    }
+    $('mentorAdminAttachMenu')?.classList.add('hidden');$('mentorAdminInput')?.focus();
+  }
+
+  function mentorAdminGrowInput(){
+    const input=$('mentorAdminInput');if(!input)return;
+    input.style.height='36px';input.style.height=Math.min(input.scrollHeight,104)+'px';
   }
 
   async function claimMentorConversation(){
-    if(!mentorActiveConversation?.conversation_id) return;
-    await api('/rest/v1/rpc/admin_assign_mentor',{
-      method:'POST',
-      body:JSON.stringify({
-        p_conversation_id:mentorActiveConversation.conversation_id,
-        p_team_id:currentTeam.id
-      })
-    });
-    await loadMentorInbox();
-    await openMentorConversation(mentorActiveConversation.conversation_id);
+    if(!mentorActiveConversation?.conversation_id)return;
+    await api('/rest/v1/rpc/admin_assign_mentor',{method:'POST',body:JSON.stringify({
+      p_conversation_id:mentorActiveConversation.conversation_id,p_team_id:currentTeam.id
+    })});
+    await loadMentorInbox();await openMentorConversation(mentorActiveConversation.conversation_id);
   }
 
   async function loadTeamMembers(){
