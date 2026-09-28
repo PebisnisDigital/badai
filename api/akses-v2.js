@@ -1996,6 +1996,80 @@ module.exports = async function handler(req, res) {
   }
   #mentor .mentor-msg.sticker::before,#mentor .mentor-msg.system::before{display:none!important}
 
+  /* PENGUMUMAN BADAI — centered WhatsApp Community-style posts */
+  #mentor .mentor-chat-card.announcement-thread .mentor-message-list{
+    align-items:stretch!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+  #mentor .mentor-chat-card.announcement-thread .mentor-msg{
+    width:min(92%,520px)!important;
+    max-width:520px!important;
+    align-self:center!important;
+    justify-self:center!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding:7px 8px 5px!important;
+    border:0!important;
+    border-radius:8px!important;
+    border-top-left-radius:8px!important;
+    border-top-right-radius:8px!important;
+    background:#202c33!important;
+    color:#e9edef!important;
+    box-shadow:0 1px 2px rgba(0,0,0,.34)!important;
+  }
+  #mentor .mentor-chat-card.announcement-thread .mentor-msg::before{
+    display:none!important;
+  }
+  #mentor .mentor-chat-card.announcement-thread .mentor-msg .body{
+    width:100%!important;
+    padding:0!important;
+    font-size:12px!important;
+    line-height:1.42!important;
+  }
+  #mentor .mentor-chat-card.announcement-thread .mentor-msg-image{
+    width:100%!important;
+    display:block!important;
+    margin:0 0 7px!important;
+  }
+  #mentor .mentor-chat-card.announcement-thread .mentor-msg-image img{
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:520px!important;
+    object-fit:contain!important;
+    border:0!important;
+    border-radius:6px!important;
+    background:#111b21!important;
+  }
+  #mentor .mentor-chat-card.announcement-thread .mentor-image-caption{
+    padding:3px 2px 1px!important;
+  }
+  #mentor .mentor-chat-card.announcement-thread .mentor-msg-file{
+    width:100%!important;
+    box-sizing:border-box!important;
+    padding:9px!important;
+    border-radius:7px!important;
+    background:rgba(11,20,26,.5)!important;
+  }
+  #mentor .mentor-chat-card.announcement-thread .mentor-msg-meta{
+    margin-top:4px!important;
+    color:#8696a0!important;
+  }
+  #mentor .mentor-chat-card.announcement-thread .mentor-receipt{
+    display:none!important;
+  }
+  @media(max-width:560px){
+    #mentor .mentor-chat-card.announcement-thread .mentor-message-list{
+      padding-left:7px!important;
+      padding-right:7px!important;
+    }
+    #mentor .mentor-chat-card.announcement-thread .mentor-msg{
+      width:96%!important;
+      max-width:96%!important;
+    }
+  }
+
   /* Group sender identity: initial avatar + bubble */
   #mentor .mentor-group-message-row{
     width:100%;display:flex;align-items:flex-start;gap:8px;align-self:flex-start;
@@ -3079,7 +3153,12 @@ document.addEventListener('DOMContentLoaded', function(){
     mentorSelectedChat=kind||'mentor';
     var avatar=el('mentorWaAvatar'),name=el('mentorWaName'),sub=el('mentorWaSubstatus');
     var composer=el('mentorComposer'),stickers=el('mentorStickerTray'),attach=el('mentorAttachMenu');
+    var chatCard=el('mentorChatCard');
     if(composer)composer.dataset.chatKind=mentorSelectedChat;
+    if(chatCard){
+      chatCard.classList.toggle('announcement-thread',mentorSelectedChat==='announcement');
+      chatCard.classList.toggle('group-thread',mentorSelectedChat==='group');
+    }
     ensureCommunityMentionUi();
     var notice=el('mentorReadOnlyNotice'),attachBtn=el('mentorAttachBtn'),stickerBtn=el('mentorStickerBtn');
     if(stickers)stickers.classList.add('hidden');if(attach)attach.classList.add('hidden');clearMentorPending();clearMentorReply();closeCommunityMentionPicker();
