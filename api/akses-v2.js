@@ -1744,6 +1744,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorPendingObjectUrl='';
   var mentorInitialRender=true;
   var mentorDraftKey='badai_mentor_draft';
+  var mentorMemberPresenceLastTouch=0;
 
   function mentorEsc(value){
     return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
@@ -1890,6 +1891,12 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!mentorConversationId)return;
     mentorFetch('/rest/v1/rpc/mentor_set_typing',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId,p_is_typing:Boolean(value)})}).catch(function(){})
   }
+  function touchMentorMemberPresence(force){
+    if(!mentorConversationId)return;
+    var now=Date.now();if(!force&&now-mentorMemberPresenceLastTouch<20000)return;
+    mentorMemberPresenceLastTouch=now;
+    mentorFetch('/rest/v1/rpc/mentor_touch_member_presence',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){})
+  }
   function mentorTypingPulse(){
     mentorSetTyping(true);clearTimeout(mentorTypingTimer);
     mentorTypingTimer=setTimeout(function(){mentorSetTyping(false)},3200)
@@ -1910,6 +1917,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var rows=await mentorFetch('/rest/v1/rpc/mentor_get_or_create_conversation',{method:'POST',body:'{}'});
       var row=Array.isArray(rows)?rows[0]:rows;mentorConversationId=row&&row.conversation_id?row.conversation_id:'';
       if(!mentorConversationId)throw new Error('Percakapan belum tersedia');
+      touchMentorMemberPresence(true);
       await refreshMentorOverview();await loadMentorMessages();
       fetch('/api/mentor/status').then(function(r){return r.ok?r.json():null}).then(function(info){
         var note=el('mentorUploadNote');if(!note)return;
@@ -2031,6 +2039,7 @@ document.addEventListener('DOMContentLoaded', function(){
   mentorPollTimer=setInterval(function(){
     var screen=el('mentor');
     if(screen&&screen.classList.contains('active')&&document.visibilityState==='visible'){
+      touchMentorMemberPresence(false);
       refreshMentorOverview().catch(function(){});
       if(mentorConversationId)loadMentorMessages().catch(function(){});else bootMentor()
     }
