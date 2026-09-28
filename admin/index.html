@@ -3458,6 +3458,25 @@ th,td{padding:14px 12px!important}
 #pageMentor .mentor-thread-back{color:#d1d7db!important}
 #pageMentor .mentor-inbox-head button,
 #pageMentor .mentor-thread-head button{border-color:#34534a!important;background:#14251f!important;color:#77d7b0!important}
+
+.account-admin-logout{
+  margin-top:12px;padding:16px 18px;border:1px solid #402126;border-radius:16px;
+  background:linear-gradient(180deg,#140d0e,#0d090a);display:flex;align-items:center;
+  justify-content:space-between;gap:18px
+}
+.account-admin-logout>div{min-width:0}
+.account-admin-kicker{display:block;margin-bottom:5px;color:#ff8f9a;font-size:8px;font-weight:950;letter-spacing:.09em}
+.account-admin-logout h3{margin:0 0 4px;color:#fff;font-size:17px;line-height:1.2}
+.account-admin-logout p{margin:0;color:#8f8587;font-size:11px;line-height:1.5;max-width:650px}
+.account-admin-logout-btn{
+  flex:0 0 auto;min-height:40px;padding:0 15px;border:1px solid #703039;border-radius:10px;
+  background:#2a1115;color:#ff9ba4;font-size:10px;font-weight:950;cursor:pointer
+}
+.account-admin-logout-btn:hover{background:#36161b;border-color:#91414d}
+@media(max-width:620px){
+  .account-admin-logout{align-items:stretch;display:grid;padding:13px}
+  .account-admin-logout-btn{width:100%;min-height:42px}
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -3474,9 +3493,6 @@ th,td{padding:14px 12px!important}
       <span class="admin-brand-pill">ADMIN</span>
       <span id="adminIdentity" class="header-admin-identity hidden">Memuat akun...</span>
       <span id="headerPageTitle" class="header-page-title hidden">Penjualan BADAI</span>
-    </div>
-    <div class="top-actions">
-      <button id="logoutBtn" class="small-btn danger hidden" type="button">LOGOUT</button>
     </div>
   </div>
 </header>
@@ -3524,9 +3540,9 @@ th,td{padding:14px 12px!important}
         <span class="nav-label">Mentor</span>
         <span id="mentorAdminBadge" class="mentor-tab-badge hidden">0</span>
       </button>
-      <button id="tabTeam" class="admin-tab" data-page="team" type="button" aria-label="Tim">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span class="nav-label">Tim</span>
+      <button id="tabTeam" class="admin-tab" data-page="team" type="button" aria-label="Akun">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="M18 5.5h3M19.5 4v3"/></svg>
+        <span class="nav-label">Akun</span>
       </button>
     </nav>
 
@@ -4144,15 +4160,15 @@ th,td{padding:14px 12px!important}
     <section id="pageTeam" class="admin-page hidden">
       <div class="page-title">
         <div>
-          <h2>Tim</h2>
-          <p>Atur siapa yang boleh masuk dashboard BADAI dan tentukan perannya.</p>
+          <h2>Akun</h2>
+          <p>Kelola akun dashboard BADAI, data akunmu, dan akses tim sesuai peran.</p>
         </div>
       </div>
 
       <div class="team-layout">
         <div id="teamAddPanel" class="team-panel">
-          <h3>Tambah Tim</h3>
-          <p>Saat ditambahkan, sistem langsung membuat akun login dan password awal.</p>
+          <h3>Tambah Akun Admin</h3>
+          <p>Owner dan Super Admin dapat membuat akun dashboard baru beserta password awalnya.</p>
           <form id="teamForm" class="team-form">
             <input id="teamName" type="text" required placeholder="Nama tim"/>
             <input id="teamEmail" type="email" required placeholder="Email tim"/>
@@ -4164,13 +4180,13 @@ th,td{padding:14px 12px!important}
               <option value="marketing">Marketing</option>
               <option value="mentor">Mentor</option>
             </select>
-            <button id="addTeamBtn" class="primary" type="submit">TAMBAH TIM + BUAT AKSES</button>
+            <button id="addTeamBtn" class="primary" type="submit">TAMBAH AKUN + BUAT AKSES</button>
           </form>
           <div id="teamStatus" class="team-status-note"></div>
 
           <div class="team-help">
-            <div><b>SUPER ADMIN</b> — Kontrol penuh seperti Owner, termasuk mengelola Tim.</div>
-            <div><b>ADMIN</b> — Penjualan + Keuangan + Marketing + bisa melihat Tim, tanpa mengelola akun lain.</div>
+            <div><b>SUPER ADMIN</b> — Kontrol penuh seperti Owner, termasuk mengelola semua akun dashboard.</div>
+            <div><b>ADMIN</b> — Penjualan + Keuangan + Marketing + dapat melihat daftar akun, tetapi hanya mengedit akun sendiri.</div>
             <div><b>SALES</b> — Fokus Penjualan dan pengelolaan member.</div>
             <div><b>FINANCE</b> — Hanya melihat Keuangan dan laporan.</div>
             <div><b>MARKETING</b> — Hanya mengatur harga, kupon, dan notifikasi marketing.</div>
@@ -4179,17 +4195,26 @@ th,td{padding:14px 12px!important}
         </div>
 
         <div class="team-panel team-table-wrap">
-          <h3>Daftar Tim</h3>
-          <p id="teamListHelp">Semua akun dashboard dapat melihat daftar Tim. Hanya Owner dan Super Admin yang dapat mengelola akun lain.</p>
-          <div id="teamReadOnlyNotice" class="team-status-note hidden">Mode lihat saja. Kamu tetap bisa mengedit nama dan password akunmu sendiri lewat tombol EDIT AKUN.</div>
+          <h3>Daftar Akun Dashboard</h3>
+          <p id="teamListHelp">Semua akun dashboard dapat melihat daftar akun. Hanya Owner dan Super Admin yang dapat mengelola akun lain.</p>
+          <div id="teamReadOnlyNotice" class="team-status-note hidden">Kamu dapat melihat daftar akun, tetapi hanya bisa mengedit nama dan password akunmu sendiri.</div>
           <table>
             <thead>
-              <tr><th>Tim</th><th>Role</th><th>Status</th><th>Akun</th><th>Aksi</th></tr>
+              <tr><th>Nama</th><th>Role</th><th>Status</th><th>Login</th><th>Aksi</th></tr>
             </thead>
             <tbody id="teamTableBody"></tbody>
           </table>
-          <div id="teamEmpty" class="empty hidden">Belum ada tim.</div>
+          <div id="teamEmpty" class="empty hidden">Belum ada akun dashboard.</div>
         </div>
+      </div>
+
+      <div class="account-admin-logout">
+        <div>
+          <span class="account-admin-kicker">SESI AKUN</span>
+          <h3>Keluar dari Dashboard</h3>
+          <p>Keluar dari akun admin BADAI di perangkat ini. Kamu perlu login kembali untuk membuka dashboard.</p>
+        </div>
+        <button id="logoutBtn" class="account-admin-logout-btn hidden" type="button">KELUAR / LOGOUT</button>
       </div>
     </section>
   </section>
@@ -4258,14 +4283,14 @@ th,td{padding:14px 12px!important}
 
 <div id="teamCredentialModal" class="cred-modal hidden">
   <div class="cred-box">
-    <h2>Akses Tim Dibuat</h2>
-    <p>Salin data ini lalu kirim ke anggota tim.</p>
+    <h2>Akun Dashboard Dibuat</h2>
+    <p>Salin data login ini lalu kirim ke pemilik akun.</p>
     <div class="cred-row"><span>NAMA</span><strong id="teamCredName">-</strong></div>
     <div class="cred-row"><span>ROLE</span><strong id="teamCredRole">-</strong></div>
     <div class="cred-row"><span>EMAIL LOGIN</span><strong id="teamCredEmail">-</strong></div>
     <div class="cred-row"><span>PASSWORD AWAL</span><strong id="teamCredPassword">-</strong></div>
     <div class="cred-actions">
-      <button id="copyTeamCredentialBtn" class="primary-act" type="button">SALIN AKSES TIM</button>
+      <button id="copyTeamCredentialBtn" class="primary-act" type="button">SALIN AKSES</button>
       <button id="closeTeamCredentialBtn" type="button">TUTUP</button>
     </div>
   </div>
@@ -4273,7 +4298,7 @@ th,td{padding:14px 12px!important}
 
 <div id="teamEditModal" class="cred-modal hidden">
   <div class="cred-box">
-    <h2>Edit Akun Tim</h2>
+    <h2>Edit Akun Dashboard</h2>
     <p id="teamEditHelp">Edit nama akun dan password sesuai izin akunmu.</p>
     <input id="teamEditId" type="hidden"/>
     <div class="manage-grid">
@@ -4798,8 +4823,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('teamReadOnlyNotice')?.classList.toggle('hidden', manager);
     if($('teamListHelp')){
       $('teamListHelp').textContent = manager
-        ? 'Owner dan Super Admin dapat menambah, mengubah role, mengaktifkan/nonaktifkan, dan menghapus Tim.'
-        : 'Semua akun dashboard dapat melihat daftar Tim. Kamu hanya dapat mengedit nama dan password akunmu sendiri.';
+        ? 'Owner dan Super Admin dapat menambah, mengubah role, mengaktifkan/nonaktifkan, dan menghapus akun dashboard.'
+        : 'Kamu dapat melihat daftar akun dashboard. Nama dan password hanya dapat diubah untuk akunmu sendiri.';
     }
   }
 
@@ -4820,7 +4845,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       finance:'Keuangan BADAI',
       marketing:'Marketing BADAI',
       mentor:'Mentor BADAI',
-      team:'Tim BADAI'
+      team:'Akun BADAI'
     };
     if($('headerPageTitle')) $('headerPageTitle').textContent = pageTitles[page] || 'BADAI';
 
@@ -7648,7 +7673,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
 
     if(action === 'delete'){
-      if(!confirm('Hapus ' + row.full_name + ' dari tim BADAI? Akun tidak akan bisa masuk dashboard lagi.')) return;
+      if(!confirm('Hapus akun ' + row.full_name + '? Akun ini tidak akan bisa masuk dashboard lagi.')) return;
       await api('/rest/v1/admin_team_members?id=eq.' + encodeURIComponent(id), {
         method:'DELETE', headers:{'Prefer':'return=minimal'}
       });
