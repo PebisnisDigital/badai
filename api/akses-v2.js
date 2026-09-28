@@ -1682,6 +1682,11 @@ module.exports = async function handler(req, res) {
     display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:8px;padding:7px 10px;
     border-top:1px solid #26343c;background:#111b21
   }
+  #mentor .mentor-reply-bar.hidden{display:none!important}
+  #mentor .mentor-reply-bar.mentor-reply-closing{
+    animation:badaiIosReplyOut .18s cubic-bezier(.4,0,1,1) both!important;
+    pointer-events:none
+  }
   #mentor .mentor-reply-bar>div{min-width:0;display:grid;gap:2px;padding-left:8px;border-left:3px solid #00a884}
   #mentor .mentor-reply-bar b{font:700 12px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;color:#53bdeb}
   #mentor .mentor-reply-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 12px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;color:#aebac1}
@@ -1885,6 +1890,10 @@ module.exports = async function handler(req, res) {
   @keyframes badaiIosTrayIn{
     from{opacity:0;transform:translate3d(0,10px,0)}
     to{opacity:1;transform:none}
+  }
+  @keyframes badaiIosReplyOut{
+    from{opacity:1;transform:translate3d(0,0,0)}
+    to{opacity:0;transform:translate3d(0,8px,0)}
   }
   @keyframes badaiIosReactionIn{
     from{opacity:0;transform:scale(.88)}
@@ -2371,11 +2380,17 @@ document.addEventListener('DOMContentLoaded', function(){
       var title=el('mentorReplyTitle'),txt=el('mentorReplyText');
       if(title)title.textContent='Membalas '+(m.sender_kind==='member'?'pesan Anda':'Mentor');
       if(txt)txt.textContent=mentorReply.summary.slice(0,130);
-      bar.classList.remove('hidden')
+      bar.classList.remove('mentor-reply-closing','hidden')
     }
     el('mentorMessageInput')&&el('mentorMessageInput').focus()
   }
-  function clearMentorReply(){mentorReply=null;el('mentorReplyBar')&&el('mentorReplyBar').classList.add('hidden')}
+  function clearMentorReply(){
+    mentorReply=null;
+    var bar=el('mentorReplyBar');if(!bar)return;
+    if(bar.classList.contains('hidden')){bar.classList.remove('mentor-reply-closing');return}
+    bar.classList.add('mentor-reply-closing');
+    setTimeout(function(){bar.classList.add('hidden');bar.classList.remove('mentor-reply-closing')},180)
+  }
   async function mentorMessageAction(messageId,action,emoji){
     var m=mentorMessageRows.get(messageId);if(!m)return;
     var state=mentorUiState.get(messageId)||{};
