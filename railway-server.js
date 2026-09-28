@@ -13,7 +13,7 @@ const akses = require('./api/admin-v3.js');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
-const BUILD_REV = 'badai-staging-mentor-hot-archive-v1';
+const BUILD_REV = 'badai-staging-profile-avatar-drive-v1';
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://tlvxlekqrllkvcpgwmic.supabase.co';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 const MENTOR_ARCHIVE_SECRET = process.env.MENTOR_ARCHIVE_SECRET || '';
@@ -467,6 +467,48 @@ async function handleMentorUpload(req,res){
   });
 }
 
+
+async function handleProfileAvatarUpload(req,res){
+  if(!(await mentorDriveConfigured())){
+    return res.status(503).json({error:'Google Drive BADAI belum terhubung.'});
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const user=await verifySupabaseBearer(token);
+  if(!user?.id) return res.status(401).json({error:'Session tidak valid.'});
+
+  const parsed=await parseMentorMultipart(req);
+  const mime=String(parsed.file.mime||'').toLowerCase();
+  if(!['image/jpeg','image/png','image/webp'].includes(mime)){
+    return res.status(400).json({error:'Foto profil harus JPG, PNG, atau WebP.'});
+  }
+  if(Number(parsed.file.size||0)>2*1024*1024){
+    return res.status(400).json({error:'Foto profil maksimal 2 MB setelah diproses.'});
+  }
+
+  const drive=await driveClient();
+  const avatarRoot=await findOrCreateDriveFolder(drive,'PROFILE-AVATARS',MENTOR_DRIVE_FOLDER_ID);
+  const userFolder=await findOrCreateDriveFolder(drive,String(user.id),avatarRoot);
+  const ext=mime==='image/png'?'.png':mime==='image/webp'?'.webp':'.jpg';
+  const fileName='avatar-'+Date.now()+ext;
+  const saved=await uploadDriveBuffer(drive,userFolder,fileName,mime,parsed.file.buffer);
+  const avatarUrl=signedMentorFileUrl(saved.id);
+
+  const savedProfile=await supabaseRpc(
+    'profile_avatar_set',
+    {p_drive_file_id:saved.id,p_avatar_url:avatarUrl},
+    'Bearer '+token
+  );
+  const row=Array.isArray(savedProfile)?savedProfile[0]:savedProfile;
+
+  return res.status(200).json({
+    ok:true,
+    avatar_url:row?.avatar_url||avatarUrl,
+    drive_file_id:saved.id
+  });
+}
+
 async function handleMentorFile(req,res){
   const fileId=String(req.query.id||'');
   const sig=String(req.query.sig||'');
@@ -588,6 +630,10 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/api/mentor/file' && req.method === 'GET') {
       return await handleMentorFile(req,res);
+    }
+
+    if (pathname === '/api/profile/avatar' && req.method === 'POST') {
+      return await handleProfileAvatarUpload(req,res);
     }
 
     if (pathname === '/admin' || pathname === '/admin/' || pathname === '/api/admin-v5') {
