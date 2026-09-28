@@ -1720,8 +1720,19 @@ h1,h2,h3,h4,h5,h6,
       </div>
 
       <div class="mentor-chat-card">
-        <div id="mentorMessageList" class="mentor-message-list">
-          <div class="mentor-empty">Belum ada percakapan. Kirim pertanyaan pertama kamu 👇</div>
+        <div class="mentor-wa-head">
+          <div class="mentor-wa-avatar">M</div>
+          <div class="mentor-wa-person">
+            <strong id="mentorWaName">Mentor BADAI</strong>
+            <span id="mentorWaSubstatus">Menghubungkan...</span>
+          </div>
+        </div>
+
+        <div class="mentor-message-wrap">
+          <div id="mentorMessageList" class="mentor-message-list">
+            <div class="mentor-empty">Belum ada percakapan. Kirim pertanyaan pertama kamu 👇</div>
+          </div>
+          <button id="mentorJumpLatest" class="mentor-jump-latest hidden" type="button" aria-label="Ke pesan terbaru">↓</button>
         </div>
 
         <div id="mentorStickerTray" class="mentor-sticker-tray hidden">
@@ -1735,16 +1746,31 @@ h1,h2,h3,h4,h5,h6,
           <button type="button" data-mentor-sticker="🎉">🎉</button>
         </div>
 
-        <form id="mentorComposer" class="mentor-composer">
-          <button id="mentorStickerBtn" type="button" class="mentor-icon-btn" title="Kirim stiker">☺</button>
-          <label class="mentor-icon-btn mentor-file-btn" title="Kirim gambar atau file">
-            ＋
-            <input id="mentorFileInput" type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt" hidden/>
+        <div id="mentorAttachMenu" class="mentor-attach-menu hidden">
+          <label class="mentor-attach-choice image">🖼 <span>Foto</span>
+            <input id="mentorImageInput" type="file" accept="image/*" hidden/>
           </label>
-          <textarea id="mentorMessageInput" rows="1" maxlength="4000" placeholder="Tulis pesan ke mentor..."></textarea>
-          <button id="mentorSendBtn" type="submit" class="mentor-send-btn">KIRIM</button>
+          <label class="mentor-attach-choice file">📎 <span>Dokumen</span>
+            <input id="mentorFileInput" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt" hidden/>
+          </label>
+        </div>
+
+        <div id="mentorPendingAttachment" class="mentor-pending-attachment hidden">
+          <div id="mentorPendingPreview" class="mentor-pending-preview"></div>
+          <div class="mentor-pending-meta">
+            <strong id="mentorPendingName">Lampiran</strong>
+            <span id="mentorPendingSize"></span>
+          </div>
+          <button id="mentorPendingCancel" type="button" aria-label="Batalkan lampiran">×</button>
+        </div>
+
+        <form id="mentorComposer" class="mentor-composer">
+          <button id="mentorStickerBtn" type="button" class="mentor-icon-btn" title="Emoji / stiker">☺</button>
+          <button id="mentorAttachBtn" type="button" class="mentor-icon-btn" title="Lampirkan">⌕</button>
+          <textarea id="mentorMessageInput" rows="1" maxlength="4000" placeholder="Ketik pesan"></textarea>
+          <button id="mentorSendBtn" type="submit" class="mentor-send-btn" aria-label="Kirim">➤</button>
         </form>
-        <div id="mentorUploadNote" class="mentor-upload-note">File/gambar akan langsung masuk Google Drive setelah koneksi Drive diaktifkan Admin.</div>
+        <div id="mentorUploadNote" class="mentor-upload-note">File dan gambar disimpan langsung ke Google Drive BADAI.</div>
       </div>
 
       <div class="mentor-archive-note">
