@@ -4098,6 +4098,49 @@ th,td{padding:14px 12px!important}
   #pageMentor .mentor-admin-msg .body{font-size:16px!important}
   #pageMentor .mentor-admin-composer textarea{font-size:15px!important}
 }
+/* WhatsApp-style rich text formatting inside chat */
+#pageMentor .mentor-wa-formatted,
+#pageMentor .mentor-admin-caption{white-space:normal!important}
+#pageMentor .mentor-wa-line{min-height:1.2em}
+#pageMentor .mentor-wa-formatted strong,
+#pageMentor .mentor-admin-caption strong{font-weight:900!important}
+#pageMentor .mentor-wa-formatted em,
+#pageMentor .mentor-admin-caption em{font-style:italic}
+#pageMentor .mentor-wa-formatted del,
+#pageMentor .mentor-admin-caption del{text-decoration-thickness:1.5px}
+#pageMentor .mentor-wa-inline-code{
+  display:inline-block;
+  padding:1px 5px;
+  border-radius:4px;
+  background:rgba(0,0,0,.28);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
+  font-size:.92em;
+}
+#pageMentor .mentor-wa-code{
+  margin:5px 0;
+  padding:8px 10px;
+  overflow-x:auto;
+  border-radius:6px;
+  background:rgba(0,0,0,.32);
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+#pageMentor .mentor-wa-code code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
+  font-size:.9em;
+}
+#pageMentor .mentor-wa-list{
+  margin:4px 0 4px 22px;
+  padding:0;
+}
+#pageMentor .mentor-wa-list li{margin:2px 0;padding-left:2px}
+#pageMentor .mentor-wa-quote{
+  margin:4px 0;
+  padding:3px 0 3px 9px;
+  border-left:3px solid #00a884;
+  color:inherit;
+  opacity:.94;
+}
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -7992,6 +8035,52 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     setTimeout(()=>$('mentorAdminInput')?.focus(),30);
   }
 
+  function mentorAdminFormatText(value){
+    let safe=esc(value==null?'':String(value)).replace(/\r\n?/g,'\n');
+    const blocks=[];
+    safe=safe.replace(/```([\s\S]*?)```/g,(_,code)=>{
+      const token='@@BADAI_WA_CODE_'+blocks.length+'@@';
+      blocks.push('<pre class="mentor-wa-code"><code>'+code.replace(/^\n|\n$/g,'')+'</code></pre>');
+      return token;
+    });
+    const inline=(text)=>{
+      let out=String(text||'');
+      out=out.replace(/`([^`\n]+)`/g,'<code class="mentor-wa-inline-code">$1</code>');
+      out=out.replace(/\*([^*\n]+)\*/g,'<strong>$1</strong>');
+      out=out.replace(/_([^_\n]+)_/g,'<em>$1</em>');
+      out=out.replace(/~([^~\n]+)~/g,'<del>$1</del>');
+      out=out.replace(/@@BADAI_WA_CODE_(\d+)@@/g,(_,i)=>blocks[Number(i)]||'');
+      return out;
+    };
+    const lines=safe.split('\n');
+    let html='',i=0;
+    while(i<lines.length){
+      const line=lines[i];
+      if(/^[-*]\s+/.test(line)){
+        html+='<ul class="mentor-wa-list">';
+        while(i<lines.length&&/^[-*]\s+/.test(lines[i])){
+          html+='<li>'+inline(lines[i].replace(/^[-*]\s+/,''))+'</li>';i++;
+        }
+        html+='</ul>';continue;
+      }
+      if(/^\d+\.\s+/.test(line)){
+        html+='<ol class="mentor-wa-list">';
+        while(i<lines.length&&/^\d+\.\s+/.test(lines[i])){
+          html+='<li>'+inline(lines[i].replace(/^\d+\.\s+/,''))+'</li>';i++;
+        }
+        html+='</ol>';continue;
+      }
+      if(/^&gt;\s+/.test(line)){
+        html+='<blockquote class="mentor-wa-quote">'+inline(line.replace(/^&gt;\s+/,''))+'</blockquote>';i++;continue;
+      }
+      if(/^@@BADAI_WA_CODE_\d+@@$/.test(line.trim())){
+        html+=inline(line.trim());i++;continue;
+      }
+      html+='<div class="mentor-wa-line">'+(line?inline(line):'<br>')+'</div>';i++;
+    }
+    return html;
+  }
+
   async function loadMentorAdminMessages(forceScroll=false){
     if(!mentorActiveConversation?.conversation_id)return;
     const id=mentorActiveConversation.conversation_id;
@@ -8010,12 +8099,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
             body='<div class="body">'+esc(m.sticker_key||'✨')+'</div>';
           }else if(m.message_type==='image'){
             body='<div class="body"><a class="mentor-admin-image" href="'+link+'" target="_blank" rel="noopener"><img src="'+link+'" alt="'+label+'" loading="lazy"></a>'+
-              (m.body?'<div class="mentor-admin-caption">'+esc(m.body)+'</div>':'')+'</div>';
+              (m.body?'<div class="mentor-admin-caption">'+mentorAdminFormatText(m.body)+'</div>':'')+'</div>';
           }else if(m.message_type==='file'){
             body='<div class="body"><a class="mentor-admin-file" href="'+link+'" target="_blank" rel="noopener"><span class="mentor-admin-file-icon">📄</span><span class="mentor-admin-file-copy"><b>'+label+'</b><small>'+esc(mentorAdminSize(m.file_size)||String(m.file_mime||'Dokumen'))+'</small></span></a>'+
-              (m.body?'<div class="mentor-admin-caption">'+esc(m.body)+'</div>':'')+'</div>';
+              (m.body?'<div class="mentor-admin-caption">'+mentorAdminFormatText(m.body)+'</div>':'')+'</div>';
           }else{
-            body='<div class="body">'+esc(m.body||'')+'</div>';
+            body='<div class="body mentor-wa-formatted">'+mentorAdminFormatText(m.body||'')+'</div>';
           }
           const receipt=m.sender_kind==='mentor'?mentorAdminReceipt(m.created_at):'';
           html+='<div class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+'">'+body+
