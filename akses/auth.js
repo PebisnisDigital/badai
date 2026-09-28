@@ -499,7 +499,7 @@
 
     if(plan !== 'pro'){
       if(affiliateNav) affiliateNav.style.display = 'none';
-      if(footer) footer.style.setProperty('--member-nav-count','3');
+      if(footer) footer.style.setProperty('--member-nav-count','5');
 
       const affiliateScreen = document.getElementById('afiliasi');
       if(affiliateScreen?.classList.contains('active')){
