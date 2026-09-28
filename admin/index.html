@@ -3390,7 +3390,7 @@ th,td{padding:14px 12px!important}
 .mentor-admin-pending>button{width:27px;height:27px;border:0;border-radius:999px;background:#292929;color:#bbb;font-size:16px}
 .mentor-admin-composer{grid-template-columns:32px 32px minmax(0,1fr) 36px!important;gap:5px!important;padding:7px 8px!important;background:#121212!important}
 .mentor-admin-icon{width:32px!important;height:36px!important;border:0!important;border-radius:999px!important;background:transparent!important;color:#aaa!important;font-size:18px!important}
-#mentorAdminAttachBtn{transform:rotate(-28deg);font-size:20px!important}
+#mentorAdminAttachBtn{transform:none;font-size:18px!important}
 .mentor-admin-composer textarea{min-height:36px!important;max-height:104px!important;border:0!important;border-radius:19px!important;background:#262626!important;padding:9px 12px!important;font-size:9.5px!important;line-height:1.4!important;overflow-y:auto!important}
 .mentor-admin-composer button[type="submit"]{width:36px!important;height:36px!important;min-height:36px!important;padding:0!important;border-radius:999px!important;font-size:14px!important}
 #mentorAdminNote{min-height:0!important;margin:0!important;padding:0 8px!important;border:0!important;background:#121212!important;color:#777!important;font-size:6.5px!important}
@@ -3434,8 +3434,27 @@ th,td{padding:14px 12px!important}
     linear-gradient(45deg,transparent 46%,rgba(134,150,160,.018) 47% 53%,transparent 54%),
     linear-gradient(-45deg,transparent 46%,rgba(134,150,160,.014) 47% 53%,transparent 54%)!important;
   background-size:58px 58px,72px 72px,94px 94px,118px 118px!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  scrollbar-width:thin;
+  scrollbar-color:#43515a transparent;
 }
-#pageMentor .mentor-admin-date{background:#182229!important;color:#d1d7db!important}
+#pageMentor .mentor-admin-messages,
+#pageMentor .mentor-inbox-list{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#43515a transparent}
+#pageMentor .mentor-admin-messages::-webkit-scrollbar,
+#pageMentor .mentor-inbox-list::-webkit-scrollbar{width:7px;height:7px}
+#pageMentor .mentor-admin-messages::-webkit-scrollbar-track,
+#pageMentor .mentor-inbox-list::-webkit-scrollbar-track{background:transparent}
+#pageMentor .mentor-admin-messages::-webkit-scrollbar-thumb,
+#pageMentor .mentor-inbox-list::-webkit-scrollbar-thumb{background:#43515a;border-radius:999px;border:2px solid transparent;background-clip:padding-box}
+#pageMentor .mentor-admin-date{position:sticky;top:6px;z-index:2;background:#182229!important;color:#d1d7db!important;backdrop-filter:blur(6px)}
+#pageMentor .mentor-admin-jump:not(.hidden){animation:mentorJumpIn .16s ease-out}
+#pageMentor .mentor-admin-stickers:not(.hidden),
+#pageMentor .mentor-admin-attach-menu:not(.hidden),
+#pageMentor .mentor-admin-pending:not(.hidden){animation:mentorTrayIn .14s ease-out}
+@keyframes mentorJumpIn{from{opacity:0;transform:translateY(8px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes mentorTrayIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 #pageMentor .mentor-admin-msg.member{background:var(--wa-in)!important;color:var(--wa-text)!important}
 #pageMentor .mentor-admin-msg.mentor{background:var(--wa-out)!important;color:#e9edef!important}
 #pageMentor .mentor-admin-meta{color:#aebac1!important}
@@ -4225,8 +4244,8 @@ th,td{padding:14px 12px!important}
               <button id="mentorAdminPendingCancel" type="button">×</button>
             </div>
             <form id="mentorAdminComposer" class="mentor-admin-composer">
-              <button id="mentorAdminStickerBtn" type="button" class="mentor-admin-icon">☺</button>
-              <button id="mentorAdminAttachBtn" type="button" class="mentor-admin-icon">⌕</button>
+              <button id="mentorAdminStickerBtn" type="button" class="mentor-admin-icon" title="Kirim stiker" aria-label="Kirim stiker">☺</button>
+              <button id="mentorAdminAttachBtn" type="button" class="mentor-admin-icon" title="Kirim file" aria-label="Kirim file">📎</button>
               <textarea id="mentorAdminInput" rows="1" maxlength="4000" placeholder="Ketik pesan"></textarea>
               <button id="mentorAdminSendBtn" type="submit" aria-label="Kirim">➤</button>
             </form>
@@ -7320,9 +7339,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return !list||list.scrollHeight-list.scrollTop-list.clientHeight<90;
   }
 
-  function mentorAdminScrollBottom(force){
+  function mentorAdminScrollBottom(force,smooth){
     const list=$('mentorAdminMessageList');if(!list)return;
-    if(force||mentorAdminNearBottom(list)){list.scrollTop=list.scrollHeight;$('mentorAdminJumpLatest')?.classList.add('hidden')}
+    if(force||mentorAdminNearBottom(list)){
+      const top=list.scrollHeight;
+      if(typeof list.scrollTo==='function')list.scrollTo({top,behavior:smooth?'smooth':'auto'});else list.scrollTop=top;
+      $('mentorAdminJumpLatest')?.classList.add('hidden');
+    }
   }
 
   function mentorThreadStatus(row){
@@ -7980,7 +8003,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }finally{if(btn)btn.disabled=false}
   });
 
-  $('mentorAdminJumpLatest')?.addEventListener('click',()=>mentorAdminScrollBottom(true));
+  $('mentorAdminJumpLatest')?.addEventListener('click',()=>mentorAdminScrollBottom(true,true));
   $('mentorAdminMessageList')?.addEventListener('scroll',()=>{
     const list=$('mentorAdminMessageList'),jump=$('mentorAdminJumpLatest');
     if(list&&jump)jump.classList.toggle('hidden',mentorAdminNearBottom(list));
