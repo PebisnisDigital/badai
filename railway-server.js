@@ -496,6 +496,20 @@ async function handleMentorUpload(req,res){
   const rows=check.ok?await check.json().catch(()=>[]):[];
   if(!check.ok || !rows?.length) return res.status(403).json({error:'Tidak punya akses ke percakapan ini.'});
 
+  const teamCheck=await fetch(
+    SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&role=in.(owner,super_admin,admin,mentor)&select=role&limit=1',
+    {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
+  );
+  const teamRows=teamCheck.ok?await teamCheck.json().catch(()=>[]):[];
+  const isMentorStaff=Boolean(teamRows?.length);
+  if(isMentorStaff){
+    const statusRows=await supabaseRpc('mentor_work_hours_status',{},'Bearer '+token).catch(()=>[]);
+    const workStatus=Array.isArray(statusRows)?statusRows[0]:statusRows;
+    if(workStatus?.enabled!==false && !workStatus?.is_open){
+      return res.status(403).json({error:'Di luar jam kerja Mentor BADAI. Lampiran dapat dikirim saat jam kerja kembali buka.'});
+    }
+  }
+
   const drive=await driveClient();
   const attachmentRoot=await findOrCreateDriveFolder(drive,'ATTACHMENTS',MENTOR_DRIVE_FOLDER_ID);
   const conversationFolder=await findOrCreateDriveFolder(drive,conversationId,attachmentRoot);
