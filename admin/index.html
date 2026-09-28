@@ -4211,6 +4211,11 @@ th,td{padding:14px 12px!important}
   display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:8px;padding:7px 10px;
   border-top:1px solid #26343c;background:#111b21
 }
+#pageMentor .mentor-reply-bar.hidden{display:none!important}
+#pageMentor .mentor-reply-bar.mentor-reply-closing{
+  animation:badaiAdminReplyOut .18s cubic-bezier(.4,0,1,1) both!important;
+  pointer-events:none
+}
 #pageMentor .mentor-reply-bar>div{min-width:0;display:grid;gap:2px;padding-left:8px;border-left:3px solid #00a884}
 #pageMentor .mentor-reply-bar b{font:700 11px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;color:#53bdeb}
 #pageMentor .mentor-reply-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:300 11px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif!important;color:#aebac1}
@@ -4528,6 +4533,10 @@ th,td{padding:14px 12px!important}
 @keyframes badaiAdminTrayIn{
   from{opacity:0;transform:translate3d(0,10px,0)}
   to{opacity:1;transform:none}
+}
+@keyframes badaiAdminReplyOut{
+  from{opacity:1;transform:translate3d(0,0,0)}
+  to{opacity:0;transform:translate3d(0,8px,0)}
 }
 @keyframes badaiAdminReactionIn{
   from{opacity:0;transform:scale(.88)}
@@ -8678,14 +8687,17 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(bar){
       $('mentorAdminReplyTitle').textContent='Membalas '+(m.sender_kind==='mentor'?'pesan Anda':'Member');
       $('mentorAdminReplyText').textContent=mentorAdminReply.summary.slice(0,130);
-      bar.classList.remove('hidden');
+      bar.classList.remove('mentor-reply-closing','hidden');
     }
     $('mentorAdminInput')?.focus();
   }
 
   function clearMentorAdminReply(){
     mentorAdminReply=null;
-    $('mentorAdminReplyBar')?.classList.add('hidden');
+    const bar=$('mentorAdminReplyBar');if(!bar)return;
+    if(bar.classList.contains('hidden')){bar.classList.remove('mentor-reply-closing');return}
+    bar.classList.add('mentor-reply-closing');
+    setTimeout(()=>{bar.classList.add('hidden');bar.classList.remove('mentor-reply-closing')},180);
   }
 
   async function mentorAdminMessageAction(messageId,action,emoji){
