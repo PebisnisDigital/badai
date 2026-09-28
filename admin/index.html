@@ -5198,6 +5198,16 @@ th,td{padding:14px 12px!important}
     width:48px!important;height:48px!important;flex-basis:48px!important
   }
 }
+
+/* Auto Reply tab visibility — must beat WhatsApp layout !important rules */
+#pageMentor #mentorAdminLayout.hidden{display:none!important}
+#pageMentor #mentorOpsPanel.hidden{display:none!important}
+#pageMentor #mentorChatSettingsBtn.hidden{display:none!important}
+#pageMentor #mentorAutoReplyPanel.hidden,
+#pageMentor #mentorAutoReplyLogPanel.hidden{display:none!important}
+#pageMentor #mentorAutoReplyPanel:not(.hidden),
+#pageMentor #mentorAutoReplyLogPanel:not(.hidden){display:grid!important}
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
