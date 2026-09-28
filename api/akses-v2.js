@@ -2032,6 +2032,88 @@ module.exports = async function handler(req, res) {
   /* Group @mentions */
   #mentor .mentor-mention-btn{font-weight:700!important;font-size:18px!important}
   #mentor .mentor-mention-btn.hidden{display:none!important}
+
+  /* Composer hardening: prevent hidden tool buttons from occupying CSS-grid cells */
+  #mentor .mentor-composer > .hidden{
+    display:none!important;
+  }
+  #mentor .mentor-composer{
+    grid-auto-flow:row!important;
+    grid-auto-rows:auto!important;
+    min-height:56px!important;
+    height:auto!important;
+    align-items:end!important;
+  }
+  #mentor .mentor-composer textarea{
+    width:100%!important;
+    min-width:0!important;
+    height:38px;
+    margin:0!important;
+    grid-row:1!important;
+  }
+  #mentor .mentor-composer .mentor-send-btn{
+    grid-row:1!important;
+    align-self:end!important;
+    margin:0!important;
+  }
+
+  /* Grup BADAI: emoji + @ + input + kirim */
+  #mentor .mentor-composer[data-chat-kind="group"]{
+    grid-template-columns:34px 34px minmax(0,1fr) 38px!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="group"] #mentorStickerBtn{
+    display:grid!important;
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="group"] #mentorAttachBtn{
+    display:none!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="group"] #mentorMentionBtn{
+    display:grid!important;
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="group"] #mentorMessageInput{
+    grid-column:3!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="group"] #mentorSendBtn{
+    grid-column:4!important;
+  }
+
+  /* Chat Mentor: emoji + lampiran + input + kirim */
+  #mentor .mentor-composer[data-chat-kind="mentor"]{
+    grid-template-columns:34px 34px minmax(0,1fr) 38px!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorStickerBtn{
+    display:grid!important;
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorAttachBtn{
+    display:grid!important;
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorMentionBtn{
+    display:none!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorMessageInput{
+    grid-column:3!important;
+  }
+  #mentor .mentor-composer[data-chat-kind="mentor"] #mentorSendBtn{
+    grid-column:4!important;
+  }
+
+  @media(max-width:560px){
+    #mentor .mentor-composer[data-chat-kind="group"],
+    #mentor .mentor-composer[data-chat-kind="mentor"]{
+      grid-template-columns:32px 32px minmax(0,1fr) 38px!important;
+      gap:5px!important;
+      padding:7px 8px!important;
+      min-height:52px!important;
+    }
+  }
   #mentor .mentor-mention-picker{
     position:absolute;left:10px;right:10px;bottom:58px;z-index:70;
     max-height:270px;overflow-y:auto;padding:6px;border:1px solid #2b3942;border-radius:13px;
@@ -3042,6 +3124,7 @@ document.addEventListener('DOMContentLoaded', function(){
     mentorSelectedChat=kind||'mentor';
     var avatar=el('mentorWaAvatar'),name=el('mentorWaName'),sub=el('mentorWaSubstatus');
     var composer=el('mentorComposer'),stickers=el('mentorStickerTray'),attach=el('mentorAttachMenu');
+    if(composer)composer.dataset.chatKind=mentorSelectedChat;
     ensureCommunityMentionUi();
     var notice=el('mentorReadOnlyNotice'),attachBtn=el('mentorAttachBtn'),stickerBtn=el('mentorStickerBtn'),mentionBtn=el('mentorMentionBtn');
     if(stickers)stickers.classList.add('hidden');if(attach)attach.classList.add('hidden');clearMentorPending();clearMentorReply();closeCommunityMentionPicker();
