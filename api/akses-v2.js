@@ -2226,17 +2226,28 @@ document.addEventListener('DOMContentLoaded', function(){
     }catch(_){}
   }
   function ensureProfileAvatarEditor(){
-    var account=el('akun');if(!account||el('badaiProfileAvatarCard'))return;
-    var form=account.querySelector('.account-card');if(!form)return;
-    var card=document.createElement('div');
-    card.id='badaiProfileAvatarCard';card.className='badai-profile-avatar-card';
-    card.innerHTML=
-      '<div id="badaiProfileAvatarPreview" class="badai-profile-avatar-preview">M</div>'+
-      '<div class="badai-profile-avatar-copy"><b>Foto Profil</b><span>Tampil di Grup BADAI. Foto otomatis dikecilkan agar ringan.</span></div>'+
-      '<div class="badai-profile-avatar-actions"><button id="badaiProfileAvatarBtn" type="button" class="badai-profile-avatar-btn">GANTI FOTO</button><input id="badaiProfileAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>'+
-      '<div id="badaiProfileAvatarStatus" class="badai-profile-avatar-status">Disimpan di Google Drive BADAI, bukan Supabase Storage.</div>';
-    form.parentNode.insertBefore(card,form);
+    var account=el('akun');if(!account)return;
+    var card=el('badaiProfileAvatarCard');
+    if(!card){
+      var form=account.querySelector('.account-card');if(!form)return;
+      card=document.createElement('div');
+      card.id='badaiProfileAvatarCard';card.className='badai-profile-avatar-card';
+      card.innerHTML=
+        '<div id="badaiProfileAvatarPreview" class="badai-profile-avatar-preview">M</div>'+
+        '<div class="badai-profile-avatar-copy"><b id="memberProfileDisplayName">Member BADAI</b><span id="memberProfileDisplayMeta">Profil Member BADAI</span></div>'+
+        '<div class="badai-profile-avatar-actions"><button id="badaiProfileAvatarBtn" type="button" class="badai-profile-avatar-btn">GANTI FOTO</button><input id="badaiProfileAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>'+
+        '<div id="badaiProfileAvatarStatus" class="badai-profile-avatar-status">Foto tampil di Grup BADAI dan Chat Mentor.</div>';
+      form.parentNode.insertBefore(card,form);
+    }
+
     var btn=el('badaiProfileAvatarBtn'),input=el('badaiProfileAvatarInput');
+    if(!btn||!input)return;
+    if(btn.dataset.avatarBound==='1'){
+      badaiLoadMyAvatar();
+      return;
+    }
+    btn.dataset.avatarBound='1';
+
     btn.addEventListener('click',function(){input.click()});
     input.addEventListener('change',async function(){
       var file=input.files&&input.files[0];if(!file)return;
@@ -2250,7 +2261,7 @@ document.addEventListener('DOMContentLoaded', function(){
         var response=await fetch('/api/profile/avatar',{method:'POST',headers:{Authorization:'Bearer '+s.access_token},body:fd});
         var data=await response.json().catch(function(){return {}});
         if(!response.ok)throw new Error(data.error||'Upload foto gagal.');
-        badaiAvatarPreview(data.avatar_url,(s.user.user_metadata&&s.user.user_metadata.full_name)||'Member');
+        badaiAvatarPreview(data.avatar_url,(s.user&&s.user.user_metadata&&s.user.user_metadata.full_name)||'Member');
         badaiAvatarStatus('Foto profil sudah diperbarui.','ok');
         communityParticipantsLoaded=false;
         loadCommunityParticipants(true).catch(function(){});
