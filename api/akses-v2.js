@@ -1428,6 +1428,54 @@ module.exports = async function handler(req, res) {
     .mentor-icon-btn{width:32px!important}
   }
 
+
+  /* Mentor WhatsApp-like dark visual theme */
+  #mentor{--wa-bg:#0b141a;--wa-panel:#111b21;--wa-header:#202c33;--wa-input:#2a3942;--wa-in:#202c33;--wa-out:#005c4b;--wa-green:#00a884;--wa-green-bright:#25d366;--wa-text:#e9edef;--wa-muted:#8696a0}
+  #mentor .mentor-member-head{border-bottom-color:#202c33!important}
+  #mentor .mentor-chat-card{background:var(--wa-bg)!important;border-color:#26343c!important;box-shadow:0 10px 34px rgba(0,0,0,.28)}
+  #mentor .mentor-wa-head{background:var(--wa-header)!important;border-bottom-color:#283943!important}
+  #mentor .mentor-wa-avatar{background:#374248!important;border:2px solid #ff4fa3!important;color:#fff!important}
+  #mentor .mentor-wa-person strong{color:var(--wa-text)!important}
+  #mentor .mentor-wa-person span{color:var(--wa-muted)!important}
+  #mentor .mentor-wa-person span.typing{color:var(--wa-green-bright)!important}
+  #mentor .mentor-message-list{
+    background-color:var(--wa-bg)!important;
+    background-image:
+      radial-gradient(circle at 15px 17px,rgba(134,150,160,.055) 0 1.2px,transparent 1.4px),
+      radial-gradient(circle at 42px 48px,rgba(134,150,160,.04) 0 1px,transparent 1.3px),
+      linear-gradient(45deg,transparent 46%,rgba(134,150,160,.018) 47% 53%,transparent 54%),
+      linear-gradient(-45deg,transparent 46%,rgba(134,150,160,.014) 47% 53%,transparent 54%)!important;
+    background-size:58px 58px,72px 72px,94px 94px,118px 118px!important;
+  }
+  #mentor .mentor-date-sep{background:#182229!important;color:#d1d7db!important}
+  #mentor .mentor-msg.mentor{background:var(--wa-in)!important;color:var(--wa-text)!important}
+  #mentor .mentor-msg.member{background:var(--wa-out)!important;color:#e9edef!important}
+  #mentor .mentor-msg.system{background:#182229!important;color:#d1d7db!important}
+  #mentor .mentor-msg-meta{color:#aebac1!important}
+  #mentor .mentor-receipt.read{color:#53bdeb!important}
+  #mentor .mentor-msg-file{background:rgba(11,20,26,.36)!important}
+  #mentor .mentor-file-icon{background:#3b4a54!important}
+  #mentor .mentor-jump-latest{background:var(--wa-header)!important;border-color:#31444e!important;color:#d1d7db!important}
+  #mentor .mentor-sticker-tray,
+  #mentor .mentor-attach-menu,
+  #mentor .mentor-pending-attachment{background:var(--wa-panel)!important;border-top-color:#26343c!important}
+  #mentor .mentor-sticker-tray button,
+  #mentor .mentor-attach-choice{background:var(--wa-header)!important;border-color:#31444e!important}
+  #mentor .mentor-attach-choice.image,
+  #mentor .mentor-attach-choice.file{color:#d1d7db!important}
+  #mentor .mentor-pending-preview{background:#2a3942!important}
+  #mentor .mentor-pending-meta span{color:var(--wa-muted)!important}
+  #mentor .mentor-composer{background:var(--wa-bg)!important;border-top-color:#26343c!important}
+  #mentor .mentor-icon-btn{color:#8696a0!important}
+  #mentor .mentor-composer textarea{background:var(--wa-header)!important;color:var(--wa-text)!important;box-shadow:none!important}
+  #mentor .mentor-composer textarea::placeholder{color:#8696a0!important}
+  #mentor .mentor-composer textarea:focus{box-shadow:0 0 0 1px #3b4a54 inset!important}
+  #mentor .mentor-send-btn{background:var(--wa-green)!important;color:#fff!important}
+  #mentor .mentor-upload-note{background:var(--wa-bg)!important;color:#667781!important}
+  #mentor .mentor-member-status.online{border-color:#1d6f5a!important;color:#25d366!important;background:#102a24!important}
+  #mentor .mentor-member-status.offline{border-color:#3b4a54!important;color:#8696a0!important;background:#111b21!important}
+  #mentor .mentor-nav-badge{background:var(--wa-green-bright)!important;border-color:#0b141a!important;color:#0b141a!important}
+
 </style>`;
 
     const headerMarkup = String.raw`
