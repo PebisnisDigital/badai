@@ -4355,6 +4355,108 @@ th,td{padding:14px 12px!important}
   margin:0 0 3px;color:#53bdeb;font-size:11px!important;font-weight:600!important
 }
 #pageMentor .mentor-admin-composer.hidden,#pageMentor .mentor-admin-icon.hidden,#pageMentor #claimMentorChatBtn.hidden{display:none!important}
+
+/* Community thread cleanup — aligned like WhatsApp */
+#pageMentor .mentor-thread-head{
+  display:grid!important;
+  grid-template-columns:36px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  justify-content:initial!important;
+  column-gap:10px!important;
+  min-height:64px!important;
+  padding:8px 12px!important;
+}
+#pageMentor .mentor-thread-head .mentor-thread-person{
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+}
+#pageMentor .mentor-thread-head .mentor-thread-copy{
+  min-width:0!important;
+  display:grid!important;
+  gap:2px!important;
+  text-align:left!important;
+}
+#pageMentor .mentor-thread-head .mentor-thread-copy b,
+#pageMentor .mentor-thread-head .mentor-thread-copy span{
+  margin:0!important;
+  text-align:left!important;
+}
+#pageMentor .community-thread .mentor-thread-avatar{
+  width:42px!important;
+  height:42px!important;
+  flex:0 0 42px!important;
+}
+#pageMentor .community-thread .mentor-thread-copy b{
+  font-size:16px!important;
+  line-height:1.2!important;
+  font-weight:400!important;
+}
+#pageMentor .community-thread .mentor-thread-copy span{
+  font-size:11px!important;
+  line-height:1.25!important;
+  font-weight:300!important;
+}
+#pageMentor .community-thread .mentor-admin-message-wrap{
+  flex:1 1 auto!important;
+  min-height:0!important;
+}
+#pageMentor .community-thread .mentor-admin-messages{
+  flex:1 1 auto!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:14px 18px!important;
+}
+#pageMentor .community-thread .mentor-admin-composer.community-composer{
+  flex:0 0 auto!important;
+  width:100%!important;
+  min-height:54px!important;
+  display:grid!important;
+  grid-template-columns:36px minmax(0,1fr) 40px!important;
+  align-items:end!important;
+  gap:7px!important;
+  padding:8px 10px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  border-top:1px solid #26343c!important;
+  background:#111b21!important;
+}
+#pageMentor .community-thread .mentor-admin-composer.community-composer #mentorAdminStickerBtn{
+  grid-column:1!important;
+  width:36px!important;
+  height:40px!important;
+}
+#pageMentor .community-thread .mentor-admin-composer.community-composer textarea{
+  grid-column:2!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:40px!important;
+  max-height:96px!important;
+  margin:0!important;
+  padding:10px 14px!important;
+  box-sizing:border-box!important;
+  border-radius:20px!important;
+  font-size:15px!important;
+  line-height:1.35!important;
+  resize:none!important;
+}
+#pageMentor .community-thread .mentor-admin-composer.community-composer #mentorAdminSendBtn{
+  grid-column:3!important;
+  width:40px!important;
+  height:40px!important;
+  min-height:40px!important;
+  margin:0!important;
+}
+#pageMentor .community-thread #mentorAdminNote:empty{display:none!important}
+#pageMentor .community-thread #mentorAdminNote{
+  flex:0 0 auto!important;
+  padding:6px 12px 8px!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+  text-align:center!important;
+}
 @media(max-width:760px){
   #pageMentor .mentor-admin-layout{
     height:calc(100dvh - 150px)!important;
@@ -8173,6 +8275,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function updateMentorThreadHeader(){
     const row=mentorActiveConversation;if(!row)return;
+    const view=$('mentorThreadView'),composer=$('mentorAdminComposer');
+    view?.classList.remove('community-thread','announcement-thread','group-thread');
+    composer?.classList.remove('community-composer');
+    $('mentorAdminAttachBtn')?.classList.remove('hidden');
+    $('mentorAdminStickerBtn')?.classList.remove('hidden');
+    composer?.classList.remove('hidden');
     if($('mentorThreadName'))$('mentorThreadName').textContent=row.member_name||'Member BADAI';
     if($('mentorThreadAvatar'))$('mentorThreadAvatar').textContent=mentorInitials(row.member_name);
     if($('mentorThreadMeta')){
@@ -8236,6 +8344,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function setAdminCommunityChrome(slug){
     const announcement=slug==='announcement';
+    const view=$('mentorThreadView'),composer=$('mentorAdminComposer');
+    view?.classList.add('community-thread');
+    view?.classList.toggle('announcement-thread',announcement);
+    view?.classList.toggle('group-thread',!announcement);
+    composer?.classList.add('community-composer');
     $('mentorThreadAvatar').textContent=announcement?'📢':'G';
     $('mentorThreadName').textContent=announcement?'PENGUMUMAN BADAI':'Grup BADAI';
     $('mentorThreadMeta').textContent=announcement?'Info resmi dari tim BADAI':'Diskusi semua member BADAI';
@@ -8243,7 +8356,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('mentorAdminReplyBar')?.classList.add('hidden');
     $('mentorAdminAttachBtn')?.classList.add('hidden');
     $('mentorAdminStickerBtn')?.classList.toggle('hidden',!adminCommunityCanSend(slug));
-    $('mentorAdminComposer')?.classList.toggle('hidden',!adminCommunityCanSend(slug));
+    composer?.classList.toggle('hidden',!adminCommunityCanSend(slug));
     if($('mentorAdminNote'))$('mentorAdminNote').textContent=announcement&&!adminCommunityCanSend(slug)?'Hanya Admin, Mentor, dan Super Admin yang dapat mengirim pengumuman.':'';
   }
 
