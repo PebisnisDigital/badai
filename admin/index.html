@@ -3321,6 +3321,43 @@ th,td{padding:14px 12px!important}
 }
 #pageMentor #mentorThreadView.chat-select-mode .mentor-bubble-menu-btn{display:none!important}
 
+/* Mentor work hours */
+#pageMentor .mentor-work-hours-card{grid-column:1/-1!important;display:block!important;padding:14px!important}
+#pageMentor .mentor-work-hours-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#pageMentor .mentor-work-hours-head>div{display:grid;gap:3px}
+#pageMentor .mentor-work-hours-head strong{font-size:12px!important}
+#pageMentor .mentor-work-hours-head strong.open{color:#55d98b!important}
+#pageMentor .mentor-work-hours-head strong.closed{color:#ff8a8f!important}
+#pageMentor .mentor-work-master{display:flex;align-items:center;gap:7px;color:#aaa;font-size:7px;font-weight:900}
+#pageMentor .mentor-work-master input{accent-color:#ff4fa3}
+#pageMentor .mentor-work-hours-schedule{display:grid;gap:5px;margin-top:11px}
+#pageMentor .mentor-work-day{display:grid;grid-template-columns:34px 80px 100px 14px 100px;align-items:center;gap:7px;padding:7px 9px;border:1px solid #292929;border-radius:9px;background:#101010}
+#pageMentor .mentor-work-day b{color:#ddd;font-size:8px!important}
+#pageMentor .mentor-work-day input[type="time"]{min-height:30px;padding:0 7px;border:1px solid #303030;border-radius:7px;background:#171717;color:#fff;font-size:8px}
+#pageMentor .mentor-work-day.day-closed{opacity:.48}
+#pageMentor .mentor-work-sep{color:#666;text-align:center}
+#pageMentor .mentor-work-toggle{position:relative;width:30px;height:18px}
+#pageMentor .mentor-work-toggle input{position:absolute;opacity:0;pointer-events:none}
+#pageMentor .mentor-work-toggle span{position:absolute;inset:0;border-radius:999px;background:#333;transition:.18s}
+#pageMentor .mentor-work-toggle span::after{content:"";position:absolute;width:14px;height:14px;left:2px;top:2px;border-radius:999px;background:#aaa;transition:.18s}
+#pageMentor .mentor-work-toggle input:checked+span{background:#ff4fa3}
+#pageMentor .mentor-work-toggle input:checked+span::after{transform:translateX(12px);background:#fff}
+#pageMentor .mentor-work-hours-actions{display:flex;align-items:center;gap:10px;margin-top:10px}
+#pageMentor .mentor-work-hours-actions button{min-height:34px;padding:0 11px;border:0;border-radius:8px;background:#ff4fa3;color:#111;font-size:7px;font-weight:950}
+#pageMentor .mentor-work-hours-actions span{color:#777;font-size:7px}
+#pageMentor .mentor-work-hours-notice{margin:0;padding:9px 12px;display:grid;gap:2px;border-top:1px solid #3c3034;border-bottom:1px solid #3c3034;background:rgba(0,0,0,.82);color:#bbb}
+#pageMentor .mentor-work-hours-notice.hidden{display:none!important}
+#pageMentor .mentor-work-hours-notice b{color:#ff8d93;font-size:8px!important}
+#pageMentor .mentor-work-hours-notice span{font-size:7px!important;line-height:1.4}
+#pageMentor #mentorThreadView.after-hours .mentor-admin-message-wrap{background-color:#050505!important;opacity:.64}
+#pageMentor #mentorThreadView.after-hours .mentor-thread-head{background:#101010!important}
+#pageMentor #mentorThreadView.after-hours .mentor-admin-composer{background:#0c0c0c!important;opacity:.62}
+#pageMentor #mentorThreadView.after-hours .mentor-admin-composer textarea{cursor:not-allowed!important}
+@media(max-width:700px){
+  #pageMentor .mentor-work-day{grid-template-columns:32px 64px minmax(72px,1fr) 10px minmax(72px,1fr)}
+  #pageMentor .mentor-work-hours-head{align-items:flex-start;flex-direction:column}
+}
+
 /* Mentor Auto Reply */
 .mentor-feature-tabs{display:flex;gap:6px;margin:8px 0 10px;padding:5px;border:1px solid #242424;border-radius:12px;background:#0b0b0b}
 .mentor-feature-tabs button{min-height:34px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:#777;font-size:7px;font-weight:950;letter-spacing:.05em;cursor:pointer}
@@ -5834,6 +5871,69 @@ th,td{padding:14px 12px!important}
         <div class="stat"><span>HOT STORAGE</span><strong>7 HARI</strong><small>Supabase untuk chat aktif</small></div>
         <div class="stat"><span>ARSIP HARIAN</span><strong>00.05 WIB</strong><small>Disiapkan otomatis tiap malam</small></div>
         <div class="stat mentor-drive-stat"><span>GOOGLE DRIVE</span><strong id="mentorDriveStatus">BELUM TERHUBUNG</strong><small id="mentorDriveAccount">Pesan tidak dihapus sebelum arsip terverifikasi</small><button id="mentorConnectDriveBtn" class="hidden" type="button">SAMBUNGKAN GOOGLE DRIVE</button></div>
+
+        <div class="stat mentor-work-hours-card">
+          <div class="mentor-work-hours-head">
+            <div><span>JAM KERJA MENTOR</span><strong id="mentorWorkHoursStatus">MEMUAT...</strong></div>
+            <label class="mentor-work-master"><input id="mentorWorkHoursEnabled" type="checkbox" checked/><span>AKTIFKAN JAM KERJA</span></label>
+          </div>
+          <small id="mentorWorkHoursSummary">Zona waktu Asia/Jakarta (WIB). Member tetap bisa mengirim pesan saat Mentor tutup.</small>
+          <div id="mentorWorkHoursSchedule" class="mentor-work-hours-schedule">
+            <div class="mentor-work-day" data-work-day="1">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Senin</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="2">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Selasa</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="3">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Rabu</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="4">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Kamis</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="5">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Jumat</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="6">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Sabtu</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="0">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Minggu</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+          </div>
+          <div class="mentor-work-hours-actions">
+            <button id="mentorWorkHoursSaveBtn" type="button">SIMPAN JAM KERJA</button>
+            <span id="mentorWorkHoursSaveStatus"></span>
+          </div>
+        </div>
       </div>
 
       <div id="mentorAdminLayout" class="mentor-admin-layout">
@@ -5899,6 +5999,10 @@ th,td{padding:14px 12px!important}
             <div id="mentorAdminReplyBar" class="mentor-reply-bar hidden">
               <div><b id="mentorAdminReplyTitle">Membalas pesan</b><span id="mentorAdminReplyText"></span></div>
               <button id="mentorAdminReplyCancel" type="button" aria-label="Batalkan balasan">×</button>
+            </div>
+            <div id="mentorAdminWorkHoursNotice" class="mentor-work-hours-notice hidden">
+              <b>🌙 DI LUAR JAM KERJA</b>
+              <span id="mentorAdminWorkHoursNoticeText">Balasan Mentor dikunci sampai jam kerja berikutnya.</span>
             </div>
             <form id="mentorAdminComposer" class="mentor-admin-composer">
               <button id="mentorAdminStickerBtn" type="button" class="mentor-admin-icon" title="Kirim stiker" aria-label="Kirim stiker">☺</button>
@@ -6548,6 +6652,10 @@ th,td{padding:14px 12px!important}
   let mentorAutoReplyLogs = [];
   let mentorAutoEditingMedia = null;
   let mentorAutoPendingFile = null;
+  let mentorWorkHoursStatus = null;
+  let mentorWorkHoursRows = [];
+  let mentorWorkHoursBusy = false;
+  let mentorWorkHoursLastFetch = 0;
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
   let membershipRenewals = [];
@@ -7012,6 +7120,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(page === 'mentor'){
       loadMentorInbox();
       loadMentorAutoReplyRules().catch(()=>{});
+      refreshMentorWorkHours(true).catch(()=>{});
     }
     if(page === 'team'){
       populateAdminSelfSettings();
@@ -9357,6 +9466,137 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return 'terakhir dilihat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(new Date(value));
   }
 
+  function mentorWorkTime(value){
+    return String(value||'').slice(0,5);
+  }
+
+  function mentorWorkNextLabel(value){
+    if(!value)return '';
+    try{
+      return new Intl.DateTimeFormat('id-ID',{
+        weekday:'long',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'
+      }).format(new Date(value)).replace('.',':')+' WIB';
+    }catch(_){return ''}
+  }
+
+  function applyAdminWorkHoursUi(){
+    const status=mentorWorkHoursStatus;
+    const enabled=status?status.enabled!==false:true;
+    const open=!enabled||Boolean(status?.is_open);
+    const privateThread=mentorAdminScreen==='mentor-thread';
+
+    const statusNode=$('mentorWorkHoursStatus');
+    if(statusNode){
+      statusNode.textContent=open?'● SEDANG BUKA':'○ SEDANG TUTUP';
+      statusNode.classList.toggle('open',open);
+      statusNode.classList.toggle('closed',!open);
+    }
+
+    const next=mentorWorkNextLabel(status?.next_open_at);
+    if($('mentorWorkHoursSummary')){
+      $('mentorWorkHoursSummary').textContent=open
+        ? 'Sedang dalam jam kerja • Zona waktu Asia/Jakarta (WIB).'
+        : 'Di luar jam kerja'+(next?' • Buka lagi '+next:'')+' • Member tetap bisa mengirim pesan.';
+    }
+
+    const locked=privateThread&&!open;
+    $('mentorThreadView')?.classList.toggle('after-hours',locked);
+    $('mentorAdminWorkHoursNotice')?.classList.toggle('hidden',!locked);
+    if($('mentorAdminWorkHoursNoticeText')){
+      $('mentorAdminWorkHoursNoticeText').textContent=next
+        ? 'Balasan Mentor dikunci. Jam kerja buka lagi '+next+'.'
+        : 'Balasan Mentor dikunci sampai jam kerja berikutnya.';
+    }
+
+    if(privateThread){
+      const input=$('mentorAdminInput'),send=$('mentorAdminSendBtn'),attach=$('mentorAdminAttachBtn'),sticker=$('mentorAdminStickerBtn');
+      if(input){
+        input.disabled=locked;
+        input.placeholder=locked?'Di luar jam kerja Mentor':'Ketik pesan';
+      }
+      if(send)send.disabled=locked;
+      if(attach)attach.disabled=locked;
+      if(sticker)sticker.disabled=locked;
+      if(locked){
+        $('mentorAdminStickerTray')?.classList.add('hidden');
+        $('mentorAdminAttachMenu')?.classList.add('hidden');
+        clearMentorAdminPending();
+        clearMentorAdminReply();
+      }
+    }
+  }
+
+  async function refreshMentorWorkHours(force=false){
+    const now=Date.now();
+    if(mentorWorkHoursBusy)return mentorWorkHoursStatus;
+    if(!force&&mentorWorkHoursStatus&&now-mentorWorkHoursLastFetch<30000){
+      applyAdminWorkHoursUi();return mentorWorkHoursStatus;
+    }
+    mentorWorkHoursBusy=true;
+    try{
+      const rows=await api('/rest/v1/rpc/mentor_work_hours_status',{method:'POST',body:'{}'});
+      mentorWorkHoursStatus=Array.isArray(rows)?rows[0]:rows;
+      mentorWorkHoursLastFetch=Date.now();
+      applyAdminWorkHoursUi();
+      return mentorWorkHoursStatus;
+    }finally{mentorWorkHoursBusy=false}
+  }
+
+  function renderMentorWorkHoursSettings(){
+    const byDay=new Map((mentorWorkHoursRows||[]).map(r=>[Number(r.day_of_week),r]));
+    document.querySelectorAll('#mentorWorkHoursSchedule [data-work-day]').forEach(row=>{
+      const d=Number(row.dataset.workDay),data=byDay.get(d);if(!data)return;
+      const open=row.querySelector('.mentor-work-open');
+      const start=row.querySelector('.mentor-work-start');
+      const end=row.querySelector('.mentor-work-end');
+      if(open)open.checked=Boolean(data.is_open);
+      if(start)start.value=mentorWorkTime(data.start_time)||'08:00';
+      if(end)end.value=mentorWorkTime(data.end_time)||'22:00';
+      row.classList.toggle('day-closed',!data.is_open);
+      if(start)start.disabled=!data.is_open||!['owner','super_admin','admin'].includes(currentTeam?.role);
+      if(end)end.disabled=!data.is_open||!['owner','super_admin','admin'].includes(currentTeam?.role);
+      if(open)open.disabled=!['owner','super_admin','admin'].includes(currentTeam?.role);
+    });
+    const enabled=mentorWorkHoursRows[0]?.schedule_enabled!==false;
+    if($('mentorWorkHoursEnabled')){
+      $('mentorWorkHoursEnabled').checked=enabled;
+      $('mentorWorkHoursEnabled').disabled=!['owner','super_admin','admin'].includes(currentTeam?.role);
+    }
+    $('mentorWorkHoursSaveBtn')?.classList.toggle('hidden',!['owner','super_admin','admin'].includes(currentTeam?.role));
+  }
+
+  async function loadMentorWorkHoursSettings(){
+    mentorWorkHoursRows=await api('/rest/v1/rpc/admin_mentor_work_hours_get',{method:'POST',body:'{}'})||[];
+    renderMentorWorkHoursSettings();
+    await refreshMentorWorkHours(true);
+  }
+
+  async function saveMentorWorkHoursSettings(){
+    const schedule=Array.from(document.querySelectorAll('#mentorWorkHoursSchedule [data-work-day]')).map(row=>({
+      day_of_week:Number(row.dataset.workDay),
+      is_open:Boolean(row.querySelector('.mentor-work-open')?.checked),
+      start_time:row.querySelector('.mentor-work-start')?.value||'08:00',
+      end_time:row.querySelector('.mentor-work-end')?.value||'22:00'
+    }));
+    const btn=$('mentorWorkHoursSaveBtn'),old=btn?.textContent||'SIMPAN JAM KERJA';
+    if(btn){btn.disabled=true;btn.textContent='MENYIMPAN...'}
+    try{
+      await api('/rest/v1/rpc/admin_mentor_work_hours_save',{
+        method:'POST',
+        body:JSON.stringify({
+          p_schedule:schedule,
+          p_enabled:Boolean($('mentorWorkHoursEnabled')?.checked),
+          p_timezone:'Asia/Jakarta'
+        })
+      });
+      if($('mentorWorkHoursSaveStatus'))$('mentorWorkHoursSaveStatus').textContent='✓ Jam kerja tersimpan';
+      await loadMentorWorkHoursSettings();
+      mentorAdminToast('Jam kerja Mentor diperbarui');
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old}
+    }
+  }
+
   function mentorAutoTimeShort(value){
     const raw=String(value||'');
     return raw ? raw.slice(0,5) : '';
@@ -9730,6 +9970,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       $('claimMentorChatBtn').textContent=mine?'CHAT SAYA ✓':'AMBIL CHAT';
       $('claimMentorChatBtn').disabled=mine;
     }
+    refreshMentorWorkHours(false).catch(()=>{});
+    applyAdminWorkHoursUi();
   }
 
   function mentorAdminOverviewRow(slug){
@@ -10500,6 +10742,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
     await api('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:id})}).catch(()=>{});
     refreshMentorAdminUnread().catch(()=>{});
+    refreshMentorWorkHours(false).catch(()=>{});
   }
 
   async function mentorAdminSetTyping(value){
@@ -10514,6 +10757,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function sendMentorAdminPayload(type,body,sticker,fileData){
     if(!mentorActiveConversation?.conversation_id)throw new Error('Pilih percakapan member dulu.');
+    await refreshMentorWorkHours(true);
+    if(mentorWorkHoursStatus?.enabled!==false&&!mentorWorkHoursStatus?.is_open){
+      throw new Error('Di luar jam kerja Mentor BADAI. Balasan belum dapat dikirim.');
+    }
     await api('/rest/v1/rpc/mentor_send_message_v2',{method:'POST',body:JSON.stringify({
       p_conversation_id:mentorActiveConversation.conversation_id,p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
       p_drive_file_id:fileData?.id||null,p_drive_web_view_link:fileData?.url||null,p_file_name:fileData?.name||null,
@@ -10908,6 +11155,21 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     panel?.classList.toggle('hidden',!willOpen);
     btn?.setAttribute('aria-expanded',String(Boolean(willOpen)));
     btn?.classList.toggle('active',Boolean(willOpen));
+    if(willOpen)loadMentorWorkHoursSettings().catch(err=>mentorAdminToast(err.message||'Gagal memuat jam kerja'));
+  });
+  $('mentorWorkHoursSchedule')?.addEventListener('change',e=>{
+    const row=e.target.closest('[data-work-day]');if(!row)return;
+    const open=Boolean(row.querySelector('.mentor-work-open')?.checked);
+    row.classList.toggle('day-closed',!open);
+    const canEdit=['owner','super_admin','admin'].includes(currentTeam?.role);
+    row.querySelector('.mentor-work-start').disabled=!open||!canEdit;
+    row.querySelector('.mentor-work-end').disabled=!open||!canEdit;
+  });
+  $('mentorWorkHoursSaveBtn')?.addEventListener('click',async()=>{
+    try{await saveMentorWorkHoursSettings()}
+    catch(err){
+      if($('mentorWorkHoursSaveStatus'))$('mentorWorkHoursSaveStatus').textContent='✕ '+(err.message||'Gagal menyimpan jam kerja');
+    }
   });
 
   document.querySelectorAll('[data-mentor-feature]').forEach(btn=>{
