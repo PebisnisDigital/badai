@@ -1028,7 +1028,8 @@ body{
   letter-spacing:.04em;
   text-transform:uppercase;
 }
-.account-field input{
+.account-field input,
+.account-field textarea{
   width:100%;
   min-height:42px;
   border-radius:11px;
@@ -1038,10 +1039,58 @@ body{
   padding:0 11px;
   outline:none;
   font:700 11px "Nunito";
+  box-sizing:border-box;
 }
-.account-field input:focus{
+.account-field textarea{
+  min-height:92px;
+  padding:11px;
+  resize:vertical;
+  line-height:1.45;
+}
+.account-field input:focus,
+.account-field textarea:focus{
   border-color:#ff4fa3;
   box-shadow:0 0 0 3px rgba(255,79,163,.10);
+}
+.account-profile-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.account-profile-grid .account-field{margin-bottom:0}
+.account-marketing-consent{
+  margin-top:4px;
+  padding:11px 12px;
+  display:grid;
+  grid-template-columns:18px minmax(0,1fr);
+  gap:9px;
+  align-items:start;
+  border:1px solid #2e2630;
+  border-radius:12px;
+  background:#100c0f;
+}
+.account-marketing-consent input{
+  width:16px!important;
+  min-height:16px!important;
+  height:16px;
+  margin:2px 0 0;
+  accent-color:#ff4fa3;
+}
+.account-marketing-consent span{
+  color:#aaa;
+  font:600 9px/1.45 "Nunito",Arial,sans-serif;
+}
+.account-data-note{
+  margin:2px 0 10px;
+  padding:9px 10px;
+  border-left:3px solid #ff4fa3;
+  border-radius:8px;
+  background:#100b0e;
+  color:#8f858b;
+  font:600 8.5px/1.45 "Nunito",Arial,sans-serif;
+}
+@media(max-width:520px){
+  .account-profile-grid{grid-template-columns:1fr}
 }
 .account-help{
   margin-top:-3px;
@@ -1952,7 +2001,7 @@ h1,h2,h3,h4,h5,h6,
 
       <div class="account-section-label">
         <span>DATA SAYA</span>
-        <small>Data yang tampil sebagai identitas Member BADAI.</small>
+        <small>Lengkapi profil supaya komunikasi dan layanan BADAI lebih relevan.</small>
       </div>
 
       <form id="memberAccountForm" class="account-card account-profile-form">
@@ -1971,6 +2020,32 @@ h1,h2,h3,h4,h5,h6,
           <input id="memberAccountEmail" type="email" autocomplete="email" readonly aria-readonly="true" placeholder="email@contoh.com"/>
           <div class="account-help">Email login dikunci untuk keamanan akun. Hubungi Admin BADAI jika perlu mengganti email.</div>
         </div>
+
+        <div class="account-profile-grid">
+          <div class="account-field">
+            <label for="memberBirthPlace">Tempat Lahir</label>
+            <input id="memberBirthPlace" type="text" maxlength="120" autocomplete="address-level2" placeholder="Contoh: Bandung"/>
+          </div>
+
+          <div class="account-field">
+            <label for="memberBirthDate">Tanggal Lahir</label>
+            <input id="memberBirthDate" type="date" autocomplete="bday"/>
+          </div>
+        </div>
+
+        <div class="account-field">
+          <label for="memberFullAddress">Alamat Lengkap</label>
+          <textarea id="memberFullAddress" maxlength="1000" autocomplete="street-address" placeholder="Nama jalan, RT/RW, kelurahan/desa, kecamatan, kota/kabupaten, provinsi"></textarea>
+        </div>
+
+        <div class="account-data-note">
+          Data tambahan ini bersifat opsional dan disimpan di profil BADAI. Gunakan hanya data yang nyaman kamu berikan.
+        </div>
+
+        <label class="account-marketing-consent" for="memberMarketingConsent">
+          <input id="memberMarketingConsent" type="checkbox"/>
+          <span>Saya bersedia data profil ini digunakan BADAI untuk personalisasi komunikasi, informasi program, penawaran, dan kegiatan marketing BADAI.</span>
+        </label>
 
         <button id="memberAccountSave" class="account-save" type="submit">SIMPAN DATA</button>
         <div id="memberAccountStatus" class="account-status"></div>
