@@ -3285,6 +3285,8 @@ th,td{padding:14px 12px!important}
 .mentor-admin-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 12px}
 .mentor-admin-status-grid .stat{min-width:0}
 .mentor-admin-status-grid .stat strong{font-size:16px}
+.mentor-drive-stat button{margin-top:8px;min-height:30px;border:1px solid #ff4fa3;border-radius:9px;background:#ff4fa3;color:#111;padding:0 10px;font-size:7px;font-weight:950;cursor:pointer}
+.mentor-drive-stat button.hidden{display:none}
 .mentor-admin-layout{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,1.7fr);gap:10px;min-height:560px}
 .mentor-inbox-panel,.mentor-thread-panel{border:1px solid #242424;border-radius:14px;background:#090909;overflow:hidden}
 .mentor-inbox-head,.mentor-thread-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border-bottom:1px solid #242424;background:#0d0d0d}
@@ -3935,7 +3937,7 @@ th,td{padding:14px 12px!important}
       <div class="mentor-admin-status-grid">
         <div class="stat"><span>HOT STORAGE</span><strong>7 HARI</strong><small>Supabase untuk chat aktif</small></div>
         <div class="stat"><span>ARSIP HARIAN</span><strong>00.05 WIB</strong><small>Disiapkan otomatis tiap malam</small></div>
-        <div class="stat"><span>GOOGLE DRIVE</span><strong id="mentorDriveStatus">BELUM TERHUBUNG</strong><small>Pesan tidak dihapus sebelum arsip terverifikasi</small></div>
+        <div class="stat mentor-drive-stat"><span>GOOGLE DRIVE</span><strong id="mentorDriveStatus">BELUM TERHUBUNG</strong><small id="mentorDriveAccount">Pesan tidak dihapus sebelum arsip terverifikasi</small><button id="mentorConnectDriveBtn" class="hidden" type="button">SAMBUNGKAN GOOGLE DRIVE</button></div>
       </div>
 
       <div class="mentor-admin-layout">
@@ -6985,6 +6987,20 @@ Kalau mau aktif lagi, balas pesan ini ya.`
           ? (pending ? 'TERHUBUNG • '+pending+' ANTRIAN' : 'TERHUBUNG ✓')
           : (pending ? pending + ' ARSIP MENUNGGU' : 'BELUM TERHUBUNG');
       }
+      if($('mentorDriveAccount')){
+        $('mentorDriveAccount').textContent = driveState?.drive_configured
+          ? ('Akun: '+(driveState.connected_account || 'Google Drive aktif'))
+          : (driveState?.oauth_client_configured
+              ? 'Siap dihubungkan ke akun Google.'
+              : 'OAuth Google belum disiapkan di Railway.');
+      }
+      if($('mentorConnectDriveBtn')){
+        $('mentorConnectDriveBtn').classList.toggle('hidden', Boolean(driveState?.drive_configured) || !['owner','super_admin'].includes(currentTeam?.role));
+        $('mentorConnectDriveBtn').disabled = !driveState?.oauth_client_configured;
+        $('mentorConnectDriveBtn').textContent = driveState?.oauth_client_configured
+          ? 'SAMBUNGKAN GOOGLE DRIVE'
+          : 'BUTUH GOOGLE OAUTH';
+      }
 
       if(mentorActiveConversation){
         const fresh = mentorConversations.find(x=>x.conversation_id===mentorActiveConversation.conversation_id);
@@ -7444,6 +7460,24 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   });
 
   $('refreshMentorInboxBtn')?.addEventListener('click', () => loadMentorInbox());
+  $('mentorConnectDriveBtn')?.addEventListener('click', async () => {
+    const btn=$('mentorConnectDriveBtn');
+    if(btn) btn.disabled=true;
+    try{
+      const res=await fetch('/api/mentor/google/connect',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
+        body:'{}'
+      });
+      const data=await res.json().catch(()=>null);
+      if(!res.ok) throw new Error(data?.error || 'Gagal memulai koneksi Google Drive.');
+      if(!data?.url) throw new Error('Link otorisasi Google tidak tersedia.');
+      location.href=data.url;
+    }catch(err){
+      $('mentorAdminNote').textContent='✕ '+(err.message || 'Gagal menyambungkan Google Drive.');
+      if(btn) btn.disabled=false;
+    }
+  });
   $('mentorInboxList')?.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-mentor-conversation]');
     if(btn) openMentorConversation(btn.dataset.mentorConversation);
