@@ -3320,6 +3320,219 @@ th,td{padding:14px 12px!important}
   content:"✓";display:grid;place-items:center;border-color:#ff4fa3;background:#ff4fa3;color:#111;font-size:10px;font-weight:950
 }
 #pageMentor #mentorThreadView.chat-select-mode .mentor-bubble-menu-btn{display:none!important}
+
+.mentor-ai-draft{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;padding:9px 11px;border-top:1px solid #513349;border-bottom:1px solid #513349;background:linear-gradient(90deg,#171018,#100c10)}
+.mentor-ai-draft.hidden{display:none!important}
+.mentor-ai-draft-copy{min-width:0;display:grid;gap:3px}
+.mentor-ai-draft-copy b{color:#ff7ebc;font-size:7px!important}
+.mentor-ai-draft-copy span{color:#ddd;font-size:8px!important;line-height:1.45;white-space:pre-wrap}
+.mentor-ai-draft-copy small{color:#777;font-size:6px!important}
+.mentor-ai-draft-actions{display:flex;align-items:center;gap:5px}
+.mentor-ai-draft-actions button{min-height:29px;padding:0 8px;border:1px solid #4a3240;border-radius:8px;background:#21141c;color:#ff89c0;font-size:6px;font-weight:950}
+.mentor-ai-draft-actions button:last-child{width:29px;padding:0;color:#aaa;background:#161616;border-color:#303030}
+
+/* AI Mentor */
+#pageMentor .mentor-ai-panel{display:grid;gap:10px}
+#pageMentor .mentor-ai-panel.hidden{display:none!important}
+#pageMentor .mentor-ai-hero{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;
+  border:1px solid #382331;border-radius:15px;background:linear-gradient(145deg,#140d12,#090909)
+}
+#pageMentor .mentor-ai-hero span{display:block;color:#ff72b6;font-size:7px;font-weight:950;letter-spacing:.12em}
+#pageMentor .mentor-ai-hero h3{margin:4px 0;color:#fff;font-size:18px}
+#pageMentor .mentor-ai-hero p{margin:0;color:#858085;font-size:8px;line-height:1.45}
+#pageMentor .mentor-ai-status{min-width:66px;padding:8px 10px;text-align:center;border-radius:999px;font-size:8px;font-weight:950;border:1px solid #3a3a3a}
+#pageMentor .mentor-ai-status.off{color:#888;background:#141414}
+#pageMentor .mentor-ai-status.on{color:#7be49e;background:#0e1d13;border-color:#244c31}
+#pageMentor .mentor-ai-usage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+#pageMentor .mentor-ai-usage>div{padding:10px;border:1px solid #242424;border-radius:11px;background:#0c0c0c}
+#pageMentor .mentor-ai-usage span{display:block;color:#666;font-size:6px;font-weight:900}
+#pageMentor .mentor-ai-usage b{display:block;margin-top:3px;color:#fff;font-size:14px;overflow:hidden;text-overflow:ellipsis}
+#pageMentor .mentor-ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#pageMentor .mentor-ai-card{min-width:0;padding:13px;border:1px solid #262626;border-radius:13px;background:#0c0c0c}
+#pageMentor .mentor-ai-card.full{grid-column:1/-1}
+#pageMentor .mentor-ai-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+#pageMentor .mentor-ai-card-head>div{display:flex;align-items:center;gap:7px}
+#pageMentor .mentor-ai-card-head span{display:grid;place-items:center;width:20px;height:20px;border-radius:999px;background:#24131c;color:#ff78b8;font-size:6px;font-weight:950}
+#pageMentor .mentor-ai-card-head h4{margin:0;color:#fff;font-size:9px}
+#pageMentor .mentor-ai-card-head>button{min-height:27px;padding:0 8px;border:1px solid #3b2a34;border-radius:7px;background:#171116;color:#ff86bd;font-size:6px;font-weight:900}
+#pageMentor .mentor-ai-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#pageMentor .mentor-ai-form-grid .full{grid-column:1/-1}
+#pageMentor .mentor-ai-form-grid textarea{width:100%;box-sizing:border-box;resize:vertical}
+#pageMentor .mentor-ai-form-grid small{display:block;margin-top:4px;color:#696969;font-size:6px}
+#pageMentor .mentor-ai-switch-row{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #292929;border-radius:9px;background:#111;color:#ccc;font-size:7px;font-weight:900}
+#pageMentor .mentor-ai-switch-row.compact{grid-column:auto}
+#pageMentor .mentor-ai-switch-row input{accent-color:#ff4fa3}
+#pageMentor .mentor-ai-primary{min-height:34px;padding:0 11px;border:0;border-radius:8px;background:#ff4fa3;color:#111;font-size:7px;font-weight:950;cursor:pointer}
+#pageMentor .mentor-ai-card>.mentor-ai-primary{margin-top:9px}
+#pageMentor .mentor-ai-provider-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+#pageMentor .mentor-ai-provider-actions button{min-height:32px;padding:0 9px;border:1px solid #343434;border-radius:8px;background:#151515;color:#ddd;font-size:6.5px;font-weight:900}
+#pageMentor .mentor-ai-provider-actions button.mentor-ai-primary{background:#ff4fa3;color:#111;border-color:#ff4fa3}
+#pageMentor .mentor-ai-provider-actions button.danger{color:#ff8d93}
+#pageMentor .mentor-ai-provider-list,#pageMentor .mentor-ai-list{display:grid;gap:6px;margin-top:10px}
+#pageMentor .mentor-ai-list-item{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;
+  padding:8px;border:1px solid #242424;border-radius:9px;background:#111;cursor:pointer
+}
+#pageMentor .mentor-ai-list-item:hover{border-color:#49313f}
+#pageMentor .mentor-ai-list-item b{display:block;color:#ddd;font-size:7.5px}
+#pageMentor .mentor-ai-list-item small{display:block;margin-top:2px;color:#686868;font-size:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pageMentor .mentor-ai-list-item em{font-style:normal;padding:4px 6px;border-radius:999px;background:#171717;color:#8b8b8b;font-size:5.5px;font-weight:900}
+#pageMentor .mentor-ai-list-item em.active{background:#0f1d13;color:#72dc95}
+#pageMentor .mentor-ai-test-box{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+#pageMentor .mentor-ai-test-box textarea{width:100%;box-sizing:border-box;resize:vertical}
+#pageMentor .mentor-ai-test-result{margin-top:9px;padding:11px;border:1px solid #272727;border-radius:10px;background:#111;color:#bbb;font-size:8px;line-height:1.5;white-space:pre-wrap}
+#pageMentor .mentor-ai-test-result b{color:#fff}
+#pageMentor .mentor-ai-test-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px;color:#777;font-size:6px}
+@media(max-width:760px){
+  #pageMentor .mentor-ai-usage{grid-template-columns:1fr 1fr}
+  #pageMentor .mentor-ai-grid{grid-template-columns:1fr}
+  #pageMentor .mentor-ai-card.full{grid-column:auto}
+  #pageMentor .mentor-ai-form-grid{grid-template-columns:1fr}
+  #pageMentor .mentor-ai-form-grid .full,#pageMentor .mentor-ai-switch-row{grid-column:auto}
+  #pageMentor .mentor-ai-test-box{grid-template-columns:1fr}
+  #pageMentor .mentor-ai-hero{align-items:flex-start;flex-direction:column}
+}
+
+/* Dedicated Jam Operasional tab */
+#pageMentor .mentor-work-hours-tab{gap:10px!important}
+#pageMentor .mentor-work-tab-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:13px 15px;border:1px solid #282828;border-radius:13px;background:#0c0c0c
+}
+#pageMentor .mentor-work-tab-head>div:first-child{min-width:0}
+#pageMentor .mentor-work-tab-head span{display:block;color:#ff76b8;font-size:7px;font-weight:950;letter-spacing:.1em}
+#pageMentor .mentor-work-tab-head h3{margin:4px 0 3px;color:#fff;font-size:16px}
+#pageMentor .mentor-work-tab-head p{max-width:640px;margin:0;color:#7d7d7d;font-size:8px;line-height:1.45}
+#pageMentor .mentor-work-timezone{
+  flex:0 0 auto;padding:7px 9px;border:1px solid #343434;border-radius:999px;
+  background:#131313;color:#aaa;font-size:6.5px;font-weight:950;letter-spacing:.05em
+}
+#pageMentor .mentor-work-hours-standalone{
+  padding:13px!important;border:1px solid #282828!important;border-radius:13px!important;background:#0b0b0b!important
+}
+#pageMentor .mentor-work-hours-standalone .mentor-work-hours-schedule{
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:6px
+}
+#pageMentor .mentor-work-hours-standalone .mentor-work-day{
+  grid-template-columns:30px 62px minmax(74px,1fr) 10px minmax(74px,1fr);
+  padding:7px 8px
+}
+@media(max-width:720px){
+  #pageMentor .mentor-work-tab-head{align-items:flex-start;flex-direction:column}
+  #pageMentor .mentor-work-hours-standalone .mentor-work-hours-schedule{grid-template-columns:1fr}
+}
+
+/* Mentor work hours */
+#pageMentor .mentor-work-hours-card{grid-column:1/-1!important;display:block!important;padding:14px!important}
+#pageMentor .mentor-work-hours-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#pageMentor .mentor-work-hours-head>div{display:grid;gap:3px}
+#pageMentor .mentor-work-hours-head strong{font-size:12px!important}
+#pageMentor .mentor-work-hours-head strong.open{color:#55d98b!important}
+#pageMentor .mentor-work-hours-head strong.closed{color:#ff8a8f!important}
+#pageMentor .mentor-work-master{display:flex;align-items:center;gap:7px;color:#aaa;font-size:7px;font-weight:900}
+#pageMentor .mentor-work-master input{accent-color:#ff4fa3}
+#pageMentor .mentor-work-hours-schedule{display:grid;gap:5px;margin-top:11px}
+#pageMentor .mentor-work-day{display:grid;grid-template-columns:34px 80px 100px 14px 100px;align-items:center;gap:7px;padding:7px 9px;border:1px solid #292929;border-radius:9px;background:#101010}
+#pageMentor .mentor-work-day b{color:#ddd;font-size:8px!important}
+#pageMentor .mentor-work-day input[type="time"]{min-height:30px;padding:0 7px;border:1px solid #303030;border-radius:7px;background:#171717;color:#fff;font-size:8px}
+#pageMentor .mentor-work-day.day-closed{opacity:.48}
+#pageMentor .mentor-work-sep{color:#666;text-align:center}
+#pageMentor .mentor-work-toggle{position:relative;width:30px;height:18px}
+#pageMentor .mentor-work-toggle input{position:absolute;opacity:0;pointer-events:none}
+#pageMentor .mentor-work-toggle span{position:absolute;inset:0;border-radius:999px;background:#333;transition:.18s}
+#pageMentor .mentor-work-toggle span::after{content:"";position:absolute;width:14px;height:14px;left:2px;top:2px;border-radius:999px;background:#aaa;transition:.18s}
+#pageMentor .mentor-work-toggle input:checked+span{background:#ff4fa3}
+#pageMentor .mentor-work-toggle input:checked+span::after{transform:translateX(12px);background:#fff}
+#pageMentor .mentor-work-hours-actions{display:flex;align-items:center;gap:10px;margin-top:10px}
+#pageMentor .mentor-work-hours-actions button{min-height:34px;padding:0 11px;border:0;border-radius:8px;background:#ff4fa3;color:#111;font-size:7px;font-weight:950}
+#pageMentor .mentor-work-hours-actions span{color:#777;font-size:7px}
+#pageMentor .mentor-work-hours-notice{margin:0;padding:9px 12px;display:grid;gap:2px;border-top:1px solid #3c3034;border-bottom:1px solid #3c3034;background:rgba(0,0,0,.82);color:#bbb}
+#pageMentor .mentor-work-hours-notice.hidden{display:none!important}
+#pageMentor .mentor-work-hours-notice b{color:#ff8d93;font-size:8px!important}
+#pageMentor .mentor-work-hours-notice span{font-size:7px!important;line-height:1.4}
+#pageMentor #mentorThreadView.after-hours .mentor-admin-message-wrap{background-color:#050505!important;opacity:.64}
+#pageMentor #mentorThreadView.after-hours .mentor-thread-head{background:#101010!important}
+#pageMentor #mentorThreadView.after-hours .mentor-admin-composer{background:#0c0c0c!important;opacity:.62}
+#pageMentor #mentorThreadView.after-hours .mentor-admin-composer textarea{cursor:not-allowed!important}
+@media(max-width:700px){
+  #pageMentor .mentor-work-day{grid-template-columns:32px 64px minmax(72px,1fr) 10px minmax(72px,1fr)}
+  #pageMentor .mentor-work-hours-head{align-items:flex-start;flex-direction:column}
+}
+
+/* Mentor Auto Reply */
+.mentor-feature-tabs{display:flex;gap:6px;margin:8px 0 10px;padding:5px;border:1px solid #242424;border-radius:12px;background:#0b0b0b}
+.mentor-feature-tabs button{min-height:34px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:#777;font-size:7px;font-weight:950;letter-spacing:.05em;cursor:pointer}
+.mentor-feature-tabs button.active{background:#ff4fa3;color:#111}
+.mentor-feature-count{display:inline-grid;place-items:center;min-width:16px;height:16px;padding:0 4px;margin-left:4px;border-radius:999px;background:#111;color:#ff8fc4;font-size:6px}
+.mentor-feature-tabs button.active .mentor-feature-count{background:#111;color:#fff}
+.mentor-feature-count.hidden{display:none}
+.mentor-autoreply-panel{display:grid;gap:10px}
+.mentor-autoreply-panel.hidden{display:none}
+.mentor-autoreply-hero{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px;border:1px solid #372332;border-radius:15px;background:linear-gradient(145deg,#130d11,#090909)}
+.mentor-autoreply-hero span{display:block;color:#ff76b8;font-size:7px;font-weight:950;letter-spacing:.12em}
+.mentor-autoreply-hero h3{margin:4px 0;color:#fff;font-size:18px}
+.mentor-autoreply-hero p{max-width:650px;margin:0;color:#858085;font-size:8px;line-height:1.5}
+.mentor-autoreply-hero>button{flex:0 0 auto;min-height:38px;padding:0 13px;border:0;border-radius:10px;background:#ff4fa3;color:#111;font-size:8px;font-weight:950;cursor:pointer}
+.mentor-autoreply-hero.compact h3{font-size:16px}
+.mentor-autoreply-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mentor-autoreply-stats>div{padding:12px;border:1px solid #242424;border-radius:12px;background:#0c0c0c}
+.mentor-autoreply-stats span{display:block;color:#686868;font-size:6.5px;font-weight:900}
+.mentor-autoreply-stats b{display:block;margin-top:3px;color:#fff;font-size:19px}
+.mentor-autoreply-list{display:grid;gap:8px}
+.mentor-auto-rule{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:12px;border:1px solid #252525;border-radius:13px;background:#0c0c0c}
+.mentor-auto-rule.inactive{opacity:.6}
+.mentor-auto-rule-main{min-width:0}
+.mentor-auto-rule-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.mentor-auto-rule-top b{font-size:11px;color:#fff}
+.mentor-auto-pill{display:inline-flex;align-items:center;min-height:20px;padding:0 7px;border-radius:999px;background:#1b1117;color:#ff88bf;font-size:6px;font-weight:950}
+.mentor-auto-pill.active{background:#0d1c12;color:#71d994}
+.mentor-auto-keywords{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.mentor-auto-keywords span{padding:4px 7px;border:1px solid #2d2d2d;border-radius:999px;background:#141414;color:#bcbcbc;font-size:6.5px}
+.mentor-auto-preview{margin-top:8px;color:#bcbcbc;font-size:8px;line-height:1.45;white-space:pre-wrap}
+.mentor-auto-rule-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;color:#6f6f6f;font-size:6.5px}
+.mentor-auto-rule-actions{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.mentor-auto-rule-actions button{min-height:30px;padding:0 8px;border:1px solid #343434;border-radius:8px;background:#151515;color:#fff;font-size:6.5px;font-weight:900;cursor:pointer}
+.mentor-auto-rule-actions button.primary{border-color:#63354e;color:#ff8fc4}
+.mentor-auto-rule-actions button.danger{color:#ff8188}
+.mentor-autoreply-log-list{display:grid;gap:7px}
+.mentor-auto-log{padding:11px;border:1px solid #242424;border-radius:12px;background:#0c0c0c}
+.mentor-auto-log-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mentor-auto-log-head b{font-size:9px;color:#fff}
+.mentor-auto-log-head span{font-size:6px;color:#666}
+.mentor-auto-log-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.mentor-auto-log-grid>div{padding:8px;border-radius:9px;background:#121212}
+.mentor-auto-log-grid span{display:block;color:#686868;font-size:6px;font-weight:900}
+.mentor-auto-log-grid p{margin:4px 0 0;color:#c8c8c8;font-size:7.5px;line-height:1.45;white-space:pre-wrap}
+.mentor-autoreply-modal{width:min(620px,calc(100vw - 24px));max-height:90vh;overflow:auto}
+.mentor-autoreply-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.mentor-autoreply-modal-head span{display:block;color:#ff72b6;font-size:7px;font-weight:950;letter-spacing:.1em}
+.mentor-autoreply-modal-head h2{margin:3px 0 0}
+.mentor-autoreply-modal-head>button{width:30px;height:30px;border:0;border-radius:999px;background:#222;color:#bbb;font-size:18px;cursor:pointer}
+.mentor-autoreply-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.mentor-autoreply-form-grid .full{grid-column:1/-1}
+.mentor-autoreply-form-grid textarea{width:100%;box-sizing:border-box;resize:vertical}
+.mentor-auto-inline-input{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px}
+.mentor-auto-inline-input span{color:#777;font-size:7px;font-weight:900}
+.mentor-auto-time-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
+.mentor-auto-time-row span{color:#555}
+.mentor-auto-media-row{display:flex;gap:7px;flex-wrap:wrap}
+.mentor-auto-file-btn,.mentor-auto-media-row button{min-height:34px;padding:0 10px;display:inline-flex;align-items:center;border:1px solid #3d2a35;border-radius:8px;background:#171116;color:#ff8fc4;font-size:7px;font-weight:900;cursor:pointer}
+.mentor-auto-media-row button{background:#151515;color:#bbb}
+.mentor-auto-media-info{margin-top:6px;color:#777;font-size:7px}
+.mentor-auto-badge{display:inline-flex;align-items:center;min-height:15px;padding:0 5px;margin:0 4px;border-radius:999px;background:#261520;color:#ff85bd;font-size:5.5px;font-weight:950;letter-spacing:.06em}
+.mentor-ai-reply-badge{display:inline-flex;align-items:center;min-height:15px;padding:0 5px;margin:0 4px;border-radius:999px;background:#12251b;color:#79e5a3;font-size:5.5px;font-weight:950;letter-spacing:.06em}
+@media(max-width:700px){
+  .mentor-feature-tabs{overflow:auto}
+  .mentor-feature-tabs button{white-space:nowrap}
+  .mentor-autoreply-hero{align-items:flex-start;flex-direction:column}
+  .mentor-autoreply-stats{grid-template-columns:1fr}
+  .mentor-auto-rule{grid-template-columns:1fr}
+  .mentor-auto-rule-actions{justify-content:flex-start}
+  .mentor-auto-log-grid,.mentor-autoreply-form-grid{grid-template-columns:1fr}
+  .mentor-autoreply-form-grid .full{grid-column:auto}
+}
+
 .mentor-admin-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 12px}
 .mentor-admin-status-grid .stat{min-width:0}
 .mentor-admin-status-grid .stat strong{font-size:16px}
@@ -5125,6 +5338,20 @@ th,td{padding:14px 12px!important}
     width:48px!important;height:48px!important;flex-basis:48px!important
   }
 }
+
+/* Auto Reply tab visibility — must beat WhatsApp layout !important rules */
+#pageMentor #mentorAdminLayout.hidden{display:none!important}
+#pageMentor #mentorOpsPanel.hidden{display:none!important}
+#pageMentor #mentorChatSettingsBtn.hidden{display:none!important}
+#pageMentor #mentorAutoReplyPanel.hidden,
+#pageMentor #mentorAutoReplyLogPanel.hidden,
+#pageMentor #mentorWorkHoursPanel.hidden,
+#pageMentor #mentorAiPanel.hidden{display:none!important}
+#pageMentor #mentorAutoReplyPanel:not(.hidden),
+#pageMentor #mentorAutoReplyLogPanel:not(.hidden),
+#pageMentor #mentorWorkHoursPanel:not(.hidden),
+#pageMentor #mentorAiPanel:not(.hidden){display:grid!important}
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -5741,10 +5968,19 @@ th,td{padding:14px 12px!important}
         <button id="mentorChatSettingsBtn" type="button" aria-expanded="false" title="Pengaturan Chat">⚙</button>
       </div>
 
+      <div class="mentor-feature-tabs" role="tablist" aria-label="Fitur Chat Member">
+        <button id="mentorFeatureChatBtn" class="active" type="button" data-mentor-feature="chat">CHAT</button>
+        <button id="mentorFeatureAutoBtn" type="button" data-mentor-feature="autoreply">AUTO REPLY <span id="mentorAutoActiveBadge" class="mentor-feature-count hidden">0</span></button>
+        <button id="mentorFeatureLogBtn" type="button" data-mentor-feature="log">LOG AUTO REPLY</button>
+        <button id="mentorFeatureHoursBtn" type="button" data-mentor-feature="hours">JAM OPERASIONAL</button>
+        <button id="mentorFeatureAiBtn" type="button" data-mentor-feature="ai">AI MENTOR</button>
+      </div>
+
       <div id="mentorOpsPanel" class="mentor-admin-status-grid hidden">
         <div class="stat"><span>HOT STORAGE</span><strong>7 HARI</strong><small>Supabase untuk chat aktif</small></div>
         <div class="stat"><span>ARSIP HARIAN</span><strong>00.05 WIB</strong><small>Disiapkan otomatis tiap malam</small></div>
         <div class="stat mentor-drive-stat"><span>GOOGLE DRIVE</span><strong id="mentorDriveStatus">BELUM TERHUBUNG</strong><small id="mentorDriveAccount">Pesan tidak dihapus sebelum arsip terverifikasi</small><button id="mentorConnectDriveBtn" class="hidden" type="button">SAMBUNGKAN GOOGLE DRIVE</button></div>
+
       </div>
 
       <div id="mentorAdminLayout" class="mentor-admin-layout">
@@ -5807,9 +6043,24 @@ th,td{padding:14px 12px!important}
               <div class="mentor-admin-pending-copy"><b id="mentorAdminPendingName">Lampiran</b><span id="mentorAdminPendingSize"></span></div>
               <button id="mentorAdminPendingCancel" type="button">×</button>
             </div>
+            <div id="mentorAdminAiDraft" class="mentor-ai-draft hidden">
+              <div class="mentor-ai-draft-copy">
+                <b>✨ DRAFT AI MENTOR <span id="mentorAdminAiDraftConfidence"></span></b>
+                <span id="mentorAdminAiDraftText"></span>
+                <small id="mentorAdminAiDraftReason"></small>
+              </div>
+              <div class="mentor-ai-draft-actions">
+                <button id="mentorAdminAiDraftUse" type="button">PAKAI DRAFT</button>
+                <button id="mentorAdminAiDraftDismiss" type="button">×</button>
+              </div>
+            </div>
             <div id="mentorAdminReplyBar" class="mentor-reply-bar hidden">
               <div><b id="mentorAdminReplyTitle">Membalas pesan</b><span id="mentorAdminReplyText"></span></div>
               <button id="mentorAdminReplyCancel" type="button" aria-label="Batalkan balasan">×</button>
+            </div>
+            <div id="mentorAdminWorkHoursNotice" class="mentor-work-hours-notice hidden">
+              <b>🌙 DI LUAR JAM KERJA</b>
+              <span id="mentorAdminWorkHoursNoticeText">Balasan Mentor dikunci sampai jam kerja berikutnya.</span>
             </div>
             <form id="mentorAdminComposer" class="mentor-admin-composer">
               <button id="mentorAdminStickerBtn" type="button" class="mentor-admin-icon" title="Kirim stiker" aria-label="Kirim stiker">☺</button>
@@ -5821,7 +6072,384 @@ th,td{padding:14px 12px!important}
           </div>
         </section>
       </div>
+
+      <section id="mentorWorkHoursPanel" class="mentor-autoreply-panel mentor-work-hours-tab hidden">
+        <div class="mentor-work-tab-head">
+          <div>
+            <span>JAM OPERASIONAL</span>
+            <h3>Jam Kerja Mentor BADAI</h3>
+            <p>Atur kapan Mentor dan Admin boleh membalas chat member. Member tetap bisa mengirim pesan saat jam operasional tutup.</p>
+          </div>
+          <div class="mentor-work-timezone">WIB · ASIA/JAKARTA</div>
+        </div>
+
+        <div class="mentor-work-hours-card mentor-work-hours-standalone">
+          <div class="mentor-work-hours-head">
+            <div><span>JAM KERJA MENTOR</span><strong id="mentorWorkHoursStatus">MEMUAT...</strong></div>
+            <label class="mentor-work-master"><input id="mentorWorkHoursEnabled" type="checkbox" checked/><span>AKTIFKAN JAM KERJA</span></label>
+          </div>
+          <small id="mentorWorkHoursSummary">Zona waktu Asia/Jakarta (WIB). Member tetap bisa mengirim pesan saat Mentor tutup.</small>
+          <div id="mentorWorkHoursSchedule" class="mentor-work-hours-schedule">
+            <div class="mentor-work-day" data-work-day="1">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Senin</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="2">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Selasa</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="3">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Rabu</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="4">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Kamis</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="5">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Jumat</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="6">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Sabtu</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="0">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Minggu</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+          </div>
+          <div class="mentor-work-hours-actions">
+            <button id="mentorWorkHoursSaveBtn" type="button">SIMPAN JAM KERJA</button>
+            <span id="mentorWorkHoursSaveStatus"></span>
+          </div>
+        </div>
+
+      </section>
+
+      <section id="mentorAiPanel" class="mentor-ai-panel hidden">
+        <div class="mentor-ai-hero">
+          <div>
+            <span>AI MENTOR</span>
+            <h3>Otak Mentor BADAI</h3>
+            <p>Hubungkan provider AI, atur persona, knowledge, skill, mode balasan, dan test sebelum diaktifkan ke member.</p>
+          </div>
+          <div id="mentorAiHeroStatus" class="mentor-ai-status off">OFF</div>
+        </div>
+
+        <div class="mentor-ai-usage">
+          <div><span>REQUEST HARI INI</span><b id="mentorAiUsageRequests">0</b></div>
+          <div><span>INPUT TOKEN</span><b id="mentorAiUsageInput">0</b></div>
+          <div><span>OUTPUT TOKEN</span><b id="mentorAiUsageOutput">0</b></div>
+          <div><span>PROVIDER</span><b id="mentorAiUsageProvider">-</b></div>
+        </div>
+
+        <div class="mentor-ai-grid">
+          <section class="mentor-ai-card">
+            <div class="mentor-ai-card-head"><div><span>01</span><h4>STATUS & MODE</h4></div></div>
+            <div class="mentor-ai-form-grid">
+              <label class="mentor-ai-switch-row">
+                <input id="mentorAiEnabled" type="checkbox"/>
+                <span>Aktifkan AI Mentor</span>
+              </label>
+              <div class="manage-field">
+                <label>Mode</label>
+                <select id="mentorAiMode">
+                  <option value="off">OFF — tidak membalas</option>
+                  <option value="assist">ASSIST — buat draft untuk admin</option>
+                  <option value="auto">AUTO — langsung balas</option>
+                  <option value="hybrid">HYBRID — yakin balas, ragu handoff</option>
+                </select>
+              </div>
+              <div class="manage-field">
+                <label>Provider Utama</label>
+                <select id="mentorAiPrimaryProvider"><option value="">Belum ada provider</option></select>
+              </div>
+              <div class="manage-field">
+                <label>Provider Cadangan</label>
+                <select id="mentorAiFallbackProvider"><option value="">Tidak ada</option></select>
+              </div>
+              <div class="manage-field">
+                <label>Confidence Hybrid</label>
+                <input id="mentorAiConfidence" type="number" min="0" max="1" step="0.05" value="0.78"/>
+              </div>
+              <div class="manage-field">
+                <label>History Chat</label>
+                <input id="mentorAiHistory" type="number" min="2" max="40" value="12"/>
+              </div>
+              <div class="manage-field">
+                <label>Max Output Token</label>
+                <input id="mentorAiMaxTokens" type="number" min="100" max="8000" value="900"/>
+              </div>
+              <label class="mentor-ai-switch-row compact">
+                <input id="mentorAiFollowHours" type="checkbox" checked/>
+                <span>Ikuti Jam Operasional</span>
+              </label>
+            </div>
+            <button id="mentorAiSaveSettingsBtn" class="mentor-ai-primary" type="button">SIMPAN STATUS AI</button>
+          </section>
+
+          <section class="mentor-ai-card">
+            <div class="mentor-ai-card-head">
+              <div><span>02</span><h4>KONEKSI PROVIDER</h4></div>
+              <button id="mentorAiProviderNewBtn" type="button">+ BARU</button>
+            </div>
+            <input id="mentorAiProviderId" type="hidden"/>
+            <div class="mentor-ai-form-grid">
+              <div class="manage-field">
+                <label>Platform AI</label>
+                <select id="mentorAiProviderType">
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="openai">OpenAI</option>
+                  <option value="anthropic">Claude / Anthropic</option>
+                  <option value="openai_compatible">OpenAI-compatible lainnya</option>
+                </select>
+              </div>
+              <div class="manage-field">
+                <label>Nama Koneksi</label>
+                <input id="mentorAiProviderName" type="text" maxlength="100" placeholder="Contoh: DeepSeek Utama"/>
+              </div>
+              <div class="manage-field full">
+                <label>API Key</label>
+                <input id="mentorAiApiKey" type="password" autocomplete="new-password" placeholder="Masukkan API key"/>
+                <small id="mentorAiApiKeyHint">API key akan dienkripsi oleh Railway.</small>
+              </div>
+              <div class="manage-field">
+                <label>Model</label>
+                <input id="mentorAiProviderModel" type="text" placeholder="deepseek-flash"/>
+              </div>
+              <div id="mentorAiBaseUrlField" class="manage-field">
+                <label>Base URL</label>
+                <input id="mentorAiProviderBaseUrl" type="url" placeholder="Otomatis sesuai provider"/>
+              </div>
+            </div>
+            <div class="mentor-ai-provider-actions">
+              <button id="mentorAiProviderTestBtn" type="button">TEST KONEKSI</button>
+              <button id="mentorAiProviderSaveBtn" class="mentor-ai-primary" type="button">SIMPAN PROVIDER</button>
+              <button id="mentorAiProviderDeleteBtn" class="danger hidden" type="button">HAPUS</button>
+            </div>
+            <div id="mentorAiProviderStatus" class="team-status-note"></div>
+            <div id="mentorAiProviderList" class="mentor-ai-provider-list"></div>
+          </section>
+
+          <section class="mentor-ai-card full">
+            <div class="mentor-ai-card-head"><div><span>03</span><h4>IDENTITAS & PERSONA</h4></div></div>
+            <div class="mentor-ai-form-grid">
+              <div class="manage-field">
+                <label>Nama Mentor</label>
+                <input id="mentorAiMentorName" type="text" maxlength="100" value="Mentor BADAI"/>
+              </div>
+              <div class="manage-field full">
+                <label>Instruksi Utama / System Prompt</label>
+                <textarea id="mentorAiSystemPrompt" rows="7" maxlength="12000" placeholder="Atur karakter, gaya bahasa, batasan, dan cara Mentor menjawab..."></textarea>
+              </div>
+            </div>
+            <button id="mentorAiSavePersonaBtn" class="mentor-ai-primary" type="button">SIMPAN PERSONA</button>
+          </section>
+
+          <section class="mentor-ai-card">
+            <div class="mentor-ai-card-head"><div><span>04</span><h4>KNOWLEDGE</h4></div><button id="mentorAiKnowledgeNewBtn" type="button">+ BARU</button></div>
+            <input id="mentorAiKnowledgeId" type="hidden"/>
+            <div class="mentor-ai-form-grid">
+              <div class="manage-field full"><label>Judul</label><input id="mentorAiKnowledgeTitle" type="text" maxlength="180" placeholder="Contoh: Cara Login BADAI"/></div>
+              <div class="manage-field full"><label>Keyword</label><input id="mentorAiKnowledgeKeywords" type="text" placeholder="login, masuk, akses member"/></div>
+              <div class="manage-field full"><label>Isi Knowledge</label><textarea id="mentorAiKnowledgeContent" rows="7" maxlength="30000" placeholder="Tulis informasi yang harus diketahui AI Mentor..."></textarea></div>
+              <div class="manage-field"><label>Prioritas</label><input id="mentorAiKnowledgePriority" type="number" min="0" max="1000" value="100"/></div>
+              <label class="mentor-ai-switch-row compact"><input id="mentorAiKnowledgeActive" type="checkbox" checked/><span>Aktif</span></label>
+            </div>
+            <div class="mentor-ai-provider-actions">
+              <button id="mentorAiKnowledgeSaveBtn" class="mentor-ai-primary" type="button">SIMPAN KNOWLEDGE</button>
+              <button id="mentorAiKnowledgeDeleteBtn" class="danger hidden" type="button">HAPUS</button>
+            </div>
+            <div id="mentorAiKnowledgeList" class="mentor-ai-list"></div>
+          </section>
+
+          <section class="mentor-ai-card">
+            <div class="mentor-ai-card-head"><div><span>05</span><h4>SKILL & ATURAN</h4></div><button id="mentorAiSkillNewBtn" type="button">+ BARU</button></div>
+            <input id="mentorAiSkillId" type="hidden"/>
+            <div class="mentor-ai-form-grid">
+              <div class="manage-field full"><label>Nama Skill</label><input id="mentorAiSkillName" type="text" maxlength="120" placeholder="Contoh: Cek Status Membership"/></div>
+              <div class="manage-field full"><label>Instruksi</label><textarea id="mentorAiSkillInstructions" rows="6" maxlength="12000" placeholder="Jelaskan apa yang boleh dilakukan dan kapan harus handoff..."></textarea></div>
+              <div class="manage-field">
+                <label>Permission</label>
+                <select id="mentorAiSkillPermission">
+                  <option value="allowed">BOLEH OTOMATIS</option>
+                  <option value="approval">BUTUH ADMIN</option>
+                  <option value="disabled">DILARANG</option>
+                </select>
+              </div>
+              <label class="mentor-ai-switch-row compact"><input id="mentorAiSkillActive" type="checkbox" checked/><span>Aktif</span></label>
+            </div>
+            <div class="mentor-ai-provider-actions">
+              <button id="mentorAiSkillSaveBtn" class="mentor-ai-primary" type="button">SIMPAN SKILL</button>
+              <button id="mentorAiSkillDeleteBtn" class="danger hidden" type="button">HAPUS</button>
+            </div>
+            <div id="mentorAiSkillList" class="mentor-ai-list"></div>
+          </section>
+
+          <section class="mentor-ai-card full mentor-ai-test-card">
+            <div class="mentor-ai-card-head"><div><span>06</span><h4>TEST AI MENTOR</h4></div></div>
+            <div class="mentor-ai-test-box">
+              <textarea id="mentorAiTestInput" rows="3" placeholder="Contoh: Kak, aku lupa cara login BADAI"></textarea>
+              <button id="mentorAiTestBtn" class="mentor-ai-primary" type="button">COBA AI MENTOR</button>
+            </div>
+            <div id="mentorAiTestResult" class="mentor-ai-test-result">
+              <span>Belum ada test.</span>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="mentorAutoReplyPanel" class="mentor-autoreply-panel hidden">
+        <div class="mentor-autoreply-hero">
+          <div>
+            <span>AUTO REPLY MENTOR</span>
+            <h3>Balas Member Otomatis dari Kata Kunci</h3>
+            <p>Berjalan dari Supabase walaupun dashboard admin sedang ditutup. Satu pesan member hanya memicu satu rule dengan prioritas tertinggi.</p>
+          </div>
+          <button id="mentorAutoCreateBtn" type="button">+ BUAT AUTO REPLY</button>
+        </div>
+
+        <div class="mentor-autoreply-stats">
+          <div><span>RULE AKTIF</span><b id="mentorAutoStatActive">0</b></div>
+          <div><span>TOTAL RULE</span><b id="mentorAutoStatTotal">0</b></div>
+          <div><span>TOTAL TERPICU</span><b id="mentorAutoStatTriggered">0</b></div>
+        </div>
+
+        <div id="mentorAutoRuleList" class="mentor-autoreply-list">
+          <div class="empty">Belum ada Auto Reply.</div>
+        </div>
+      </section>
+
+      <section id="mentorAutoReplyLogPanel" class="mentor-autoreply-panel hidden">
+        <div class="mentor-autoreply-hero compact">
+          <div>
+            <span>LOG AUTO REPLY</span>
+            <h3>Riwayat Balasan Otomatis</h3>
+            <p>Lihat pesan member, keyword yang cocok, rule yang berjalan, dan balasan yang dikirim.</p>
+          </div>
+          <button id="mentorAutoLogRefreshBtn" type="button">↻ REFRESH LOG</button>
+        </div>
+        <div id="mentorAutoLogList" class="mentor-autoreply-log-list">
+          <div class="empty">Belum ada Auto Reply yang terpicu.</div>
+        </div>
+      </section>
     </section>
+
+
+<div id="mentorAutoReplyModal" class="cred-modal hidden">
+  <div class="cred-box mentor-autoreply-modal">
+    <div class="mentor-autoreply-modal-head">
+      <div>
+        <span>AUTO REPLY MENTOR</span>
+        <h2 id="mentorAutoModalTitle">Buat Auto Reply</h2>
+      </div>
+      <button id="mentorAutoModalClose" type="button" aria-label="Tutup">×</button>
+    </div>
+    <input id="mentorAutoId" type="hidden"/>
+
+    <div class="mentor-autoreply-form-grid">
+      <div class="manage-field full">
+        <label>Nama Auto Reply</label>
+        <input id="mentorAutoName" type="text" maxlength="100" placeholder="Contoh: Cara Login"/>
+      </div>
+
+      <div class="manage-field">
+        <label>Cara Mencocokkan</label>
+        <select id="mentorAutoMatchType">
+          <option value="contains">Mengandung kata</option>
+          <option value="exact">Sama persis</option>
+          <option value="fallback">Fallback — jika tidak ada keyword cocok</option>
+        </select>
+      </div>
+
+      <div class="manage-field">
+        <label>Status</label>
+        <select id="mentorAutoStatus">
+          <option value="active">AKTIF</option>
+          <option value="inactive">NONAKTIF</option>
+        </select>
+      </div>
+
+      <div id="mentorAutoKeywordField" class="manage-field full">
+        <label>Kata Kunci</label>
+        <textarea id="mentorAutoKeywords" rows="3" placeholder="login, masuk, akses member, gagal login"></textarea>
+        <div class="price-plan-note">Pisahkan dengan koma atau baris baru. Huruf besar/kecil tidak berpengaruh.</div>
+      </div>
+
+      <div class="manage-field full">
+        <label>Isi Balasan</label>
+        <textarea id="mentorAutoReplyText" rows="6" maxlength="4000" placeholder="Hai Kak 👋 Untuk login ke Member Area BADAI..."></textarea>
+      </div>
+
+      <div class="manage-field">
+        <label>Tipe Balasan</label>
+        <select id="mentorAutoReplyType">
+          <option value="text">Teks</option>
+          <option value="image">Foto + caption</option>
+          <option value="file">File + caption</option>
+        </select>
+      </div>
+
+      <div class="manage-field">
+        <label>Cooldown</label>
+        <div class="mentor-auto-inline-input"><input id="mentorAutoCooldown" type="number" min="0" max="1440" value="10"/><span>MENIT</span></div>
+      </div>
+
+      <div id="mentorAutoMediaField" class="manage-field full hidden">
+        <label>Lampiran Auto Reply</label>
+        <div class="mentor-auto-media-row">
+          <label class="mentor-auto-file-btn">📎 PILIH FOTO / FILE<input id="mentorAutoMediaInput" type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt" hidden/></label>
+          <button id="mentorAutoMediaRemove" type="button">HAPUS LAMPIRAN</button>
+        </div>
+        <div id="mentorAutoMediaInfo" class="mentor-auto-media-info">Belum ada lampiran.</div>
+      </div>
+
+      <div class="manage-field">
+        <label>Prioritas</label>
+        <input id="mentorAutoPriority" type="number" min="0" max="1000" value="100"/>
+        <div class="price-plan-note">Angka lebih besar diprioritaskan jika beberapa rule cocok.</div>
+      </div>
+
+      <div class="manage-field">
+        <label>Jam Aktif</label>
+        <div class="mentor-auto-time-row">
+          <input id="mentorAutoStartTime" type="time"/>
+          <span>—</span>
+          <input id="mentorAutoEndTime" type="time"/>
+        </div>
+        <div class="price-plan-note">Kosongkan keduanya untuk aktif 24 jam.</div>
+      </div>
+    </div>
+
+    <div id="mentorAutoFormStatus" class="team-status-note"></div>
+    <div class="cred-actions">
+      <button id="mentorAutoSaveBtn" class="primary-act" type="button">SIMPAN AUTO REPLY</button>
+      <button id="mentorAutoCancelBtn" type="button">BATAL</button>
+    </div>
+  </div>
+</div>
 
     <section id="pageTeam" class="admin-page hidden">
       <div class="page-title">
@@ -6325,6 +6953,19 @@ th,td{padding:14px 12px!important}
   let mentorAdminMentionState = null;
   let mentorInboxQuery = '';
   let mentorUnreadOnly = false;
+  let mentorAdminFeature = 'chat';
+  let mentorAutoReplyRules = [];
+  let mentorAutoReplyLogs = [];
+  let mentorAutoEditingMedia = null;
+  let mentorAutoPendingFile = null;
+  let mentorWorkHoursStatus = null;
+  let mentorWorkHoursRows = [];
+  let mentorWorkHoursBusy = false;
+  let mentorWorkHoursLastFetch = 0;
+  let mentorAiData = {settings:{},providers:[],knowledge:[],skills:[],usage:{}};
+  let mentorAiBusy = false;
+  let mentorAdminAiDraft = null;
+  let mentorAdminUsingAiDraftId = null;
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
   let membershipRenewals = [];
@@ -6786,7 +7427,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
     if(page === 'finance') loadFinanceTransactions();
     if(page === 'marketing') loadMarketing();
-    if(page === 'mentor') loadMentorInbox();
+    if(page === 'mentor'){
+      $('mentorFeatureAiBtn')?.classList.toggle('hidden',!mentorAiAllowed());
+      loadMentorInbox();
+      loadMentorAutoReplyRules().catch(()=>{});
+      refreshMentorWorkHours(true).catch(()=>{});
+    }
     if(page === 'team'){
       populateAdminSelfSettings();
       loadTeamMembers();
@@ -9131,6 +9777,720 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return 'terakhir dilihat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(new Date(value));
   }
 
+  function renderMentorAdminAiDraft(){
+    const box=$('mentorAdminAiDraft');if(!box)return;
+    const d=mentorAdminAiDraft;
+    box.classList.toggle('hidden',!d);
+    if(!d)return;
+    if($('mentorAdminAiDraftConfidence'))$('mentorAdminAiDraftConfidence').textContent='· '+Math.round(Number(d.confidence||0)*100)+'%';
+    if($('mentorAdminAiDraftText'))$('mentorAdminAiDraftText').textContent=d.answer||'';
+    if($('mentorAdminAiDraftReason'))$('mentorAdminAiDraftReason').textContent=d.reason||'Butuh review Mentor manusia';
+  }
+
+  async function loadMentorAdminAiDraft(){
+    if(!mentorActiveConversation?.conversation_id){mentorAdminAiDraft=null;renderMentorAdminAiDraft();return}
+    const rows=await api('/rest/v1/rpc/admin_mentor_ai_draft_get',{
+      method:'POST',body:JSON.stringify({p_conversation_id:mentorActiveConversation.conversation_id})
+    }).catch(()=>[])||[];
+    mentorAdminAiDraft=Array.isArray(rows)?(rows[0]||null):rows;
+    renderMentorAdminAiDraft();
+  }
+
+  async function dismissMentorAdminAiDraft(){
+    if(!mentorAdminAiDraft?.id)return;
+    await api('/rest/v1/rpc/admin_mentor_ai_draft_action',{
+      method:'POST',body:JSON.stringify({p_id:mentorAdminAiDraft.id,p_action:'dismissed'})
+    });
+    mentorAdminAiDraft=null;mentorAdminUsingAiDraftId=null;renderMentorAdminAiDraft();
+  }
+
+  function mentorAiAllowed(){
+    return ['owner','super_admin','admin'].includes(currentTeam?.role);
+  }
+
+  function mentorAiDefaultModel(type){
+    if(type==='openai')return 'gpt-5.6-luna';
+    if(type==='anthropic')return 'claude-sonnet-5';
+    if(type==='deepseek')return 'deepseek-flash';
+    return '';
+  }
+
+  function mentorAiProviderLabel(p){
+    const names={openai:'OpenAI',anthropic:'Claude',deepseek:'DeepSeek',openai_compatible:'Compatible'};
+    return (p?.name||names[p?.provider_type]||'AI')+' · '+(p?.model||'-');
+  }
+
+  function mentorAiKeywords(value){
+    return String(value||'').split(/[\n,]+/).map(x=>x.trim().toLowerCase()).filter(Boolean);
+  }
+
+  function mentorAiResetProvider(){
+    if($('mentorAiProviderId'))$('mentorAiProviderId').value='';
+    if($('mentorAiProviderType'))$('mentorAiProviderType').value='deepseek';
+    if($('mentorAiProviderName'))$('mentorAiProviderName').value='DeepSeek Utama';
+    if($('mentorAiApiKey'))$('mentorAiApiKey').value='';
+    if($('mentorAiProviderModel'))$('mentorAiProviderModel').value='deepseek-flash';
+    if($('mentorAiProviderBaseUrl'))$('mentorAiProviderBaseUrl').value='';
+    if($('mentorAiApiKeyHint'))$('mentorAiApiKeyHint').textContent='API key akan dienkripsi oleh Railway.';
+    $('mentorAiProviderDeleteBtn')?.classList.add('hidden');
+    if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='';
+  }
+
+  function mentorAiEditProvider(id){
+    const p=(mentorAiData.providers||[]).find(x=>x.id===id);if(!p)return;
+    $('mentorAiProviderId').value=p.id;
+    $('mentorAiProviderType').value=p.provider_type;
+    $('mentorAiProviderName').value=p.name||'';
+    $('mentorAiApiKey').value='';
+    $('mentorAiProviderModel').value=p.model||'';
+    $('mentorAiProviderBaseUrl').value=p.base_url||'';
+    $('mentorAiApiKeyHint').textContent='API key tersimpan terenkripsi ••••'+(p.api_key_last4||'');
+    $('mentorAiProviderDeleteBtn')?.classList.remove('hidden');
+    if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='';
+  }
+
+  function mentorAiResetKnowledge(){
+    $('mentorAiKnowledgeId').value='';
+    $('mentorAiKnowledgeTitle').value='';
+    $('mentorAiKnowledgeKeywords').value='';
+    $('mentorAiKnowledgeContent').value='';
+    $('mentorAiKnowledgePriority').value='100';
+    $('mentorAiKnowledgeActive').checked=true;
+    $('mentorAiKnowledgeDeleteBtn')?.classList.add('hidden');
+  }
+
+  function mentorAiEditKnowledge(id){
+    const k=(mentorAiData.knowledge||[]).find(x=>x.id===id);if(!k)return;
+    $('mentorAiKnowledgeId').value=k.id;
+    $('mentorAiKnowledgeTitle').value=k.title||'';
+    $('mentorAiKnowledgeKeywords').value=(k.keywords||[]).join(', ');
+    $('mentorAiKnowledgeContent').value=k.content||'';
+    $('mentorAiKnowledgePriority').value=String(k.priority??100);
+    $('mentorAiKnowledgeActive').checked=k.is_active!==false;
+    $('mentorAiKnowledgeDeleteBtn')?.classList.remove('hidden');
+  }
+
+  function mentorAiResetSkill(){
+    $('mentorAiSkillId').value='';
+    $('mentorAiSkillName').value='';
+    $('mentorAiSkillInstructions').value='';
+    $('mentorAiSkillPermission').value='allowed';
+    $('mentorAiSkillActive').checked=true;
+    $('mentorAiSkillDeleteBtn')?.classList.add('hidden');
+  }
+
+  function mentorAiEditSkill(id){
+    const s=(mentorAiData.skills||[]).find(x=>x.id===id);if(!s)return;
+    $('mentorAiSkillId').value=s.id;
+    $('mentorAiSkillName').value=s.name||'';
+    $('mentorAiSkillInstructions').value=s.instructions||'';
+    $('mentorAiSkillPermission').value=s.permission_mode||'allowed';
+    $('mentorAiSkillActive').checked=s.is_active!==false;
+    $('mentorAiSkillDeleteBtn')?.classList.remove('hidden');
+  }
+
+  function renderMentorAi(){
+    const data=mentorAiData||{},s=data.settings||{},providers=data.providers||[],usage=data.usage||{};
+    if($('mentorAiEnabled'))$('mentorAiEnabled').checked=Boolean(s.enabled);
+    if($('mentorAiMode'))$('mentorAiMode').value=s.mode||'off';
+    if($('mentorAiConfidence'))$('mentorAiConfidence').value=String(s.confidence_threshold??0.78);
+    if($('mentorAiHistory'))$('mentorAiHistory').value=String(s.max_history_messages??12);
+    if($('mentorAiMaxTokens'))$('mentorAiMaxTokens').value=String(s.max_output_tokens??900);
+    if($('mentorAiFollowHours'))$('mentorAiFollowHours').checked=s.follow_work_hours!==false;
+    if($('mentorAiMentorName'))$('mentorAiMentorName').value=s.mentor_name||'Mentor BADAI';
+    if($('mentorAiSystemPrompt'))$('mentorAiSystemPrompt').value=s.system_prompt||'';
+
+    const primary=$('mentorAiPrimaryProvider'),fallback=$('mentorAiFallbackProvider');
+    const options=providers.filter(p=>p.is_active!==false).map(p=>'<option value="'+esc(p.id)+'">'+esc(mentorAiProviderLabel(p))+'</option>').join('');
+    if(primary){
+      primary.innerHTML='<option value="">Belum ada provider</option>'+options;
+      primary.value=s.primary_provider_id||'';
+    }
+    if(fallback){
+      fallback.innerHTML='<option value="">Tidak ada</option>'+options;
+      fallback.value=s.fallback_provider_id||'';
+    }
+
+    const activeProvider=providers.find(p=>p.id===s.primary_provider_id);
+    if($('mentorAiHeroStatus')){
+      const on=Boolean(s.enabled)&&s.mode!=='off'&&Boolean(activeProvider);
+      $('mentorAiHeroStatus').textContent=on?(String(s.mode||'AUTO').toUpperCase()):'OFF';
+      $('mentorAiHeroStatus').classList.toggle('on',on);
+      $('mentorAiHeroStatus').classList.toggle('off',!on);
+    }
+    if($('mentorAiUsageRequests'))$('mentorAiUsageRequests').textContent=Number(usage.today_requests||0).toLocaleString('id-ID');
+    if($('mentorAiUsageInput'))$('mentorAiUsageInput').textContent=Number(usage.today_input_tokens||0).toLocaleString('id-ID');
+    if($('mentorAiUsageOutput'))$('mentorAiUsageOutput').textContent=Number(usage.today_output_tokens||0).toLocaleString('id-ID');
+    if($('mentorAiUsageProvider'))$('mentorAiUsageProvider').textContent=activeProvider?activeProvider.name:'-';
+
+    if($('mentorAiProviderList')){
+      $('mentorAiProviderList').innerHTML=providers.map(p=>
+        '<div class="mentor-ai-list-item" data-ai-provider-id="'+esc(p.id)+'"><div><b>'+esc(p.name||'Provider AI')+'</b>'+
+        '<small>'+esc(p.provider_type)+' · '+esc(p.model||'-')+' · key ••••'+esc(p.api_key_last4||'')+'</small></div>'+
+        '<em class="'+(p.is_active?'active':'')+'">'+(p.is_active?'AKTIF':'OFF')+'</em></div>'
+      ).join('')||'<div class="empty">Belum ada provider AI.</div>';
+    }
+
+    if($('mentorAiKnowledgeList')){
+      $('mentorAiKnowledgeList').innerHTML=(data.knowledge||[]).map(k=>
+        '<div class="mentor-ai-list-item" data-ai-knowledge-id="'+esc(k.id)+'"><div><b>'+esc(k.title)+'</b>'+
+        '<small>'+esc((k.keywords||[]).join(', ')||'Tanpa keyword')+' · prioritas '+Number(k.priority||0)+'</small></div>'+
+        '<em class="'+(k.is_active?'active':'')+'">'+(k.is_active?'AKTIF':'OFF')+'</em></div>'
+      ).join('')||'<div class="empty">Belum ada knowledge.</div>';
+    }
+
+    if($('mentorAiSkillList')){
+      const perm={allowed:'OTOMATIS',approval:'BUTUH ADMIN',disabled:'DILARANG'};
+      $('mentorAiSkillList').innerHTML=(data.skills||[]).map(x=>
+        '<div class="mentor-ai-list-item" data-ai-skill-id="'+esc(x.id)+'"><div><b>'+esc(x.name)+'</b>'+
+        '<small>'+esc((x.instructions||'').slice(0,100))+'</small></div>'+
+        '<em class="'+(x.is_active&&x.permission_mode!=='disabled'?'active':'')+'">'+esc(perm[x.permission_mode]||x.permission_mode)+'</em></div>'
+      ).join('')||'<div class="empty">Belum ada skill/aturan.</div>';
+    }
+  }
+
+  async function loadMentorAi(force=false){
+    if(!mentorAiAllowed())return;
+    if(mentorAiBusy&&!force)return;
+    mentorAiBusy=true;
+    try{
+      const data=await api('/rest/v1/rpc/admin_mentor_ai_settings_get',{method:'POST',body:'{}'});
+      mentorAiData=data||{settings:{},providers:[],knowledge:[],skills:[],usage:{}};
+      renderMentorAi();
+    }finally{mentorAiBusy=false}
+  }
+
+  function mentorAiSettingsPayload(){
+    return {
+      p_enabled:Boolean($('mentorAiEnabled')?.checked),
+      p_mode:$('mentorAiMode')?.value||'off',
+      p_primary_provider_id:$('mentorAiPrimaryProvider')?.value||null,
+      p_fallback_provider_id:$('mentorAiFallbackProvider')?.value||null,
+      p_mentor_name:String($('mentorAiMentorName')?.value||'Mentor BADAI').trim(),
+      p_system_prompt:String($('mentorAiSystemPrompt')?.value||'').trim(),
+      p_confidence_threshold:Number($('mentorAiConfidence')?.value||0.78),
+      p_follow_work_hours:Boolean($('mentorAiFollowHours')?.checked),
+      p_max_history_messages:Number($('mentorAiHistory')?.value||12),
+      p_max_output_tokens:Number($('mentorAiMaxTokens')?.value||900)
+    };
+  }
+
+  async function saveMentorAiSettings(){
+    await api('/rest/v1/rpc/admin_mentor_ai_settings_save',{method:'POST',body:JSON.stringify(mentorAiSettingsPayload())});
+    await loadMentorAi(true);
+    mentorAdminToast('Pengaturan AI Mentor tersimpan');
+  }
+
+  async function saveMentorAiProvider(){
+    const payload={
+      id:$('mentorAiProviderId')?.value||null,
+      provider_type:$('mentorAiProviderType')?.value||'deepseek',
+      name:String($('mentorAiProviderName')?.value||'').trim(),
+      api_key:String($('mentorAiApiKey')?.value||'').trim(),
+      api_key_last4:(mentorAiData.providers||[]).find(x=>x.id===$('mentorAiProviderId')?.value)?.api_key_last4||'',
+      model:String($('mentorAiProviderModel')?.value||'').trim(),
+      base_url:String($('mentorAiProviderBaseUrl')?.value||'').trim(),
+      is_active:true
+    };
+    if(!payload.name)throw new Error('Nama koneksi wajib diisi.');
+    if(!payload.model)throw new Error('Model wajib diisi.');
+    const res=await fetch('/api/admin/ai/provider/save',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(data.error||'Gagal menyimpan provider.');
+    await loadMentorAi(true);
+    mentorAiEditProvider(data.id);
+    mentorAdminToast('Provider AI tersimpan terenkripsi');
+  }
+
+  async function testMentorAiProvider(){
+    const payload={
+      id:$('mentorAiProviderId')?.value||null,
+      provider_type:$('mentorAiProviderType')?.value||'deepseek',
+      name:String($('mentorAiProviderName')?.value||'').trim(),
+      api_key:String($('mentorAiApiKey')?.value||'').trim(),
+      model:String($('mentorAiProviderModel')?.value||'').trim(),
+      base_url:String($('mentorAiProviderBaseUrl')?.value||'').trim()
+    };
+    const res=await fetch('/api/admin/ai/provider/test',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(data.error||'Koneksi provider gagal.');
+    if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='✓ TERHUBUNG · '+Math.round(Number(data.latency_ms||0))+' ms · '+(data.answer||'OK');
+  }
+
+  async function deleteMentorAiProvider(){
+    const id=$('mentorAiProviderId')?.value;if(!id)return;
+    if(!window.confirm('Hapus koneksi provider AI ini?'))return;
+    await api('/rest/v1/rpc/admin_mentor_ai_provider_delete',{method:'POST',body:JSON.stringify({p_id:id})});
+    mentorAiResetProvider();await loadMentorAi(true);mentorAdminToast('Provider AI dihapus');
+  }
+
+  async function saveMentorAiKnowledge(){
+    const id=$('mentorAiKnowledgeId')?.value||null;
+    await api('/rest/v1/rpc/admin_mentor_ai_knowledge_save',{method:'POST',body:JSON.stringify({
+      p_id:id,p_title:String($('mentorAiKnowledgeTitle')?.value||'').trim(),
+      p_content:String($('mentorAiKnowledgeContent')?.value||'').trim(),
+      p_keywords:mentorAiKeywords($('mentorAiKnowledgeKeywords')?.value||''),
+      p_priority:Number($('mentorAiKnowledgePriority')?.value||100),
+      p_is_active:Boolean($('mentorAiKnowledgeActive')?.checked)
+    })});
+    mentorAiResetKnowledge();await loadMentorAi(true);mentorAdminToast('Knowledge tersimpan');
+  }
+
+  async function deleteMentorAiKnowledge(){
+    const id=$('mentorAiKnowledgeId')?.value;if(!id)return;
+    if(!window.confirm('Hapus knowledge ini?'))return;
+    await api('/rest/v1/rpc/admin_mentor_ai_knowledge_delete',{method:'POST',body:JSON.stringify({p_id:id})});
+    mentorAiResetKnowledge();await loadMentorAi(true);mentorAdminToast('Knowledge dihapus');
+  }
+
+  async function saveMentorAiSkill(){
+    const id=$('mentorAiSkillId')?.value||null;
+    await api('/rest/v1/rpc/admin_mentor_ai_skill_save',{method:'POST',body:JSON.stringify({
+      p_id:id,p_name:String($('mentorAiSkillName')?.value||'').trim(),
+      p_instructions:String($('mentorAiSkillInstructions')?.value||'').trim(),
+      p_permission_mode:$('mentorAiSkillPermission')?.value||'allowed',
+      p_is_active:Boolean($('mentorAiSkillActive')?.checked)
+    })});
+    mentorAiResetSkill();await loadMentorAi(true);mentorAdminToast('Skill AI tersimpan');
+  }
+
+  async function deleteMentorAiSkill(){
+    const id=$('mentorAiSkillId')?.value;if(!id)return;
+    if(!window.confirm('Hapus skill/aturan ini?'))return;
+    await api('/rest/v1/rpc/admin_mentor_ai_skill_delete',{method:'POST',body:JSON.stringify({p_id:id})});
+    mentorAiResetSkill();await loadMentorAi(true);mentorAdminToast('Skill AI dihapus');
+  }
+
+  async function testMentorAiChat(){
+    const message=String($('mentorAiTestInput')?.value||'').trim();
+    if(!message)throw new Error('Tulis pesan test dulu.');
+    const btn=$('mentorAiTestBtn'),old=btn?.textContent||'COBA AI MENTOR';
+    if(btn){btn.disabled=true;btn.textContent='AI MENJAWAB...'}
+    try{
+      const res=await fetch('/api/admin/ai/test-chat',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
+        body:JSON.stringify({message})
+      });
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(data.error||'Test AI gagal.');
+      if($('mentorAiTestResult'))$('mentorAiTestResult').innerHTML=
+        '<b>'+esc(data.answer||'-')+'</b>'+
+        '<div class="mentor-ai-test-meta"><span>Confidence '+Math.round(Number(data.confidence||0)*100)+'%</span>'+
+        '<span>'+(data.handoff?'HANDOFF':'BOLEH JAWAB')+'</span>'+
+        '<span>'+Math.round(Number(data.latency_ms||0))+' ms</span>'+
+        '<span>Knowledge '+Number(data.knowledge_count||0)+'</span>'+
+        '<span>Skill '+Number(data.skill_count||0)+'</span></div>'+
+        (data.reason?'<div class="mentor-ai-test-meta"><span>Reason: '+esc(data.reason)+'</span></div>':'');
+    }finally{if(btn){btn.disabled=false;btn.textContent=old}}
+  }
+
+  function mentorWorkTime(value){
+    return String(value||'').slice(0,5);
+  }
+
+  function mentorWorkNextLabel(value){
+    if(!value)return '';
+    try{
+      return new Intl.DateTimeFormat('id-ID',{
+        weekday:'long',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'
+      }).format(new Date(value)).replace('.',':')+' WIB';
+    }catch(_){return ''}
+  }
+
+  function applyAdminWorkHoursUi(){
+    const status=mentorWorkHoursStatus;
+    const enabled=status?status.enabled!==false:true;
+    const open=!enabled||Boolean(status?.is_open);
+    const privateThread=mentorAdminScreen==='mentor-thread';
+
+    const statusNode=$('mentorWorkHoursStatus');
+    if(statusNode){
+      statusNode.textContent=open?'● SEDANG BUKA':'○ SEDANG TUTUP';
+      statusNode.classList.toggle('open',open);
+      statusNode.classList.toggle('closed',!open);
+    }
+
+    const next=mentorWorkNextLabel(status?.next_open_at);
+    if($('mentorWorkHoursSummary')){
+      $('mentorWorkHoursSummary').textContent=open
+        ? 'Sedang dalam jam kerja • Zona waktu Asia/Jakarta (WIB).'
+        : 'Di luar jam kerja'+(next?' • Buka lagi '+next:'')+' • Member tetap bisa mengirim pesan.';
+    }
+
+    const locked=privateThread&&!open;
+    $('mentorThreadView')?.classList.toggle('after-hours',locked);
+    $('mentorAdminWorkHoursNotice')?.classList.toggle('hidden',!locked);
+    if($('mentorAdminWorkHoursNoticeText')){
+      $('mentorAdminWorkHoursNoticeText').textContent=next
+        ? 'Balasan Mentor dikunci. Jam kerja buka lagi '+next+'.'
+        : 'Balasan Mentor dikunci sampai jam kerja berikutnya.';
+    }
+
+    if(privateThread){
+      const input=$('mentorAdminInput'),send=$('mentorAdminSendBtn'),attach=$('mentorAdminAttachBtn'),sticker=$('mentorAdminStickerBtn');
+      if(input){
+        input.disabled=locked;
+        input.placeholder=locked?'Di luar jam kerja Mentor':'Ketik pesan';
+      }
+      if(send)send.disabled=locked;
+      if(attach)attach.disabled=locked;
+      if(sticker)sticker.disabled=locked;
+      if(locked){
+        $('mentorAdminStickerTray')?.classList.add('hidden');
+        $('mentorAdminAttachMenu')?.classList.add('hidden');
+        clearMentorAdminPending();
+        clearMentorAdminReply();
+      }
+    }
+  }
+
+  async function refreshMentorWorkHours(force=false){
+    const now=Date.now();
+    if(mentorWorkHoursBusy)return mentorWorkHoursStatus;
+    if(!force&&mentorWorkHoursStatus&&now-mentorWorkHoursLastFetch<30000){
+      applyAdminWorkHoursUi();return mentorWorkHoursStatus;
+    }
+    mentorWorkHoursBusy=true;
+    try{
+      const rows=await api('/rest/v1/rpc/mentor_work_hours_status',{method:'POST',body:'{}'});
+      mentorWorkHoursStatus=Array.isArray(rows)?rows[0]:rows;
+      mentorWorkHoursLastFetch=Date.now();
+      applyAdminWorkHoursUi();
+      return mentorWorkHoursStatus;
+    }finally{mentorWorkHoursBusy=false}
+  }
+
+  function renderMentorWorkHoursSettings(){
+    const byDay=new Map((mentorWorkHoursRows||[]).map(r=>[Number(r.day_of_week),r]));
+    document.querySelectorAll('#mentorWorkHoursSchedule [data-work-day]').forEach(row=>{
+      const d=Number(row.dataset.workDay),data=byDay.get(d);if(!data)return;
+      const open=row.querySelector('.mentor-work-open');
+      const start=row.querySelector('.mentor-work-start');
+      const end=row.querySelector('.mentor-work-end');
+      if(open)open.checked=Boolean(data.is_open);
+      if(start)start.value=mentorWorkTime(data.start_time)||'08:00';
+      if(end)end.value=mentorWorkTime(data.end_time)||'22:00';
+      row.classList.toggle('day-closed',!data.is_open);
+      if(start)start.disabled=!data.is_open||!['owner','super_admin','admin'].includes(currentTeam?.role);
+      if(end)end.disabled=!data.is_open||!['owner','super_admin','admin'].includes(currentTeam?.role);
+      if(open)open.disabled=!['owner','super_admin','admin'].includes(currentTeam?.role);
+    });
+    const enabled=mentorWorkHoursRows[0]?.schedule_enabled!==false;
+    if($('mentorWorkHoursEnabled')){
+      $('mentorWorkHoursEnabled').checked=enabled;
+      $('mentorWorkHoursEnabled').disabled=!['owner','super_admin','admin'].includes(currentTeam?.role);
+    }
+    $('mentorWorkHoursSaveBtn')?.classList.toggle('hidden',!['owner','super_admin','admin'].includes(currentTeam?.role));
+  }
+
+  async function loadMentorWorkHoursSettings(){
+    mentorWorkHoursRows=await api('/rest/v1/rpc/admin_mentor_work_hours_get',{method:'POST',body:'{}'})||[];
+    renderMentorWorkHoursSettings();
+    await refreshMentorWorkHours(true);
+  }
+
+  async function saveMentorWorkHoursSettings(){
+    const schedule=Array.from(document.querySelectorAll('#mentorWorkHoursSchedule [data-work-day]')).map(row=>({
+      day_of_week:Number(row.dataset.workDay),
+      is_open:Boolean(row.querySelector('.mentor-work-open')?.checked),
+      start_time:row.querySelector('.mentor-work-start')?.value||'08:00',
+      end_time:row.querySelector('.mentor-work-end')?.value||'22:00'
+    }));
+    const btn=$('mentorWorkHoursSaveBtn'),old=btn?.textContent||'SIMPAN JAM KERJA';
+    if(btn){btn.disabled=true;btn.textContent='MENYIMPAN...'}
+    try{
+      await api('/rest/v1/rpc/admin_mentor_work_hours_save',{
+        method:'POST',
+        body:JSON.stringify({
+          p_schedule:schedule,
+          p_enabled:Boolean($('mentorWorkHoursEnabled')?.checked),
+          p_timezone:'Asia/Jakarta'
+        })
+      });
+      if($('mentorWorkHoursSaveStatus'))$('mentorWorkHoursSaveStatus').textContent='✓ Jam kerja tersimpan';
+      await loadMentorWorkHoursSettings();
+      mentorAdminToast('Jam kerja Mentor diperbarui');
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old}
+    }
+  }
+
+  function mentorAutoTimeShort(value){
+    const raw=String(value||'');
+    return raw ? raw.slice(0,5) : '';
+  }
+
+  function mentorAutoDateTime(value){
+    if(!value)return '-';
+    try{return new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'}).format(new Date(value))}
+    catch(_){return String(value)}
+  }
+
+  function mentorAutoKeywordList(value){
+    return String(value||'').split(/[\n,]+/).map(x=>x.trim().toLowerCase()).filter(Boolean);
+  }
+
+  function mentorAutoRulePayload(rule,activeOverride){
+    return {
+      p_id:rule?.id||null,
+      p_name:rule?.name||'Auto Reply',
+      p_keywords:Array.isArray(rule?.keywords)?rule.keywords:[],
+      p_match_type:rule?.match_type||'contains',
+      p_reply_message_type:rule?.reply_message_type||'text',
+      p_reply_text:rule?.reply_text||null,
+      p_drive_file_id:rule?.drive_file_id||null,
+      p_drive_web_view_link:rule?.drive_web_view_link||null,
+      p_file_name:rule?.file_name||null,
+      p_file_mime:rule?.file_mime||null,
+      p_file_size:rule?.file_size==null?null:Number(rule.file_size),
+      p_priority:Number(rule?.priority??100),
+      p_cooldown_minutes:Number(rule?.cooldown_minutes??10),
+      p_active_start_time:rule?.active_start_time||null,
+      p_active_end_time:rule?.active_end_time||null,
+      p_is_active:activeOverride===undefined?Boolean(rule?.is_active):Boolean(activeOverride)
+    };
+  }
+
+  function renderMentorAutoReplyRules(){
+    const list=$('mentorAutoRuleList');if(!list)return;
+    const active=mentorAutoReplyRules.filter(r=>r.is_active).length;
+    const triggered=mentorAutoReplyRules.reduce((sum,r)=>sum+Number(r.trigger_count||0),0);
+    if($('mentorAutoStatActive'))$('mentorAutoStatActive').textContent=String(active);
+    if($('mentorAutoStatTotal'))$('mentorAutoStatTotal').textContent=String(mentorAutoReplyRules.length);
+    if($('mentorAutoStatTriggered'))$('mentorAutoStatTriggered').textContent=String(triggered);
+    if($('mentorAutoActiveBadge')){
+      $('mentorAutoActiveBadge').textContent=String(active);
+      $('mentorAutoActiveBadge').classList.toggle('hidden',active<1);
+    }
+    list.innerHTML=mentorAutoReplyRules.map(r=>{
+      const kws=r.match_type==='fallback'
+        ? '<span>FALLBACK</span>'
+        : (r.keywords||[]).slice(0,8).map(k=>'<span>'+esc(k)+'</span>').join('');
+      const schedule=r.active_start_time&&r.active_end_time
+        ? mentorAutoTimeShort(r.active_start_time)+'–'+mentorAutoTimeShort(r.active_end_time)+' WIB'
+        : '24 JAM';
+      const typeLabel=r.reply_message_type==='image'?'FOTO':r.reply_message_type==='file'?'FILE':'TEKS';
+      return '<article class="mentor-auto-rule '+(r.is_active?'':'inactive')+'" data-auto-rule="'+esc(r.id)+'">'+
+        '<div class="mentor-auto-rule-main">'+
+          '<div class="mentor-auto-rule-top"><b>'+esc(r.name)+'</b>'+
+            '<span class="mentor-auto-pill '+(r.is_active?'active':'')+'">'+(r.is_active?'AKTIF':'NONAKTIF')+'</span>'+
+            '<span class="mentor-auto-pill">'+esc(r.match_type==='contains'?'MENGANDUNG':r.match_type==='exact'?'PERSIS':'FALLBACK')+'</span>'+
+            '<span class="mentor-auto-pill">'+typeLabel+'</span></div>'+
+          '<div class="mentor-auto-keywords">'+kws+'</div>'+
+          '<div class="mentor-auto-preview">'+esc((r.reply_text||'').slice(0,260))+(r.file_name?'\n📎 '+esc(r.file_name):'')+'</div>'+
+          '<div class="mentor-auto-rule-meta"><span>Prioritas '+Number(r.priority||0)+'</span><span>Cooldown '+Number(r.cooldown_minutes||0)+' menit</span><span>'+schedule+'</span><span>Terpicu '+Number(r.trigger_count||0)+'x</span></div>'+
+        '</div>'+
+        '<div class="mentor-auto-rule-actions">'+
+          '<button class="primary" type="button" data-auto-action="edit" data-id="'+esc(r.id)+'">EDIT</button>'+
+          '<button type="button" data-auto-action="toggle" data-id="'+esc(r.id)+'">'+(r.is_active?'NONAKTIFKAN':'AKTIFKAN')+'</button>'+
+          (['owner','super_admin','admin'].includes(currentTeam?.role)?'<button class="danger" type="button" data-auto-action="delete" data-id="'+esc(r.id)+'">HAPUS</button>':'')+
+        '</div>'+
+      '</article>';
+    }).join('')||'<div class="empty">Belum ada Auto Reply. Klik + BUAT AUTO REPLY untuk mulai.</div>';
+  }
+
+  async function loadMentorAutoReplyRules(){
+    const rows=await api('/rest/v1/rpc/admin_mentor_autoreply_rules',{method:'POST',body:'{}'})||[];
+    mentorAutoReplyRules=rows;
+    renderMentorAutoReplyRules();
+    return rows;
+  }
+
+  function syncMentorAutoModalFields(){
+    const fallback=$('mentorAutoMatchType')?.value==='fallback';
+    $('mentorAutoKeywordField')?.classList.toggle('hidden',fallback);
+    const media=$('mentorAutoReplyType')?.value!=='text';
+    $('mentorAutoMediaField')?.classList.toggle('hidden',!media);
+    const info=$('mentorAutoMediaInfo');
+    if(info){
+      if(mentorAutoPendingFile)info.textContent='File baru: '+mentorAutoPendingFile.name+' • '+mentorAdminSize(mentorAutoPendingFile.size);
+      else if(mentorAutoEditingMedia?.id)info.textContent='Lampiran tersimpan: '+(mentorAutoEditingMedia.name||'File')+' • '+mentorAdminSize(mentorAutoEditingMedia.size);
+      else info.textContent='Belum ada lampiran.';
+    }
+  }
+
+  function closeMentorAutoReplyModal(){
+    $('mentorAutoReplyModal')?.classList.add('hidden');
+    mentorAutoPendingFile=null;
+    mentorAutoEditingMedia=null;
+    if($('mentorAutoMediaInput'))$('mentorAutoMediaInput').value='';
+  }
+
+  function openMentorAutoReplyModal(rule=null,sourceMessage=null){
+    mentorAutoPendingFile=null;
+    mentorAutoEditingMedia=null;
+    if($('mentorAutoId'))$('mentorAutoId').value=rule?.id||'';
+    if($('mentorAutoModalTitle'))$('mentorAutoModalTitle').textContent=rule?'Edit Auto Reply':'Buat Auto Reply';
+    if($('mentorAutoName'))$('mentorAutoName').value=rule?.name||(sourceMessage?'Balasan dari chat':'');
+    if($('mentorAutoMatchType'))$('mentorAutoMatchType').value=rule?.match_type||'contains';
+    if($('mentorAutoStatus'))$('mentorAutoStatus').value=(rule?.is_active===false)?'inactive':'active';
+    if($('mentorAutoKeywords'))$('mentorAutoKeywords').value=(rule?.keywords||[]).join(', ');
+    if($('mentorAutoReplyText'))$('mentorAutoReplyText').value=rule?.reply_text||sourceMessage?.body||'';
+    const sourceType=['text','image','file'].includes(sourceMessage?.message_type)?sourceMessage.message_type:'text';
+    if($('mentorAutoReplyType'))$('mentorAutoReplyType').value=rule?.reply_message_type||sourceType;
+    if($('mentorAutoCooldown'))$('mentorAutoCooldown').value=String(rule?.cooldown_minutes??10);
+    if($('mentorAutoPriority'))$('mentorAutoPriority').value=String(rule?.priority??100);
+    if($('mentorAutoStartTime'))$('mentorAutoStartTime').value=mentorAutoTimeShort(rule?.active_start_time);
+    if($('mentorAutoEndTime'))$('mentorAutoEndTime').value=mentorAutoTimeShort(rule?.active_end_time);
+    if($('mentorAutoFormStatus'))$('mentorAutoFormStatus').textContent='';
+
+    const mediaSource=rule||sourceMessage;
+    if(mediaSource?.drive_file_id){
+      mentorAutoEditingMedia={
+        id:mediaSource.drive_file_id,
+        url:mediaSource.drive_web_view_link||'',
+        name:mediaSource.file_name||'Lampiran',
+        mime:mediaSource.file_mime||'application/octet-stream',
+        size:Number(mediaSource.file_size||0)
+      };
+    }
+    syncMentorAutoModalFields();
+    $('mentorAutoReplyModal')?.classList.remove('hidden');
+    setTimeout(()=>$('mentorAutoName')?.focus(),30);
+  }
+
+  async function uploadMentorAutoReplyMedia(file){
+    if(!file)return null;
+    if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
+    const fd=new FormData();fd.append('file',file);
+    const res=await fetch('/api/mentor/autoreply/upload',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+session.access_token},
+      body:fd
+    });
+    const data=await res.json().catch(()=>null);
+    if(!res.ok)throw new Error(data?.error||'Upload lampiran Auto Reply gagal.');
+    return data;
+  }
+
+  async function saveMentorAutoReply(){
+    const btn=$('mentorAutoSaveBtn');
+    const name=String($('mentorAutoName')?.value||'').trim();
+    const matchType=$('mentorAutoMatchType')?.value||'contains';
+    const replyType=$('mentorAutoReplyType')?.value||'text';
+    const replyText=String($('mentorAutoReplyText')?.value||'').trim();
+    const keywords=mentorAutoKeywordList($('mentorAutoKeywords')?.value||'');
+    const start=$('mentorAutoStartTime')?.value||'';
+    const end=$('mentorAutoEndTime')?.value||'';
+    if(name.length<2)throw new Error('Nama Auto Reply wajib diisi.');
+    if(matchType!=='fallback'&&!keywords.length)throw new Error('Isi minimal satu kata kunci.');
+    if(replyType==='text'&&!replyText)throw new Error('Isi balasan wajib diisi.');
+    if(Boolean(start)!==Boolean(end))throw new Error('Jam aktif harus diisi lengkap: mulai dan selesai.');
+
+    let media=mentorAutoEditingMedia;
+    if(replyType!=='text'&&mentorAutoPendingFile){
+      if($('mentorAutoFormStatus'))$('mentorAutoFormStatus').textContent='Mengunggah lampiran...';
+      media=await uploadMentorAutoReplyMedia(mentorAutoPendingFile);
+    }
+    if(replyType!=='text'&&!media?.id)throw new Error('Pilih foto atau file untuk tipe balasan ini.');
+    if(replyType==='text')media=null;
+
+    const old=btn?.textContent||'SIMPAN AUTO REPLY';
+    if(btn){btn.disabled=true;btn.textContent='MENYIMPAN...'}
+    try{
+      await api('/rest/v1/rpc/admin_mentor_autoreply_save',{
+        method:'POST',
+        body:JSON.stringify({
+          p_id:$('mentorAutoId')?.value||null,
+          p_name:name,
+          p_keywords:keywords,
+          p_match_type:matchType,
+          p_reply_message_type:replyType,
+          p_reply_text:replyText||null,
+          p_drive_file_id:media?.id||null,
+          p_drive_web_view_link:media?.url||null,
+          p_file_name:media?.name||null,
+          p_file_mime:media?.mime||null,
+          p_file_size:media?.size||null,
+          p_priority:Number($('mentorAutoPriority')?.value||100),
+          p_cooldown_minutes:Number($('mentorAutoCooldown')?.value||10),
+          p_active_start_time:start||null,
+          p_active_end_time:end||null,
+          p_is_active:$('mentorAutoStatus')?.value!=='inactive'
+        })
+      });
+      closeMentorAutoReplyModal();
+      await loadMentorAutoReplyRules();
+      mentorAdminToast('Auto Reply berhasil disimpan');
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old}
+    }
+  }
+
+  async function toggleMentorAutoReply(id){
+    const rule=mentorAutoReplyRules.find(r=>r.id===id);if(!rule)return;
+    await api('/rest/v1/rpc/admin_mentor_autoreply_save',{
+      method:'POST',body:JSON.stringify(mentorAutoRulePayload(rule,!rule.is_active))
+    });
+    await loadMentorAutoReplyRules();
+    mentorAdminToast(rule.is_active?'Auto Reply dinonaktifkan':'Auto Reply diaktifkan');
+  }
+
+  async function deleteMentorAutoReply(id){
+    const rule=mentorAutoReplyRules.find(r=>r.id===id);if(!rule)return;
+    if(!window.confirm('Hapus Auto Reply "'+rule.name+'"? Riwayat chat yang sudah terkirim tetap disimpan.'))return;
+    await api('/rest/v1/rpc/admin_mentor_autoreply_delete',{method:'POST',body:JSON.stringify({p_id:id})});
+    await loadMentorAutoReplyRules();
+    mentorAdminToast('Auto Reply dihapus');
+  }
+
+  function renderMentorAutoReplyLogs(){
+    const list=$('mentorAutoLogList');if(!list)return;
+    list.innerHTML=mentorAutoReplyLogs.map(row=>
+      '<article class="mentor-auto-log">'+
+        '<div class="mentor-auto-log-head"><b>'+esc(row.member_name||'Member BADAI')+' • '+esc(row.rule_name||'Auto Reply')+'</b><span>'+esc(mentorAutoDateTime(row.created_at))+'</span></div>'+
+        '<div class="mentor-auto-rule-meta"><span>Keyword: '+esc(row.matched_keyword||'Fallback')+'</span></div>'+
+        '<div class="mentor-auto-log-grid">'+
+          '<div><span>PESAN MEMBER</span><p>'+esc(row.incoming_text||'-')+'</p></div>'+
+          '<div><span>BALASAN OTOMATIS</span><p>'+esc(row.reply_text||'Lampiran otomatis')+'</p></div>'+
+        '</div>'+
+      '</article>'
+    ).join('')||'<div class="empty">Belum ada Auto Reply yang terpicu.</div>';
+  }
+
+  async function loadMentorAutoReplyLogs(){
+    const rows=await api('/rest/v1/rpc/admin_mentor_autoreply_logs',{
+      method:'POST',body:JSON.stringify({p_limit:200})
+    })||[];
+    mentorAutoReplyLogs=rows;
+    renderMentorAutoReplyLogs();
+  }
+
+  function switchMentorAdminFeature(feature){
+    if(feature==='ai'&&!mentorAiAllowed())feature='chat';
+    mentorAdminFeature=['chat','autoreply','log','hours','ai'].includes(feature)?feature:'chat';
+    document.querySelectorAll('[data-mentor-feature]').forEach(btn=>{
+      btn.classList.toggle('active',btn.dataset.mentorFeature===mentorAdminFeature);
+    });
+    const isChat=mentorAdminFeature==='chat';
+    $('mentorAdminLayout')?.classList.toggle('hidden',!isChat);
+    if(!isChat){
+      $('mentorOpsPanel')?.classList.add('hidden');
+      $('mentorChatSettingsBtn')?.setAttribute('aria-expanded','false');
+      $('mentorChatSettingsBtn')?.classList.remove('active');
+    }
+    $('mentorChatSettingsBtn')?.classList.toggle('hidden',!isChat);
+    $('mentorFeatureAiBtn')?.classList.toggle('hidden',!mentorAiAllowed());
+    $('mentorAutoReplyPanel')?.classList.toggle('hidden',mentorAdminFeature!=='autoreply');
+    $('mentorAutoReplyLogPanel')?.classList.toggle('hidden',mentorAdminFeature!=='log');
+    $('mentorWorkHoursPanel')?.classList.toggle('hidden',mentorAdminFeature!=='hours');
+    $('mentorAiPanel')?.classList.toggle('hidden',mentorAdminFeature!=='ai');
+    if(mentorAdminFeature==='chat')loadMentorInbox().catch(()=>{});
+    if(mentorAdminFeature==='autoreply')loadMentorAutoReplyRules().catch(err=>mentorAdminToast(err.message||'Gagal memuat Auto Reply'));
+    if(mentorAdminFeature==='log')loadMentorAutoReplyLogs().catch(err=>mentorAdminToast(err.message||'Gagal memuat log'));
+    if(mentorAdminFeature==='hours')loadMentorWorkHoursSettings().catch(err=>mentorAdminToast(err.message||'Gagal memuat jam operasional'));
+    if(mentorAdminFeature==='ai')loadMentorAi(true).catch(err=>mentorAdminToast(err.message||'Gagal memuat AI Mentor'));
+  }
+
   function mentorAdminToast(message){
     let node=$('mentorAdminToast');
     if(!node){node=document.createElement('div');node.id='mentorAdminToast';node.className='mentor-admin-toast';document.body.appendChild(node)}
@@ -9243,6 +10603,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       $('claimMentorChatBtn').textContent=mine?'CHAT SAYA ✓':'AMBIL CHAT';
       $('claimMentorChatBtn').disabled=mine;
     }
+    refreshMentorWorkHours(false).catch(()=>{});
+    applyAdminWorkHoursUi();
   }
 
   function mentorAdminOverviewRow(slug){
@@ -9914,6 +11276,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const m=mentorAdminMessageRows.get(messageId);if(!m)return;
     const state=mentorAdminUiState.get(messageId)||{};
     if(action==='reply'){setMentorAdminReply(messageId);return}
+    if(action==='autoreply'){openMentorAutoReplyModal(null,m);return}
     if(action==='copy'){
       const text=mentorAdminMessageSummary(m);
       try{await navigator.clipboard.writeText(text);mentorAdminToast('Pesan disalin')}catch(_){mentorAdminToast('Gagal menyalin pesan')}
@@ -9940,8 +11303,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const menu=document.createElement('div');
     menu.className='mentor-message-menu';
     menu.dataset.messageId=messageId;
+    const message=mentorAdminMessageRows.get(messageId);
+    const autoReplyAction=message&&message.sender_kind==='mentor'&&!message.is_auto_reply&&!message.is_ai_reply&&['text','image','file'].includes(message.message_type)
+      ? '<button type="button" data-msg-action="autoreply"><span>⚡</span>Jadikan Auto Reply</button>'
+      : '';
     menu.innerHTML=
       '<button type="button" data-msg-action="reply"><span>↩</span>Balas</button>'+
+      autoReplyAction+
       '<button type="button" data-msg-action="copy"><span>▣</span>Salin</button>'+
       '<button type="button" data-msg-action="reaction"><span>☺</span>Reaksi</button>'+
       '<div class="mentor-menu-reactions hidden">'+['👍','❤️','😂','😮','😢','🙏'].map(x=>'<button type="button" data-msg-emoji="'+x+'">'+x+'</button>').join('')+'</div>'+
@@ -9959,7 +11327,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadMentorAdminMessages(forceScroll=false){
     if(!mentorActiveConversation?.conversation_id)return;
     const id=mentorActiveConversation.conversation_id;
-    const rows=await api('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,created_at&order=created_at.desc&limit=100')||[];
+    const rows=await api('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+'&select=id,sender_kind,message_type,body,sticker_key,drive_file_id,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,is_auto_reply,autoreply_rule_id,is_ai_reply,created_at&order=created_at.desc&limit=100')||[];
     const uiRows=await api('/rest/v1/rpc/mentor_message_ui_state',{method:'POST',body:JSON.stringify({p_conversation_id:id})}).catch(()=>[])||[];
     mentorAdminUiState=new Map(uiRows.map(x=>[x.message_id,x]));
     const ordered=rows.slice().reverse();
@@ -9994,7 +11362,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
           if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
           html+='<div id="mentor-msg-'+esc(m.id)+'" class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorAdminSelectedIds.has(String(m.id))?' chat-selected':'')+'" data-message-id="'+esc(m.id)+'">'+
             '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+esc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
-            (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
+            (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+
+            (m.is_auto_reply?'<span class="mentor-auto-badge" title="Dikirim otomatis">AUTO</span>':'')+
+            (m.is_ai_reply?'<span class="mentor-ai-reply-badge" title="Dikirim AI Mentor">AI</span>':'')+reply+body+
             '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+receipt+'</div>'+
             (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>';
         });
@@ -10006,6 +11376,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
     await api('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:id})}).catch(()=>{});
     refreshMentorAdminUnread().catch(()=>{});
+    refreshMentorWorkHours(false).catch(()=>{});
+    loadMentorAdminAiDraft().catch(()=>{});
   }
 
   async function mentorAdminSetTyping(value){
@@ -10020,11 +11392,21 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function sendMentorAdminPayload(type,body,sticker,fileData){
     if(!mentorActiveConversation?.conversation_id)throw new Error('Pilih percakapan member dulu.');
+    await refreshMentorWorkHours(true);
+    if(mentorWorkHoursStatus?.enabled!==false&&!mentorWorkHoursStatus?.is_open){
+      throw new Error('Di luar jam kerja Mentor BADAI. Balasan belum dapat dikirim.');
+    }
     await api('/rest/v1/rpc/mentor_send_message_v2',{method:'POST',body:JSON.stringify({
       p_conversation_id:mentorActiveConversation.conversation_id,p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
       p_drive_file_id:fileData?.id||null,p_drive_web_view_link:fileData?.url||null,p_file_name:fileData?.name||null,
       p_file_mime:fileData?.mime||null,p_file_size:fileData?.size||null,p_reply_to_message_id:mentorAdminReply?.id||null
     })});
+    if(mentorAdminUsingAiDraftId){
+      await api('/rest/v1/rpc/admin_mentor_ai_draft_action',{
+        method:'POST',body:JSON.stringify({p_id:mentorAdminUsingAiDraftId,p_action:'sent'})
+      }).catch(()=>{});
+      mentorAdminUsingAiDraftId=null;mentorAdminAiDraft=null;renderMentorAdminAiDraft();
+    }
     clearMentorAdminReply();
     mentorAdminSetTyping(false);mentorAdminLastKey='';
     await loadMentorAdminMessages(true);await loadMentorInbox();
@@ -10032,6 +11414,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function uploadMentorAdminFile(file){
     if(!file)return null;if(file.size>10*1024*1024)throw new Error('File maksimal 10 MB.');
+    await refreshMentorWorkHours(true);
+    if(mentorWorkHoursStatus?.enabled!==false&&!mentorWorkHoursStatus?.is_open){
+      throw new Error('Di luar jam kerja Mentor BADAI. Lampiran belum dapat dikirim.');
+    }
     const fd=new FormData();fd.append('file',file);fd.append('conversation_id',mentorActiveConversation?.conversation_id||'');
     const res=await fetch('/api/mentor/upload',{method:'POST',headers:{Authorization:'Bearer '+session.access_token},body:fd});
     const data=await res.json().catch(()=>null);
@@ -10415,6 +11801,99 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     btn?.setAttribute('aria-expanded',String(Boolean(willOpen)));
     btn?.classList.toggle('active',Boolean(willOpen));
   });
+  $('mentorWorkHoursSchedule')?.addEventListener('change',e=>{
+    const row=e.target.closest('[data-work-day]');if(!row)return;
+    const open=Boolean(row.querySelector('.mentor-work-open')?.checked);
+    row.classList.toggle('day-closed',!open);
+    const canEdit=['owner','super_admin','admin'].includes(currentTeam?.role);
+    row.querySelector('.mentor-work-start').disabled=!open||!canEdit;
+    row.querySelector('.mentor-work-end').disabled=!open||!canEdit;
+  });
+  $('mentorWorkHoursSaveBtn')?.addEventListener('click',async()=>{
+    try{await saveMentorWorkHoursSettings()}
+    catch(err){
+      if($('mentorWorkHoursSaveStatus'))$('mentorWorkHoursSaveStatus').textContent='✕ '+(err.message||'Gagal menyimpan jam kerja');
+    }
+  });
+
+  document.querySelectorAll('[data-mentor-feature]').forEach(btn=>{
+    btn.addEventListener('click',()=>switchMentorAdminFeature(btn.dataset.mentorFeature));
+  });
+  $('mentorAiProviderType')?.addEventListener('change',()=>{
+    const type=$('mentorAiProviderType').value;
+    if(!$('mentorAiProviderId').value){
+      $('mentorAiProviderModel').value=mentorAiDefaultModel(type);
+      $('mentorAiProviderName').value=type==='openai'?'OpenAI Utama':type==='anthropic'?'Claude Utama':type==='deepseek'?'DeepSeek Utama':'AI Compatible';
+    }
+  });
+  $('mentorAiProviderNewBtn')?.addEventListener('click',mentorAiResetProvider);
+  $('mentorAiProviderList')?.addEventListener('click',e=>{
+    const row=e.target.closest('[data-ai-provider-id]');if(row)mentorAiEditProvider(row.dataset.aiProviderId);
+  });
+  $('mentorAiProviderSaveBtn')?.addEventListener('click',async()=>{
+    try{if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='Menyimpan...';await saveMentorAiProvider()}
+    catch(err){if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='✕ '+(err.message||'Gagal menyimpan provider')}
+  });
+  $('mentorAiProviderTestBtn')?.addEventListener('click',async()=>{
+    try{if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='Menguji koneksi...';await testMentorAiProvider()}
+    catch(err){if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='✕ '+(err.message||'Koneksi gagal')}
+  });
+  $('mentorAiProviderDeleteBtn')?.addEventListener('click',()=>deleteMentorAiProvider().catch(err=>mentorAdminToast(err.message||'Gagal menghapus provider')));
+  $('mentorAiSaveSettingsBtn')?.addEventListener('click',()=>saveMentorAiSettings().catch(err=>mentorAdminToast(err.message||'Gagal menyimpan AI')));
+  $('mentorAiSavePersonaBtn')?.addEventListener('click',()=>saveMentorAiSettings().catch(err=>mentorAdminToast(err.message||'Gagal menyimpan persona')));
+
+  $('mentorAiKnowledgeNewBtn')?.addEventListener('click',mentorAiResetKnowledge);
+  $('mentorAiKnowledgeList')?.addEventListener('click',e=>{
+    const row=e.target.closest('[data-ai-knowledge-id]');if(row)mentorAiEditKnowledge(row.dataset.aiKnowledgeId);
+  });
+  $('mentorAiKnowledgeSaveBtn')?.addEventListener('click',()=>saveMentorAiKnowledge().catch(err=>mentorAdminToast(err.message||'Gagal menyimpan knowledge')));
+  $('mentorAiKnowledgeDeleteBtn')?.addEventListener('click',()=>deleteMentorAiKnowledge().catch(err=>mentorAdminToast(err.message||'Gagal menghapus knowledge')));
+
+  $('mentorAiSkillNewBtn')?.addEventListener('click',mentorAiResetSkill);
+  $('mentorAiSkillList')?.addEventListener('click',e=>{
+    const row=e.target.closest('[data-ai-skill-id]');if(row)mentorAiEditSkill(row.dataset.aiSkillId);
+  });
+  $('mentorAiSkillSaveBtn')?.addEventListener('click',()=>saveMentorAiSkill().catch(err=>mentorAdminToast(err.message||'Gagal menyimpan skill')));
+  $('mentorAiSkillDeleteBtn')?.addEventListener('click',()=>deleteMentorAiSkill().catch(err=>mentorAdminToast(err.message||'Gagal menghapus skill')));
+  $('mentorAiTestBtn')?.addEventListener('click',()=>testMentorAiChat().catch(err=>{
+    if($('mentorAiTestResult'))$('mentorAiTestResult').textContent='✕ '+(err.message||'Test AI gagal');
+  }));
+  mentorAiResetProvider();mentorAiResetKnowledge();mentorAiResetSkill();
+
+  $('mentorAutoCreateBtn')?.addEventListener('click',()=>openMentorAutoReplyModal());
+  $('mentorAutoLogRefreshBtn')?.addEventListener('click',()=>loadMentorAutoReplyLogs().catch(err=>mentorAdminToast(err.message||'Gagal memuat log')));
+  $('mentorAutoModalClose')?.addEventListener('click',closeMentorAutoReplyModal);
+  $('mentorAutoCancelBtn')?.addEventListener('click',closeMentorAutoReplyModal);
+  $('mentorAutoReplyModal')?.addEventListener('click',e=>{if(e.target===$('mentorAutoReplyModal'))closeMentorAutoReplyModal()});
+  $('mentorAutoMatchType')?.addEventListener('change',syncMentorAutoModalFields);
+  $('mentorAutoReplyType')?.addEventListener('change',syncMentorAutoModalFields);
+  $('mentorAutoMediaInput')?.addEventListener('change',e=>{
+    mentorAutoPendingFile=e.target.files?.[0]||null;
+    if(mentorAutoPendingFile){
+      if($('mentorAutoReplyType'))$('mentorAutoReplyType').value=mentorAutoPendingFile.type?.startsWith('image/')?'image':'file';
+    }
+    syncMentorAutoModalFields();
+  });
+  $('mentorAutoMediaRemove')?.addEventListener('click',()=>{
+    mentorAutoPendingFile=null;mentorAutoEditingMedia=null;
+    if($('mentorAutoMediaInput'))$('mentorAutoMediaInput').value='';
+    syncMentorAutoModalFields();
+  });
+  $('mentorAutoSaveBtn')?.addEventListener('click',async()=>{
+    try{await saveMentorAutoReply()}
+    catch(err){if($('mentorAutoFormStatus'))$('mentorAutoFormStatus').textContent='✕ '+(err.message||'Gagal menyimpan Auto Reply.')}
+  });
+  $('mentorAutoRuleList')?.addEventListener('click',async e=>{
+    const btn=e.target.closest('[data-auto-action]');if(!btn)return;
+    const id=btn.dataset.id,action=btn.dataset.autoAction;
+    try{
+      if(action==='edit'){
+        const rule=mentorAutoReplyRules.find(r=>r.id===id);if(rule)openMentorAutoReplyModal(rule);
+      }else if(action==='toggle')await toggleMentorAutoReply(id);
+      else if(action==='delete')await deleteMentorAutoReply(id);
+    }catch(err){mentorAdminToast(err.message||'Gagal mengatur Auto Reply')}
+  });
+  switchMentorAdminFeature('chat');
 
   function setMentorInboxCollapsed(){
     const layout=$('mentorAdminLayout'),btn=$('mentorInboxCollapseBtn');
@@ -10516,6 +11995,18 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       else await deleteSelectedAdminChat();
     }catch(err){mentorAdminToast(err.message||'Gagal menghapus pesan.')}
   });
+
+  $('mentorAdminAiDraftUse')?.addEventListener('click',()=>{
+    if(!mentorAdminAiDraft)return;
+    mentorAdminUsingAiDraftId=mentorAdminAiDraft.id;
+    if($('mentorAdminInput')){
+      $('mentorAdminInput').value=mentorAdminAiDraft.answer||'';
+      $('mentorAdminInput').dispatchEvent(new Event('input',{bubbles:true}));
+      $('mentorAdminInput').focus();
+    }
+    mentorAdminToast('Draft AI dimasukkan. Boleh diedit sebelum dikirim.');
+  });
+  $('mentorAdminAiDraftDismiss')?.addEventListener('click',()=>dismissMentorAdminAiDraft().catch(err=>mentorAdminToast(err.message||'Gagal menghapus draft')));
 
   $('claimMentorChatBtn')?.addEventListener('click',async()=>{
     try{await claimMentorConversation()}
@@ -10692,7 +12183,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
     /* Heavy chat refresh only while Chat page is actually open. */
     const page=$('pageMentor');
-    if(page&&!page.classList.contains('hidden')){
+    if(page&&!page.classList.contains('hidden')&&mentorAdminFeature==='chat'){
       touchMentorPresence().catch(()=>{});
       loadMentorInbox().catch(()=>{});
     }

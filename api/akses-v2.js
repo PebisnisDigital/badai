@@ -1383,6 +1383,48 @@ module.exports = async function handler(req, res) {
   }
 
 
+  /* Mentor work hours — member view */
+  #mentor .mentor-work-hours-member-notice{
+    flex:0 0 auto;
+    display:grid;
+    gap:3px;
+    padding:10px 13px;
+    border-top:1px solid #3b3034;
+    border-bottom:1px solid #3b3034;
+    background:rgba(0,0,0,.82);
+    color:#aaa;
+  }
+  #mentor .mentor-work-hours-member-notice.hidden{display:none!important}
+  #mentor .mentor-work-hours-member-notice b{
+    color:#ff9297;
+    font-size:9px!important;
+    font-weight:950!important;
+  }
+  #mentor .mentor-work-hours-member-notice span{
+    font-size:9px!important;
+    line-height:1.45!important;
+  }
+  #mentor .mentor-chat-card.mentor-after-hours{
+    background:rgba(0,0,0,.92)!important;
+    border-color:#242424!important;
+  }
+  #mentor .mentor-chat-card.mentor-after-hours .mentor-wa-head,
+  #mentor .mentor-chat-card.mentor-after-hours .mentor-message-wrap{
+    background-color:#050505!important;
+    opacity:.58;
+    filter:saturate(.5) brightness(.72);
+  }
+  #mentor .mentor-chat-card.mentor-after-hours .mentor-composer{
+    background:#080808!important;
+  }
+  #mentor .mentor-chat-card.mentor-after-hours .mentor-upload-note{
+    background:#080808!important;
+    color:#696969!important;
+  }
+  #mentor .mentor-chat-card.mentor-after-hours .mentor-wa-person span{
+    color:#ff9ea3!important;
+  }
+
   /* Chat management menu + multi-delete */
   .mentor-wa-person{flex:1 1 auto!important}
   .mentor-chat-more{
@@ -1717,6 +1759,7 @@ module.exports = async function handler(req, res) {
   #mentor .mentor-msg:hover .mentor-bubble-menu-btn,
   #mentor .mentor-bubble-menu-btn:focus{opacity:1;background:rgba(11,20,26,.22)}
   #mentor .mentor-message-star{position:absolute;top:5px;left:6px;color:#f5c451;font-size:11px}
+  #mentor .mentor-ai-reply-badge{display:inline-flex;align-items:center;min-height:16px;padding:0 6px;margin:0 4px 3px 2px;border-radius:999px;background:#12372f;color:#79e5a3;font-size:8px!important;font-weight:700!important;letter-spacing:.05em}
   #mentor .mentor-reply-quote{
     width:100%;display:grid;gap:2px;margin:0 0 6px;padding:6px 8px;border:0;border-left:3px solid #00a884;
     border-radius:5px;background:rgba(11,20,26,.28);color:inherit;text-align:left
@@ -2797,6 +2840,10 @@ document.addEventListener('DOMContentLoaded', function(){
   var communityMentionState=null;
   var mentorDraftKey='badai_mentor_draft';
   var mentorMemberPresenceLastTouch=0;
+  var mentorWorkHoursStatus=null;
+  var mentorWorkHoursLastFetch=0;
+  var mentorWorkHoursBusy=false;
+  var mentorLastOverviewRow=null;
 
   function mentorEsc(value){
     return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
@@ -3131,7 +3178,8 @@ document.addEventListener('DOMContentLoaded', function(){
       if(animateMsg)mentorAnimatedMessageIds.add(m.id);
       html+='<div id="mentor-msg-'+mentorEsc(m.id)+'" class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorChatSelectedIds.has(String(m.id))?' chat-selected':'')+'" data-message-id="'+mentorEsc(m.id)+'">'+
         '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+mentorEsc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
-        (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
+        (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+
+        (m.is_ai_reply?'<span class="mentor-ai-reply-badge" title="Dibalas AI Mentor">AI</span>':'')+reply+body+
         '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+receipt+'</div>'+
         (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>'
     });
@@ -3344,8 +3392,10 @@ document.addEventListener('DOMContentLoaded', function(){
     }else{
       if(avatar)avatar.textContent='M';if(notice)notice.classList.add('hidden');if(composer)composer.classList.remove('hidden');
       if(attachBtn)attachBtn.classList.remove('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');
+      refreshMentorWorkHours(false).catch(function(){});
       refreshMentorOverview().catch(function(){})
     }
+    applyMemberMentorWorkHoursUi();
   }
 
   function communitySenderTone(name){
@@ -3472,23 +3522,75 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     mentorUnreadCount=count;mentorUnreadInitialized=true;renderTotalChatUnread()
   }
+  function mentorWorkNextLabel(value){
+    if(!value)return '';
+    try{
+      return new Intl.DateTimeFormat('id-ID',{
+        weekday:'long',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'
+      }).format(new Date(value)).replace('.',':')+' WIB'
+    }catch(_){return ''}
+  }
+
+  function mentorWorkHoursClosed(){
+    return !!(mentorWorkHoursStatus&&mentorWorkHoursStatus.enabled!==false&&!mentorWorkHoursStatus.is_open)
+  }
+
+  function applyMemberMentorWorkHoursUi(){
+    var closed=mentorSelectedChat==='mentor'&&mentorWorkHoursClosed();
+    var card=el('mentorChatCard'),notice=el('mentorWorkHoursNotice'),text=el('mentorWorkHoursNoticeText');
+    if(card)card.classList.toggle('mentor-after-hours',closed);
+    if(notice)notice.classList.toggle('hidden',!closed);
+    if(text&&closed){
+      var next=mentorWorkNextLabel(mentorWorkHoursStatus&&mentorWorkHoursStatus.next_open_at);
+      text.textContent='Mentor sedang di luar jam kerja. Pesan kamu tetap bisa dikirim'+
+        (next?' dan akan dibalas setelah '+next+'.':'. Mentor akan membalas saat jam kerja buka kembali.');
+    }
+  }
+
+  async function refreshMentorWorkHours(force){
+    var now=Date.now();
+    if(mentorWorkHoursBusy)return mentorWorkHoursStatus;
+    if(!force&&mentorWorkHoursStatus&&now-mentorWorkHoursLastFetch<30000){
+      applyMemberMentorWorkHoursUi();
+      if(mentorLastOverviewRow)setMentorStatus(mentorLastOverviewRow);
+      return mentorWorkHoursStatus
+    }
+    mentorWorkHoursBusy=true;
+    try{
+      var rows=await mentorFetch('/rest/v1/rpc/mentor_work_hours_status',{method:'POST',body:'{}'});
+      mentorWorkHoursStatus=Array.isArray(rows)?rows[0]:rows;
+      mentorWorkHoursLastFetch=Date.now();
+      applyMemberMentorWorkHoursUi();
+      if(mentorLastOverviewRow)setMentorStatus(mentorLastOverviewRow);
+      return mentorWorkHoursStatus
+    }catch(_){return mentorWorkHoursStatus}
+    finally{mentorWorkHoursBusy=false}
+  }
+
   function setMentorStatus(row){
+    mentorLastOverviewRow=row||mentorLastOverviewRow;
     var status=el('mentorMemberStatus'),sub=el('mentorWaSubstatus'),name=el('mentorWaName');
     /* Member-facing identity stays unified as Mentor BADAI, regardless of which staff account replies. */
     var displayName='Mentor BADAI';
     if(mentorSelectedChat==='mentor'&&name)name.textContent=displayName;
     if(el('mentorChatRowName'))el('mentorChatRowName').textContent=displayName;
     var text='offline',typing=false,online=false;
-    if(row&&row.mentor_typing){text='sedang mengetik...';typing=true;online=true}
+    if(mentorWorkHoursClosed()){
+      var next=mentorWorkNextLabel(mentorWorkHoursStatus&&mentorWorkHoursStatus.next_open_at);
+      text='di luar jam kerja'+(next?' • buka '+next:'');
+      typing=false;online=false;
+    }else if(row&&row.mentor_typing){text='sedang mengetik...';typing=true;online=true}
     else if(row&&row.mentor_online){text='online';online=true}
     else if(row){text=mentorRelativeLastSeen(row.mentor_last_seen_at)}
     if(mentorSelectedChat==='mentor'&&sub){sub.textContent=text;sub.classList.toggle('typing',typing)}
     var rowPreview=el('mentorChatRowPreview');
     if(rowPreview&&typing)rowPreview.textContent='sedang mengetik...';
     if(status){
-      status.textContent=typing?'MENGETIK...':(online?'● MENTOR ONLINE':'○ MENTOR OFFLINE');
-      status.classList.toggle('online',online);status.classList.toggle('offline',!online)
+      status.textContent=mentorWorkHoursClosed()?'○ DI LUAR JAM KERJA':(typing?'MENGETIK...':(online?'● MENTOR ONLINE':'○ MENTOR OFFLINE'));
+      status.classList.toggle('online',online);
+      status.classList.toggle('offline',!online)
     }
+    applyMemberMentorWorkHoursUi();
   }
   async function refreshMentorOverview(){
     if(mentorOverviewBusy)return;
@@ -3500,6 +3602,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(row.conversation_id&&!mentorConversationId)mentorConversationId=row.conversation_id;
       setMentorUnread(row.unread_count||0);
       if(String(row.mentor_last_read_at||'')!==String(mentorLastReadAt||'')){mentorLastReadAt=row.mentor_last_read_at||null;mentorLastKey=''}
+      await refreshMentorWorkHours(false);
       setMentorStatus(row)
     }catch(_){}
     finally{mentorOverviewBusy=false}
@@ -3520,7 +3623,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   async function loadMentorMessages(){
     if(!mentorConversationId)return;
-    var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,created_at&order=created_at.desc&limit=80');
+    var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,is_ai_reply,created_at&order=created_at.desc&limit=80');
     var states=await mentorFetch('/rest/v1/rpc/mentor_message_ui_state',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){return []});
     mentorUiState=new Map((states||[]).map(function(x){return [x.message_id,x]}));
     rows=(rows||[]).reverse();
@@ -3539,6 +3642,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var row=Array.isArray(rows)?rows[0]:rows;mentorConversationId=row&&row.conversation_id?row.conversation_id:'';
       if(!mentorConversationId)throw new Error('Percakapan belum tersedia');
       touchMentorMemberPresence(true);
+      await refreshMentorWorkHours(true);
       await refreshMentorOverview();await loadMentorMessages();
       fetch('/api/mentor/status').then(function(r){return r.ok?r.json():null}).then(function(info){
         var note=el('mentorUploadNote');if(!note)return;
@@ -3776,6 +3880,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function refreshAllChatUnread(){
     if(document.visibilityState!=='visible')return;
+    refreshMentorWorkHours(false).catch(function(){});
     refreshMentorOverview().catch(function(){});
     refreshCommunityOverview().catch(function(){});
   }
