@@ -28,6 +28,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/admin/ai/*"
+  to = "https://badai.up.railway.app/api/admin/ai/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/admin/chat/permanent-delete"
   to = "https://badai.up.railway.app/api/admin/chat/permanent-delete"
   status = 200

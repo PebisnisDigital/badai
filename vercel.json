@@ -13,6 +13,10 @@
       "dest": "https://badai.up.railway.app/api/profile/$1"
     },
     {
+      "src": "^/api/admin/ai/(.*)$",
+      "dest": "https://badai.up.railway.app/api/admin/ai/$1"
+    },
+    {
       "src": "^/api/admin/chat/permanent-delete$",
       "dest": "https://badai.up.railway.app/api/admin/chat/permanent-delete"
     },
