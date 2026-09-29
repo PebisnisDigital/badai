@@ -3521,6 +3521,7 @@ th,td{padding:14px 12px!important}
 .mentor-auto-media-row button{background:#151515;color:#bbb}
 .mentor-auto-media-info{margin-top:6px;color:#777;font-size:7px}
 .mentor-auto-badge{display:inline-flex;align-items:center;min-height:15px;padding:0 5px;margin:0 4px;border-radius:999px;background:#261520;color:#ff85bd;font-size:5.5px;font-weight:950;letter-spacing:.06em}
+.mentor-ai-reply-badge{display:inline-flex;align-items:center;min-height:15px;padding:0 5px;margin:0 4px;border-radius:999px;background:#12251b;color:#79e5a3;font-size:5.5px;font-weight:950;letter-spacing:.06em}
 @media(max-width:700px){
   .mentor-feature-tabs{overflow:auto}
   .mentor-feature-tabs button{white-space:nowrap}
@@ -11303,7 +11304,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     menu.className='mentor-message-menu';
     menu.dataset.messageId=messageId;
     const message=mentorAdminMessageRows.get(messageId);
-    const autoReplyAction=message&&message.sender_kind==='mentor'&&!message.is_auto_reply&&['text','image','file'].includes(message.message_type)
+    const autoReplyAction=message&&message.sender_kind==='mentor'&&!message.is_auto_reply&&!message.is_ai_reply&&['text','image','file'].includes(message.message_type)
       ? '<button type="button" data-msg-action="autoreply"><span>⚡</span>Jadikan Auto Reply</button>'
       : '';
     menu.innerHTML=
@@ -11326,7 +11327,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadMentorAdminMessages(forceScroll=false){
     if(!mentorActiveConversation?.conversation_id)return;
     const id=mentorActiveConversation.conversation_id;
-    const rows=await api('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+'&select=id,sender_kind,message_type,body,sticker_key,drive_file_id,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,is_auto_reply,autoreply_rule_id,created_at&order=created_at.desc&limit=100')||[];
+    const rows=await api('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(id)+'&select=id,sender_kind,message_type,body,sticker_key,drive_file_id,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,is_auto_reply,autoreply_rule_id,is_ai_reply,created_at&order=created_at.desc&limit=100')||[];
     const uiRows=await api('/rest/v1/rpc/mentor_message_ui_state',{method:'POST',body:JSON.stringify({p_conversation_id:id})}).catch(()=>[])||[];
     mentorAdminUiState=new Map(uiRows.map(x=>[x.message_id,x]));
     const ordered=rows.slice().reverse();
@@ -11362,7 +11363,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
           html+='<div id="mentor-msg-'+esc(m.id)+'" class="mentor-admin-msg '+esc(m.sender_kind)+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorAdminSelectedIds.has(String(m.id))?' chat-selected':'')+'" data-message-id="'+esc(m.id)+'">'+
             '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+esc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
             (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+
-            (m.is_auto_reply?'<span class="mentor-auto-badge" title="Dikirim otomatis">AUTO</span>':'')+reply+body+
+            (m.is_auto_reply?'<span class="mentor-auto-badge" title="Dikirim otomatis">AUTO</span>':'')+
+            (m.is_ai_reply?'<span class="mentor-ai-reply-badge" title="Dikirim AI Mentor">AI</span>':'')+reply+body+
             '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+receipt+'</div>'+
             (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>';
         });
