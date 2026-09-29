@@ -3407,7 +3407,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function renderCommunityMessages(rows,slug){
     var list=el('mentorMessageList');if(!list)return;
     var wasNear=mentorNearBottom(list),s=memberSession(),uid=s&&s.user?s.user.id:'';
-    rows=rows||[];var html='',lastDay='';
+    rows=rows||[];var html='',lastDay='',rowMap=new Map(rows.map(function(m){return [m.id,m]}));
     if(!rows.length){
       list.innerHTML='<div class="mentor-empty">'+(slug==='announcement'?'Belum ada pengumuman dari tim BADAI.':'Belum ada pesan di Grup BADAI. Jadi yang pertama ngobrol 👋')+'</div>';
       return
@@ -3432,9 +3432,16 @@ document.addEventListener('DOMContentLoaded', function(){
       else if(m.message_type==='image')body='<div class="body"><a class="mentor-msg-image" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><img src="'+mentorEsc(m.drive_web_view_link||'#')+'" alt="" loading="lazy"></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
       else if(m.message_type==='file')body='<div class="body"><a class="mentor-msg-file" href="'+mentorEsc(m.drive_web_view_link||'#')+'" target="_blank" rel="noopener"><span class="mentor-file-icon">📄</span><span class="mentor-file-copy"><b>'+mentorEsc(m.file_name||'Dokumen')+'</b><small>'+mentorEsc(mentorSize(m.file_size)||String(m.file_mime||'Dokumen'))+'</small></span></a>'+(m.body?'<div class="mentor-image-caption">'+mentorFormatText(m.body)+'</div>':'')+'</div>';
       else body='<div class="body mentor-wa-formatted">'+(slug==='group'?communityFormatText(m.body||''):mentorFormatText(m.body||''))+'</div>';
+      var reply='';
+      if(m.reply_to_message_id){
+        var target=rowMap.get(m.reply_to_message_id);
+        var label=target?(String(target.sender_user_id||'')===String(uid||'')?'Anda':String(target.sender_name||'Member BADAI')):'Pesan';
+        var summary=target?mentorMessageSummary(target):'Pesan sebelumnya';
+        reply='<button type="button" class="mentor-reply-quote" data-mentor-jump-message="'+mentorEsc(m.reply_to_message_id)+'"><b>'+mentorEsc(label)+'</b><span>'+mentorEsc(summary.slice(0,120))+'</span></button>'
+      }
       var animateMsg=!mentorAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAnimatedMessageIds.add(m.id);
-      var bubble='<div id="mentor-msg-'+mentorEsc(m.id)+'" data-message-id="'+mentorEsc(m.id)+'" class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorChatSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+announcementHead+sender+body+
+      var bubble='<div id="mentor-msg-'+mentorEsc(m.id)+'" data-message-id="'+mentorEsc(m.id)+'" class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorChatSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+announcementHead+sender+reply+body+
         '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own&&slug!=='announcement'?'<span class="mentor-receipt read">✓✓</span>':'')+'</div></div>';
       if(slug==='group'&&!own){
         var tone=communitySenderTone(senderName);
@@ -3454,7 +3461,7 @@ document.addEventListener('DOMContentLoaded', function(){
   async function loadCommunityMessages(slug){
     if(!slug||slug==='mentor')return;
     if(slug==='group')await loadCommunityParticipants(false);
-    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list_v4',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
+    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list_v5',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
     renderCommunityMessages(rows||[],slug);
     if(mentorView==='thread'){
       await mentorFetch('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(function(){});
