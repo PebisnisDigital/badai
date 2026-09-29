@@ -1759,6 +1759,7 @@ module.exports = async function handler(req, res) {
   #mentor .mentor-msg:hover .mentor-bubble-menu-btn,
   #mentor .mentor-bubble-menu-btn:focus{opacity:1;background:rgba(11,20,26,.22)}
   #mentor .mentor-message-star{position:absolute;top:5px;left:6px;color:#f5c451;font-size:11px}
+  #mentor .mentor-ai-reply-badge{display:inline-flex;align-items:center;min-height:16px;padding:0 6px;margin:0 4px 3px 2px;border-radius:999px;background:#12372f;color:#79e5a3;font-size:8px!important;font-weight:700!important;letter-spacing:.05em}
   #mentor .mentor-reply-quote{
     width:100%;display:grid;gap:2px;margin:0 0 6px;padding:6px 8px;border:0;border-left:3px solid #00a884;
     border-radius:5px;background:rgba(11,20,26,.28);color:inherit;text-align:left
@@ -3177,7 +3178,8 @@ document.addEventListener('DOMContentLoaded', function(){
       if(animateMsg)mentorAnimatedMessageIds.add(m.id);
       html+='<div id="mentor-msg-'+mentorEsc(m.id)+'" class="mentor-msg '+mentorEsc(m.sender_kind)+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorChatSelectedIds.has(String(m.id))?' chat-selected':'')+'" data-message-id="'+mentorEsc(m.id)+'">'+
         '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+mentorEsc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
-        (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+reply+body+
+        (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+
+        (m.is_ai_reply?'<span class="mentor-ai-reply-badge" title="Dibalas AI Mentor">AI</span>':'')+reply+body+
         '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+receipt+'</div>'+
         (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>'
     });
@@ -3621,7 +3623,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   async function loadMentorMessages(){
     if(!mentorConversationId)return;
-    var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,created_at&order=created_at.desc&limit=80');
+    var rows=await mentorFetch('/rest/v1/mentor_messages?conversation_id=eq.'+encodeURIComponent(mentorConversationId)+'&select=id,sender_kind,message_type,body,sticker_key,drive_web_view_link,file_name,file_mime,file_size,reply_to_message_id,is_ai_reply,created_at&order=created_at.desc&limit=80');
     var states=await mentorFetch('/rest/v1/rpc/mentor_message_ui_state',{method:'POST',body:JSON.stringify({p_conversation_id:mentorConversationId})}).catch(function(){return []});
     mentorUiState=new Map((states||[]).map(function(x){return [x.message_id,x]}));
     rows=(rows||[]).reverse();
