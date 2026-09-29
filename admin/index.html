@@ -6223,6 +6223,8 @@ th,td{padding:14px 12px!important}
                   <option value="deepseek">DeepSeek</option>
                   <option value="openai">OpenAI</option>
                   <option value="anthropic">Claude / Anthropic</option>
+                  <option value="gemini">Google Gemini</option>
+                  <option value="openrouter">OpenRouter</option>
                   <option value="openai_compatible">OpenAI-compatible lainnya</option>
                 </select>
               </div>
@@ -9812,11 +9814,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(type==='openai')return 'gpt-5.6-luna';
     if(type==='anthropic')return 'claude-sonnet-5';
     if(type==='deepseek')return 'deepseek-flash';
+    if(type==='gemini')return 'gemini-3.8-flash';
+    if(type==='openrouter')return 'openrouter/free';
     return '';
   }
 
   function mentorAiProviderLabel(p){
-    const names={openai:'OpenAI',anthropic:'Claude',deepseek:'DeepSeek',openai_compatible:'Compatible'};
+    const names={openai:'OpenAI',anthropic:'Claude',deepseek:'DeepSeek',gemini:'Gemini',openrouter:'OpenRouter',openai_compatible:'Compatible'};
     return (p?.name||names[p?.provider_type]||'AI')+' · '+(p?.model||'-');
   }
 
@@ -11823,7 +11827,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const type=$('mentorAiProviderType').value;
     if(!$('mentorAiProviderId').value){
       $('mentorAiProviderModel').value=mentorAiDefaultModel(type);
-      $('mentorAiProviderName').value=type==='openai'?'OpenAI Utama':type==='anthropic'?'Claude Utama':type==='deepseek'?'DeepSeek Utama':'AI Compatible';
+      $('mentorAiProviderName').value=type==='openai'?'OpenAI Utama':type==='anthropic'?'Claude Utama':type==='deepseek'?'DeepSeek Utama':type==='gemini'?'Gemini Utama':type==='openrouter'?'OpenRouter Gratis':'AI Compatible';
     }
   });
   $('mentorAiProviderNewBtn')?.addEventListener('click',mentorAiResetProvider);

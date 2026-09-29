@@ -329,6 +329,8 @@ function normalizeAiBaseUrl(providerType,baseUrl){
   if(providerType==='openai') return custom?assertPublicAiUrl(custom):'https://api.openai.com/v1';
   if(providerType==='anthropic') return custom?assertPublicAiUrl(custom):'https://api.anthropic.com/v1';
   if(providerType==='deepseek') return custom?assertPublicAiUrl(custom):'https://api.deepseek.com';
+  if(providerType==='gemini') return custom?assertPublicAiUrl(custom):'https://generativelanguage.googleapis.com/v1beta/openai';
+  if(providerType==='openrouter') return custom?assertPublicAiUrl(custom):'https://openrouter.ai/api/v1';
   if(providerType==='openai_compatible'){
     if(!custom) throw new Error('Base URL wajib diisi untuk OpenAI-compatible.');
     return assertPublicAiUrl(custom);
