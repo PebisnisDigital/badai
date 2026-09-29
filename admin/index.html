@@ -3379,6 +3379,19 @@ th,td{padding:14px 12px!important}
 #pageMentor .mentor-ai-list-item small{display:block;margin-top:2px;color:#686868;font-size:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #pageMentor .mentor-ai-list-item em{font-style:normal;padding:4px 6px;border-radius:999px;background:#171717;color:#8b8b8b;font-size:5.5px;font-weight:900}
 #pageMentor .mentor-ai-list-item em.active{background:#0f1d13;color:#72dc95}
+#pageMentor .mentor-ai-source-box{margin-top:12px;padding-top:12px;border-top:1px solid #242424}
+#pageMentor .mentor-ai-source-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#pageMentor .mentor-ai-source-head b{display:block;color:#fff;font-size:8px}
+#pageMentor .mentor-ai-source-head small{display:block;margin-top:3px;color:#707070;font-size:6px;line-height:1.4}
+#pageMentor .mentor-ai-source-head button{min-height:30px;padding:0 9px;border:1px solid #60324c;border-radius:8px;background:#24131c;color:#ff86bd;font-size:6.5px;font-weight:950;cursor:pointer}
+#pageMentor .mentor-ai-source-head button:disabled{opacity:.5;cursor:wait}
+#pageMentor .mentor-ai-source-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:9px}
+#pageMentor .mentor-ai-source-stats>div{padding:7px;border:1px solid #222;border-radius:8px;background:#101010}
+#pageMentor .mentor-ai-source-stats span{display:block;color:#666;font-size:5.5px;font-weight:900}
+#pageMentor .mentor-ai-source-stats b{display:block;margin-top:2px;color:#eee;font-size:11px}
+#pageMentor .mentor-ai-source-link{color:#ff8ac0!important;text-decoration:none}
+#pageMentor .mentor-ai-list-item em.warn{background:#2b2210;color:#e8c56e}
+#pageMentor .mentor-ai-list-item em.err{background:#2b1113;color:#ff8e94}
 #pageMentor .mentor-ai-test-box{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
 #pageMentor .mentor-ai-test-box textarea{width:100%;box-sizing:border-box;resize:vertical}
 #pageMentor .mentor-ai-test-result{margin-top:9px;padding:11px;border:1px solid #272727;border-radius:10px;background:#111;color:#bbb;font-size:8px;line-height:1.5;white-space:pre-wrap}
@@ -6329,6 +6342,25 @@ th,td{padding:14px 12px!important}
               <button id="mentorAiKnowledgeDeleteBtn" class="danger hidden" type="button">HAPUS</button>
             </div>
             <div id="mentorAiKnowledgeList" class="mentor-ai-list"></div>
+
+            <div class="mentor-ai-source-box">
+              <div class="mentor-ai-source-head">
+                <div>
+                  <b>MATERI MEMBER AREA</b>
+                  <small id="mentorAiSourceSummary">Belum dicek.</small>
+                </div>
+                <button id="mentorAiSourceSyncBtn" type="button">SINKRONKAN VIDEO</button>
+              </div>
+              <div class="mentor-ai-source-stats">
+                <div><span>VIDEO</span><b id="mentorAiSourceTotal">0</b></div>
+                <div><span>SIAP AI</span><b id="mentorAiSourceReady">0</b></div>
+                <div><span>CHUNKS</span><b id="mentorAiSourceChunks">0</b></div>
+                <div><span>GAGAL</span><b id="mentorAiSourceFailed">0</b></div>
+              </div>
+              <div id="mentorAiSourceList" class="mentor-ai-list">
+                <div class="empty">Belum ada video yang disinkronkan.</div>
+              </div>
+            </div>
           </section>
 
           <section class="mentor-ai-card">
@@ -7010,6 +7042,8 @@ th,td{padding:14px 12px!important}
   let mentorWorkHoursLastFetch = 0;
   let mentorAiData = {settings:{},providers:[],knowledge:[],skills:[],usage:{}};
   let mentorAiBusy = false;
+  let mentorAiSourceData = {total:0,ready:0,pending:0,failed:0,chunks:0,transcript_chars:0,sources:[]};
+  let mentorAiSourceBusy = false;
   let mentorAdminAiDraft = null;
   let mentorAdminUsingAiDraftId = null;
   let currentFinanceType = 'profitloss';
@@ -9997,6 +10031,69 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   }
 
+  function renderMentorAiSources(){
+    const data=mentorAiSourceData||{},sources=Array.isArray(data.sources)?data.sources:[];
+    if($('mentorAiSourceTotal'))$('mentorAiSourceTotal').textContent=Number(data.total||0).toLocaleString('id-ID');
+    if($('mentorAiSourceReady'))$('mentorAiSourceReady').textContent=Number(data.ready||0).toLocaleString('id-ID');
+    if($('mentorAiSourceChunks'))$('mentorAiSourceChunks').textContent=Number(data.chunks||0).toLocaleString('id-ID');
+    if($('mentorAiSourceFailed'))$('mentorAiSourceFailed').textContent=Number(data.failed||0).toLocaleString('id-ID');
+    if($('mentorAiSourceSummary')){
+      const chars=Number(data.transcript_chars||0);
+      $('mentorAiSourceSummary').textContent=
+        Number(data.ready||0)+' video siap dipakai AI'+
+        (chars?' · '+Math.round(chars/1000).toLocaleString('id-ID')+' ribu karakter transcript':'')+
+        ' · transcript master disimpan di Google Drive.';
+    }
+    if($('mentorAiSourceList')){
+      const labels={ready:'SIAP AI',pending:'MENUNGGU',syncing:'SINKRON',no_caption:'NO CAPTION',failed:'GAGAL'};
+      $('mentorAiSourceList').innerHTML=sources.map(x=>{
+        const status=String(x.status||'pending');
+        const cls=status==='ready'?'active':status==='failed'||status==='no_caption'?'err':'warn';
+        const detail=[
+          x.category||'MATERI',
+          x.video_id?'YouTube '+x.video_id:'',
+          Number(x.chunk_count||0)?Number(x.chunk_count||0)+' chunks':'',
+          x.last_error?String(x.last_error).slice(0,120):''
+        ].filter(Boolean).join(' · ');
+        return '<div class="mentor-ai-list-item"><div><b>'+esc(x.title||'Materi Video')+'</b>'+
+          '<small>'+esc(detail||'-')+'</small>'+
+          (x.drive_web_view_link?'<small><a class="mentor-ai-source-link" href="'+esc(x.drive_web_view_link)+'" target="_blank" rel="noopener noreferrer">Buka transcript di Drive ↗</a></small>':'')+
+          '</div><em class="'+cls+'">'+esc(labels[status]||status.toUpperCase())+'</em></div>';
+      }).join('')||'<div class="empty">Belum ada video yang disinkronkan.</div>';
+    }
+  }
+
+  async function loadMentorAiSourceStatus(){
+    if(!mentorAiAllowed()||!session?.access_token)return;
+    const res=await fetch('/api/admin/ai/knowledge/status',{headers:{Authorization:'Bearer '+session.access_token}});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(data.error||'Gagal membaca status materi AI.');
+    mentorAiSourceData=data.status||{total:0,ready:0,pending:0,failed:0,chunks:0,transcript_chars:0,sources:[]};
+    renderMentorAiSources();
+  }
+
+  async function syncMentorAiSources(){
+    if(mentorAiSourceBusy)return;
+    mentorAiSourceBusy=true;
+    const btn=$('mentorAiSourceSyncBtn'),old=btn?.textContent||'SINKRONKAN VIDEO';
+    if(btn){btn.disabled=true;btn.textContent='MEMPELAJARI VIDEO...'}
+    if($('mentorAiSourceSummary'))$('mentorAiSourceSummary').textContent='Mengambil transcript YouTube, menyimpan master ke Drive, lalu membuat index AI...';
+    try{
+      const res=await fetch('/api/admin/ai/knowledge/sync',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
+        body:'{}'
+      });
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(data.error||'Sinkronisasi video gagal.');
+      await loadMentorAiSourceStatus();
+      mentorAdminToast('Knowledge video: '+Number(data.ready||0)+' siap, '+Number(data.failed||0)+' perlu dicek');
+    }finally{
+      mentorAiSourceBusy=false;
+      if(btn){btn.disabled=false;btn.textContent=old}
+    }
+  }
+
   async function loadMentorAi(force=false){
     if(!mentorAiAllowed())return;
     if(mentorAiBusy&&!force)return;
@@ -10005,6 +10102,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const data=await api('/rest/v1/rpc/admin_mentor_ai_settings_get',{method:'POST',body:'{}'});
       mentorAiData=data||{settings:{},providers:[],knowledge:[],skills:[],usage:{}};
       renderMentorAi();
+      await loadMentorAiSourceStatus().catch(()=>{});
     }finally{mentorAiBusy=false}
   }
 
@@ -11933,6 +12031,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   });
   $('mentorAiKnowledgeSaveBtn')?.addEventListener('click',()=>saveMentorAiKnowledge().catch(err=>mentorAdminToast(err.message||'Gagal menyimpan knowledge')));
   $('mentorAiKnowledgeDeleteBtn')?.addEventListener('click',()=>deleteMentorAiKnowledge().catch(err=>mentorAdminToast(err.message||'Gagal menghapus knowledge')));
+  $('mentorAiSourceSyncBtn')?.addEventListener('click',()=>syncMentorAiSources().catch(err=>{
+    if($('mentorAiSourceSummary'))$('mentorAiSourceSummary').textContent='✕ '+(err.message||'Sinkronisasi video gagal');
+    mentorAdminToast(err.message||'Sinkronisasi video gagal');
+  }));
 
   $('mentorAiSkillNewBtn')?.addEventListener('click',mentorAiResetSkill);
   $('mentorAiSkillList')?.addEventListener('click',e=>{
