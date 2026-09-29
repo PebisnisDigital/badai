@@ -310,14 +310,28 @@ function decryptAiSecret(provider){
   return out.toString('utf8');
 }
 
+function assertPublicAiUrl(value){
+  const u=new URL(String(value||''));
+  if(u.protocol!=='https:') throw new Error('Base URL AI wajib HTTPS.');
+  const host=String(u.hostname||'').toLowerCase();
+  const blocked=
+    host==='localhost'||host==='0.0.0.0'||host==='::1'||
+    /^127\./.test(host)||/^10\./.test(host)||/^192\.168\./.test(host)||
+    /^169\.254\./.test(host)||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(host)||
+    host.endsWith('.local')||host.endsWith('.internal');
+  if(blocked) throw new Error('Base URL private/internal tidak diizinkan.');
+  return u.toString().replace(/\/+$/,'');
+}
+
 function normalizeAiBaseUrl(providerType,baseUrl){
   const custom=String(baseUrl||'').trim().replace(/\/+$/,'');
-  if(providerType==='openai') return custom||'https://api.openai.com/v1';
-  if(providerType==='anthropic') return custom||'https://api.anthropic.com/v1';
-  if(providerType==='deepseek') return custom||'https://api.deepseek.com';
+  if(providerType==='openai') return custom?assertPublicAiUrl(custom):'https://api.openai.com/v1';
+  if(providerType==='anthropic') return custom?assertPublicAiUrl(custom):'https://api.anthropic.com/v1';
+  if(providerType==='deepseek') return custom?assertPublicAiUrl(custom):'https://api.deepseek.com';
   if(providerType==='openai_compatible'){
     if(!custom) throw new Error('Base URL wajib diisi untuk OpenAI-compatible.');
-    return custom;
+    return assertPublicAiUrl(custom);
   }
   throw new Error('Provider AI tidak dikenali.');
 }
