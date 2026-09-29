@@ -3321,6 +3321,69 @@ th,td{padding:14px 12px!important}
 }
 #pageMentor #mentorThreadView.chat-select-mode .mentor-bubble-menu-btn{display:none!important}
 
+/* AI Mentor */
+#pageMentor .mentor-ai-panel{display:grid;gap:10px}
+#pageMentor .mentor-ai-panel.hidden{display:none!important}
+#pageMentor .mentor-ai-hero{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;
+  border:1px solid #382331;border-radius:15px;background:linear-gradient(145deg,#140d12,#090909)
+}
+#pageMentor .mentor-ai-hero span{display:block;color:#ff72b6;font-size:7px;font-weight:950;letter-spacing:.12em}
+#pageMentor .mentor-ai-hero h3{margin:4px 0;color:#fff;font-size:18px}
+#pageMentor .mentor-ai-hero p{margin:0;color:#858085;font-size:8px;line-height:1.45}
+#pageMentor .mentor-ai-status{min-width:66px;padding:8px 10px;text-align:center;border-radius:999px;font-size:8px;font-weight:950;border:1px solid #3a3a3a}
+#pageMentor .mentor-ai-status.off{color:#888;background:#141414}
+#pageMentor .mentor-ai-status.on{color:#7be49e;background:#0e1d13;border-color:#244c31}
+#pageMentor .mentor-ai-usage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+#pageMentor .mentor-ai-usage>div{padding:10px;border:1px solid #242424;border-radius:11px;background:#0c0c0c}
+#pageMentor .mentor-ai-usage span{display:block;color:#666;font-size:6px;font-weight:900}
+#pageMentor .mentor-ai-usage b{display:block;margin-top:3px;color:#fff;font-size:14px;overflow:hidden;text-overflow:ellipsis}
+#pageMentor .mentor-ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#pageMentor .mentor-ai-card{min-width:0;padding:13px;border:1px solid #262626;border-radius:13px;background:#0c0c0c}
+#pageMentor .mentor-ai-card.full{grid-column:1/-1}
+#pageMentor .mentor-ai-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+#pageMentor .mentor-ai-card-head>div{display:flex;align-items:center;gap:7px}
+#pageMentor .mentor-ai-card-head span{display:grid;place-items:center;width:20px;height:20px;border-radius:999px;background:#24131c;color:#ff78b8;font-size:6px;font-weight:950}
+#pageMentor .mentor-ai-card-head h4{margin:0;color:#fff;font-size:9px}
+#pageMentor .mentor-ai-card-head>button{min-height:27px;padding:0 8px;border:1px solid #3b2a34;border-radius:7px;background:#171116;color:#ff86bd;font-size:6px;font-weight:900}
+#pageMentor .mentor-ai-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#pageMentor .mentor-ai-form-grid .full{grid-column:1/-1}
+#pageMentor .mentor-ai-form-grid textarea{width:100%;box-sizing:border-box;resize:vertical}
+#pageMentor .mentor-ai-form-grid small{display:block;margin-top:4px;color:#696969;font-size:6px}
+#pageMentor .mentor-ai-switch-row{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #292929;border-radius:9px;background:#111;color:#ccc;font-size:7px;font-weight:900}
+#pageMentor .mentor-ai-switch-row.compact{grid-column:auto}
+#pageMentor .mentor-ai-switch-row input{accent-color:#ff4fa3}
+#pageMentor .mentor-ai-primary{min-height:34px;padding:0 11px;border:0;border-radius:8px;background:#ff4fa3;color:#111;font-size:7px;font-weight:950;cursor:pointer}
+#pageMentor .mentor-ai-card>.mentor-ai-primary{margin-top:9px}
+#pageMentor .mentor-ai-provider-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+#pageMentor .mentor-ai-provider-actions button{min-height:32px;padding:0 9px;border:1px solid #343434;border-radius:8px;background:#151515;color:#ddd;font-size:6.5px;font-weight:900}
+#pageMentor .mentor-ai-provider-actions button.mentor-ai-primary{background:#ff4fa3;color:#111;border-color:#ff4fa3}
+#pageMentor .mentor-ai-provider-actions button.danger{color:#ff8d93}
+#pageMentor .mentor-ai-provider-list,#pageMentor .mentor-ai-list{display:grid;gap:6px;margin-top:10px}
+#pageMentor .mentor-ai-list-item{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;
+  padding:8px;border:1px solid #242424;border-radius:9px;background:#111;cursor:pointer
+}
+#pageMentor .mentor-ai-list-item:hover{border-color:#49313f}
+#pageMentor .mentor-ai-list-item b{display:block;color:#ddd;font-size:7.5px}
+#pageMentor .mentor-ai-list-item small{display:block;margin-top:2px;color:#686868;font-size:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pageMentor .mentor-ai-list-item em{font-style:normal;padding:4px 6px;border-radius:999px;background:#171717;color:#8b8b8b;font-size:5.5px;font-weight:900}
+#pageMentor .mentor-ai-list-item em.active{background:#0f1d13;color:#72dc95}
+#pageMentor .mentor-ai-test-box{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+#pageMentor .mentor-ai-test-box textarea{width:100%;box-sizing:border-box;resize:vertical}
+#pageMentor .mentor-ai-test-result{margin-top:9px;padding:11px;border:1px solid #272727;border-radius:10px;background:#111;color:#bbb;font-size:8px;line-height:1.5;white-space:pre-wrap}
+#pageMentor .mentor-ai-test-result b{color:#fff}
+#pageMentor .mentor-ai-test-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px;color:#777;font-size:6px}
+@media(max-width:760px){
+  #pageMentor .mentor-ai-usage{grid-template-columns:1fr 1fr}
+  #pageMentor .mentor-ai-grid{grid-template-columns:1fr}
+  #pageMentor .mentor-ai-card.full{grid-column:auto}
+  #pageMentor .mentor-ai-form-grid{grid-template-columns:1fr}
+  #pageMentor .mentor-ai-form-grid .full,#pageMentor .mentor-ai-switch-row{grid-column:auto}
+  #pageMentor .mentor-ai-test-box{grid-template-columns:1fr}
+  #pageMentor .mentor-ai-hero{align-items:flex-start;flex-direction:column}
+}
+
 /* Dedicated Jam Operasional tab */
 #pageMentor .mentor-work-hours-tab{gap:10px!important}
 #pageMentor .mentor-work-tab-head{
@@ -5271,10 +5334,12 @@ th,td{padding:14px 12px!important}
 #pageMentor #mentorChatSettingsBtn.hidden{display:none!important}
 #pageMentor #mentorAutoReplyPanel.hidden,
 #pageMentor #mentorAutoReplyLogPanel.hidden,
-#pageMentor #mentorWorkHoursPanel.hidden{display:none!important}
+#pageMentor #mentorWorkHoursPanel.hidden,
+#pageMentor #mentorAiPanel.hidden{display:none!important}
 #pageMentor #mentorAutoReplyPanel:not(.hidden),
 #pageMentor #mentorAutoReplyLogPanel:not(.hidden),
-#pageMentor #mentorWorkHoursPanel:not(.hidden){display:grid!important}
+#pageMentor #mentorWorkHoursPanel:not(.hidden),
+#pageMentor #mentorAiPanel:not(.hidden){display:grid!important}
 
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -5897,6 +5962,7 @@ th,td{padding:14px 12px!important}
         <button id="mentorFeatureAutoBtn" type="button" data-mentor-feature="autoreply">AUTO REPLY <span id="mentorAutoActiveBadge" class="mentor-feature-count hidden">0</span></button>
         <button id="mentorFeatureLogBtn" type="button" data-mentor-feature="log">LOG AUTO REPLY</button>
         <button id="mentorFeatureHoursBtn" type="button" data-mentor-feature="hours">JAM OPERASIONAL</button>
+        <button id="mentorFeatureAiBtn" type="button" data-mentor-feature="ai">AI MENTOR</button>
       </div>
 
       <div id="mentorOpsPanel" class="mentor-admin-status-grid hidden">
@@ -6058,6 +6124,179 @@ th,td{padding:14px 12px!important}
           </div>
         </div>
 
+      </section>
+
+      <section id="mentorAiPanel" class="mentor-ai-panel hidden">
+        <div class="mentor-ai-hero">
+          <div>
+            <span>AI MENTOR</span>
+            <h3>Otak Mentor BADAI</h3>
+            <p>Hubungkan provider AI, atur persona, knowledge, skill, mode balasan, dan test sebelum diaktifkan ke member.</p>
+          </div>
+          <div id="mentorAiHeroStatus" class="mentor-ai-status off">OFF</div>
+        </div>
+
+        <div class="mentor-ai-usage">
+          <div><span>REQUEST HARI INI</span><b id="mentorAiUsageRequests">0</b></div>
+          <div><span>INPUT TOKEN</span><b id="mentorAiUsageInput">0</b></div>
+          <div><span>OUTPUT TOKEN</span><b id="mentorAiUsageOutput">0</b></div>
+          <div><span>PROVIDER</span><b id="mentorAiUsageProvider">-</b></div>
+        </div>
+
+        <div class="mentor-ai-grid">
+          <section class="mentor-ai-card">
+            <div class="mentor-ai-card-head"><div><span>01</span><h4>STATUS & MODE</h4></div></div>
+            <div class="mentor-ai-form-grid">
+              <label class="mentor-ai-switch-row">
+                <input id="mentorAiEnabled" type="checkbox"/>
+                <span>Aktifkan AI Mentor</span>
+              </label>
+              <div class="manage-field">
+                <label>Mode</label>
+                <select id="mentorAiMode">
+                  <option value="off">OFF — tidak membalas</option>
+                  <option value="assist">ASSIST — buat draft untuk admin</option>
+                  <option value="auto">AUTO — langsung balas</option>
+                  <option value="hybrid">HYBRID — yakin balas, ragu handoff</option>
+                </select>
+              </div>
+              <div class="manage-field">
+                <label>Provider Utama</label>
+                <select id="mentorAiPrimaryProvider"><option value="">Belum ada provider</option></select>
+              </div>
+              <div class="manage-field">
+                <label>Provider Cadangan</label>
+                <select id="mentorAiFallbackProvider"><option value="">Tidak ada</option></select>
+              </div>
+              <div class="manage-field">
+                <label>Confidence Hybrid</label>
+                <input id="mentorAiConfidence" type="number" min="0" max="1" step="0.05" value="0.78"/>
+              </div>
+              <div class="manage-field">
+                <label>History Chat</label>
+                <input id="mentorAiHistory" type="number" min="2" max="40" value="12"/>
+              </div>
+              <div class="manage-field">
+                <label>Max Output Token</label>
+                <input id="mentorAiMaxTokens" type="number" min="100" max="8000" value="900"/>
+              </div>
+              <label class="mentor-ai-switch-row compact">
+                <input id="mentorAiFollowHours" type="checkbox" checked/>
+                <span>Ikuti Jam Operasional</span>
+              </label>
+            </div>
+            <button id="mentorAiSaveSettingsBtn" class="mentor-ai-primary" type="button">SIMPAN STATUS AI</button>
+          </section>
+
+          <section class="mentor-ai-card">
+            <div class="mentor-ai-card-head">
+              <div><span>02</span><h4>KONEKSI PROVIDER</h4></div>
+              <button id="mentorAiProviderNewBtn" type="button">+ BARU</button>
+            </div>
+            <input id="mentorAiProviderId" type="hidden"/>
+            <div class="mentor-ai-form-grid">
+              <div class="manage-field">
+                <label>Platform AI</label>
+                <select id="mentorAiProviderType">
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="openai">OpenAI</option>
+                  <option value="anthropic">Claude / Anthropic</option>
+                  <option value="openai_compatible">OpenAI-compatible lainnya</option>
+                </select>
+              </div>
+              <div class="manage-field">
+                <label>Nama Koneksi</label>
+                <input id="mentorAiProviderName" type="text" maxlength="100" placeholder="Contoh: DeepSeek Utama"/>
+              </div>
+              <div class="manage-field full">
+                <label>API Key</label>
+                <input id="mentorAiApiKey" type="password" autocomplete="new-password" placeholder="Masukkan API key"/>
+                <small id="mentorAiApiKeyHint">API key akan dienkripsi oleh Railway.</small>
+              </div>
+              <div class="manage-field">
+                <label>Model</label>
+                <input id="mentorAiProviderModel" type="text" placeholder="deepseek-flash"/>
+              </div>
+              <div id="mentorAiBaseUrlField" class="manage-field">
+                <label>Base URL</label>
+                <input id="mentorAiProviderBaseUrl" type="url" placeholder="Otomatis sesuai provider"/>
+              </div>
+            </div>
+            <div class="mentor-ai-provider-actions">
+              <button id="mentorAiProviderTestBtn" type="button">TEST KONEKSI</button>
+              <button id="mentorAiProviderSaveBtn" class="mentor-ai-primary" type="button">SIMPAN PROVIDER</button>
+              <button id="mentorAiProviderDeleteBtn" class="danger hidden" type="button">HAPUS</button>
+            </div>
+            <div id="mentorAiProviderStatus" class="team-status-note"></div>
+            <div id="mentorAiProviderList" class="mentor-ai-provider-list"></div>
+          </section>
+
+          <section class="mentor-ai-card full">
+            <div class="mentor-ai-card-head"><div><span>03</span><h4>IDENTITAS & PERSONA</h4></div></div>
+            <div class="mentor-ai-form-grid">
+              <div class="manage-field">
+                <label>Nama Mentor</label>
+                <input id="mentorAiMentorName" type="text" maxlength="100" value="Mentor BADAI"/>
+              </div>
+              <div class="manage-field full">
+                <label>Instruksi Utama / System Prompt</label>
+                <textarea id="mentorAiSystemPrompt" rows="7" maxlength="12000" placeholder="Atur karakter, gaya bahasa, batasan, dan cara Mentor menjawab..."></textarea>
+              </div>
+            </div>
+            <button id="mentorAiSavePersonaBtn" class="mentor-ai-primary" type="button">SIMPAN PERSONA</button>
+          </section>
+
+          <section class="mentor-ai-card">
+            <div class="mentor-ai-card-head"><div><span>04</span><h4>KNOWLEDGE</h4></div><button id="mentorAiKnowledgeNewBtn" type="button">+ BARU</button></div>
+            <input id="mentorAiKnowledgeId" type="hidden"/>
+            <div class="mentor-ai-form-grid">
+              <div class="manage-field full"><label>Judul</label><input id="mentorAiKnowledgeTitle" type="text" maxlength="180" placeholder="Contoh: Cara Login BADAI"/></div>
+              <div class="manage-field full"><label>Keyword</label><input id="mentorAiKnowledgeKeywords" type="text" placeholder="login, masuk, akses member"/></div>
+              <div class="manage-field full"><label>Isi Knowledge</label><textarea id="mentorAiKnowledgeContent" rows="7" maxlength="30000" placeholder="Tulis informasi yang harus diketahui AI Mentor..."></textarea></div>
+              <div class="manage-field"><label>Prioritas</label><input id="mentorAiKnowledgePriority" type="number" min="0" max="1000" value="100"/></div>
+              <label class="mentor-ai-switch-row compact"><input id="mentorAiKnowledgeActive" type="checkbox" checked/><span>Aktif</span></label>
+            </div>
+            <div class="mentor-ai-provider-actions">
+              <button id="mentorAiKnowledgeSaveBtn" class="mentor-ai-primary" type="button">SIMPAN KNOWLEDGE</button>
+              <button id="mentorAiKnowledgeDeleteBtn" class="danger hidden" type="button">HAPUS</button>
+            </div>
+            <div id="mentorAiKnowledgeList" class="mentor-ai-list"></div>
+          </section>
+
+          <section class="mentor-ai-card">
+            <div class="mentor-ai-card-head"><div><span>05</span><h4>SKILL & ATURAN</h4></div><button id="mentorAiSkillNewBtn" type="button">+ BARU</button></div>
+            <input id="mentorAiSkillId" type="hidden"/>
+            <div class="mentor-ai-form-grid">
+              <div class="manage-field full"><label>Nama Skill</label><input id="mentorAiSkillName" type="text" maxlength="120" placeholder="Contoh: Cek Status Membership"/></div>
+              <div class="manage-field full"><label>Instruksi</label><textarea id="mentorAiSkillInstructions" rows="6" maxlength="12000" placeholder="Jelaskan apa yang boleh dilakukan dan kapan harus handoff..."></textarea></div>
+              <div class="manage-field">
+                <label>Permission</label>
+                <select id="mentorAiSkillPermission">
+                  <option value="allowed">BOLEH OTOMATIS</option>
+                  <option value="approval">BUTUH ADMIN</option>
+                  <option value="disabled">DILARANG</option>
+                </select>
+              </div>
+              <label class="mentor-ai-switch-row compact"><input id="mentorAiSkillActive" type="checkbox" checked/><span>Aktif</span></label>
+            </div>
+            <div class="mentor-ai-provider-actions">
+              <button id="mentorAiSkillSaveBtn" class="mentor-ai-primary" type="button">SIMPAN SKILL</button>
+              <button id="mentorAiSkillDeleteBtn" class="danger hidden" type="button">HAPUS</button>
+            </div>
+            <div id="mentorAiSkillList" class="mentor-ai-list"></div>
+          </section>
+
+          <section class="mentor-ai-card full mentor-ai-test-card">
+            <div class="mentor-ai-card-head"><div><span>06</span><h4>TEST AI MENTOR</h4></div></div>
+            <div class="mentor-ai-test-box">
+              <textarea id="mentorAiTestInput" rows="3" placeholder="Contoh: Kak, aku lupa cara login BADAI"></textarea>
+              <button id="mentorAiTestBtn" class="mentor-ai-primary" type="button">COBA AI MENTOR</button>
+            </div>
+            <div id="mentorAiTestResult" class="mentor-ai-test-result">
+              <span>Belum ada test.</span>
+            </div>
+          </section>
+        </div>
       </section>
 
       <section id="mentorAutoReplyPanel" class="mentor-autoreply-panel hidden">
