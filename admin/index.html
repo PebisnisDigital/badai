@@ -3321,6 +3321,16 @@ th,td{padding:14px 12px!important}
 }
 #pageMentor #mentorThreadView.chat-select-mode .mentor-bubble-menu-btn{display:none!important}
 
+.mentor-ai-draft{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;padding:9px 11px;border-top:1px solid #513349;border-bottom:1px solid #513349;background:linear-gradient(90deg,#171018,#100c10)}
+.mentor-ai-draft.hidden{display:none!important}
+.mentor-ai-draft-copy{min-width:0;display:grid;gap:3px}
+.mentor-ai-draft-copy b{color:#ff7ebc;font-size:7px!important}
+.mentor-ai-draft-copy span{color:#ddd;font-size:8px!important;line-height:1.45;white-space:pre-wrap}
+.mentor-ai-draft-copy small{color:#777;font-size:6px!important}
+.mentor-ai-draft-actions{display:flex;align-items:center;gap:5px}
+.mentor-ai-draft-actions button{min-height:29px;padding:0 8px;border:1px solid #4a3240;border-radius:8px;background:#21141c;color:#ff89c0;font-size:6px;font-weight:950}
+.mentor-ai-draft-actions button:last-child{width:29px;padding:0;color:#aaa;background:#161616;border-color:#303030}
+
 /* AI Mentor */
 #pageMentor .mentor-ai-panel{display:grid;gap:10px}
 #pageMentor .mentor-ai-panel.hidden{display:none!important}
@@ -6032,6 +6042,17 @@ th,td{padding:14px 12px!important}
               <div class="mentor-admin-pending-copy"><b id="mentorAdminPendingName">Lampiran</b><span id="mentorAdminPendingSize"></span></div>
               <button id="mentorAdminPendingCancel" type="button">×</button>
             </div>
+            <div id="mentorAdminAiDraft" class="mentor-ai-draft hidden">
+              <div class="mentor-ai-draft-copy">
+                <b>✨ DRAFT AI MENTOR <span id="mentorAdminAiDraftConfidence"></span></b>
+                <span id="mentorAdminAiDraftText"></span>
+                <small id="mentorAdminAiDraftReason"></small>
+              </div>
+              <div class="mentor-ai-draft-actions">
+                <button id="mentorAdminAiDraftUse" type="button">PAKAI DRAFT</button>
+                <button id="mentorAdminAiDraftDismiss" type="button">×</button>
+              </div>
+            </div>
             <div id="mentorAdminReplyBar" class="mentor-reply-bar hidden">
               <div><b id="mentorAdminReplyTitle">Membalas pesan</b><span id="mentorAdminReplyText"></span></div>
               <button id="mentorAdminReplyCancel" type="button" aria-label="Batalkan balasan">×</button>
@@ -6942,6 +6963,8 @@ th,td{padding:14px 12px!important}
   let mentorWorkHoursLastFetch = 0;
   let mentorAiData = {settings:{},providers:[],knowledge:[],skills:[],usage:{}};
   let mentorAiBusy = false;
+  let mentorAdminAiDraft = null;
+  let mentorAdminUsingAiDraftId = null;
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
   let membershipRenewals = [];
@@ -9753,6 +9776,33 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return 'terakhir dilihat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(new Date(value));
   }
 
+  function renderMentorAdminAiDraft(){
+    const box=$('mentorAdminAiDraft');if(!box)return;
+    const d=mentorAdminAiDraft;
+    box.classList.toggle('hidden',!d);
+    if(!d)return;
+    if($('mentorAdminAiDraftConfidence'))$('mentorAdminAiDraftConfidence').textContent='· '+Math.round(Number(d.confidence||0)*100)+'%';
+    if($('mentorAdminAiDraftText'))$('mentorAdminAiDraftText').textContent=d.answer||'';
+    if($('mentorAdminAiDraftReason'))$('mentorAdminAiDraftReason').textContent=d.reason||'Butuh review Mentor manusia';
+  }
+
+  async function loadMentorAdminAiDraft(){
+    if(!mentorActiveConversation?.conversation_id){mentorAdminAiDraft=null;renderMentorAdminAiDraft();return}
+    const rows=await api('/rest/v1/rpc/admin_mentor_ai_draft_get',{
+      method:'POST',body:JSON.stringify({p_conversation_id:mentorActiveConversation.conversation_id})
+    }).catch(()=>[])||[];
+    mentorAdminAiDraft=Array.isArray(rows)?(rows[0]||null):rows;
+    renderMentorAdminAiDraft();
+  }
+
+  async function dismissMentorAdminAiDraft(){
+    if(!mentorAdminAiDraft?.id)return;
+    await api('/rest/v1/rpc/admin_mentor_ai_draft_action',{
+      method:'POST',body:JSON.stringify({p_id:mentorAdminAiDraft.id,p_action:'dismissed'})
+    });
+    mentorAdminAiDraft=null;mentorAdminUsingAiDraftId=null;renderMentorAdminAiDraft();
+  }
+
   function mentorAiAllowed(){
     return ['owner','super_admin','admin'].includes(currentTeam?.role);
   }
@@ -11325,6 +11375,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     await api('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:id})}).catch(()=>{});
     refreshMentorAdminUnread().catch(()=>{});
     refreshMentorWorkHours(false).catch(()=>{});
+    loadMentorAdminAiDraft().catch(()=>{});
   }
 
   async function mentorAdminSetTyping(value){
@@ -11348,6 +11399,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       p_drive_file_id:fileData?.id||null,p_drive_web_view_link:fileData?.url||null,p_file_name:fileData?.name||null,
       p_file_mime:fileData?.mime||null,p_file_size:fileData?.size||null,p_reply_to_message_id:mentorAdminReply?.id||null
     })});
+    if(mentorAdminUsingAiDraftId){
+      await api('/rest/v1/rpc/admin_mentor_ai_draft_action',{
+        method:'POST',body:JSON.stringify({p_id:mentorAdminUsingAiDraftId,p_action:'sent'})
+      }).catch(()=>{});
+      mentorAdminUsingAiDraftId=null;mentorAdminAiDraft=null;renderMentorAdminAiDraft();
+    }
     clearMentorAdminReply();
     mentorAdminSetTyping(false);mentorAdminLastKey='';
     await loadMentorAdminMessages(true);await loadMentorInbox();
@@ -11936,6 +11993,18 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       else await deleteSelectedAdminChat();
     }catch(err){mentorAdminToast(err.message||'Gagal menghapus pesan.')}
   });
+
+  $('mentorAdminAiDraftUse')?.addEventListener('click',()=>{
+    if(!mentorAdminAiDraft)return;
+    mentorAdminUsingAiDraftId=mentorAdminAiDraft.id;
+    if($('mentorAdminInput')){
+      $('mentorAdminInput').value=mentorAdminAiDraft.answer||'';
+      $('mentorAdminInput').dispatchEvent(new Event('input',{bubbles:true}));
+      $('mentorAdminInput').focus();
+    }
+    mentorAdminToast('Draft AI dimasukkan. Boleh diedit sebelum dikirim.');
+  });
+  $('mentorAdminAiDraftDismiss')?.addEventListener('click',()=>dismissMentorAdminAiDraft().catch(err=>mentorAdminToast(err.message||'Gagal menghapus draft')));
 
   $('claimMentorChatBtn')?.addEventListener('click',async()=>{
     try{await claimMentorConversation()}
