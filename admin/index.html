@@ -10949,7 +10949,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   function renderAdminCommunityMessages(rows,slug){
     const list=$('mentorAdminMessageList');if(!list)return;
     const uid=session?.user?.id||'';let html='',lastDay='';
-    (rows||[]).forEach(m=>{
+    rows=rows||[];
+    const rowMap=new Map(rows.map(m=>[m.id,m]));
+    mentorAdminMessageRows=rowMap;
+    rows.forEach(m=>{
       const day=mentorAdminDateKey(m.created_at);
       if(day!==lastDay){html+='<div class="mentor-admin-date">'+mentorAdminDateLabel(m.created_at)+'</div>';lastDay=day}
       const own=String(m.sender_user_id||'')===String(uid),side=own?'mentor':'member';
@@ -10982,10 +10985,17 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         body='<div class="body mentor-wa-formatted">'+(slug==='group'?mentorAdminCommunityFormatText(m.body||''):mentorAdminFormatText(m.body||''))+'</div>';
       }
 
+      const state=mentorAdminUiState.get(m.id)||{};
+      const reply=mentorAdminReplyHtml(m,rowMap);
+      const reactions=mentorAdminReactionHtml(state);
       const animateMsg=!mentorAdminAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
-      const bubble='<div id="mentor-msg-'+esc(m.id)+'" data-message-id="'+esc(m.id)+'" class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorAdminSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+announcementHead+sender+body+
-        '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+(own&&slug!=='announcement'?'<span class="mentor-admin-receipt read">✓✓</span>':'')+'</div></div>';
+      const bubble='<div id="mentor-msg-'+esc(m.id)+'" data-message-id="'+esc(m.id)+'" class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorAdminSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+
+        '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+esc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
+        (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+
+        announcementHead+sender+reply+body+
+        '<div class="mentor-admin-meta"><span>'+esc(mentorAdminClock(m.created_at))+'</span>'+(own&&slug!=='announcement'?'<span class="mentor-admin-receipt read">✓✓</span>':'')+'</div>'+
+        (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>';
 
       if(slug==='group'&&!own){
         const tone=mentorAdminSenderTone(senderName);
@@ -11004,8 +11014,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   async function loadAdminCommunityMessages(slug){
     if(!slug)return;
     if(slug==='group')await loadMentorAdminParticipants(false);
-    const rows=await api('/rest/v1/rpc/community_chat_messages_list_v4',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:150})})||[];
-    renderAdminCommunityMessages(rows,slug);
+    const [rows,uiRows]=await Promise.all([
+      api('/rest/v1/rpc/community_chat_messages_list_v5',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:150})}),
+      api('/rest/v1/rpc/community_chat_message_ui_state',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(()=>[])
+    ]);
+    mentorAdminUiState=new Map((uiRows||[]).map(x=>[x.message_id,x]));
+    renderAdminCommunityMessages(rows||[],slug);
     await api('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(()=>{});
     await loadMentorCommunityOverview();
     await refreshMentorAdminUnread();
@@ -11023,11 +11037,12 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   async function sendAdminCommunityPayload(type,body,sticker,fileData){
     const slug=mentorAdminCommunityChannel;if(!slug)return;
-    await api('/rest/v1/rpc/community_chat_send',{method:'POST',body:JSON.stringify({
+    await api('/rest/v1/rpc/community_chat_send_v2',{method:'POST',body:JSON.stringify({
       p_channel_slug:slug,p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
       p_drive_file_id:fileData?.id||null,p_drive_web_view_link:fileData?.url||null,p_file_name:fileData?.name||null,
-      p_file_mime:fileData?.mime||null,p_file_size:fileData?.size||null
+      p_file_mime:fileData?.mime||null,p_file_size:fileData?.size||null,p_reply_to_message_id:mentorAdminReply?.id||null
     })});
+    clearMentorAdminReply();
     await loadAdminCommunityMessages(slug);await loadMentorCommunityOverview();renderMentorAdminHome()
   }
 
@@ -11296,7 +11311,14 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   function mentorAdminReplyHtml(m,rowMap){
     if(!m?.reply_to_message_id)return '';
     const target=rowMap.get(m.reply_to_message_id);
-    const label=target?(target.sender_kind==='mentor'?'Anda':'Member'):'Pesan';
+    let label='Pesan';
+    if(target){
+      if(['group','announcement'].includes(mentorAdminScreen)){
+        label=String(target.sender_user_id||'')===String(session?.user?.id||'')?'Anda':String(target.sender_name||'Member BADAI');
+      }else{
+        label=target.sender_kind==='mentor'?'Anda':'Member';
+      }
+    }
     const summary=target?mentorAdminMessageSummary(target):'Pesan sebelumnya';
     return '<button type="button" class="mentor-reply-quote" data-mentor-jump-message="'+esc(m.reply_to_message_id)+'"><b>'+esc(label)+'</b><span>'+esc(summary.slice(0,120))+'</span></button>';
   }
@@ -11310,7 +11332,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     mentorAdminReply={id:m.id,summary:mentorAdminMessageSummary(m)};
     const bar=$('mentorAdminReplyBar');
     if(bar){
-      $('mentorAdminReplyTitle').textContent='Membalas '+(m.sender_kind==='mentor'?'pesan Anda':'Member');
+      const replyLabel=['group','announcement'].includes(mentorAdminScreen)
+        ? (String(m.sender_user_id||'')===String(session?.user?.id||'')?'pesan Anda':String(m.sender_name||'Member BADAI'))
+        : (m.sender_kind==='mentor'?'pesan Anda':'Member');
+      $('mentorAdminReplyTitle').textContent='Membalas '+replyLabel;
       $('mentorAdminReplyText').textContent=mentorAdminReply.summary.slice(0,130);
       bar.classList.remove('mentor-reply-closing','hidden');
     }
@@ -11335,18 +11360,25 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       try{await navigator.clipboard.writeText(text);mentorAdminToast('Pesan disalin')}catch(_){mentorAdminToast('Gagal menyalin pesan')}
       return;
     }
+    const communityMode=['group','announcement'].includes(mentorAdminScreen);
     if(action==='react'){
       const next=state.my_reaction===emoji?'':emoji;
-      await api('/rest/v1/rpc/mentor_message_react',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_emoji:next||null})});
-      mentorAdminLastKey='';await loadMentorAdminMessages(false);return;
+      await api(communityMode?'/rest/v1/rpc/community_chat_message_react':'/rest/v1/rpc/mentor_message_react',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_emoji:next||null})});
+      mentorAdminLastKey='';
+      if(communityMode)await loadAdminCommunityMessages(mentorAdminCommunityChannel);else await loadMentorAdminMessages(false);
+      return;
     }
     if(action==='star'){
-      await api('/rest/v1/rpc/mentor_message_star',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_star:!state.starred})});
-      mentorAdminLastKey='';await loadMentorAdminMessages(false);mentorAdminToast(state.starred?'Bintang dihapus':'Pesan diberi bintang');return;
+      await api(communityMode?'/rest/v1/rpc/community_chat_message_star':'/rest/v1/rpc/mentor_message_star',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_star:!state.starred})});
+      mentorAdminLastKey='';
+      if(communityMode)await loadAdminCommunityMessages(mentorAdminCommunityChannel);else await loadMentorAdminMessages(false);
+      mentorAdminToast(state.starred?'Bintang dihapus':'Pesan diberi bintang');return;
     }
     if(action==='delete'){
-      await api('/rest/v1/rpc/mentor_message_hide',{method:'POST',body:JSON.stringify({p_message_id:messageId})});
-      mentorAdminLastKey='';await loadMentorAdminMessages(false);mentorAdminToast('Pesan dihapus dari tampilan');return;
+      await api(communityMode?'/rest/v1/rpc/community_chat_message_hide':'/rest/v1/rpc/mentor_message_hide',{method:'POST',body:JSON.stringify({p_message_id:messageId})});
+      mentorAdminLastKey='';
+      if(communityMode)await loadAdminCommunityMessages(mentorAdminCommunityChannel);else await loadMentorAdminMessages(false);
+      mentorAdminToast('Pesan dihapus dari tampilan');return;
     }
   }
 
