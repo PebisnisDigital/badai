@@ -5339,6 +5339,57 @@ th,td{padding:14px 12px!important}
   }
 }
 
+/* Compact Chat Member chrome + keep composer above bottom navigation */
+#pageMentor .mentor-chat-page-head{display:none!important}
+#pageMentor .mentor-feature-tabs{
+  align-items:center!important;
+  margin-top:0!important;
+}
+#pageMentor .mentor-feature-tabs #mentorChatSettingsBtn{
+  margin-left:auto!important;
+  flex:0 0 34px!important;
+  width:34px!important;
+  min-width:34px!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid #31444e!important;
+  border-radius:999px!important;
+  background:#202c33!important;
+  color:#aebac1!important;
+  font-size:14px!important;
+  letter-spacing:0!important;
+}
+#pageMentor .mentor-feature-tabs #mentorChatSettingsBtn:hover,
+#pageMentor .mentor-feature-tabs #mentorChatSettingsBtn.active{
+  background:#123d34!important;
+  border-color:#19735e!important;
+  color:#25d366!important;
+}
+@media(max-width:760px){
+  #pageMentor .mentor-feature-tabs{
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scrollbar-width:none;
+  }
+  #pageMentor .mentor-feature-tabs::-webkit-scrollbar{display:none}
+  #pageMentor .mentor-admin-layout{
+    height:calc(100dvh - 180px - env(safe-area-inset-bottom))!important;
+    max-height:calc(100dvh - 180px - env(safe-area-inset-bottom))!important;
+    min-height:0!important;
+  }
+  #pageMentor .mentor-thread-panel,
+  #pageMentor #mentorThreadView:not(.hidden){min-height:0!important}
+  #pageMentor .mentor-admin-composer{
+    position:relative!important;
+    z-index:12!important;
+    flex:0 0 auto!important;
+  }
+  #pageMentor #mentorAdminNote{flex:0 0 auto!important}
+}
+
 /* Auto Reply tab visibility — must beat WhatsApp layout !important rules */
 #pageMentor #mentorAdminLayout.hidden{display:none!important}
 #pageMentor #mentorOpsPanel.hidden{display:none!important}
@@ -5960,20 +6011,13 @@ th,td{padding:14px 12px!important}
     </section>
 
     <section id="pageMentor" class="admin-page hidden">
-      <div class="mentor-chat-page-head">
-        <div>
-          <span>BADAI</span>
-          <h2>Chat Member</h2>
-        </div>
-        <button id="mentorChatSettingsBtn" type="button" aria-expanded="false" title="Pengaturan Chat">⚙</button>
-      </div>
-
       <div class="mentor-feature-tabs" role="tablist" aria-label="Fitur Chat Member">
         <button id="mentorFeatureChatBtn" class="active" type="button" data-mentor-feature="chat">CHAT</button>
         <button id="mentorFeatureAutoBtn" type="button" data-mentor-feature="autoreply">AUTO REPLY <span id="mentorAutoActiveBadge" class="mentor-feature-count hidden">0</span></button>
         <button id="mentorFeatureLogBtn" type="button" data-mentor-feature="log">LOG AUTO REPLY</button>
         <button id="mentorFeatureHoursBtn" type="button" data-mentor-feature="hours">JAM OPERASIONAL</button>
         <button id="mentorFeatureAiBtn" type="button" data-mentor-feature="ai">AI MENTOR</button>
+        <button id="mentorChatSettingsBtn" class="mentor-feature-settings" type="button" aria-expanded="false" title="Pengaturan Chat" aria-label="Pengaturan Chat">⚙</button>
       </div>
 
       <div id="mentorOpsPanel" class="mentor-admin-status-grid hidden">
