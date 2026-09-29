@@ -3321,6 +3321,35 @@ th,td{padding:14px 12px!important}
 }
 #pageMentor #mentorThreadView.chat-select-mode .mentor-bubble-menu-btn{display:none!important}
 
+/* Dedicated Jam Operasional tab */
+#pageMentor .mentor-work-hours-tab{gap:10px!important}
+#pageMentor .mentor-work-tab-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:13px 15px;border:1px solid #282828;border-radius:13px;background:#0c0c0c
+}
+#pageMentor .mentor-work-tab-head>div:first-child{min-width:0}
+#pageMentor .mentor-work-tab-head span{display:block;color:#ff76b8;font-size:7px;font-weight:950;letter-spacing:.1em}
+#pageMentor .mentor-work-tab-head h3{margin:4px 0 3px;color:#fff;font-size:16px}
+#pageMentor .mentor-work-tab-head p{max-width:640px;margin:0;color:#7d7d7d;font-size:8px;line-height:1.45}
+#pageMentor .mentor-work-timezone{
+  flex:0 0 auto;padding:7px 9px;border:1px solid #343434;border-radius:999px;
+  background:#131313;color:#aaa;font-size:6.5px;font-weight:950;letter-spacing:.05em
+}
+#pageMentor .mentor-work-hours-standalone{
+  padding:13px!important;border:1px solid #282828!important;border-radius:13px!important;background:#0b0b0b!important
+}
+#pageMentor .mentor-work-hours-standalone .mentor-work-hours-schedule{
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:6px
+}
+#pageMentor .mentor-work-hours-standalone .mentor-work-day{
+  grid-template-columns:30px 62px minmax(74px,1fr) 10px minmax(74px,1fr);
+  padding:7px 8px
+}
+@media(max-width:720px){
+  #pageMentor .mentor-work-tab-head{align-items:flex-start;flex-direction:column}
+  #pageMentor .mentor-work-hours-standalone .mentor-work-hours-schedule{grid-template-columns:1fr}
+}
+
 /* Mentor work hours */
 #pageMentor .mentor-work-hours-card{grid-column:1/-1!important;display:block!important;padding:14px!important}
 #pageMentor .mentor-work-hours-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -5241,9 +5270,11 @@ th,td{padding:14px 12px!important}
 #pageMentor #mentorOpsPanel.hidden{display:none!important}
 #pageMentor #mentorChatSettingsBtn.hidden{display:none!important}
 #pageMentor #mentorAutoReplyPanel.hidden,
-#pageMentor #mentorAutoReplyLogPanel.hidden{display:none!important}
+#pageMentor #mentorAutoReplyLogPanel.hidden,
+#pageMentor #mentorWorkHoursPanel.hidden{display:none!important}
 #pageMentor #mentorAutoReplyPanel:not(.hidden),
-#pageMentor #mentorAutoReplyLogPanel:not(.hidden){display:grid!important}
+#pageMentor #mentorAutoReplyLogPanel:not(.hidden),
+#pageMentor #mentorWorkHoursPanel:not(.hidden){display:grid!important}
 
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -5865,6 +5896,7 @@ th,td{padding:14px 12px!important}
         <button id="mentorFeatureChatBtn" class="active" type="button" data-mentor-feature="chat">CHAT</button>
         <button id="mentorFeatureAutoBtn" type="button" data-mentor-feature="autoreply">AUTO REPLY <span id="mentorAutoActiveBadge" class="mentor-feature-count hidden">0</span></button>
         <button id="mentorFeatureLogBtn" type="button" data-mentor-feature="log">LOG AUTO REPLY</button>
+        <button id="mentorFeatureHoursBtn" type="button" data-mentor-feature="hours">JAM OPERASIONAL</button>
       </div>
 
       <div id="mentorOpsPanel" class="mentor-admin-status-grid hidden">
@@ -5872,68 +5904,6 @@ th,td{padding:14px 12px!important}
         <div class="stat"><span>ARSIP HARIAN</span><strong>00.05 WIB</strong><small>Disiapkan otomatis tiap malam</small></div>
         <div class="stat mentor-drive-stat"><span>GOOGLE DRIVE</span><strong id="mentorDriveStatus">BELUM TERHUBUNG</strong><small id="mentorDriveAccount">Pesan tidak dihapus sebelum arsip terverifikasi</small><button id="mentorConnectDriveBtn" class="hidden" type="button">SAMBUNGKAN GOOGLE DRIVE</button></div>
 
-        <div class="stat mentor-work-hours-card">
-          <div class="mentor-work-hours-head">
-            <div><span>JAM KERJA MENTOR</span><strong id="mentorWorkHoursStatus">MEMUAT...</strong></div>
-            <label class="mentor-work-master"><input id="mentorWorkHoursEnabled" type="checkbox" checked/><span>AKTIFKAN JAM KERJA</span></label>
-          </div>
-          <small id="mentorWorkHoursSummary">Zona waktu Asia/Jakarta (WIB). Member tetap bisa mengirim pesan saat Mentor tutup.</small>
-          <div id="mentorWorkHoursSchedule" class="mentor-work-hours-schedule">
-            <div class="mentor-work-day" data-work-day="1">
-              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
-              <b>Senin</b>
-              <input class="mentor-work-start" type="time" value="08:00"/>
-              <span class="mentor-work-sep">—</span>
-              <input class="mentor-work-end" type="time" value="22:00"/>
-            </div>
-            <div class="mentor-work-day" data-work-day="2">
-              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
-              <b>Selasa</b>
-              <input class="mentor-work-start" type="time" value="08:00"/>
-              <span class="mentor-work-sep">—</span>
-              <input class="mentor-work-end" type="time" value="22:00"/>
-            </div>
-            <div class="mentor-work-day" data-work-day="3">
-              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
-              <b>Rabu</b>
-              <input class="mentor-work-start" type="time" value="08:00"/>
-              <span class="mentor-work-sep">—</span>
-              <input class="mentor-work-end" type="time" value="22:00"/>
-            </div>
-            <div class="mentor-work-day" data-work-day="4">
-              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
-              <b>Kamis</b>
-              <input class="mentor-work-start" type="time" value="08:00"/>
-              <span class="mentor-work-sep">—</span>
-              <input class="mentor-work-end" type="time" value="22:00"/>
-            </div>
-            <div class="mentor-work-day" data-work-day="5">
-              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
-              <b>Jumat</b>
-              <input class="mentor-work-start" type="time" value="08:00"/>
-              <span class="mentor-work-sep">—</span>
-              <input class="mentor-work-end" type="time" value="22:00"/>
-            </div>
-            <div class="mentor-work-day" data-work-day="6">
-              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
-              <b>Sabtu</b>
-              <input class="mentor-work-start" type="time" value="08:00"/>
-              <span class="mentor-work-sep">—</span>
-              <input class="mentor-work-end" type="time" value="22:00"/>
-            </div>
-            <div class="mentor-work-day" data-work-day="0">
-              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
-              <b>Minggu</b>
-              <input class="mentor-work-start" type="time" value="08:00"/>
-              <span class="mentor-work-sep">—</span>
-              <input class="mentor-work-end" type="time" value="22:00"/>
-            </div>
-          </div>
-          <div class="mentor-work-hours-actions">
-            <button id="mentorWorkHoursSaveBtn" type="button">SIMPAN JAM KERJA</button>
-            <span id="mentorWorkHoursSaveStatus"></span>
-          </div>
-        </div>
       </div>
 
       <div id="mentorAdminLayout" class="mentor-admin-layout">
@@ -6014,6 +5984,81 @@ th,td{padding:14px 12px!important}
           </div>
         </section>
       </div>
+
+      <section id="mentorWorkHoursPanel" class="mentor-autoreply-panel mentor-work-hours-tab hidden">
+        <div class="mentor-work-tab-head">
+          <div>
+            <span>JAM OPERASIONAL</span>
+            <h3>Jam Kerja Mentor BADAI</h3>
+            <p>Atur kapan Mentor dan Admin boleh membalas chat member. Member tetap bisa mengirim pesan saat jam operasional tutup.</p>
+          </div>
+          <div class="mentor-work-timezone">WIB · ASIA/JAKARTA</div>
+        </div>
+
+        <div class="mentor-work-hours-card mentor-work-hours-standalone">
+          <div class="mentor-work-hours-head">
+            <div><span>JAM KERJA MENTOR</span><strong id="mentorWorkHoursStatus">MEMUAT...</strong></div>
+            <label class="mentor-work-master"><input id="mentorWorkHoursEnabled" type="checkbox" checked/><span>AKTIFKAN JAM KERJA</span></label>
+          </div>
+          <small id="mentorWorkHoursSummary">Zona waktu Asia/Jakarta (WIB). Member tetap bisa mengirim pesan saat Mentor tutup.</small>
+          <div id="mentorWorkHoursSchedule" class="mentor-work-hours-schedule">
+            <div class="mentor-work-day" data-work-day="1">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Senin</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="2">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Selasa</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="3">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Rabu</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="4">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Kamis</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="5">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Jumat</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="6">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Sabtu</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+            <div class="mentor-work-day" data-work-day="0">
+              <label class="mentor-work-toggle"><input type="checkbox" class="mentor-work-open" checked/><span></span></label>
+              <b>Minggu</b>
+              <input class="mentor-work-start" type="time" value="08:00"/>
+              <span class="mentor-work-sep">—</span>
+              <input class="mentor-work-end" type="time" value="22:00"/>
+            </div>
+          </div>
+          <div class="mentor-work-hours-actions">
+            <button id="mentorWorkHoursSaveBtn" type="button">SIMPAN JAM KERJA</button>
+            <span id="mentorWorkHoursSaveStatus"></span>
+          </div>
+        </div>
+
+      </section>
 
       <section id="mentorAutoReplyPanel" class="mentor-autoreply-panel hidden">
         <div class="mentor-autoreply-hero">
@@ -9839,7 +9884,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   function switchMentorAdminFeature(feature){
-    mentorAdminFeature=['chat','autoreply','log'].includes(feature)?feature:'chat';
+    mentorAdminFeature=['chat','autoreply','log','hours'].includes(feature)?feature:'chat';
     document.querySelectorAll('[data-mentor-feature]').forEach(btn=>{
       btn.classList.toggle('active',btn.dataset.mentorFeature===mentorAdminFeature);
     });
@@ -9853,9 +9898,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('mentorChatSettingsBtn')?.classList.toggle('hidden',!isChat);
     $('mentorAutoReplyPanel')?.classList.toggle('hidden',mentorAdminFeature!=='autoreply');
     $('mentorAutoReplyLogPanel')?.classList.toggle('hidden',mentorAdminFeature!=='log');
+    $('mentorWorkHoursPanel')?.classList.toggle('hidden',mentorAdminFeature!=='hours');
     if(mentorAdminFeature==='chat')loadMentorInbox().catch(()=>{});
     if(mentorAdminFeature==='autoreply')loadMentorAutoReplyRules().catch(err=>mentorAdminToast(err.message||'Gagal memuat Auto Reply'));
     if(mentorAdminFeature==='log')loadMentorAutoReplyLogs().catch(err=>mentorAdminToast(err.message||'Gagal memuat log'));
+    if(mentorAdminFeature==='hours')loadMentorWorkHoursSettings().catch(err=>mentorAdminToast(err.message||'Gagal memuat jam operasional'));
   }
 
   function mentorAdminToast(message){
@@ -11159,7 +11206,6 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     panel?.classList.toggle('hidden',!willOpen);
     btn?.setAttribute('aria-expanded',String(Boolean(willOpen)));
     btn?.classList.toggle('active',Boolean(willOpen));
-    if(willOpen)loadMentorWorkHoursSettings().catch(err=>mentorAdminToast(err.message||'Gagal memuat jam kerja'));
   });
   $('mentorWorkHoursSchedule')?.addEventListener('change',e=>{
     const row=e.target.closest('[data-work-day]');if(!row)return;
