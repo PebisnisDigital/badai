@@ -229,9 +229,66 @@ function transcriptClock(ms){
   const seconds=Math.max(0,Math.floor(Number(ms||0)/1000)),h=Math.floor(seconds/3600),m=Math.floor((seconds%3600)/60),sec=seconds%60;
   return h>0?String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'):String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
 }
+function transcriptRowsFromJson3(data){
+  const rows=[];
+  for(const event of (data?.events||[])){
+    const line=(event?.segs||[]).map(seg=>decodeHtmlEntities(seg?.utf8||'')).join('').replace(/\s+/g,' ').trim();
+    if(line&&line!=='[Music]'&&line!=='[Musik]')rows.push('['+transcriptClock(event.tStartMs)+'] '+line);
+  }
+  return rows;
+}
+async function fetchYoutubeTimedText(videoId){
+  const hosts=['https://www.youtube.com/api/timedtext','https://video.google.com/timedtext'];
+  const commonHeaders={'User-Agent':'Mozilla/5.0 (compatible; BADAI-Mentor/1.0)','Accept-Language':'id-ID,id;q=0.9,en;q=0.7'};
+  const candidates=[];
+  for(const host of hosts){
+    try{
+      const listRes=await fetch(host+'?type=list&v='+encodeURIComponent(videoId),{headers:commonHeaders});
+      if(listRes.ok){
+        const xml=await listRes.text();
+        for(const m of xml.matchAll(/<track\b([^>]*)\/?>/gi)){
+          const attrs=m[1]||'';
+          const lang=(attrs.match(/\blang_code="([^"]+)"/i)||[])[1]||'';
+          const name=decodeHtmlEntities((attrs.match(/\bname="([^"]*)"/i)||[])[1]||'');
+          const kind=(attrs.match(/\bkind="([^"]+)"/i)||[])[1]||'';
+          if(lang)candidates.push({host,lang,name,kind});
+        }
+      }
+    }catch(_){}
+  }
+  for(const lang of ['id','en']) for(const kind of ['','asr']) for(const host of hosts) candidates.push({host,lang,name:'',kind});
+  const seen=new Set();
+  candidates.sort((a,b)=>{
+    const score=x=>(String(x.lang).toLowerCase()==='id'?10:0)+(x.kind!=='asr'?2:0);
+    return score(b)-score(a);
+  });
+  for(const c of candidates){
+    const key=[c.host,c.lang,c.name,c.kind].join('|'); if(seen.has(key))continue; seen.add(key);
+    const q=new URLSearchParams({v:videoId,lang:c.lang,fmt:'json3'});
+    if(c.name)q.set('name',c.name);
+    if(c.kind)q.set('kind',c.kind);
+    try{
+      const res=await fetch(c.host+'?'+q.toString(),{headers:commonHeaders});
+      if(!res.ok)continue;
+      const raw=await res.text();
+      if(!raw.trim())continue;
+      const data=JSON.parse(raw);
+      const rows=transcriptRowsFromJson3(data);
+      if(rows.length)return {transcript:rows.join('\n').trim(),language:c.lang,track_name:c.name||c.kind||''};
+    }catch(_){}
+  }
+  return null;
+}
 async function fetchYoutubeTranscript(videoId){
+  const direct=await fetchYoutubeTimedText(videoId);
+  if(direct?.transcript?.length>=20)return direct;
+
   const watchRes=await fetch('https://www.youtube.com/watch?v='+encodeURIComponent(videoId)+'&hl=id',{headers:{'User-Agent':'Mozilla/5.0 (compatible; BADAI-Mentor/1.0)','Accept-Language':'id-ID,id;q=0.9,en;q=0.7'}});
-  if(!watchRes.ok)throw new Error('YouTube HTTP '+watchRes.status);
+  if(!watchRes.ok){
+    const e=new Error('YouTube HTTP '+watchRes.status+'. Caption langsung juga tidak tersedia.');
+    e.code=watchRes.status===429?'YOUTUBE_RATE_LIMIT':'YOUTUBE_HTTP';
+    throw e;
+  }
   const html=await watchRes.text();
   const player=extractBalancedJsonAfter(html,'ytInitialPlayerResponse =')||extractBalancedJsonAfter(html,'var ytInitialPlayerResponse =');
   const tracks=player?.captions?.playerCaptionsTracklistRenderer?.captionTracks||[];
@@ -240,16 +297,13 @@ async function fetchYoutubeTranscript(videoId){
   const tr=await fetch(String(track.baseUrl||'')+'&fmt=json3',{headers:{'User-Agent':'Mozilla/5.0 (compatible; BADAI-Mentor/1.0)'}});
   if(!tr.ok)throw new Error('Caption YouTube HTTP '+tr.status);
   const raw=await tr.text(); let data=null; try{data=JSON.parse(raw)}catch(_){}
-  const rows=[];
-  for(const event of (data?.events||[])){
-    const line=(event?.segs||[]).map(seg=>decodeHtmlEntities(seg?.utf8||'')).join('').replace(/\s+/g,' ').trim();
-    if(line&&line!=='[Music]'&&line!=='[Musik]')rows.push('['+transcriptClock(event.tStartMs)+'] '+line);
-  }
+  const rows=transcriptRowsFromJson3(data);
   if(!rows.length){const plain=decodeHtmlEntities(raw.replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();if(plain)rows.push(plain)}
   const transcript=rows.join('\n').trim();
   if(transcript.length<20){const e=new Error('Transcript YouTube kosong atau terlalu pendek.');e.code='NO_CAPTION';throw e}
   return {transcript,language:String(track.languageCode||''),track_name:String(track?.name?.simpleText||'')};
 }
+
 function jsSingleField(line,name){
   const m=String(line||'').match(new RegExp(name+":'((?:\\\\.|[^'])*)'")); if(!m)return '';
   return m[1].replace(/\\'/g,"'").replace(/\\\\/g,'\\').replace(/\\n/g,'\n').trim();
