@@ -10084,8 +10084,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
         body:JSON.stringify({message})
       });
-      const data=await res.json().catch(()=>({}));
-      if(!res.ok)throw new Error(data.error||'Test AI gagal.');
+      const raw=await res.text();
+      let data={};
+      try{data=raw?JSON.parse(raw):{}}catch(_){data={}}
+      if(!res.ok){
+        const detail=String(data.error||raw||('HTTP '+res.status)).replace(/^BADAI staging error:\s*/i,'').trim();
+        throw new Error(detail||'Test AI gagal.');
+      }
       if($('mentorAiTestResult'))$('mentorAiTestResult').innerHTML=
         '<b>'+esc(data.answer||'-')+'</b>'+
         '<div class="mentor-ai-test-meta"><span>Confidence '+Math.round(Number(data.confidence||0)*100)+'%</span>'+
