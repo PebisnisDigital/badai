@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>BADAI 3D — Belajar Apa Aja Dengan AI</title>
+<meta name="description" content="Eksplorasi BADAI dalam pengalaman landing page 3D ringan: belajar AI, mentor, komunitas, dan jalur cuan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050505;--bg2:#090909;--card:#0e0e0f;--card2:#141116;--pink:#ff4fa3;
+  --pink2:#ff8ac4;--white:#f7f7f8;--muted:#98989f;--line:rgba(255,255,255,.09);
+  --green:#76d79d;--max:760px;--mx:0;--my:0
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:#050505}
+body{margin:0;background:
+ radial-gradient(circle at 50% -10%,rgba(255,79,163,.10),transparent 32%),
+ linear-gradient(180deg,#050505,#070607 42%,#050505);
+ color:var(--white);font-family:"Nunito",Arial,sans-serif;line-height:1.55;overflow-x:hidden}
+body::before{
+ content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.32;
+ background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+ linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+ background-size:42px 42px;mask-image:linear-gradient(to bottom,#000,transparent 86%)
+}
+a{color:inherit;text-decoration:none}.wrap{width:min(var(--max),calc(100% - 28px));margin:auto}
+h1,h2,h3,p{margin-top:0}h1,h2,h3,.brand,.cta,.eyebrow,.portal-title,.price{
+ font-family:"Raleway",Arial,sans-serif}
+section{position:relative;padding:68px 0}.pink{color:var(--pink)}
+.nav{
+ position:fixed;z-index:80;top:10px;left:50%;transform:translateX(-50%);
+ width:min(730px,calc(100% - 20px));border:1px solid rgba(255,255,255,.10);
+ background:rgba(8,8,9,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+ border-radius:17px;box-shadow:0 16px 50px rgba(0,0,0,.32)
+}
+.nav-in{height:58px;padding:0 10px 0 15px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:20px;font-weight:900;letter-spacing:-.055em}.brand span{color:var(--pink)}
+.nav-status{display:flex;align-items:center;gap:7px;margin-left:auto;color:#7f7f86;font-size:9px;font-weight:800;letter-spacing:.08em}
+.nav-status i{width:6px;height:6px;border-radius:50%;background:var(--pink);box-shadow:0 0 14px var(--pink);animation:pulse 1.8s infinite}
+.nav-btn{padding:10px 13px;border-radius:11px;background:var(--pink);color:#0a0708;font:900 10px "Raleway";white-space:nowrap}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,79,163,.45)}100%{box-shadow:0 0 0 9px rgba(255,79,163,0)}}
+
+.hero{min-height:920px;padding:118px 0 90px;overflow:hidden}
+.hero::before{
+ content:"";position:absolute;left:50%;top:160px;width:700px;height:700px;transform:translateX(-50%);
+ border-radius:50%;background:radial-gradient(circle,rgba(255,79,163,.105),rgba(255,79,163,.018) 35%,transparent 68%);
+ filter:blur(2px);pointer-events:none
+}
+.hero-head{position:relative;z-index:5;text-align:center;max-width:680px;margin:auto}
+.kicker,.eyebrow{
+ display:inline-flex;align-items:center;justify-content:center;min-height:27px;padding:0 11px;
+ border:1px solid rgba(255,79,163,.28);border-radius:999px;background:rgba(255,79,163,.065);
+ color:#ff8ac4;font-size:8px;font-weight:900;letter-spacing:.14em;text-transform:uppercase
+}
+.hero h1{font-size:clamp(48px,11vw,82px);line-height:.89;letter-spacing:-.072em;margin:17px 0 19px;font-weight:900}
+.hero-lead{max-width:600px;margin:0 auto;color:#b2b2b7;font-size:16px;line-height:1.7}
+.hero-lead b{color:#fff}
+.hero-actions{display:flex;justify-content:center;gap:9px;margin-top:22px;flex-wrap:wrap}
+.cta{
+ min-height:52px;padding:0 19px;border:1px solid transparent;border-radius:14px;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#ff90c7,#ff4fa3);
+ color:#090709;font-size:11px;font-weight:950;box-shadow:0 16px 34px rgba(255,79,163,.20);
+ position:relative;overflow:hidden;transition:.25s ease
+}
+.cta::after{content:"";position:absolute;top:-60%;left:-35%;width:25%;height:220%;transform:rotate(18deg);
+ background:linear-gradient(90deg,transparent,rgba(255,255,255,.48),transparent);animation:shine 3.8s infinite}
+.cta.ghost{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.12);color:#fff;box-shadow:none}
+.cta:hover{transform:translateY(-2px) scale(1.015)}
+@keyframes shine{0%,58%{left:-35%;opacity:0}68%{opacity:.9}88%,100%{left:125%;opacity:0}}
+
+.world{
+ position:relative;z-index:4;width:min(720px,100%);height:550px;margin:42px auto 0;
+ perspective:1400px;transform-style:preserve-3d
+}
+.world-core{
+ position:absolute;left:50%;top:48%;width:188px;height:188px;transform-style:preserve-3d;
+ transform:translate(-50%,-50%) rotateX(calc(var(--my)*-4deg)) rotateY(calc(var(--mx)*5deg));
+ transition:transform .18s ease-out
+}
+.core-orb{
+ position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;
+ background:
+ radial-gradient(circle at 35% 28%,rgba(255,255,255,.9),rgba(255,153,204,.35) 7%,rgba(255,79,163,.18) 22%,rgba(17,9,14,.95) 62%),
+ linear-gradient(145deg,#2b1320,#090709);
+ border:1px solid rgba(255,130,193,.38);
+ box-shadow:0 0 75px rgba(255,79,163,.30),inset 0 0 60px rgba(255,79,163,.18);
+ animation:orb 5s ease-in-out infinite
+}
+.core-orb::before,.core-orb::after{content:"";position:absolute;border-radius:50%;border:1px solid rgba(255,131,194,.22)}
+.core-orb::before{inset:-29px;transform:rotateX(70deg);animation:spin 8s linear infinite}
+.core-orb::after{inset:-55px;border-style:dashed;opacity:.45;animation:spin 16s linear infinite reverse}
+.core-logo{font:900 28px "Raleway";letter-spacing:-.06em;text-shadow:0 4px 24px #000}.core-logo span{color:var(--pink)}
+@keyframes orb{50%{transform:translateY(-8px) scale(1.025)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.orbit{
+ position:absolute;left:50%;top:48%;width:500px;height:500px;transform:translate(-50%,-50%);
+ border:1px solid rgba(255,255,255,.055);border-radius:50%;transform-style:preserve-3d;
+ animation:orbitSpin 26s linear infinite
+}
+.orbit.o2{width:365px;height:365px;animation-duration:19s;animation-direction:reverse;border-color:rgba(255,79,163,.10)}
+@keyframes orbitSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+.float-card{
+ position:absolute;width:168px;padding:13px 13px 12px;border:1px solid rgba(255,255,255,.105);
+ border-radius:17px;background:linear-gradient(160deg,rgba(25,22,25,.90),rgba(9,9,10,.95));
+ box-shadow:0 22px 55px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.055);
+ backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+ transform-style:preserve-3d;transition:.3s ease
+}
+.float-card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+ background:linear-gradient(140deg,rgba(255,255,255,.14),rgba(255,79,163,.10),transparent 45%);opacity:.8}
+.float-icon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:#24111c;border:1px solid #54233e;font-size:15px}
+.float-card b{display:block;position:relative;margin-top:10px;font:900 12px "Raleway";line-height:1.15}
+.float-card small{display:block;position:relative;margin-top:4px;color:#73737a;font-size:8px;line-height:1.35}
+.fc1{left:1%;top:8%;transform:rotateY(18deg) rotateZ(-3deg)}
+.fc2{right:1%;top:12%;transform:rotateY(-18deg) rotateZ(3deg)}
+.fc3{left:3%;bottom:7%;transform:rotateY(15deg) rotateZ(2deg)}
+.fc4{right:3%;bottom:7%;transform:rotateY(-15deg) rotateZ(-2deg)}
+.float-card:hover{border-color:rgba(255,79,163,.4);box-shadow:0 26px 65px rgba(0,0,0,.5),0 0 38px rgba(255,79,163,.12)}
+.world-floor{
+ position:absolute;left:50%;bottom:8px;width:560px;height:180px;transform:translateX(-50%) rotateX(72deg);
+ background:repeating-linear-gradient(90deg,rgba(255,79,163,.09) 0 1px,transparent 1px 36px),
+ repeating-linear-gradient(0deg,rgba(255,255,255,.045) 0 1px,transparent 1px 36px);
+ mask-image:radial-gradient(ellipse,#000 12%,transparent 72%);opacity:.55
+}
+.scroll-hint{position:absolute;left:50%;bottom:0;transform:translateX(-50%);color:#58585e;font-size:8px;font-weight:800;letter-spacing:.12em}
+.scroll-hint::after{content:"↓";display:block;color:var(--pink);font-size:18px;margin-top:3px;animation:bob 1.5s infinite}
+@keyframes bob{50%{transform:translateY(5px)}}
+
+.section-head{max-width:650px;margin:0 auto 26px;text-align:center}
+.section-head .eyebrow{margin-bottom:12px}.section-head h2{font-size:clamp(31px,7vw,48px);line-height:1.01;letter-spacing:-.05em;margin-bottom:12px}
+.section-head p{max-width:590px;margin:0 auto;color:var(--muted);font-size:14px}
+
+.portal-zone{overflow:hidden}
+.portal-stage{position:relative;height:470px;perspective:1500px;transform-style:preserve-3d;margin-top:20px}
+.portal{
+ position:absolute;top:10px;left:50%;width:min(72vw,350px);height:410px;padding:16px;border-radius:26px;
+ border:1px solid rgba(255,255,255,.095);background:linear-gradient(165deg,#151316,#09090a);
+ box-shadow:0 28px 68px rgba(0,0,0,.45);transform-style:preserve-3d;
+ transition:transform .8s cubic-bezier(.2,.78,.2,1),opacity .5s,filter .5s
+}
+.portal::before{
+ content:"";position:absolute;inset:14px;border-radius:20px;border:1px solid rgba(255,79,163,.18);
+ background:
+ radial-gradient(circle at 50% 42%,rgba(255,79,163,.20),transparent 25%),
+ linear-gradient(180deg,rgba(255,255,255,.025),transparent);
+ box-shadow:inset 0 0 65px rgba(255,79,163,.06)
+}
+.portal-visual{position:relative;height:236px;display:grid;place-items:center;perspective:800px}
+.portal-ring{position:absolute;width:160px;height:160px;border-radius:50%;border:1px solid rgba(255,79,163,.42);box-shadow:0 0 40px rgba(255,79,163,.14),inset 0 0 35px rgba(255,79,163,.08);animation:ring 7s linear infinite}
+.portal-ring::before,.portal-ring::after{content:"";position:absolute;inset:17px;border-radius:50%;border:1px dashed rgba(255,255,255,.16)}
+.portal-ring::after{inset:36px;border-color:rgba(255,79,163,.32);animation:ring 4s linear infinite reverse}
+@keyframes ring{to{transform:rotate(360deg)}}
+.portal-glyph{position:relative;z-index:2;font-size:54px;filter:drop-shadow(0 16px 18px rgba(0,0,0,.55));animation:float 3.6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px) rotateY(10deg)}}
+.portal-copy{position:relative;padding:0 7px 5px}
+.portal-copy span{color:#ff81bd;font-size:8px;font-weight:900;letter-spacing:.11em}
+.portal-title{font-size:22px;line-height:1.05;font-weight:900;margin:5px 0 7px}
+.portal-copy p{color:#7f7f86;font-size:11px;line-height:1.5;margin:0}
+.portal.active{z-index:5;opacity:1;transform:translateX(-50%) translateZ(45px) rotateY(0) scale(1)}
+.portal.left{z-index:3;opacity:.42;filter:brightness(.65);transform:translateX(-114%) translateZ(-180px) rotateY(45deg) scale(.82)}
+.portal.right{z-index:3;opacity:.42;filter:brightness(.65);transform:translateX(14%) translateZ(-180px) rotateY(-45deg) scale(.82)}
+.portal.hidden{z-index:1;opacity:0;transform:translateX(-50%) translateZ(-400px) scale(.62)}
+.portal-controls{display:flex;justify-content:center;gap:7px;margin-top:-8px}
+.portal-controls button{width:38px;height:38px;border-radius:50%;border:1px solid #2a2a2d;background:#0d0d0e;color:#fff;cursor:pointer;font-size:17px}
+.portal-dots{display:flex;align-items:center;gap:5px;padding:0 5px}
+.portal-dots i{width:5px;height:5px;border-radius:50%;background:#38383d}.portal-dots i.on{width:18px;border-radius:999px;background:var(--pink)}
+
+.mentor-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+.mentor-scene,.mentor-copy-card{border:1px solid var(--line);border-radius:24px;background:linear-gradient(160deg,#121013,#09090a);overflow:hidden}
+.mentor-scene{position:relative;min-height:430px;perspective:1200px}
+.mentor-scene::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 65%,rgba(255,79,163,.15),transparent 40%)}
+.holo-platform{position:absolute;left:50%;bottom:55px;width:210px;height:70px;transform:translateX(-50%) rotateX(72deg);border-radius:50%;border:1px solid rgba(255,79,163,.4);box-shadow:0 0 45px rgba(255,79,163,.28),inset 0 0 40px rgba(255,79,163,.12);animation:holo 2.8s infinite}
+@keyframes holo{50%{box-shadow:0 0 70px rgba(255,79,163,.37),inset 0 0 55px rgba(255,79,163,.18)}}
+.holo-person{position:absolute;left:50%;bottom:82px;width:122px;height:235px;transform:translateX(-50%);filter:drop-shadow(0 0 26px rgba(255,79,163,.18))}
+.h-head{position:absolute;left:50%;top:0;width:63px;height:63px;transform:translateX(-50%);border-radius:50%;background:linear-gradient(150deg,#f7f7f7,#bdbdc3);box-shadow:inset -12px -8px 0 rgba(0,0,0,.12)}
+.h-body{position:absolute;left:50%;top:55px;width:110px;height:142px;transform:translateX(-50%);border-radius:44px 44px 21px 21px;background:linear-gradient(155deg,#262329,#0f0e10);border:1px solid #5b2b45}
+.h-body::before{content:"BADAI";position:absolute;left:50%;top:35px;transform:translateX(-50%);color:#fff;font:900 13px "Raleway";letter-spacing:-.05em}
+.h-body::after{content:"AI";color:var(--pink)}
+.h-leg{position:absolute;left:50%;bottom:0;width:88px;height:66px;transform:translateX(-50%);background:linear-gradient(160deg,#151416,#080809);clip-path:polygon(10% 0,46% 0,47% 100%,26% 100%,20% 38%,0 100%,0 62%,24% 0,76% 0,100% 62%,100% 100%,80% 100%,53% 100%,54% 0,90% 0)}
+.chat-chip{position:absolute;padding:10px 11px;border:1px solid rgba(255,79,163,.28);border-radius:13px;background:rgba(20,13,17,.82);backdrop-filter:blur(10px);color:#ddd;font-size:9px;box-shadow:0 12px 28px rgba(0,0,0,.3)}
+.chat-chip b{display:block;color:#ff89c2;font-size:8px;margin-bottom:2px}.cc1{left:15px;top:42px;animation:float 4s infinite}.cc2{right:12px;top:115px;animation:float 4.6s infinite reverse}.cc3{left:20px;bottom:92px;animation:float 5.2s infinite}
+.mentor-copy-card{padding:25px}
+.mentor-copy-card h2{font-size:34px;line-height:1.03;letter-spacing:-.045em;margin:10px 0 12px}
+.mentor-copy-card>p{color:#96969c;font-size:13px}
+.feature-list{display:grid;gap:9px;margin-top:18px}
+.feature{display:flex;gap:10px;padding:11px;border:1px solid #242427;border-radius:14px;background:#0b0b0c}
+.feature i{width:28px;height:28px;flex:0 0 28px;border-radius:9px;background:#211019;color:#ff83bd;display:grid;place-items:center;font-style:normal;font-size:12px}
+.feature b{display:block;font:900 11px "Raleway"}.feature small{display:block;margin-top:3px;color:#74747a;font-size:9px;line-height:1.4}
+
+.network-box{position:relative;height:470px;border:1px solid var(--line);border-radius:27px;overflow:hidden;background:
+ radial-gradient(circle at 50% 50%,rgba(255,79,163,.11),transparent 38%),linear-gradient(180deg,#0d0c0e,#070708)}
+.network-box canvas{position:absolute;inset:0;width:100%;height:100%}
+.net-center{position:absolute;left:50%;top:50%;width:116px;height:116px;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;background:#130c10;border:1px solid #5b2c46;box-shadow:0 0 55px rgba(255,79,163,.22)}
+.net-center b{font:900 19px "Raleway";letter-spacing:-.05em}.net-center b span{color:var(--pink)}
+.net-tag{position:absolute;transform:translate(-50%,-50%);min-width:92px;padding:8px 10px;border:1px solid #28282b;border-radius:12px;background:rgba(12,12,13,.86);backdrop-filter:blur(8px);text-align:center;color:#b7b7bc;font-size:8px;font-weight:800;box-shadow:0 12px 26px rgba(0,0,0,.26)}
+.nt1{left:19%;top:22%}.nt2{left:80%;top:24%}.nt3{left:15%;top:72%}.nt4{left:82%;top:70%}.nt5{left:50%;top:14%}.nt6{left:50%;top:86%}
+
+.outcome-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.outcome{min-height:180px;padding:18px;border:1px solid #242427;border-radius:20px;background:
+ radial-gradient(circle at 90% 8%,rgba(255,79,163,.07),transparent 25%),linear-gradient(160deg,#101012,#09090a);
+ transform:perspective(800px) rotateX(1deg);transition:.28s ease}
+.outcome:hover{transform:perspective(800px) translateY(-4px) rotateX(0) rotateY(-2deg);border-color:#4d2a3c}
+.outcome .no{display:inline-flex;padding:4px 7px;border:1px solid #3b2331;border-radius:999px;color:#ff7fbd;font:900 7px "Raleway";letter-spacing:.1em}
+.outcome .emoji{display:block;font-size:30px;margin:17px 0 12px}.outcome b{display:block;font:900 16px "Raleway";line-height:1.15}.outcome p{margin:7px 0 0;color:#77777e;font-size:10px}
+
+.pricing-wrap{border:1px solid rgba(255,79,163,.20);border-radius:28px;padding:24px;background:
+ radial-gradient(circle at 85% 10%,rgba(255,79,163,.12),transparent 26%),linear-gradient(160deg,#121013,#080809);box-shadow:0 28px 70px rgba(0,0,0,.35)}
+.price-grid{display:grid;grid-template-columns:1fr 1.12fr;gap:12px;margin-top:22px;align-items:stretch}
+.price-card{padding:19px;border:1px solid #28282b;border-radius:20px;background:#0b0b0c;display:flex;flex-direction:column}
+.price-card.hot{border-color:#7a365b;background:radial-gradient(circle at 90% 5%,rgba(255,79,163,.13),transparent 28%),#100b0e;box-shadow:0 0 36px rgba(255,79,163,.08)}
+.price-label{color:#777;font-size:8px;font-weight:900;letter-spacing:.1em}.price-card h3{font-size:21px;margin:7px 0 6px}.price-card>p{color:#7d7d84;font-size:10px}
+.price{font-size:29px;font-weight:900;letter-spacing:-.05em;margin:9px 0 12px}.price.hot{color:#ff88c2}
+.price-features{display:grid;gap:7px;margin:5px 0 18px}
+.price-features span{display:flex;gap:7px;color:#b7b7bc;font-size:9px}.price-features span::before{content:"✓";color:var(--green);font-weight:900}
+.price-card .cta{margin-top:auto;width:100%}
+.price-note{margin-top:12px;text-align:center;color:#6d6d73;font-size:8px}
+.price-loading{color:#6b6b71;font-size:9px;font-weight:700}
+
+.faq{display:grid;gap:9px}
+details{border:1px solid #242427;border-radius:15px;background:#0b0b0c;padding:14px 15px}
+summary{cursor:pointer;font:900 12px "Raleway"}.faq p{margin:9px 0 0;color:#7d7d84;font-size:10px}
+
+.final-card{position:relative;overflow:hidden;text-align:center;border:1px solid #49263a;border-radius:28px;padding:36px 22px;background:
+ radial-gradient(circle at 50% 10%,rgba(255,79,163,.16),transparent 34%),linear-gradient(160deg,#151015,#080809)}
+.final-card::before{content:"";position:absolute;left:50%;top:50%;width:520px;height:520px;transform:translate(-50%,-50%);border:1px solid rgba(255,255,255,.035);border-radius:50%;box-shadow:0 0 0 70px rgba(255,255,255,.012),0 0 0 140px rgba(255,255,255,.008)}
+.final-card>*{position:relative;z-index:2}.final-card h2{font-size:clamp(34px,8vw,54px);line-height:.98;letter-spacing:-.055em;margin:14px auto 12px;max-width:620px}
+.final-card p{max-width:530px;margin:0 auto 20px;color:#85858b;font-size:12px}
+
+footer{padding:26px 0 95px;border-top:1px solid #1c1c1e;color:#606066;font-size:8px;text-align:center}
+.mobile-bar{display:none}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.show{opacity:1;transform:none}
+
+@media(max-width:650px){
+ .nav-status{display:none}.hero{min-height:850px;padding-top:105px}.hero h1{font-size:50px}
+ .hero-lead{font-size:13px}.world{height:500px;margin-top:30px}
+ .world-core{width:142px;height:142px}.orbit{width:360px;height:360px}.orbit.o2{width:270px;height:270px}
+ .float-card{width:132px;padding:10px}.float-card b{font-size:10px}.float-card small{font-size:7px}
+ .fc1{left:-2%;top:11%}.fc2{right:-2%;top:14%}.fc3{left:-1%;bottom:10%}.fc4{right:-1%;bottom:10%}
+ .world-floor{width:420px}.portal-stage{height:430px}.portal{height:380px;width:min(76vw,320px)}
+ .portal-visual{height:215px}.portal.left{transform:translateX(-108%) translateZ(-150px) rotateY(40deg) scale(.80)}
+ .portal.right{transform:translateX(8%) translateZ(-150px) rotateY(-40deg) scale(.80)}
+ .mentor-grid{grid-template-columns:1fr}.mentor-scene{min-height:390px}.mentor-copy-card{padding:20px}.mentor-copy-card h2{font-size:29px}
+ .network-box{height:400px}.outcome-grid{grid-template-columns:1fr 1fr}.outcome{min-height:150px;padding:15px}
+ .price-grid{grid-template-columns:1fr}.pricing-wrap{padding:18px}.mobile-bar{
+  display:flex;position:fixed;z-index:90;left:9px;right:9px;bottom:9px;min-height:58px;
+  align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 13px;border:1px solid rgba(255,255,255,.10);
+  border-radius:16px;background:rgba(8,8,9,.92);backdrop-filter:blur(16px);box-shadow:0 18px 45px rgba(0,0,0,.55);
+  transform:translateY(125%);opacity:0;transition:.28s ease
+ }
+ .mobile-bar.show{transform:none;opacity:1}.mobile-bar small{display:block;color:#ff79b9;font-size:6px;font-weight:900;letter-spacing:.09em}
+ .mobile-bar b{display:block;font:900 9px "Raleway";margin-top:2px}.mobile-bar a{padding:10px 12px;border-radius:10px;background:var(--pink);color:#090708;font:900 8px "Raleway"}
+}
+@media(max-width:420px){
+ .wrap{width:min(var(--max),calc(100% - 22px))}.hero h1{font-size:45px}.hero-actions{display:grid;grid-template-columns:1fr 1fr}.cta{padding:0 11px;font-size:9px}
+ .world{height:470px}.world-core{width:126px;height:126px}.core-logo{font-size:21px}
+ .orbit{width:320px;height:320px}.orbit.o2{width:240px;height:240px}.float-card{width:115px}
+ .float-icon{width:27px;height:27px;font-size:12px}.float-card small{display:none}.world-floor{width:360px}
+ .outcome-grid{grid-template-columns:1fr}.outcome{min-height:130px}
+ .nt1{left:20%;top:20%}.nt2{left:80%;top:20%}.nt3{left:19%;top:78%}.nt4{left:81%;top:78%}.nt5{top:10%}.nt6{top:90%}
+ .net-tag{min-width:78px;padding:7px 8px;font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
+ .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+ <div class="nav-in">
+  <a class="brand" href="/">BAD<span>AI</span></a>
+  <div class="nav-status"><i></i> 3D EXPERIENCE / PROTOTYPE</div>
+  <a class="nav-btn checkout-link" href="/#pricing">GABUNG BADAI</a>
+ </div>
+</nav>
+
+<main>
+<section class="hero">
+ <div class="wrap">
+  <div class="hero-head reveal">
+   <div class="kicker">BADAI • BELAJAR APA AJA DENGAN AI</div>
+   <h1>MASUK KE<br><span class="pink">DUNIA BADAI.</span></h1>
+   <p class="hero-lead">Bukan cuma kumpulan tutorial. Ini tempat buat <b>belajar, praktik, bertanya, dan terus ngikutin perubahan AI</b> tanpa harus jalan sendirian.</p>
+   <div class="hero-actions">
+    <a class="cta" href="#explore">JELAJAHI BADAI <span>↓</span></a>
+    <a class="cta ghost checkout-link" href="/#pricing">LIHAT PAKET</a>
+   </div>
+  </div>
+
+  <div class="world reveal" id="heroWorld" aria-label="Visual dunia BADAI 3D">
+   <div class="world-floor"></div>
+   <div class="orbit"></div><div class="orbit o2"></div>
+   <div class="world-core"><div class="core-orb"><div class="core-logo">BAD<span>AI</span></div></div></div>
+   <article class="float-card fc1"><div class="float-icon">🎬</div><b>VIDEO AI</b><small>Bikin visual tanpa ribet syuting.</small></article>
+   <article class="float-card fc2"><div class="float-icon">🌐</div><b>WEBSITE AI</b><small>Dari ide sampai jadi halaman.</small></article>
+   <article class="float-card fc3"><div class="float-icon">🪞</div><b>AI INFLUENCER</b><small>Karakter digital buat konten.</small></article>
+   <article class="float-card fc4"><div class="float-icon">⚡</div><b>JALUR CUAN</b><small>Skill dipakai, bukan dikoleksi.</small></article>
+   <div class="scroll-hint">SCROLL UNTUK MASUK</div>
+  </div>
+ </div>
+</section>
+
+<section class="portal-zone" id="explore">
+ <div class="wrap">
+  <div class="section-head reveal">
+   <div class="eyebrow">PORTAL BELAJAR</div>
+   <h2>Satu komunitas.<br><span class="pink">Banyak pintu masuk.</span></h2>
+   <p>Tidak harus jago semuanya. Pilih yang paling kepake dulu, praktik, baru lanjut.</p>
+  </div>
+  <div class="portal-stage reveal" id="portalStage">
+   <article class="portal active">
+    <div class="portal-visual"><div class="portal-ring"></div><div class="portal-glyph">🎬</div></div>
+    <div class="portal-copy"><span>PORTAL 01</span><div class="portal-title">Bikin Video AI</div><p>Belajar bikin konten visual tanpa harus jago editing dari awal.</p></div>
+   </article>
+   <article class="portal right">
+    <div class="portal-visual"><div class="portal-ring"></div><div class="portal-glyph">🌐</div></div>
+    <div class="portal-copy"><span>PORTAL 02</span><div class="portal-title">Bikin Website</div><p>Ubah ide jadi halaman yang bisa dilihat, diuji, dan dipakai jualan.</p></div>
+   </article>
+   <article class="portal hidden">
+    <div class="portal-visual"><div class="portal-ring"></div><div class="portal-glyph">🪞</div></div>
+    <div class="portal-copy"><span>PORTAL 03</span><div class="portal-title">AI Influencer</div><p>Eksplor karakter, pose, konten, dan visual digital yang konsisten.</p></div>
+   </article>
+   <article class="portal hidden">
+    <div class="portal-visual"><div class="portal-ring"></div><div class="portal-glyph">🎮</div></div>
+    <div class="portal-copy"><span>PORTAL 04</span><div class="portal-title">Bikin Game</div><p>Mulai dari ide sederhana sampai pengalaman interaktif yang bisa dimainkan.</p></div>
+   </article>
+   <article class="portal left">
+    <div class="portal-visual"><div class="portal-ring"></div><div class="portal-glyph">🧠</div></div>
+    <div class="portal-copy"><span>PORTAL 05</span><div class="portal-title">Belajar AI Praktis</div><p>Materi dibuat supaya bisa langsung dicoba, bukan cuma ditonton.</p></div>
+   </article>
+  </div>
+  <div class="portal-controls reveal">
+   <button type="button" id="portalPrev" aria-label="Sebelumnya">←</button>
+   <div class="portal-dots" id="portalDots"></div>
+   <button type="button" id="portalNext" aria-label="Berikutnya">→</button>
+  </div>
+ </div>
+</section>
+
+<section>
+ <div class="wrap">
+  <div class="mentor-grid">
+   <div class="mentor-scene reveal">
+    <div class="holo-platform"></div>
+    <div class="holo-person"><div class="h-head"></div><div class="h-body"></div><div class="h-leg"></div></div>
+    <div class="chat-chip cc1"><b>AI MENTOR</b>“Mulai dari materi mana?”</div>
+    <div class="chat-chip cc2"><b>AI MENTOR</b>“Aku jelaskan step-nya.”</div>
+    <div class="chat-chip cc3"><b>AI MENTOR</b>“Kalau mentok, tanya lagi.”</div>
+   </div>
+   <div class="mentor-copy-card reveal">
+    <div class="eyebrow">MENTOR YANG BISA DITANYA</div>
+    <h2>Bingung materi?<br><span class="pink">Jangan dipendam.</span></h2>
+    <p>Member area BADAI punya ruang untuk bertanya. Tujuannya simpel: orang tidak berhenti cuma gara-gara nyangkut satu langkah.</p>
+    <div class="feature-list">
+     <div class="feature"><i>01</i><div><b>Tanya materi</b><small>Bahas langkah yang bikin bingung.</small></div></div>
+     <div class="feature"><i>02</i><div><b>Belajar sesuai konteks</b><small>Jawaban diarahkan ke knowledge BADAI.</small></div></div>
+     <div class="feature"><i>03</i><div><b>Handoff ke manusia</b><small>Kasus tertentu tetap bisa diteruskan ke mentor/admin.</small></div></div>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section>
+ <div class="wrap">
+  <div class="section-head reveal">
+   <div class="eyebrow">KOMUNITAS</div>
+   <h2>Belajar AI itu cepat berubah.<br><span class="pink">Makanya jangan sendirian.</span></h2>
+   <p>BADAI dirancang sebagai ruang belajar yang ikut bergerak saat alat, cara, dan peluang AI berubah.</p>
+  </div>
+  <div class="network-box reveal">
+   <canvas id="networkCanvas"></canvas>
+   <div class="net-center"><b>BAD<span>AI</span></b></div>
+   <div class="net-tag nt1">MEMBER</div><div class="net-tag nt2">MENTOR</div>
+   <div class="net-tag nt3">KARYA</div><div class="net-tag nt4">PRAKTIK</div>
+   <div class="net-tag nt5">UPDATE AI</div><div class="net-tag nt6">JALUR CUAN</div>
+  </div>
+ </div>
+</section>
+
+<section>
+ <div class="wrap">
+  <div class="section-head reveal">
+   <div class="eyebrow">BUKAN SEKADAR NONTON</div>
+   <h2>Skill AI harus<br><span class="pink">berubah jadi karya.</span></h2>
+   <p>Arah belajarnya dibuat ke hasil yang bisa dilihat dan dipakai.</p>
+  </div>
+  <div class="outcome-grid">
+   <article class="outcome reveal"><span class="no">OUTPUT 01</span><span class="emoji">🎬</span><b>Konten Video AI</b><p>Dari ide menjadi visual yang siap dipakai untuk konten atau promosi.</p></article>
+   <article class="outcome reveal"><span class="no">OUTPUT 02</span><span class="emoji">🌐</span><b>Website</b><p>Bikin halaman sederhana tanpa harus memulai sebagai programmer.</p></article>
+   <article class="outcome reveal"><span class="no">OUTPUT 03</span><span class="emoji">🧍</span><b>Karakter AI</b><p>Eksperimen visual untuk edukasi, konten, dan brand.</p></article>
+   <article class="outcome reveal"><span class="no">OUTPUT 04</span><span class="emoji">💸</span><b>Jalur Untung</b><p>Untuk member yang ingin menghubungkan skill dengan aktivitas jualan.</p></article>
+  </div>
+ </div>
+</section>
+
+<section id="pricing3d">
+ <div class="wrap">
+  <div class="pricing-wrap reveal">
+   <div class="section-head" style="margin-bottom:0">
+    <div class="eyebrow">PILIH PINTU MASUK</div>
+    <h2>Mulai sesuai<br><span class="pink">kebutuhanmu.</span></h2>
+    <p>Harga aktif disinkronkan dari pengaturan BADAI. Checkout tetap memakai sistem pendaftaran utama yang sudah berjalan.</p>
+   </div>
+   <div class="price-grid">
+    <article class="price-card">
+     <span class="price-label">PAKET PEMULA</span><h3>Mulai Belajar</h3>
+     <p>Untuk yang ingin masuk dari materi dasar dan mulai bikin karya AI.</p>
+     <div class="price" id="priceNewbie"><span class="price-loading">Memuat harga...</span></div>
+     <div class="price-features"><span>Materi untuk mulai praktik</span><span>Akses member BADAI</span><span>Ruang belajar komunitas</span></div>
+     <a class="cta ghost checkout-link" data-plan="newbie" href="/#pricing">PILIH PEMULA</a>
+    </article>
+    <article class="price-card hot">
+     <span class="price-label" style="color:#ff84bf">PAKET UNTUNG</span><h3>Paling Lengkap</h3>
+     <p>Untuk yang ingin materi lebih lengkap plus jalur pemanfaatan skill.</p>
+     <div class="price hot" id="pricePro"><span class="price-loading">Memuat harga...</span></div>
+     <div class="price-features"><span>Semua materi paket lengkap</span><span>Jalur cuan</span><span>Program afiliasi</span><span>Akses member BADAI</span></div>
+     <a class="cta checkout-link" data-plan="pro" href="/#pricing">PILIH UNTUNG</a>
+    </article>
+   </div>
+   <div class="price-note">Klik paket untuk lanjut ke sistem pendaftaran BADAI.</div>
+  </div>
+ </div>
+</section>
+
+<section>
+ <div class="wrap">
+  <div class="section-head reveal"><div class="eyebrow">FAQ</div><h2>Sebelum <span class="pink">masuk.</span></h2></div>
+  <div class="faq">
+   <details class="reveal"><summary>Harus sudah jago AI?</summary><p>Tidak. Konsep BADAI memang dibuat supaya orang bisa mulai dari kebutuhan praktis.</p></details>
+   <details class="reveal"><summary>Apakah materinya akan terus sama?</summary><p>Arah BADAI adalah mengikuti perkembangan AI, jadi materi dapat diperbarui saat tools dan cara kerjanya berubah.</p></details>
+   <details class="reveal"><summary>Kalau bingung waktu belajar?</summary><p>Ada jalur bantuan lewat Mentor/AI Mentor dan komunitas. Untuk kasus yang butuh penanganan manusia, sistem bisa meneruskan ke tim.</p></details>
+   <details class="reveal"><summary>Versi 3D ini bikin HP berat?</summary><p>Halaman ini sengaja dibuat tanpa engine 3D besar. Efek depth dibuat dari CSS, canvas ringan, dan animasi yang otomatis dikurangi jika perangkat meminta reduced motion.</p></details>
+  </div>
+ </div>
+</section>
+
+<section>
+ <div class="wrap">
+  <div class="final-card reveal">
+   <div class="eyebrow">THE PORTAL IS OPEN</div>
+   <h2>AI terus berubah.<br><span class="pink">Belajarnya jangan berhenti.</span></h2>
+   <p>Masuk BADAI, pilih materi yang kamu butuhkan, praktikkan, lalu lanjut lagi saat AI berubah.</p>
+   <a class="cta checkout-link" href="/#pricing">MASUK BADAI</a>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer><div class="wrap"><b style="color:#aaa">BADAI — Belajar Apa Aja Dengan Artificial Intelligence</b><br>Prototype LP 3D • Railway staging</div></footer>
+<div class="mobile-bar" id="mobileBar"><div><small>BADAI 3D</small><b>Belajar → Praktik → Jadi Karya</b></div><a class="checkout-link" href="/#pricing">GABUNG</a></div>
+
+<script>
+(function(){
+ var root=document.documentElement;
+ var world=document.getElementById('heroWorld');
+ function clamp(n){return Math.max(-1,Math.min(1,n))}
+ if(window.matchMedia('(pointer:fine)').matches){
+  window.addEventListener('pointermove',function(e){
+   var x=clamp((e.clientX/window.innerWidth-.5)*2);
+   var y=clamp((e.clientY/window.innerHeight-.5)*2);
+   root.style.setProperty('--mx',x.toFixed(3));root.style.setProperty('--my',y.toFixed(3));
+   if(world){world.style.transform='rotateX(' + (-y*1.4) + 'deg) rotateY(' + (x*1.4) + 'deg)'}
+  },{passive:true});
+ }
+ var reveal=new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('show');reveal.unobserve(entry.target)}})
+ },{threshold:.12});
+ document.querySelectorAll('.reveal').forEach(function(el){reveal.observe(el)});
+
+ var portals=Array.prototype.slice.call(document.querySelectorAll('.portal'));
+ var index=0,dots=document.getElementById('portalDots');
+ portals.forEach(function(_,i){var d=document.createElement('i');if(i===0)d.className='on';dots.appendChild(d)});
+ function renderPortals(){
+  portals.forEach(function(p,i){
+   var diff=(i-index+portals.length)%portals.length;
+   p.className='portal ' + (diff===0?'active':diff===1?'right':diff===portals.length-1?'left':'hidden');
+  });
+  Array.prototype.forEach.call(dots.children,function(d,i){d.className=i===index?'on':''});
+ }
+ document.getElementById('portalNext').addEventListener('click',function(){index=(index+1)%portals.length;renderPortals()});
+ document.getElementById('portalPrev').addEventListener('click',function(){index=(index-1+portals.length)%portals.length;renderPortals()});
+ var touchX=null;
+ document.getElementById('portalStage').addEventListener('touchstart',function(e){touchX=e.touches[0].clientX},{passive:true});
+ document.getElementById('portalStage').addEventListener('touchend',function(e){
+  if(touchX===null)return;var dx=e.changedTouches[0].clientX-touchX;
+  if(Math.abs(dx)>40){index=(index+(dx<0?1:-1)+portals.length)%portals.length;renderPortals()}touchX=null
+ },{passive:true});
+ var auto=setInterval(function(){index=(index+1)%portals.length;renderPortals()},4800);
+ document.getElementById('portalStage').addEventListener('pointerenter',function(){clearInterval(auto)});
+
+ var canvas=document.getElementById('networkCanvas'),ctx=canvas.getContext('2d'),box=canvas.parentElement;
+ var nodes=[];
+ function resize(){
+  var d=Math.min(window.devicePixelRatio||1,2),r=box.getBoundingClientRect();
+  canvas.width=Math.floor(r.width*d);canvas.height=Math.floor(r.height*d);canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';ctx.setTransform(d,0,0,d,0,0);
+  nodes=[];for(var i=0;i<26;i++)nodes.push({x:Math.random()*r.width,y:Math.random()*r.height,vx:(Math.random()-.5)*.24,vy:(Math.random()-.5)*.24,r:Math.random()*2+1})
+ }
+ function draw(){
+  var r=box.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
+  for(var i=0;i<nodes.length;i++){var n=nodes[i];n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>r.width)n.vx*=-1;if(n.y<0||n.y>r.height)n.vy*=-1;
+   for(var j=i+1;j<nodes.length;j++){var m=nodes[j],dx=n.x-m.x,dy=n.y-m.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<118){ctx.strokeStyle='rgba(255,79,163,'+(0.13*(1-dist/118))+')';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);ctx.stroke()}}
+   ctx.fillStyle='rgba(255,145,201,.55)';ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill()
+  }requestAnimationFrame(draw)
+ }
+ resize();draw();window.addEventListener('resize',resize,{passive:true});
+
+ var SUPABASE_URL='https://tlvxlekqrllkvcpgwmic.supabase.co';
+ var SUPABASE_KEY='sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
+ function rp(v){return 'Rp' + new Intl.NumberFormat('id-ID',{maximumFractionDigits:0}).format(Number(v||0))}
+ fetch(SUPABASE_URL+'/rest/v1/marketing_public_config?id=eq.1&select=product_price,newbie_price,pro_price',{headers:{apikey:SUPABASE_KEY}})
+  .then(function(r){return r.ok?r.json():[]}).then(function(rows){
+   var c=rows&&rows[0];if(!c)return;
+   var n=document.getElementById('priceNewbie'),p=document.getElementById('pricePro');
+   if(n)n.textContent=rp(c.newbie_price||c.product_price);if(p)p.textContent=rp(c.pro_price||c.product_price)
+  }).catch(function(){
+   var n=document.getElementById('priceNewbie'),p=document.getElementById('pricePro');
+   if(n)n.textContent='Lihat harga aktif';if(p)p.textContent='Lihat harga aktif'
+  });
+
+ function checkoutHref(plan){
+  var qs=new URLSearchParams(location.search),ref=qs.get('ref')||'';
+  var url='/?';if(ref)url+='ref='+encodeURIComponent(ref)+'&';if(plan)url+='paket='+encodeURIComponent(plan);return url+'#pricing'
+ }
+ document.querySelectorAll('.checkout-link').forEach(function(a){a.addEventListener('click',function(){
+  var plan=a.getAttribute('data-plan')||'';a.href=checkoutHref(plan)
+ })});
+
+ var bar=document.getElementById('mobileBar');
+ window.addEventListener('scroll',function(){if(!bar)return;bar.classList.toggle('show',window.scrollY>650&&window.scrollY<document.body.scrollHeight-window.innerHeight-500)},{passive:true});
+})();
+</script>
+</body>
+</html>
