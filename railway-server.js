@@ -13,7 +13,7 @@ const akses = require('./api/admin-v3.js');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
-const BUILD_REV = 'badai-staging-profile-avatar-drive-v1';
+const BUILD_REV = 'badai-ai-mentor-drive-knowledge-v1';
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://tlvxlekqrllkvcpgwmic.supabase.co';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 const MENTOR_ARCHIVE_SECRET = process.env.MENTOR_ARCHIVE_SECRET || '';
@@ -22,6 +22,9 @@ const GOOGLE_OAUTH_REDIRECT_URI = process.env.GOOGLE_OAUTH_REDIRECT_URI || 'http
 const AI_MENTOR_ENCRYPTION_KEY = process.env.AI_MENTOR_ENCRYPTION_KEY || '';
 const AI_MENTOR_WORKER_SECRET = process.env.AI_MENTOR_WORKER_SECRET || '';
 let aiMentorWorkerBusy = false;
+let aiKnowledgeSyncBusy = false;
+let aiKnowledgeFolderCache = '';
+const AI_KNOWLEDGE_AUTO_SYNC_MS = 24*60*60*1000;
 
 const MIME = {
   '.html':'text/html; charset=utf-8',
@@ -202,6 +205,124 @@ async function driveClient(){
   return google.drive({version:'v3',auth});
 }
 
+function decodeHtmlEntities(value){
+  return String(value||'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#(\d+);/g,(_,n)=>String.fromCodePoint(Number(n)||32));
+}
+function youtubeVideoId(value){
+  const m=String(value||'').trim().match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/i);
+  return m?m[1]:'';
+}
+function extractBalancedJsonAfter(text,marker){
+  const markerAt=text.indexOf(marker); if(markerAt<0)return null;
+  const start=text.indexOf('{',markerAt+marker.length); if(start<0)return null;
+  let depth=0,inString=false,escaped=false;
+  for(let i=start;i<text.length;i++){
+    const ch=text[i];
+    if(inString){if(escaped){escaped=false;continue} if(ch==='\\'){escaped=true;continue} if(ch==='"')inString=false;continue}
+    if(ch==='"'){inString=true;continue}
+    if(ch==='{')depth++;
+    if(ch==='}'){depth--;if(depth===0){try{return JSON.parse(text.slice(start,i+1))}catch{return null}}}
+  }
+  return null;
+}
+function transcriptClock(ms){
+  const seconds=Math.max(0,Math.floor(Number(ms||0)/1000)),h=Math.floor(seconds/3600),m=Math.floor((seconds%3600)/60),sec=seconds%60;
+  return h>0?String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'):String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+}
+async function fetchYoutubeTranscript(videoId){
+  const watchRes=await fetch('https://www.youtube.com/watch?v='+encodeURIComponent(videoId)+'&hl=id',{headers:{'User-Agent':'Mozilla/5.0 (compatible; BADAI-Mentor/1.0)','Accept-Language':'id-ID,id;q=0.9,en;q=0.7'}});
+  if(!watchRes.ok)throw new Error('YouTube HTTP '+watchRes.status);
+  const html=await watchRes.text();
+  const player=extractBalancedJsonAfter(html,'ytInitialPlayerResponse =')||extractBalancedJsonAfter(html,'var ytInitialPlayerResponse =');
+  const tracks=player?.captions?.playerCaptionsTracklistRenderer?.captionTracks||[];
+  if(!tracks.length){const e=new Error('Video belum memiliki caption/transcript yang dapat dibaca otomatis.');e.code='NO_CAPTION';throw e}
+  const track=tracks.find(x=>String(x.languageCode||'').toLowerCase()==='id')||tracks.find(x=>String(x.languageCode||'').toLowerCase().startsWith('id'))||tracks.find(x=>x.kind!=='asr')||tracks[0];
+  const tr=await fetch(String(track.baseUrl||'')+'&fmt=json3',{headers:{'User-Agent':'Mozilla/5.0 (compatible; BADAI-Mentor/1.0)'}});
+  if(!tr.ok)throw new Error('Caption YouTube HTTP '+tr.status);
+  const raw=await tr.text(); let data=null; try{data=JSON.parse(raw)}catch(_){}
+  const rows=[];
+  for(const event of (data?.events||[])){
+    const line=(event?.segs||[]).map(seg=>decodeHtmlEntities(seg?.utf8||'')).join('').replace(/\s+/g,' ').trim();
+    if(line&&line!=='[Music]'&&line!=='[Musik]')rows.push('['+transcriptClock(event.tStartMs)+'] '+line);
+  }
+  if(!rows.length){const plain=decodeHtmlEntities(raw.replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();if(plain)rows.push(plain)}
+  const transcript=rows.join('\n').trim();
+  if(transcript.length<20){const e=new Error('Transcript YouTube kosong atau terlalu pendek.');e.code='NO_CAPTION';throw e}
+  return {transcript,language:String(track.languageCode||''),track_name:String(track?.name?.simpleText||'')};
+}
+function jsSingleField(line,name){
+  const m=String(line||'').match(new RegExp(name+":'((?:\\\\.|[^'])*)'")); if(!m)return '';
+  return m[1].replace(/\\'/g,"'").replace(/\\\\/g,'\\').replace(/\\n/g,'\n').trim();
+}
+function materialArrayLines(source,varName,category){
+  const marker='var '+varName+'=[',start=source.indexOf(marker); if(start<0)return [];
+  let end=source.indexOf('\n  ];',start); if(end<0)end=source.indexOf('];',start); if(end<0)return [];
+  const out=[];
+  for(const raw of source.slice(start+marker.length,end).split('\n')){
+    const line=raw.trim(); if(!line.startsWith('{title:'))continue;
+    const title=jsSingleField(line,'title'),video=jsSingleField(line,'video'),videoId=youtubeVideoId(video); if(!title||!videoId)continue;
+    out.push({source_key:'member:'+category.toLowerCase()+':youtube:'+videoId,source_type:'youtube',category,title,description:jsSingleField(line,'description'),source_url:video,video_id:videoId,tool_url:jsSingleField(line,'toolUrl')});
+  }
+  return out;
+}
+function memberKnowledgeSources(){
+  const source=fs.readFileSync(path.join(ROOT,'api/akses-v2.js'),'utf8');
+  const all=[...materialArrayLines(source,'pemulaMaterials','PEMULA'),...materialArrayLines(source,'untungMaterials','UNTUNG'),...materialArrayLines(source,'gratisanMaterials','GRATISAN')],seen=new Set();
+  return all.filter(x=>{if(seen.has(x.source_key))return false;seen.add(x.source_key);return true});
+}
+function driveQueryEscape(value){return String(value||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function safeDriveFileName(value){return String(value||'').replace(/[\\/:*?"<>|#%{}[\]~]/g,' ').replace(/\s+/g,' ').trim().slice(0,120)}
+async function ensureAiKnowledgeFolder(drive){
+  if(aiKnowledgeFolderCache)return aiKnowledgeFolderCache;
+  if(!MENTOR_DRIVE_FOLDER_ID)throw new Error('Folder Google Drive Mentor belum dikonfigurasi.');
+  const q="'"+driveQueryEscape(MENTOR_DRIVE_FOLDER_ID)+"' in parents and trashed=false and mimeType='application/vnd.google-apps.folder' and name='BADAI AI KNOWLEDGE'";
+  const found=await drive.files.list({q,fields:'files(id,name)',pageSize:10,supportsAllDrives:true,includeItemsFromAllDrives:true});
+  if(found.data?.files?.[0]?.id){aiKnowledgeFolderCache=found.data.files[0].id;return aiKnowledgeFolderCache}
+  const created=await drive.files.create({requestBody:{name:'BADAI AI KNOWLEDGE',mimeType:'application/vnd.google-apps.folder',parents:[MENTOR_DRIVE_FOLDER_ID],appProperties:{badai_type:'ai_knowledge_root'}},fields:'id,name',supportsAllDrives:true});
+  aiKnowledgeFolderCache=String(created.data?.id||''); if(!aiKnowledgeFolderCache)throw new Error('Gagal membuat folder BADAI AI KNOWLEDGE.'); return aiKnowledgeFolderCache;
+}
+async function upsertKnowledgeTranscriptFile(drive,folderId,source,info){
+  const fileName='[BADAI AI] '+source.category+' - '+safeDriveFileName(source.title)+' - '+source.video_id+'.txt';
+  const q="'"+driveQueryEscape(folderId)+"' in parents and trashed=false and name='"+driveQueryEscape(fileName)+"'";
+  const listed=await drive.files.list({q,fields:'files(id,name,webViewLink)',pageSize:5,supportsAllDrives:true,includeItemsFromAllDrives:true});
+  const current=listed.data?.files?.[0]||null;
+  const text=['BADAI AI KNOWLEDGE MASTER','Judul: '+source.title,'Kategori: '+source.category,'Sumber YouTube: '+source.source_url,'Video ID: '+source.video_id,'Bahasa caption: '+(info.language||'-'),'Sinkron: '+new Date().toISOString(),'','TRANSCRIPT',info.transcript].join('\n');
+  const media={mimeType:'text/plain',body:Readable.from([text])};
+  if(current?.id)return (await drive.files.update({fileId:current.id,requestBody:{name:fileName,appProperties:{badai_type:'ai_knowledge_transcript',badai_video_id:source.video_id}},media,fields:'id,name,webViewLink',supportsAllDrives:true})).data;
+  return (await drive.files.create({requestBody:{name:fileName,mimeType:'text/plain',parents:[folderId],appProperties:{badai_type:'ai_knowledge_transcript',badai_video_id:source.video_id}},media,fields:'id,name,webViewLink',supportsAllDrives:true})).data;
+}
+async function markKnowledgeSourceFailure(source,error){
+  return await supabaseRpc('mentor_ai_source_fail',{p_secret:AI_MENTOR_WORKER_SECRET,p_source_key:source.source_key,p_source_type:source.source_type,p_category:source.category,p_title:source.title,p_description:source.description||null,p_source_url:source.source_url,p_video_id:source.video_id,p_tool_url:source.tool_url||null,p_status:String(error?.code||'')==='NO_CAPTION'?'no_caption':'failed',p_error:String(error?.message||error).slice(0,1800)});
+}
+async function syncAiKnowledgeFromMemberArea(){
+  if(aiKnowledgeSyncBusy)return {ok:false,busy:true,message:'Sinkronisasi Knowledge sedang berjalan.'};
+  if(!AI_MENTOR_WORKER_SECRET)throw new Error('AI_MENTOR_WORKER_SECRET belum dikonfigurasi.');
+  if(!SUPABASE_ANON_KEY)throw new Error('SUPABASE_ANON_KEY belum dikonfigurasi.');
+  if(!(await mentorDriveConfigured()))throw new Error('Google Drive Mentor belum terhubung.');
+  aiKnowledgeSyncBusy=true; const started=Date.now(),results=[];
+  try{
+    const sources=memberKnowledgeSources(),drive=await driveClient(),folderId=await ensureAiKnowledgeFolder(drive);
+    for(const source of sources){
+      try{
+        const info=await fetchYoutubeTranscript(source.video_id),file=await upsertKnowledgeTranscriptFile(drive,folderId,source,info),hash=crypto.createHash('sha256').update(info.transcript).digest('hex');
+        const saved=await supabaseRpc('mentor_ai_source_upsert',{p_secret:AI_MENTOR_WORKER_SECRET,p_source_key:source.source_key,p_source_type:source.source_type,p_category:source.category,p_title:source.title,p_description:source.description||null,p_source_url:source.source_url,p_video_id:source.video_id,p_tool_url:source.tool_url||null,p_drive_file_id:String(file?.id||'')||null,p_drive_web_view_link:String(file?.webViewLink||'')||null,p_transcript_hash:hash,p_transcript:info.transcript});
+        results.push({title:source.title,video_id:source.video_id,status:'ready',transcript_chars:info.transcript.length,chunk_count:Number(saved?.chunk_count||0)});
+      }catch(error){await markKnowledgeSourceFailure(source,error).catch(()=>{});results.push({title:source.title,video_id:source.video_id,status:String(error?.code||'')==='NO_CAPTION'?'no_caption':'failed',error:String(error?.message||error)})}
+    }
+    return {ok:true,source_count:sources.length,ready:results.filter(x=>x.status==='ready').length,failed:results.filter(x=>x.status!=='ready').length,folder_id:folderId,elapsed_ms:Date.now()-started,results};
+  }finally{aiKnowledgeSyncBusy=false}
+}
+async function handleAiKnowledgeSync(req,res){
+  const token=String(req.headers.authorization||'').replace(/^Bearer\s+/i,'');
+  if(!(await verifyAiAdminBearer(token)))return res.status(403).json({error:'Tidak punya akses Sinkronisasi Knowledge AI.'});
+  return res.status(200).json(await syncAiKnowledgeFromMemberArea());
+}
+async function handleAiKnowledgeStatus(req,res){
+  const token=String(req.headers.authorization||'').replace(/^Bearer\s+/i,'');
+  if(!(await verifyAiAdminBearer(token)))return res.status(403).json({error:'Tidak punya akses status Knowledge AI.'});
+  return res.status(200).json({ok:true,status:await supabaseRpc('admin_mentor_ai_source_status',{},'Bearer '+token)});
+}
+
 function signedMentorFileUrl(fileId){
   if(!MENTOR_ARCHIVE_SECRET) return '';
   const sig = crypto.createHmac('sha256',MENTOR_ARCHIVE_SECRET).update(String(fileId)).digest('hex');
@@ -344,7 +465,7 @@ function aiMentorSystemText(ctx){
   const knowledge=Array.isArray(ctx?.knowledge)?ctx.knowledge:[];
   const skills=Array.isArray(ctx?.skills)?ctx.skills:[];
   const knowledgeText=knowledge.length
-    ? knowledge.map((k,i)=>'['+(i+1)+'] '+String(k.title||'Knowledge')+'\n'+String(k.content||'')).join('\n\n')
+    ? knowledge.map((k,i)=>{const sourceUrl=String(k.source_url||'').trim();return '['+(i+1)+'] '+String(k.title||'Knowledge')+(sourceUrl?'\nSumber materi: '+sourceUrl:'')+'\n'+String(k.content||'')}).join('\n\n')
     : '(Belum ada knowledge khusus yang relevan.)';
   const skillText=skills.length
     ? skills.map((x,i)=>'- '+String(x.name||'Skill')+' ['+String(x.permission_mode||'allowed')+']: '+String(x.instructions||'')).join('\n')
@@ -367,6 +488,8 @@ function aiMentorSystemText(ctx){
     'ATURAN JAWABAN:',
     '- Gunakan Bahasa Indonesia yang ramah, jelas, natural, dan praktis.',
     '- Utamakan knowledge BADAI di atas asumsi model.',
+    '- Jika knowledge berasal dari transcript video, gunakan isi transcript sebagai sumber utama. Jika ada timestamp, boleh arahkan member ke menit yang relevan.',
+    '- Jika source URL tersedia dan membantu, boleh sertakan link materi YouTube itu. Jangan membuat link sendiri.',
     '- Jangan mengarang link, harga, akses, kebijakan, status pembayaran, atau fakta BADAI.',
     '- Skill dengan mode approval tidak boleh diklaim sudah dilakukan. Minta handoff ke manusia jika aksi tersebut diperlukan.',
     '- Aturan confidence: 0.90-1.00 jika jawaban jelas didukung Knowledge/data dan aman dijawab; 0.78-0.89 jika cukup yakin tetapi ada sedikit ambiguitas; di bawah 0.78 jika informasi internal kurang, meragukan, atau perlu pengecekan manusia.',
@@ -1327,6 +1450,9 @@ const server = http.createServer(async (req, res) => {
       return await handleCommunityUpload(req,res);
     }
 
+    if (pathname === '/api/admin/ai/knowledge/status' && req.method === 'GET') return await handleAiKnowledgeStatus(req,res);
+    if (pathname === '/api/admin/ai/knowledge/sync' && req.method === 'POST') return await handleAiKnowledgeSync(req,res);
+
     if (pathname === '/api/admin/ai/provider/save' && req.method === 'POST') {
       return await handleAiProviderSave(req,res);
     }
@@ -1381,4 +1507,6 @@ server.listen(PORT, '0.0.0.0', () => {
   setInterval(() => runMentorArchiveWorker().catch(()=>{}), 5*60*1000);
   setTimeout(() => processAiMentorQueueOnce().catch(()=>{}), 5000);
   setInterval(() => processAiMentorQueueOnce().catch(()=>{}), 3000);
+  setTimeout(() => syncAiKnowledgeFromMemberArea().then(r=>console.log('AI Knowledge sync:',r?.ready||0,'ready')).catch(error=>console.warn('AI Knowledge sync:',error?.message||error)), 30000);
+  setInterval(() => syncAiKnowledgeFromMemberArea().catch(error=>console.warn('AI Knowledge auto sync:',error?.message||error)), AI_KNOWLEDGE_AUTO_SYNC_MS);
 });
