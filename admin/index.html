@@ -6940,6 +6940,8 @@ th,td{padding:14px 12px!important}
   let mentorWorkHoursRows = [];
   let mentorWorkHoursBusy = false;
   let mentorWorkHoursLastFetch = 0;
+  let mentorAiData = {settings:{},providers:[],knowledge:[],skills:[],usage:{}};
+  let mentorAiBusy = false;
   let currentFinanceType = 'profitloss';
   let financeTransactions = [];
   let membershipRenewals = [];
@@ -7402,6 +7404,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(page === 'finance') loadFinanceTransactions();
     if(page === 'marketing') loadMarketing();
     if(page === 'mentor'){
+      $('mentorFeatureAiBtn')?.classList.toggle('hidden',!mentorAiAllowed());
       loadMentorInbox();
       loadMentorAutoReplyRules().catch(()=>{});
       refreshMentorWorkHours(true).catch(()=>{});
@@ -9750,6 +9753,295 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return 'terakhir dilihat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(new Date(value));
   }
 
+  function mentorAiAllowed(){
+    return ['owner','super_admin','admin'].includes(currentTeam?.role);
+  }
+
+  function mentorAiDefaultModel(type){
+    if(type==='openai')return 'gpt-5.6-luna';
+    if(type==='anthropic')return 'claude-sonnet-5';
+    if(type==='deepseek')return 'deepseek-flash';
+    return '';
+  }
+
+  function mentorAiProviderLabel(p){
+    const names={openai:'OpenAI',anthropic:'Claude',deepseek:'DeepSeek',openai_compatible:'Compatible'};
+    return (p?.name||names[p?.provider_type]||'AI')+' · '+(p?.model||'-');
+  }
+
+  function mentorAiKeywords(value){
+    return String(value||'').split(/[\n,]+/).map(x=>x.trim().toLowerCase()).filter(Boolean);
+  }
+
+  function mentorAiResetProvider(){
+    if($('mentorAiProviderId'))$('mentorAiProviderId').value='';
+    if($('mentorAiProviderType'))$('mentorAiProviderType').value='deepseek';
+    if($('mentorAiProviderName'))$('mentorAiProviderName').value='DeepSeek Utama';
+    if($('mentorAiApiKey'))$('mentorAiApiKey').value='';
+    if($('mentorAiProviderModel'))$('mentorAiProviderModel').value='deepseek-flash';
+    if($('mentorAiProviderBaseUrl'))$('mentorAiProviderBaseUrl').value='';
+    if($('mentorAiApiKeyHint'))$('mentorAiApiKeyHint').textContent='API key akan dienkripsi oleh Railway.';
+    $('mentorAiProviderDeleteBtn')?.classList.add('hidden');
+    if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='';
+  }
+
+  function mentorAiEditProvider(id){
+    const p=(mentorAiData.providers||[]).find(x=>x.id===id);if(!p)return;
+    $('mentorAiProviderId').value=p.id;
+    $('mentorAiProviderType').value=p.provider_type;
+    $('mentorAiProviderName').value=p.name||'';
+    $('mentorAiApiKey').value='';
+    $('mentorAiProviderModel').value=p.model||'';
+    $('mentorAiProviderBaseUrl').value=p.base_url||'';
+    $('mentorAiApiKeyHint').textContent='API key tersimpan terenkripsi ••••'+(p.api_key_last4||'');
+    $('mentorAiProviderDeleteBtn')?.classList.remove('hidden');
+    if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='';
+  }
+
+  function mentorAiResetKnowledge(){
+    $('mentorAiKnowledgeId').value='';
+    $('mentorAiKnowledgeTitle').value='';
+    $('mentorAiKnowledgeKeywords').value='';
+    $('mentorAiKnowledgeContent').value='';
+    $('mentorAiKnowledgePriority').value='100';
+    $('mentorAiKnowledgeActive').checked=true;
+    $('mentorAiKnowledgeDeleteBtn')?.classList.add('hidden');
+  }
+
+  function mentorAiEditKnowledge(id){
+    const k=(mentorAiData.knowledge||[]).find(x=>x.id===id);if(!k)return;
+    $('mentorAiKnowledgeId').value=k.id;
+    $('mentorAiKnowledgeTitle').value=k.title||'';
+    $('mentorAiKnowledgeKeywords').value=(k.keywords||[]).join(', ');
+    $('mentorAiKnowledgeContent').value=k.content||'';
+    $('mentorAiKnowledgePriority').value=String(k.priority??100);
+    $('mentorAiKnowledgeActive').checked=k.is_active!==false;
+    $('mentorAiKnowledgeDeleteBtn')?.classList.remove('hidden');
+  }
+
+  function mentorAiResetSkill(){
+    $('mentorAiSkillId').value='';
+    $('mentorAiSkillName').value='';
+    $('mentorAiSkillInstructions').value='';
+    $('mentorAiSkillPermission').value='allowed';
+    $('mentorAiSkillActive').checked=true;
+    $('mentorAiSkillDeleteBtn')?.classList.add('hidden');
+  }
+
+  function mentorAiEditSkill(id){
+    const s=(mentorAiData.skills||[]).find(x=>x.id===id);if(!s)return;
+    $('mentorAiSkillId').value=s.id;
+    $('mentorAiSkillName').value=s.name||'';
+    $('mentorAiSkillInstructions').value=s.instructions||'';
+    $('mentorAiSkillPermission').value=s.permission_mode||'allowed';
+    $('mentorAiSkillActive').checked=s.is_active!==false;
+    $('mentorAiSkillDeleteBtn')?.classList.remove('hidden');
+  }
+
+  function renderMentorAi(){
+    const data=mentorAiData||{},s=data.settings||{},providers=data.providers||[],usage=data.usage||{};
+    if($('mentorAiEnabled'))$('mentorAiEnabled').checked=Boolean(s.enabled);
+    if($('mentorAiMode'))$('mentorAiMode').value=s.mode||'off';
+    if($('mentorAiConfidence'))$('mentorAiConfidence').value=String(s.confidence_threshold??0.78);
+    if($('mentorAiHistory'))$('mentorAiHistory').value=String(s.max_history_messages??12);
+    if($('mentorAiMaxTokens'))$('mentorAiMaxTokens').value=String(s.max_output_tokens??900);
+    if($('mentorAiFollowHours'))$('mentorAiFollowHours').checked=s.follow_work_hours!==false;
+    if($('mentorAiMentorName'))$('mentorAiMentorName').value=s.mentor_name||'Mentor BADAI';
+    if($('mentorAiSystemPrompt'))$('mentorAiSystemPrompt').value=s.system_prompt||'';
+
+    const primary=$('mentorAiPrimaryProvider'),fallback=$('mentorAiFallbackProvider');
+    const options=providers.filter(p=>p.is_active!==false).map(p=>'<option value="'+esc(p.id)+'">'+esc(mentorAiProviderLabel(p))+'</option>').join('');
+    if(primary){
+      primary.innerHTML='<option value="">Belum ada provider</option>'+options;
+      primary.value=s.primary_provider_id||'';
+    }
+    if(fallback){
+      fallback.innerHTML='<option value="">Tidak ada</option>'+options;
+      fallback.value=s.fallback_provider_id||'';
+    }
+
+    const activeProvider=providers.find(p=>p.id===s.primary_provider_id);
+    if($('mentorAiHeroStatus')){
+      const on=Boolean(s.enabled)&&s.mode!=='off'&&Boolean(activeProvider);
+      $('mentorAiHeroStatus').textContent=on?(String(s.mode||'AUTO').toUpperCase()):'OFF';
+      $('mentorAiHeroStatus').classList.toggle('on',on);
+      $('mentorAiHeroStatus').classList.toggle('off',!on);
+    }
+    if($('mentorAiUsageRequests'))$('mentorAiUsageRequests').textContent=Number(usage.today_requests||0).toLocaleString('id-ID');
+    if($('mentorAiUsageInput'))$('mentorAiUsageInput').textContent=Number(usage.today_input_tokens||0).toLocaleString('id-ID');
+    if($('mentorAiUsageOutput'))$('mentorAiUsageOutput').textContent=Number(usage.today_output_tokens||0).toLocaleString('id-ID');
+    if($('mentorAiUsageProvider'))$('mentorAiUsageProvider').textContent=activeProvider?activeProvider.name:'-';
+
+    if($('mentorAiProviderList')){
+      $('mentorAiProviderList').innerHTML=providers.map(p=>
+        '<div class="mentor-ai-list-item" data-ai-provider-id="'+esc(p.id)+'"><div><b>'+esc(p.name||'Provider AI')+'</b>'+
+        '<small>'+esc(p.provider_type)+' · '+esc(p.model||'-')+' · key ••••'+esc(p.api_key_last4||'')+'</small></div>'+
+        '<em class="'+(p.is_active?'active':'')+'">'+(p.is_active?'AKTIF':'OFF')+'</em></div>'
+      ).join('')||'<div class="empty">Belum ada provider AI.</div>';
+    }
+
+    if($('mentorAiKnowledgeList')){
+      $('mentorAiKnowledgeList').innerHTML=(data.knowledge||[]).map(k=>
+        '<div class="mentor-ai-list-item" data-ai-knowledge-id="'+esc(k.id)+'"><div><b>'+esc(k.title)+'</b>'+
+        '<small>'+esc((k.keywords||[]).join(', ')||'Tanpa keyword')+' · prioritas '+Number(k.priority||0)+'</small></div>'+
+        '<em class="'+(k.is_active?'active':'')+'">'+(k.is_active?'AKTIF':'OFF')+'</em></div>'
+      ).join('')||'<div class="empty">Belum ada knowledge.</div>';
+    }
+
+    if($('mentorAiSkillList')){
+      const perm={allowed:'OTOMATIS',approval:'BUTUH ADMIN',disabled:'DILARANG'};
+      $('mentorAiSkillList').innerHTML=(data.skills||[]).map(x=>
+        '<div class="mentor-ai-list-item" data-ai-skill-id="'+esc(x.id)+'"><div><b>'+esc(x.name)+'</b>'+
+        '<small>'+esc((x.instructions||'').slice(0,100))+'</small></div>'+
+        '<em class="'+(x.is_active&&x.permission_mode!=='disabled'?'active':'')+'">'+esc(perm[x.permission_mode]||x.permission_mode)+'</em></div>'
+      ).join('')||'<div class="empty">Belum ada skill/aturan.</div>';
+    }
+  }
+
+  async function loadMentorAi(force=false){
+    if(!mentorAiAllowed())return;
+    if(mentorAiBusy&&!force)return;
+    mentorAiBusy=true;
+    try{
+      const data=await api('/rest/v1/rpc/admin_mentor_ai_settings_get',{method:'POST',body:'{}'});
+      mentorAiData=data||{settings:{},providers:[],knowledge:[],skills:[],usage:{}};
+      renderMentorAi();
+    }finally{mentorAiBusy=false}
+  }
+
+  function mentorAiSettingsPayload(){
+    return {
+      p_enabled:Boolean($('mentorAiEnabled')?.checked),
+      p_mode:$('mentorAiMode')?.value||'off',
+      p_primary_provider_id:$('mentorAiPrimaryProvider')?.value||null,
+      p_fallback_provider_id:$('mentorAiFallbackProvider')?.value||null,
+      p_mentor_name:String($('mentorAiMentorName')?.value||'Mentor BADAI').trim(),
+      p_system_prompt:String($('mentorAiSystemPrompt')?.value||'').trim(),
+      p_confidence_threshold:Number($('mentorAiConfidence')?.value||0.78),
+      p_follow_work_hours:Boolean($('mentorAiFollowHours')?.checked),
+      p_max_history_messages:Number($('mentorAiHistory')?.value||12),
+      p_max_output_tokens:Number($('mentorAiMaxTokens')?.value||900)
+    };
+  }
+
+  async function saveMentorAiSettings(){
+    await api('/rest/v1/rpc/admin_mentor_ai_settings_save',{method:'POST',body:JSON.stringify(mentorAiSettingsPayload())});
+    await loadMentorAi(true);
+    mentorAdminToast('Pengaturan AI Mentor tersimpan');
+  }
+
+  async function saveMentorAiProvider(){
+    const payload={
+      id:$('mentorAiProviderId')?.value||null,
+      provider_type:$('mentorAiProviderType')?.value||'deepseek',
+      name:String($('mentorAiProviderName')?.value||'').trim(),
+      api_key:String($('mentorAiApiKey')?.value||'').trim(),
+      api_key_last4:(mentorAiData.providers||[]).find(x=>x.id===$('mentorAiProviderId')?.value)?.api_key_last4||'',
+      model:String($('mentorAiProviderModel')?.value||'').trim(),
+      base_url:String($('mentorAiProviderBaseUrl')?.value||'').trim(),
+      is_active:true
+    };
+    if(!payload.name)throw new Error('Nama koneksi wajib diisi.');
+    if(!payload.model)throw new Error('Model wajib diisi.');
+    const res=await fetch('/api/admin/ai/provider/save',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(data.error||'Gagal menyimpan provider.');
+    await loadMentorAi(true);
+    mentorAiEditProvider(data.id);
+    mentorAdminToast('Provider AI tersimpan terenkripsi');
+  }
+
+  async function testMentorAiProvider(){
+    const payload={
+      id:$('mentorAiProviderId')?.value||null,
+      provider_type:$('mentorAiProviderType')?.value||'deepseek',
+      name:String($('mentorAiProviderName')?.value||'').trim(),
+      api_key:String($('mentorAiApiKey')?.value||'').trim(),
+      model:String($('mentorAiProviderModel')?.value||'').trim(),
+      base_url:String($('mentorAiProviderBaseUrl')?.value||'').trim()
+    };
+    const res=await fetch('/api/admin/ai/provider/test',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(data.error||'Koneksi provider gagal.');
+    if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='✓ TERHUBUNG · '+Math.round(Number(data.latency_ms||0))+' ms · '+(data.answer||'OK');
+  }
+
+  async function deleteMentorAiProvider(){
+    const id=$('mentorAiProviderId')?.value;if(!id)return;
+    if(!window.confirm('Hapus koneksi provider AI ini?'))return;
+    await api('/rest/v1/rpc/admin_mentor_ai_provider_delete',{method:'POST',body:JSON.stringify({p_id:id})});
+    mentorAiResetProvider();await loadMentorAi(true);mentorAdminToast('Provider AI dihapus');
+  }
+
+  async function saveMentorAiKnowledge(){
+    const id=$('mentorAiKnowledgeId')?.value||null;
+    await api('/rest/v1/rpc/admin_mentor_ai_knowledge_save',{method:'POST',body:JSON.stringify({
+      p_id:id,p_title:String($('mentorAiKnowledgeTitle')?.value||'').trim(),
+      p_content:String($('mentorAiKnowledgeContent')?.value||'').trim(),
+      p_keywords:mentorAiKeywords($('mentorAiKnowledgeKeywords')?.value||''),
+      p_priority:Number($('mentorAiKnowledgePriority')?.value||100),
+      p_is_active:Boolean($('mentorAiKnowledgeActive')?.checked)
+    })});
+    mentorAiResetKnowledge();await loadMentorAi(true);mentorAdminToast('Knowledge tersimpan');
+  }
+
+  async function deleteMentorAiKnowledge(){
+    const id=$('mentorAiKnowledgeId')?.value;if(!id)return;
+    if(!window.confirm('Hapus knowledge ini?'))return;
+    await api('/rest/v1/rpc/admin_mentor_ai_knowledge_delete',{method:'POST',body:JSON.stringify({p_id:id})});
+    mentorAiResetKnowledge();await loadMentorAi(true);mentorAdminToast('Knowledge dihapus');
+  }
+
+  async function saveMentorAiSkill(){
+    const id=$('mentorAiSkillId')?.value||null;
+    await api('/rest/v1/rpc/admin_mentor_ai_skill_save',{method:'POST',body:JSON.stringify({
+      p_id:id,p_name:String($('mentorAiSkillName')?.value||'').trim(),
+      p_instructions:String($('mentorAiSkillInstructions')?.value||'').trim(),
+      p_permission_mode:$('mentorAiSkillPermission')?.value||'allowed',
+      p_is_active:Boolean($('mentorAiSkillActive')?.checked)
+    })});
+    mentorAiResetSkill();await loadMentorAi(true);mentorAdminToast('Skill AI tersimpan');
+  }
+
+  async function deleteMentorAiSkill(){
+    const id=$('mentorAiSkillId')?.value;if(!id)return;
+    if(!window.confirm('Hapus skill/aturan ini?'))return;
+    await api('/rest/v1/rpc/admin_mentor_ai_skill_delete',{method:'POST',body:JSON.stringify({p_id:id})});
+    mentorAiResetSkill();await loadMentorAi(true);mentorAdminToast('Skill AI dihapus');
+  }
+
+  async function testMentorAiChat(){
+    const message=String($('mentorAiTestInput')?.value||'').trim();
+    if(!message)throw new Error('Tulis pesan test dulu.');
+    const btn=$('mentorAiTestBtn'),old=btn?.textContent||'COBA AI MENTOR';
+    if(btn){btn.disabled=true;btn.textContent='AI MENJAWAB...'}
+    try{
+      const res=await fetch('/api/admin/ai/test-chat',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
+        body:JSON.stringify({message})
+      });
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(data.error||'Test AI gagal.');
+      if($('mentorAiTestResult'))$('mentorAiTestResult').innerHTML=
+        '<b>'+esc(data.answer||'-')+'</b>'+
+        '<div class="mentor-ai-test-meta"><span>Confidence '+Math.round(Number(data.confidence||0)*100)+'%</span>'+
+        '<span>'+(data.handoff?'HANDOFF':'BOLEH JAWAB')+'</span>'+
+        '<span>'+Math.round(Number(data.latency_ms||0))+' ms</span>'+
+        '<span>Knowledge '+Number(data.knowledge_count||0)+'</span>'+
+        '<span>Skill '+Number(data.skill_count||0)+'</span></div>'+
+        (data.reason?'<div class="mentor-ai-test-meta"><span>Reason: '+esc(data.reason)+'</span></div>':'');
+    }finally{if(btn){btn.disabled=false;btn.textContent=old}}
+  }
+
   function mentorWorkTime(value){
     return String(value||'').slice(0,5);
   }
@@ -10123,7 +10415,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   function switchMentorAdminFeature(feature){
-    mentorAdminFeature=['chat','autoreply','log','hours'].includes(feature)?feature:'chat';
+    if(feature==='ai'&&!mentorAiAllowed())feature='chat';
+    mentorAdminFeature=['chat','autoreply','log','hours','ai'].includes(feature)?feature:'chat';
     document.querySelectorAll('[data-mentor-feature]').forEach(btn=>{
       btn.classList.toggle('active',btn.dataset.mentorFeature===mentorAdminFeature);
     });
@@ -10135,13 +10428,16 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       $('mentorChatSettingsBtn')?.classList.remove('active');
     }
     $('mentorChatSettingsBtn')?.classList.toggle('hidden',!isChat);
+    $('mentorFeatureAiBtn')?.classList.toggle('hidden',!mentorAiAllowed());
     $('mentorAutoReplyPanel')?.classList.toggle('hidden',mentorAdminFeature!=='autoreply');
     $('mentorAutoReplyLogPanel')?.classList.toggle('hidden',mentorAdminFeature!=='log');
     $('mentorWorkHoursPanel')?.classList.toggle('hidden',mentorAdminFeature!=='hours');
+    $('mentorAiPanel')?.classList.toggle('hidden',mentorAdminFeature!=='ai');
     if(mentorAdminFeature==='chat')loadMentorInbox().catch(()=>{});
     if(mentorAdminFeature==='autoreply')loadMentorAutoReplyRules().catch(err=>mentorAdminToast(err.message||'Gagal memuat Auto Reply'));
     if(mentorAdminFeature==='log')loadMentorAutoReplyLogs().catch(err=>mentorAdminToast(err.message||'Gagal memuat log'));
     if(mentorAdminFeature==='hours')loadMentorWorkHoursSettings().catch(err=>mentorAdminToast(err.message||'Gagal memuat jam operasional'));
+    if(mentorAdminFeature==='ai')loadMentorAi(true).catch(err=>mentorAdminToast(err.message||'Gagal memuat AI Mentor'));
   }
 
   function mentorAdminToast(message){
@@ -11464,6 +11760,47 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   document.querySelectorAll('[data-mentor-feature]').forEach(btn=>{
     btn.addEventListener('click',()=>switchMentorAdminFeature(btn.dataset.mentorFeature));
   });
+  $('mentorAiProviderType')?.addEventListener('change',()=>{
+    const type=$('mentorAiProviderType').value;
+    if(!$('mentorAiProviderId').value){
+      $('mentorAiProviderModel').value=mentorAiDefaultModel(type);
+      $('mentorAiProviderName').value=type==='openai'?'OpenAI Utama':type==='anthropic'?'Claude Utama':type==='deepseek'?'DeepSeek Utama':'AI Compatible';
+    }
+  });
+  $('mentorAiProviderNewBtn')?.addEventListener('click',mentorAiResetProvider);
+  $('mentorAiProviderList')?.addEventListener('click',e=>{
+    const row=e.target.closest('[data-ai-provider-id]');if(row)mentorAiEditProvider(row.dataset.aiProviderId);
+  });
+  $('mentorAiProviderSaveBtn')?.addEventListener('click',async()=>{
+    try{if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='Menyimpan...';await saveMentorAiProvider()}
+    catch(err){if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='✕ '+(err.message||'Gagal menyimpan provider')}
+  });
+  $('mentorAiProviderTestBtn')?.addEventListener('click',async()=>{
+    try{if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='Menguji koneksi...';await testMentorAiProvider()}
+    catch(err){if($('mentorAiProviderStatus'))$('mentorAiProviderStatus').textContent='✕ '+(err.message||'Koneksi gagal')}
+  });
+  $('mentorAiProviderDeleteBtn')?.addEventListener('click',()=>deleteMentorAiProvider().catch(err=>mentorAdminToast(err.message||'Gagal menghapus provider')));
+  $('mentorAiSaveSettingsBtn')?.addEventListener('click',()=>saveMentorAiSettings().catch(err=>mentorAdminToast(err.message||'Gagal menyimpan AI')));
+  $('mentorAiSavePersonaBtn')?.addEventListener('click',()=>saveMentorAiSettings().catch(err=>mentorAdminToast(err.message||'Gagal menyimpan persona')));
+
+  $('mentorAiKnowledgeNewBtn')?.addEventListener('click',mentorAiResetKnowledge);
+  $('mentorAiKnowledgeList')?.addEventListener('click',e=>{
+    const row=e.target.closest('[data-ai-knowledge-id]');if(row)mentorAiEditKnowledge(row.dataset.aiKnowledgeId);
+  });
+  $('mentorAiKnowledgeSaveBtn')?.addEventListener('click',()=>saveMentorAiKnowledge().catch(err=>mentorAdminToast(err.message||'Gagal menyimpan knowledge')));
+  $('mentorAiKnowledgeDeleteBtn')?.addEventListener('click',()=>deleteMentorAiKnowledge().catch(err=>mentorAdminToast(err.message||'Gagal menghapus knowledge')));
+
+  $('mentorAiSkillNewBtn')?.addEventListener('click',mentorAiResetSkill);
+  $('mentorAiSkillList')?.addEventListener('click',e=>{
+    const row=e.target.closest('[data-ai-skill-id]');if(row)mentorAiEditSkill(row.dataset.aiSkillId);
+  });
+  $('mentorAiSkillSaveBtn')?.addEventListener('click',()=>saveMentorAiSkill().catch(err=>mentorAdminToast(err.message||'Gagal menyimpan skill')));
+  $('mentorAiSkillDeleteBtn')?.addEventListener('click',()=>deleteMentorAiSkill().catch(err=>mentorAdminToast(err.message||'Gagal menghapus skill')));
+  $('mentorAiTestBtn')?.addEventListener('click',()=>testMentorAiChat().catch(err=>{
+    if($('mentorAiTestResult'))$('mentorAiTestResult').textContent='✕ '+(err.message||'Test AI gagal');
+  }));
+  mentorAiResetProvider();mentorAiResetKnowledge();mentorAiResetSkill();
+
   $('mentorAutoCreateBtn')?.addEventListener('click',()=>openMentorAutoReplyModal());
   $('mentorAutoLogRefreshBtn')?.addEventListener('click',()=>loadMentorAutoReplyLogs().catch(err=>mentorAdminToast(err.message||'Gagal memuat log')));
   $('mentorAutoModalClose')?.addEventListener('click',closeMentorAutoReplyModal);
