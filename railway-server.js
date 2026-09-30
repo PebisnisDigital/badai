@@ -1191,7 +1191,7 @@ async function handleMentorUpload(req,res){
   if(!check.ok || !rows?.length) return res.status(403).json({error:'Tidak punya akses ke percakapan ini.'});
 
   const teamCheck=await fetch(
-    SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&role=in.(owner,super_admin,admin,mentor)&select=role&limit=1',
+    SUPABASE_URL+'/rest/v1/admin_team_members?auth_user_id=eq.'+encodeURIComponent(user.id)+'&status=eq.active&role=in.(owner,super_admin,admin,mentor,sales,finance,marketing)&select=role&limit=1',
     {headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}}
   );
   const teamRows=teamCheck.ok?await teamCheck.json().catch(()=>[]):[];
@@ -1254,7 +1254,7 @@ async function handleCommunityUpload(req,res){
   const profileRows=profileCheck.ok?await profileCheck.json().catch(()=>[]):[];
   const role=String(teamRows?.[0]?.role||'');
   const staffRoles=['owner','super_admin','admin','mentor','sales','finance','marketing'];
-  const announcementRoles=['owner','super_admin','admin','mentor'];
+  const announcementRoles=['owner','super_admin','admin','mentor','sales','finance','marketing'];
   const isStaff=staffRoles.includes(role);
   const isAnnouncementStaff=announcementRoles.includes(role);
   const memberRow=profileRows?.[0]||null;
