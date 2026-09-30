@@ -3546,11 +3546,21 @@ th,td{padding:14px 12px!important}
   .mentor-autoreply-form-grid .full{grid-column:auto}
 }
 
-.mentor-admin-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 12px}
+.mentor-admin-status-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0 12px}
 .mentor-admin-status-grid .stat{min-width:0}
 .mentor-admin-status-grid .stat strong{font-size:16px}
 .mentor-drive-stat button{margin-top:8px;min-height:30px;border:1px solid #ff4fa3;border-radius:9px;background:#ff4fa3;color:#111;padding:0 10px;font-size:7px;font-weight:950;cursor:pointer}
 .mentor-drive-stat button.hidden{display:none}
+.mentor-identity-stat{display:grid!important;grid-template-columns:52px minmax(0,1fr);gap:9px;align-items:center}
+.mentor-identity-avatar{width:52px;height:52px;display:grid;place-items:center;overflow:hidden;border:2px solid #ff4fa3;border-radius:999px;background:#222;color:#fff;font-size:18px;font-weight:950}
+.mentor-identity-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.mentor-identity-copy{min-width:0;display:grid;gap:3px}
+.mentor-identity-copy>span{color:#777;font-size:6px;font-weight:900;letter-spacing:.08em}
+.mentor-identity-copy>strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:10px!important}
+.mentor-identity-copy>small{color:#777;font-size:6px;line-height:1.35}
+.mentor-identity-upload{margin-top:4px;min-height:27px;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #ff4fa3;border-radius:8px;background:#ff4fa3;color:#111;font-size:6px;font-weight:950;cursor:pointer}
+.mentor-identity-upload.hidden{display:none!important}
+@media(max-width:900px){.mentor-admin-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .mentor-admin-layout{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,1.7fr);gap:10px;min-height:560px}
 .mentor-inbox-panel,.mentor-thread-panel{border:1px solid #242424;border-radius:14px;background:#090909;overflow:hidden}
 .mentor-inbox-head,.mentor-thread-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border-bottom:1px solid #242424;background:#0d0d0d}
@@ -6037,6 +6047,15 @@ th,td{padding:14px 12px!important}
         <div class="stat"><span>HOT STORAGE</span><strong>7 HARI</strong><small>Supabase untuk chat aktif</small></div>
         <div class="stat"><span>ARSIP HARIAN</span><strong>00.05 WIB</strong><small>Disiapkan otomatis tiap malam</small></div>
         <div class="stat mentor-drive-stat"><span>GOOGLE DRIVE</span><strong id="mentorDriveStatus">BELUM TERHUBUNG</strong><small id="mentorDriveAccount">Pesan tidak dihapus sebelum arsip terverifikasi</small><button id="mentorConnectDriveBtn" class="hidden" type="button">SAMBUNGKAN GOOGLE DRIVE</button></div>
+        <div class="stat mentor-identity-stat">
+          <div id="mentorIdentityAvatarPreview" class="mentor-identity-avatar">M</div>
+          <div class="mentor-identity-copy">
+            <span>PROFIL MENTOR</span>
+            <strong id="mentorIdentityName">MENTOR BADAI</strong>
+            <small>Satu identitas untuk semua admin.</small>
+            <label id="mentorIdentityUploadBtn" class="mentor-identity-upload hidden">GANTI FOTO<input id="mentorIdentityAvatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden></label>
+          </div>
+        </div>
 
       </div>
 
@@ -7042,6 +7061,8 @@ th,td{padding:14px 12px!important}
   let mentorWorkHoursLastFetch = 0;
   let mentorAiData = {settings:{},providers:[],knowledge:[],skills:[],usage:{}};
   let mentorAiBusy = false;
+  let mentorIdentity = {display_name:'MENTOR BADAI',avatar_url:'',updated_at:null};
+  let mentorIdentityLastFetch = 0;
   let mentorAiSourceData = {total:0,ready:0,pending:0,failed:0,chunks:0,transcript_chars:0,sources:[]};
   let mentorAiSourceBusy = false;
   let mentorAdminAiDraft = null;
@@ -7477,6 +7498,51 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   function mentorConfigAllowed(){
     return ['owner','super_admin','admin','mentor'].includes(currentTeam?.role);
   }
+  function mentorIdentityManageAllowed(){
+    return ['owner','super_admin'].includes(currentTeam?.role);
+  }
+  function renderMentorIdentity(){
+    const name=mentorIdentity?.display_name||'MENTOR BADAI';
+    const url=String(mentorIdentity?.avatar_url||'').trim();
+    if($('mentorIdentityName'))$('mentorIdentityName').textContent=name;
+    const preview=$('mentorIdentityAvatarPreview');
+    if(preview)preview.innerHTML=url?'<img src="'+esc(url)+'" alt="Mentor BADAI">':'M';
+    $('mentorIdentityUploadBtn')?.classList.toggle('hidden',!mentorIdentityManageAllowed());
+  }
+  async function loadMentorIdentity(force=false){
+    if(!session?.access_token)return mentorIdentity;
+    if(!force&&mentorIdentityLastFetch&&Date.now()-mentorIdentityLastFetch<30000){
+      renderMentorIdentity();return mentorIdentity;
+    }
+    const rows=await api('/rest/v1/rpc/mentor_identity_get',{method:'POST',body:'{}'});
+    const row=Array.isArray(rows)?rows[0]:rows;
+    if(row)mentorIdentity={display_name:row.display_name||'MENTOR BADAI',avatar_url:row.avatar_url||'',updated_at:row.updated_at||null};
+    mentorIdentityLastFetch=Date.now();
+    renderMentorIdentity();
+    return mentorIdentity;
+  }
+  async function uploadMentorIdentityAvatar(file){
+    if(!file)return;
+    if(!mentorIdentityManageAllowed())throw new Error('Hanya Admin Pusat yang dapat mengganti avatar Mentor BADAI.');
+    if(!/^image\/(jpeg|png|webp)$/i.test(file.type||''))throw new Error('Gunakan JPG, PNG, atau WebP.');
+    if(file.size>3*1024*1024)throw new Error('Avatar maksimal 3 MB.');
+    const input=$('mentorIdentityAvatarInput'),label=$('mentorIdentityUploadBtn');
+    const old=label?.childNodes?.[0]?.textContent||'GANTI FOTO';
+    if(label&&label.firstChild)label.firstChild.textContent='MENGUPLOAD...';
+    try{
+      const fd=new FormData();fd.append('file',file);
+      const res=await fetch('/api/admin/mentor-identity/avatar',{method:'POST',headers:{Authorization:'Bearer '+session.access_token},body:fd});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(data.error||'Gagal mengganti avatar Mentor.');
+      mentorIdentity={display_name:data.display_name||'MENTOR BADAI',avatar_url:data.avatar_url||'',updated_at:data.updated_at||null};
+      mentorIdentityLastFetch=Date.now();renderMentorIdentity();
+      if(['announcement','group'].includes(mentorAdminScreen))await loadAdminCommunityMessages(mentorAdminCommunityChannel);
+      mentorAdminToast('Avatar MENTOR BADAI berhasil diperbarui');
+    }finally{
+      if(input)input.value='';
+      if(label&&label.firstChild)label.firstChild.textContent=old;
+    }
+  }
   function configureTabs(){
     const allowed = allowedPages();
     $('tabSales').classList.toggle('hidden', !allowed.includes('sales'));
@@ -7486,6 +7552,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('tabTeam').classList.toggle('hidden', !allowed.includes('team'));
     document.querySelector('[data-mentor-feature="autoreply"]')?.classList.toggle('hidden',!mentorConfigAllowed());
     document.querySelector('[data-mentor-feature="log"]')?.classList.toggle('hidden',!mentorConfigAllowed());
+    $('mentorIdentityUploadBtn')?.classList.toggle('hidden',!mentorIdentityManageAllowed());
+    renderMentorIdentity();
   }
 
   function switchPage(page){
@@ -7544,6 +7612,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
       configureTabs();
       configureTeamAccessUI();
+      loadMentorIdentity(true).catch(()=>{});
       setupAdminProfileAvatar();
       bindAdminSelfSettings();
       populateAdminSelfSettings();
@@ -11067,8 +11136,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         ? '<div class="mentor-community-sender '+mentorAdminSenderTone(senderName)+'">'+esc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</div>'
         : '';
       const senderInitial=String(senderName||'A').trim().charAt(0).toUpperCase()||'A';
+      const sharedAvatar=String(mentorIdentity?.avatar_url||'').trim();
       const announcementAvatar=staffMessage
-        ? '<div class="mentor-announcement-avatar verified">M</div>'
+        ? (sharedAvatar?'<div class="mentor-announcement-avatar verified"><img src="'+esc(sharedAvatar)+'" alt="Mentor BADAI" loading="lazy"></div>':'<div class="mentor-announcement-avatar verified">M</div>')
         : (m.sender_verified&&m.sender_avatar_url
           ? '<div class="mentor-announcement-avatar verified"><img src="'+esc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
           : '<div class="mentor-announcement-avatar">'+esc(senderInitial)+'</div>');
@@ -11163,7 +11233,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         const fresh=mentorConversations.find(x=>x.conversation_id===mentorActiveConversation.conversation_id);
         if(fresh)mentorActiveConversation=fresh;
       }
-      await loadMentorCommunityOverview();
+      await Promise.all([loadMentorCommunityOverview(),loadMentorIdentity(false).catch(()=>mentorIdentity)]);
       renderMentorInbox();updateMentorThreadHeader();
       const communityUnread=Array.from(mentorCommunityOverviewMap.values()).reduce((sum,row)=>sum+Number(row.unread_count||0),0);
       setMentorAdminUnread(mentorConversations.reduce((sum,row)=>sum+Number(row.unread_count||0),0)+communityUnread);
@@ -11986,6 +12056,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       try{Notification.requestPermission().catch(()=>{})}catch(_){}
     }
     touchMentorPresence(true).catch(()=>{});
+  });
+
+  $('mentorIdentityAvatarInput')?.addEventListener('change',e=>{
+    const file=e.target.files&&e.target.files[0];
+    if(file)uploadMentorIdentityAvatar(file).catch(err=>mentorAdminToast(err.message||'Gagal mengganti avatar Mentor'));
   });
 
   $('mentorChatSettingsBtn')?.addEventListener('click',()=>{
