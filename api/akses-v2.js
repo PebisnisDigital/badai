@@ -2600,9 +2600,13 @@ document.addEventListener('DOMContentLoaded', function(){
     var host=el(targetId);
     if(!host)return;
     var firstNo=Number(startNo||1);
+    var displayItems=(items||[]).map(function(item,i){
+      return {item:item,originalIndex:i}
+    }).reverse();
     host.className='badai-material-card-grid';
-    host.innerHTML=items.map(function(item,i){
-      var number=String(firstNo+i).padStart(3,'0');
+    host.innerHTML=displayItems.map(function(entry){
+      var item=entry.item;
+      var number=String(firstNo+entry.originalIndex).padStart(3,'0');
       var hasTool=!!String(item.toolUrl||'').trim();
       var hasVideo=!!String(item.video||'').trim();
       var ready=item.ready===true || hasTool || hasVideo;
