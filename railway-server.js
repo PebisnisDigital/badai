@@ -1411,7 +1411,7 @@ async function handleMentorIdentityAvatarUpload(req,res){
   const avatarUrl=signedMentorFileUrl(saved.id);
 
   const savedIdentity=await supabaseRpc(
-    'admin_mentor_identity_set',
+    'admin_mentor_identity_avatar_set',
     {p_drive_file_id:saved.id,p_avatar_url:avatarUrl},
     'Bearer '+token
   );
