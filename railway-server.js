@@ -1667,7 +1667,7 @@ const server = http.createServer(async (req, res) => {
       return await handleMentorIdentityAvatarUpload(req,res);
     }
 
-    if (pathname === '/api/admin/mentor/avatar' && req.method === 'POST') {
+    if ((pathname === '/api/admin/mentor/avatar' || pathname === '/api/admin/mentor-identity/avatar') && req.method === 'POST') {
       return await handleMentorIdentityAvatarUpload(req,res);
     }
 
