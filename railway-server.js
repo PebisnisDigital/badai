@@ -1381,6 +1381,50 @@ async function handleAdminPermanentChatDelete(req,res){
 }
 
 
+
+async function handleMentorIdentityAvatarUpload(req,res){
+  if(!(await mentorDriveConfigured())){
+    return res.status(503).json({error:'Google Drive Mentor belum terhubung.'});
+  }
+
+  const authHeader=String(req.headers.authorization||'');
+  const token=authHeader.startsWith('Bearer ')?authHeader.slice(7):'';
+  const admin=await verifyAdminBearer(token);
+  if(!admin){
+    return res.status(403).json({error:'Hanya Admin Pusat yang dapat mengganti avatar Mentor BADAI.'});
+  }
+
+  const parsed=await parseMentorMultipart(req);
+  const mime=String(parsed.file.mime||'').toLowerCase();
+  if(!['image/jpeg','image/png','image/webp'].includes(mime)){
+    return res.status(400).json({error:'Avatar Mentor harus JPG, PNG, atau WebP.'});
+  }
+  if(Number(parsed.file.size||0)>3*1024*1024){
+    return res.status(400).json({error:'Avatar Mentor maksimal 3 MB.'});
+  }
+
+  const drive=await driveClient();
+  const root=await findOrCreateDriveFolder(drive,'MENTOR-IDENTITY',MENTOR_DRIVE_FOLDER_ID);
+  const ext=mime==='image/png'?'.png':mime==='image/webp'?'.webp':'.jpg';
+  const fileName='mentor-badai-'+Date.now()+ext;
+  const saved=await uploadDriveBuffer(drive,root,fileName,mime,parsed.file.buffer);
+  const avatarUrl=signedMentorFileUrl(saved.id);
+
+  const savedIdentity=await supabaseRpc(
+    'admin_mentor_identity_set',
+    {p_drive_file_id:saved.id,p_avatar_url:avatarUrl},
+    'Bearer '+token
+  );
+  const row=Array.isArray(savedIdentity)?savedIdentity[0]:savedIdentity;
+
+  return res.status(200).json({
+    ok:true,
+    display_name:row?.display_name||'MENTOR BADAI',
+    avatar_url:row?.avatar_url||avatarUrl,
+    updated_at:row?.updated_at||new Date().toISOString()
+  });
+}
+
 async function handleProfileAvatarUpload(req,res){
   if(!(await mentorDriveConfigured())){
     return res.status(503).json({error:'Google Drive BADAI belum terhubung.'});
@@ -1573,6 +1617,10 @@ const server = http.createServer(async (req, res) => {
     }
     if (pathname === '/api/admin/ai/test-chat' && req.method === 'POST') {
       return await handleAiTestChat(req,res);
+    }
+
+    if (pathname === '/api/admin/mentor-identity/avatar' && req.method === 'POST') {
+      return await handleMentorIdentityAvatarUpload(req,res);
     }
 
     if (pathname === '/api/profile/avatar' && req.method === 'POST') {
