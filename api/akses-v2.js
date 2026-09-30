@@ -117,8 +117,8 @@ module.exports = async function handler(req, res) {
   .badai-member-header-logo{justify-self:start}
 
   .badai-pemula-intro{
-    min-width:0;min-height:122px;display:grid;gap:15px;align-content:center;
-    padding:20px 14px 18px 7px;border-bottom:1px solid #352832;text-align:left
+    min-width:0;min-height:72px;display:grid;gap:0;align-content:center;
+    padding:14px 14px 14px 7px;border-bottom:1px solid #352832;text-align:left
   }
   .badai-pemula-intro-title-row{display:flex;align-items:center;gap:8px;min-width:0}
   .badai-pemula-intro-title{
@@ -163,7 +163,7 @@ module.exports = async function handler(req, res) {
     .badai-member-header-actions{width:min(100%,245px);gap:5px}
     .badai-member-header-action{min-height:34px;padding:0 7px;border-radius:9px;font-size:8px;gap:4px}
     .badai-member-header-action span{font-size:9px}
-    .badai-pemula-intro{min-height:108px;gap:12px;padding:16px 8px 14px 4px}
+    .badai-pemula-intro{min-height:64px;gap:0;padding:12px 8px 12px 4px}
     .badai-pemula-intro-title-row{gap:8px}
     .badai-pemula-intro-title{font-size:22px}
     .badai-pemula-update-badge{min-height:29px;padding:0 10px;font-size:10px}
@@ -2531,7 +2531,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   var kelas=el('kelas');
-  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-intro"><div class="badai-pemula-intro-title-row"><div class="badai-pemula-intro-title">MEMBER <span>PEMULA</span></div><span class="badai-pemula-update-badge">SELALU UPDATE</span></div><div class="badai-pemula-intro-marquee" aria-label="SEMUA MATERI akan terus diperbarui dan disesuaikan dengan perkembangan AI terbaru. Jadi materi yang dipelajari mengikuti update AI terkini."><div class="badai-pemula-intro-track"><span class="badai-pemula-intro-item">SEMUA MATERI akan terus diperbarui dan disesuaikan dengan perkembangan AI terbaru. Jadi materi yang dipelajari mengikuti update AI terkini.</span><span class="badai-pemula-intro-item" aria-hidden="true">SEMUA MATERI akan terus diperbarui dan disesuaikan dengan perkembangan AI terbaru. Jadi materi yang dipelajari mengikuti update AI terkini.</span></div></div></div><div class="badai-pemula-heading-actions"><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
+  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-intro"><div class="badai-pemula-intro-title-row"><div class="badai-pemula-intro-title">MEMBER <span>PEMULA</span></div><span class="badai-pemula-update-badge">SELALU UPDATE</span></div></div><div class="badai-pemula-heading-actions"><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
   var bonus=el('jaluruntung');
   if(bonus&&!bonus.querySelector('.screen-heading')) bonus.insertAdjacentHTML('afterbegin','<div class="screen-heading"><h1>Untung BADAI</h1><p>21 materi khusus Member Untung untuk bikin produk, konten, dan sistem yang menghasilkan.</p></div>');
   var akun=el('akun');
