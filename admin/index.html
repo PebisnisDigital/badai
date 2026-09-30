@@ -7501,12 +7501,26 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   function mentorIdentityManageAllowed(){
     return ['owner','super_admin'].includes(currentTeam?.role);
   }
-  function renderMentorIdentity(){
+  function mentorIdentityAvatarMarkup(extraClass=''){
+    const url=String(mentorIdentity?.avatar_url||'').trim();
+    return url
+      ? '<div class="mentor-inbox-avatar has-photo '+extraClass+'"><img src="'+esc(url)+'" alt="Mentor BADAI" loading="eager"></div>'
+      : '<div class="mentor-inbox-avatar '+extraClass+'">M</div>';
+  }
+  function applyMentorIdentityEverywhere(){
     const name=mentorIdentity?.display_name||'MENTOR BADAI';
     const url=String(mentorIdentity?.avatar_url||'').trim();
     if($('mentorIdentityName'))$('mentorIdentityName').textContent=name;
     const preview=$('mentorIdentityAvatarPreview');
-    if(preview)preview.innerHTML=url?'<img src="'+esc(url)+'" alt="Mentor BADAI">':'M';
+    if(preview)preview.innerHTML=url?'<img src="'+esc(url)+'" alt="Mentor BADAI" loading="eager">':'M';
+    document.querySelectorAll('[data-shared-mentor-avatar]').forEach(node=>{
+      node.innerHTML=url?'<img src="'+esc(url)+'" alt="Mentor BADAI" loading="eager">':'M';
+      node.classList.toggle('has-photo',Boolean(url));
+    });
+    document.querySelectorAll('[data-shared-mentor-name]').forEach(node=>node.textContent=name);
+  }
+  function renderMentorIdentity(){
+    applyMentorIdentityEverywhere();
     $('mentorIdentityUploadBtn')?.classList.toggle('hidden',!mentorIdentityManageAllowed());
   }
   async function loadMentorIdentity(force=false){
@@ -7537,8 +7551,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       if(!res.ok)throw new Error(data.error||'Gagal mengganti avatar Mentor.');
       mentorIdentity={display_name:data.display_name||'MENTOR BADAI',avatar_url:data.avatar_url||'',updated_at:data.updated_at||null};
       mentorIdentityLastFetch=Date.now();renderMentorIdentity();
+      renderMentorAdminHome();
       if(['announcement','group'].includes(mentorAdminScreen))await loadAdminCommunityMessages(mentorAdminCommunityChannel);
-      mentorAdminToast('Avatar MENTOR BADAI berhasil diperbarui');
+      mentorAdminToast('Avatar MENTOR BADAI berhasil diperbarui di semua chat');
     }finally{
       if(input)input.value='';
       if(label&&label.firstChild)label.firstChild.textContent=old;
@@ -11139,7 +11154,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const senderInitial=String(senderName||'A').trim().charAt(0).toUpperCase()||'A';
       const sharedAvatar=String(mentorIdentity?.avatar_url||'').trim();
       const announcementAvatar=staffMessage
-        ? (sharedAvatar?'<div class="mentor-announcement-avatar verified"><img src="'+esc(sharedAvatar)+'" alt="Mentor BADAI" loading="lazy"></div>':'<div class="mentor-announcement-avatar verified">M</div>')
+        ? (sharedAvatar?'<div class="mentor-announcement-avatar verified"><img src="'+esc(sharedAvatar)+'" alt="Mentor BADAI" loading="eager"></div>':'<div class="mentor-announcement-avatar verified">M</div>')
         : (m.sender_verified&&m.sender_avatar_url
           ? '<div class="mentor-announcement-avatar verified"><img src="'+esc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
           : '<div class="mentor-announcement-avatar">'+esc(senderInitial)+'</div>');
