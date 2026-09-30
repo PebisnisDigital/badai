@@ -3254,7 +3254,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function mentorChatInfoData(){
     if(mentorSelectedChat==='announcement')return {
       avatar:'📢',title:'PENGUMUMAN BADAI',subtitle:'Channel resmi • Satu arah',
-      desc:'Semua informasi penting komunitas BADAI dikirim di sini. Hanya Owner, Super Admin, Admin, dan Mentor yang dapat mengirim pesan. Member hanya membaca agar pengumuman penting tidak tenggelam.',
+      desc:'Semua informasi penting komunitas BADAI dikirim oleh tim menggunakan satu identitas MENTOR BADAI. Member hanya membaca agar pengumuman penting tidak tenggelam.',
       note:'Gunakan channel ini sebagai sumber informasi resmi BADAI.'
     };
     if(mentorSelectedChat==='group')return {
@@ -3264,7 +3264,7 @@ document.addEventListener('DOMContentLoaded', function(){
     };
     return {
       avatar:'M',title:'Mentor BADAI',subtitle:'Konsultasi privat • Tim Mentor BADAI',
-      desc:'Percakapan pribadi antara kamu dan tim Mentor BADAI. Balasan dapat ditangani Owner maupun mentor yang sedang bertugas, tetapi di sisi member seluruh layanan tetap tampil sebagai Mentor BADAI.',
+      desc:'Percakapan pribadi antara kamu dan MENTOR BADAI. Seluruh admin aktif dapat membantu membalas, tetapi identitas layanan yang terlihat selalu satu: MENTOR BADAI.',
       note:'Chat ini bersifat privat antara kamu dan tim BADAI.'
     };
   }
