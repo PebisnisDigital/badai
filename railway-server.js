@@ -315,7 +315,17 @@ function materialArrayLines(source,varName,category){
   for(const raw of source.slice(start+marker.length,end).split('\n')){
     const line=raw.trim(); if(!line.startsWith('{title:'))continue;
     const title=jsSingleField(line,'title'),video=jsSingleField(line,'video'),videoId=youtubeVideoId(video); if(!title||!videoId)continue;
-    out.push({source_key:'member:'+category.toLowerCase()+':youtube:'+videoId,source_type:'youtube',category,title,description:jsSingleField(line,'description'),source_url:video,video_id:videoId,tool_url:jsSingleField(line,'toolUrl')});
+    out.push({
+      source_key:'member:'+category.toLowerCase()+':youtube:'+videoId,
+      source_type:'youtube',
+      category,
+      title,
+      description:jsSingleField(line,'description'),
+      content:jsSingleField(line,'content'),
+      source_url:video,
+      video_id:videoId,
+      tool_url:jsSingleField(line,'toolUrl')
+    });
   }
   return out;
 }
@@ -358,10 +368,58 @@ async function syncAiKnowledgeFromMemberArea(){
     const sources=memberKnowledgeSources(),drive=await driveClient(),folderId=await ensureAiKnowledgeFolder(drive);
     for(const source of sources){
       try{
-        const info=await fetchYoutubeTranscript(source.video_id),file=await upsertKnowledgeTranscriptFile(drive,folderId,source,info),hash=crypto.createHash('sha256').update(info.transcript).digest('hex');
-        const saved=await supabaseRpc('mentor_ai_source_upsert',{p_secret:AI_MENTOR_WORKER_SECRET,p_source_key:source.source_key,p_source_type:source.source_type,p_category:source.category,p_title:source.title,p_description:source.description||null,p_source_url:source.source_url,p_video_id:source.video_id,p_tool_url:source.tool_url||null,p_drive_file_id:String(file?.id||'')||null,p_drive_web_view_link:String(file?.webViewLink||'')||null,p_transcript_hash:hash,p_transcript:info.transcript});
-        results.push({title:source.title,video_id:source.video_id,status:'ready',transcript_chars:info.transcript.length,chunk_count:Number(saved?.chunk_count||0)});
-      }catch(error){await markKnowledgeSourceFailure(source,error).catch(()=>{});results.push({title:source.title,video_id:source.video_id,status:String(error?.code||'')==='NO_CAPTION'?'no_caption':'failed',error:String(error?.message||error)})}
+        let info=null;
+        let knowledgeMode='transcript';
+        try{
+          info=await fetchYoutubeTranscript(source.video_id);
+        }catch(error){
+          knowledgeMode='metadata';
+          const safeText=[
+            'MATERI MEMBER AREA BADAI',
+            'Judul: '+source.title,
+            'Kategori: '+source.category,
+            source.description?'Deskripsi: '+source.description:'',
+            source.content?'Cara belajar / catatan materi: '+source.content:'',
+            source.tool_url?'Link tools: '+source.tool_url:'',
+            source.source_url?'Link video tutorial: '+source.source_url:'',
+            '',
+            'CATATAN UNTUK AI MENTOR:',
+            '- Transcript video belum tersedia karena sumber YouTube sedang membatasi akses otomatis.',
+            '- Gunakan hanya informasi di atas.',
+            '- Jangan mengarang langkah teknis yang tidak tertulis.',
+            '- Jika member meminta langkah detail isi video, arahkan membuka video tutorial atau minta bantuan Mentor manusia.'
+          ].filter(Boolean).join('\n');
+          info={transcript:safeText,language:'metadata',track_name:'metadata-fallback',fallback_error:String(error?.message||error)};
+        }
+        const file=await upsertKnowledgeTranscriptFile(drive,folderId,source,info),hash=crypto.createHash('sha256').update(info.transcript).digest('hex');
+        const saved=await supabaseRpc('mentor_ai_source_upsert',{
+          p_secret:AI_MENTOR_WORKER_SECRET,
+          p_source_key:source.source_key,
+          p_source_type:knowledgeMode==='transcript'?'youtube':'youtube_metadata',
+          p_category:source.category,
+          p_title:source.title,
+          p_description:source.description||null,
+          p_source_url:source.source_url,
+          p_video_id:source.video_id,
+          p_tool_url:source.tool_url||null,
+          p_drive_file_id:String(file?.id||'')||null,
+          p_drive_web_view_link:String(file?.webViewLink||'')||null,
+          p_transcript_hash:hash,
+          p_transcript:info.transcript
+        });
+        results.push({
+          title:source.title,
+          video_id:source.video_id,
+          status:'ready',
+          knowledge_mode:knowledgeMode,
+          transcript_chars:info.transcript.length,
+          chunk_count:Number(saved?.chunk_count||0),
+          warning:info.fallback_error||null
+        });
+      }catch(error){
+        await markKnowledgeSourceFailure(source,error).catch(()=>{});
+        results.push({title:source.title,video_id:source.video_id,status:String(error?.code||'')==='NO_CAPTION'?'no_caption':'failed',error:String(error?.message||error)})
+      }
     }
     return {ok:true,source_count:sources.length,ready:results.filter(x=>x.status==='ready').length,failed:results.filter(x=>x.status!=='ready').length,folder_id:folderId,elapsed_ms:Date.now()-started,results};
   }finally{aiKnowledgeSyncBusy=false}
