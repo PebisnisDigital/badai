@@ -3490,13 +3490,13 @@ document.addEventListener('DOMContentLoaded', function(){
       var senderInitial=String(senderName||'A').trim().charAt(0).toUpperCase()||'A';
       var sharedMentorAvatar=mentorIdentityPhoto();
       var announcementAvatar=staffMessage
-        ? (sharedMentorAvatar?'<div class="mentor-announcement-avatar verified"><img src="'+mentorEsc(sharedMentorAvatar)+'" alt="Mentor BADAI" loading="lazy"></div>':'<div class="mentor-announcement-avatar verified">M</div>')
+        ? ((sharedMentorAvatar||m.sender_avatar_url)?'<div class="mentor-announcement-avatar verified"><img src="'+mentorEsc(sharedMentorAvatar||m.sender_avatar_url)+'" alt="Mentor BADAI" loading="lazy"></div>':'<div class="mentor-announcement-avatar verified">M</div>')
         : (m.sender_verified&&m.sender_avatar_url
           ? '<div class="mentor-announcement-avatar verified"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
           : '<div class="mentor-announcement-avatar">'+mentorEsc(senderInitial)+'</div>');
       var announcementHead=slug==='announcement'
         ? '<div class="mentor-announcement-head">'+announcementAvatar+
-            '<div class="mentor-announcement-copy"><b>'+mentorEsc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</b><small>Admin komunitas</small></div>'+
+            '<div class="mentor-announcement-copy"><b>'+mentorEsc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</b><small>Mentor BADAI</small></div>'+
           '</div>'
         : '';
       var body='';
@@ -3539,6 +3539,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   async function loadCommunityMessages(slug){
     if(!slug||slug==='mentor')return;
+    await loadMentorIdentity(false);
     if(slug==='group')await loadCommunityParticipants(false);
     var pair=await Promise.all([
       mentorFetch('/rest/v1/rpc/community_chat_messages_list_v5',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})}),
@@ -3692,6 +3693,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var rows=await mentorFetch('/rest/v1/rpc/mentor_member_overview',{method:'POST',body:'{}'});
       var row=Array.isArray(rows)?rows[0]:rows;
       if(!row)return;
+      await loadMentorIdentity(false);
       if(row.conversation_id&&!mentorConversationId)mentorConversationId=row.conversation_id;
       setMentorUnread(row.unread_count||0);
       if(String(row.mentor_last_read_at||'')!==String(mentorLastReadAt||'')){mentorLastReadAt=row.mentor_last_read_at||null;mentorLastKey=''}
