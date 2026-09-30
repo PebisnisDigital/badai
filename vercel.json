@@ -17,6 +17,10 @@
       "dest": "https://badai.up.railway.app/api/admin/ai/$1"
     },
     {
+      "src": "^/api/admin/mentor-identity/avatar$",
+      "dest": "https://badai.up.railway.app/api/admin/mentor-identity/avatar"
+    },
+    {
       "src": "^/api/admin/chat/permanent-delete$",
       "dest": "https://badai.up.railway.app/api/admin/chat/permanent-delete"
     },
