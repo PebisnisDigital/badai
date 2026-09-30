@@ -2869,13 +2869,18 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function applyMentorIdentityUi(){
     var name=mentorIdentity&&mentorIdentity.display_name?mentorIdentity.display_name:'MENTOR BADAI';
+    var url=mentorIdentityPhoto();
     if(el('mentorChatRowName'))el('mentorChatRowName').textContent=name;
     var rowAvatar=document.querySelector('#mentor [data-chat-kind="mentor"] .mentor-chat-row-avatar');
     if(rowAvatar){
-      var url=mentorIdentityPhoto();
-      if(url){rowAvatar.innerHTML='<img src="'+mentorEsc(url)+'" alt="Mentor BADAI" loading="lazy">';rowAvatar.classList.add('shared-mentor-photo')}
-      else{rowAvatar.textContent='M';rowAvatar.classList.remove('shared-mentor-photo')}
+      if(url){rowAvatar.innerHTML='<img src="'+mentorEsc(url)+'" alt="Mentor BADAI" loading="eager">';rowAvatar.classList.add('shared-mentor-photo','has-photo')}
+      else{rowAvatar.textContent='M';rowAvatar.classList.remove('shared-mentor-photo','has-photo')}
     }
+    document.querySelectorAll('#mentor [data-shared-mentor-avatar]').forEach(function(node){
+      if(url){node.innerHTML='<img src="'+mentorEsc(url)+'" alt="Mentor BADAI" loading="eager">';node.classList.add('has-photo')}
+      else{node.textContent='M';node.classList.remove('has-photo')}
+    });
+    document.querySelectorAll('#mentor [data-shared-mentor-name]').forEach(function(node){node.textContent=name});
     if(mentorSelectedChat==='mentor'){
       if(el('mentorWaName'))el('mentorWaName').textContent=name;
       setMentorIdentityAvatarNode(el('mentorWaAvatar'),'M');
