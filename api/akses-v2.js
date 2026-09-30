@@ -3075,7 +3075,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function mentorReplyHtml(m,rowMap){
     if(!m||!m.reply_to_message_id)return '';
     var target=rowMap.get(m.reply_to_message_id);
-    var label=target?(target.sender_kind==='member'?'Anda':'Mentor'):'Pesan';
+    var label=target?(target.sender_kind==='member'?'Anda':'MENTOR BADAI'):'Pesan';
     var summary=target?mentorMessageSummary(target):'Pesan sebelumnya';
     return '<button type="button" class="mentor-reply-quote" data-mentor-jump-message="'+mentorEsc(m.reply_to_message_id)+'"><b>'+mentorEsc(label)+'</b><span>'+mentorEsc(summary.slice(0,120))+'</span></button>'
   }
@@ -3090,9 +3090,9 @@ document.addEventListener('DOMContentLoaded', function(){
       var title=el('mentorReplyTitle'),txt=el('mentorReplyText'),replyLabel='Mentor';
       if(mentorSelectedChat==='group'){
         var sess=memberSession(),uid=sess&&sess.user?sess.user.id:'';
-        replyLabel=String(m.sender_user_id||'')===String(uid||'')?'pesan Anda':String(m.sender_name||'Member BADAI')
+        replyLabel=m.sender_kind==='staff'?'MENTOR BADAI':(String(m.sender_user_id||'')===String(uid||'')?'pesan Anda':String(m.sender_name||'Member BADAI'))
       }else{
-        replyLabel=m.sender_kind==='member'?'pesan Anda':'Mentor'
+        replyLabel=m.sender_kind==='member'?'pesan Anda':'MENTOR BADAI'
       }
       if(title)title.textContent='Membalas '+replyLabel;
       if(txt)txt.textContent=mentorReply.summary.slice(0,130);
@@ -3436,13 +3436,16 @@ document.addEventListener('DOMContentLoaded', function(){
       var day=mentorDateKey(m.created_at);
       if(day!==lastDay){html+='<div class="mentor-date-sep">'+mentorDateLabel(m.created_at)+'</div>';lastDay=day}
       var own=String(m.sender_user_id||'')===String(uid||''),side=own?'member':'mentor';
-      var senderName=m.sender_name||'Member BADAI';
+      var staffMessage=m.sender_kind==='staff';
+      var senderName=staffMessage?'MENTOR BADAI':(m.sender_name||'Member BADAI');
       var state=mentorUiState.get(m.id)||{};
       var sender=(slug==='group'&&!own)?'<div class="mentor-community-sender '+communitySenderTone(senderName)+'">'+mentorEsc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</div>':'';
       var senderInitial=String(senderName||'A').trim().charAt(0).toUpperCase()||'A';
-      var announcementAvatar=m.sender_verified&&m.sender_avatar_url
-        ? '<div class="mentor-announcement-avatar verified"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
-        : '<div class="mentor-announcement-avatar">'+mentorEsc(senderInitial)+'</div>';
+      var announcementAvatar=staffMessage
+        ? '<div class="mentor-announcement-avatar verified">M</div>'
+        : (m.sender_verified&&m.sender_avatar_url
+          ? '<div class="mentor-announcement-avatar verified"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
+          : '<div class="mentor-announcement-avatar">'+mentorEsc(senderInitial)+'</div>');
       var announcementHead=slug==='announcement'
         ? '<div class="mentor-announcement-head">'+announcementAvatar+
             '<div class="mentor-announcement-copy"><b>'+mentorEsc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</b><small>Admin komunitas</small></div>'+
@@ -3456,7 +3459,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var reply='';
       if(m.reply_to_message_id){
         var target=rowMap.get(m.reply_to_message_id);
-        var label=target?(String(target.sender_user_id||'')===String(uid||'')?'Anda':String(target.sender_name||'Member BADAI')):'Pesan';
+        var label=target?(target.sender_kind==='staff'?'MENTOR BADAI':(String(target.sender_user_id||'')===String(uid||'')?'Anda':String(target.sender_name||'Member BADAI'))):'Pesan';
         var summary=target?mentorMessageSummary(target):'Pesan sebelumnya';
         reply='<button type="button" class="mentor-reply-quote" data-mentor-jump-message="'+mentorEsc(m.reply_to_message_id)+'"><b>'+mentorEsc(label)+'</b><span>'+mentorEsc(summary.slice(0,120))+'</span></button>'
       }
