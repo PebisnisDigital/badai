@@ -7525,12 +7525,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(!file)return;
     if(!mentorIdentityManageAllowed())throw new Error('Hanya Admin Pusat yang dapat mengganti avatar Mentor BADAI.');
     if(!/^image\/(jpeg|png|webp)$/i.test(file.type||''))throw new Error('Gunakan JPG, PNG, atau WebP.');
-    if(file.size>3*1024*1024)throw new Error('Avatar maksimal 3 MB.');
+    if(file.size>12*1024*1024)throw new Error('Foto awal maksimal 12 MB.');
     const input=$('mentorIdentityAvatarInput'),label=$('mentorIdentityUploadBtn');
     const old=label?.childNodes?.[0]?.textContent||'GANTI FOTO';
     if(label&&label.firstChild)label.firstChild.textContent='MENGUPLOAD...';
     try{
-      const fd=new FormData();fd.append('file',file);
+      const compressed=await compressAdminAvatar(file);
+      const fd=new FormData();fd.append('file',compressed,'mentor-badai.webp');
       const res=await fetch('/api/admin/mentor-identity/avatar',{method:'POST',headers:{Authorization:'Bearer '+session.access_token},body:fd});
       const data=await res.json().catch(()=>({}));
       if(!res.ok)throw new Error(data.error||'Gagal mengganti avatar Mentor.');
