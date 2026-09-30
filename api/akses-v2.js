@@ -1467,6 +1467,8 @@ module.exports = async function handler(req, res) {
   .mentor-chat-card{position:relative;border-radius:15px!important;background:#0b0b0b!important;border:1px solid #292929!important;overflow:hidden!important}
   .mentor-wa-head{height:58px;display:flex;align-items:center;gap:10px;padding:8px 11px;border-bottom:1px solid #242424;background:#121212}
   .mentor-wa-avatar{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:999px;background:linear-gradient(145deg,#ff4fa3,#a92367);color:#fff;font:950 16px/1 "Raleway",Arial,sans-serif}
+  #mentor .mentor-wa-avatar.has-photo,#mentor .mentor-chat-row-avatar.shared-mentor-photo,#mentor .mentor-chat-info-avatar.has-photo{padding:0!important;overflow:hidden!important}
+  #mentor .mentor-wa-avatar img,#mentor .mentor-chat-row-avatar.shared-mentor-photo img,#mentor .mentor-chat-info-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:999px}
   .mentor-wa-person{min-width:0;display:grid;gap:3px}
   .mentor-wa-person strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font:900 12px/1.1 "Nunito",Arial,sans-serif}
   .mentor-wa-person span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#939393;font:750 8px/1.1 "Nunito",Arial,sans-serif}
@@ -2848,6 +2850,50 @@ document.addEventListener('DOMContentLoaded', function(){
   var mentorWorkHoursLastFetch=0;
   var mentorWorkHoursBusy=false;
   var mentorLastOverviewRow=null;
+  var mentorIdentity={display_name:'MENTOR BADAI',avatar_url:'',updated_at:null};
+  var mentorIdentityLastFetch=0;
+
+  function mentorIdentityPhoto(){
+    return String(mentorIdentity&&mentorIdentity.avatar_url||'').trim()
+  }
+  function setMentorIdentityAvatarNode(node,fallback){
+    if(!node)return;
+    var url=mentorIdentityPhoto();
+    if(url){
+      node.innerHTML='<img src="'+mentorEsc(url)+'" alt="Mentor BADAI" loading="lazy">';
+      node.classList.add('has-photo')
+    }else{
+      node.textContent=fallback||'M';
+      node.classList.remove('has-photo')
+    }
+  }
+  function applyMentorIdentityUi(){
+    var name=mentorIdentity&&mentorIdentity.display_name?mentorIdentity.display_name:'MENTOR BADAI';
+    if(el('mentorChatRowName'))el('mentorChatRowName').textContent=name;
+    var rowAvatar=document.querySelector('#mentor [data-chat-kind="mentor"] .mentor-chat-row-avatar');
+    if(rowAvatar){
+      var url=mentorIdentityPhoto();
+      if(url){rowAvatar.innerHTML='<img src="'+mentorEsc(url)+'" alt="Mentor BADAI" loading="lazy">';rowAvatar.classList.add('shared-mentor-photo')}
+      else{rowAvatar.textContent='M';rowAvatar.classList.remove('shared-mentor-photo')}
+    }
+    if(mentorSelectedChat==='mentor'){
+      if(el('mentorWaName'))el('mentorWaName').textContent=name;
+      setMentorIdentityAvatarNode(el('mentorWaAvatar'),'M');
+      var infoAvatar=el('mentorChatInfoAvatar');
+      if(infoAvatar)setMentorIdentityAvatarNode(infoAvatar,'M')
+    }
+  }
+  async function loadMentorIdentity(force){
+    var now=Date.now();
+    if(!force&&mentorIdentityLastFetch&&now-mentorIdentityLastFetch<30000){applyMentorIdentityUi();return mentorIdentity}
+    try{
+      var rows=await mentorFetch('/rest/v1/rpc/mentor_identity_get',{method:'POST',body:'{}'});
+      var row=Array.isArray(rows)?rows[0]:rows;
+      if(row)mentorIdentity={display_name:row.display_name||'MENTOR BADAI',avatar_url:row.avatar_url||'',updated_at:row.updated_at||null};
+      mentorIdentityLastFetch=Date.now();applyMentorIdentityUi()
+    }catch(_){}
+    return mentorIdentity
+  }
 
   function mentorEsc(value){
     return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
@@ -3294,7 +3340,8 @@ document.addEventListener('DOMContentLoaded', function(){
     var panel=ensureMentorChatInfoPanel();if(!panel)return;
     var data=mentorChatInfoData();
     var av=el('mentorChatInfoAvatar'),title=el('mentorChatInfoTitle'),sub=el('mentorChatInfoSubtitle'),desc=el('mentorChatInfoDesc'),note=el('mentorChatInfoNote');
-    if(av)av.textContent=data.avatar;if(title)title.textContent=data.title;if(sub)sub.textContent=data.subtitle;if(desc)desc.textContent=data.desc;if(note)note.textContent=data.note;
+    if(av){if(mentorSelectedChat==='mentor')setMentorIdentityAvatarNode(av,'M');else{av.textContent=data.avatar;av.classList.remove('has-photo')}}
+    if(title)title.textContent=mentorSelectedChat==='mentor'?(mentorIdentity&&mentorIdentity.display_name?mentorIdentity.display_name:'MENTOR BADAI'):data.title;if(sub)sub.textContent=data.subtitle;if(desc)desc.textContent=data.desc;if(note)note.textContent=data.note;
     panel.classList.remove('hidden','closing');
     panel.setAttribute('aria-hidden','false');
     requestAnimationFrame(function(){panel.classList.add('open')})
@@ -3407,7 +3454,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(composer)composer.classList.remove('hidden');if(notice)notice.classList.add('hidden');
       if(attachBtn)attachBtn.classList.remove('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');loadCommunityParticipants(false).catch(function(){})
     }else{
-      if(avatar)avatar.textContent='M';if(notice)notice.classList.add('hidden');if(composer)composer.classList.remove('hidden');
+      setMentorIdentityAvatarNode(avatar,'M');if(name)name.textContent=mentorIdentity&&mentorIdentity.display_name?mentorIdentity.display_name:'MENTOR BADAI';if(notice)notice.classList.add('hidden');if(composer)composer.classList.remove('hidden');
       if(attachBtn)attachBtn.classList.remove('hidden');if(stickerBtn)stickerBtn.classList.remove('hidden');
       refreshMentorWorkHours(false).catch(function(){});
       refreshMentorOverview().catch(function(){})
@@ -3441,8 +3488,9 @@ document.addEventListener('DOMContentLoaded', function(){
       var state=mentorUiState.get(m.id)||{};
       var sender=(slug==='group'&&!own)?'<div class="mentor-community-sender '+communitySenderTone(senderName)+'">'+mentorEsc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</div>':'';
       var senderInitial=String(senderName||'A').trim().charAt(0).toUpperCase()||'A';
+      var sharedMentorAvatar=mentorIdentityPhoto();
       var announcementAvatar=staffMessage
-        ? '<div class="mentor-announcement-avatar verified">M</div>'
+        ? (sharedMentorAvatar?'<div class="mentor-announcement-avatar verified"><img src="'+mentorEsc(sharedMentorAvatar)+'" alt="Mentor BADAI" loading="lazy"></div>':'<div class="mentor-announcement-avatar verified">M</div>')
         : (m.sender_verified&&m.sender_avatar_url
           ? '<div class="mentor-announcement-avatar verified"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
           : '<div class="mentor-announcement-avatar">'+mentorEsc(senderInitial)+'</div>');
@@ -3474,8 +3522,10 @@ document.addEventListener('DOMContentLoaded', function(){
         (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>';
       if(slug==='group'&&!own){
         var tone=communitySenderTone(senderName);
-        var avatar=m.sender_verified&&m.sender_avatar_url
-          ? '<div class="mentor-group-initial has-photo verified"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
+        var avatar=staffMessage&&sharedMentorAvatar
+          ? '<div class="mentor-group-initial has-photo verified"><img src="'+mentorEsc(sharedMentorAvatar)+'" alt="Mentor BADAI" loading="lazy"></div>'
+          : m.sender_verified&&m.sender_avatar_url
+            ? '<div class="mentor-group-initial has-photo verified"><img src="'+mentorEsc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
           : m.sender_avatar_key
             ? '<div class="mentor-group-initial has-photo"><img src="'+mentorEsc(badaiAvatarUrl(m.sender_avatar_key))+'" alt="" loading="lazy"></div>'
             : '<div class="mentor-group-initial '+tone+'">'+mentorEsc(senderInitial)+'</div>';
@@ -3614,7 +3664,7 @@ document.addEventListener('DOMContentLoaded', function(){
     mentorLastOverviewRow=row||mentorLastOverviewRow;
     var status=el('mentorMemberStatus'),sub=el('mentorWaSubstatus'),name=el('mentorWaName');
     /* Member-facing identity stays unified as Mentor BADAI, regardless of which staff account replies. */
-    var displayName='Mentor BADAI';
+    var displayName=mentorIdentity&&mentorIdentity.display_name?mentorIdentity.display_name:'MENTOR BADAI';
     if(mentorSelectedChat==='mentor'&&name)name.textContent=displayName;
     if(el('mentorChatRowName'))el('mentorChatRowName').textContent=displayName;
     var text='offline',typing=false,online=false;
@@ -3681,6 +3731,7 @@ document.addEventListener('DOMContentLoaded', function(){
   async function bootMentor(){
     var status=el('mentorMemberStatus');if(status){status.textContent='Menghubungkan...';status.classList.remove('online','offline')}
     try{
+      await loadMentorIdentity(false);
       var rows=await mentorFetch('/rest/v1/rpc/mentor_get_or_create_conversation',{method:'POST',body:'{}'});
       var row=Array.isArray(rows)?rows[0]:rows;mentorConversationId=row&&row.conversation_id?row.conversation_id:'';
       if(!mentorConversationId)throw new Error('Percakapan belum tersedia');
