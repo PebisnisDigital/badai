@@ -7452,9 +7452,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const role = currentTeam?.role;
     if(role === 'owner' || role === 'super_admin') return ['sales','finance','marketing','mentor','team'];
     if(role === 'admin') return ['sales','finance','marketing','mentor','team'];
-    if(role === 'sales') return ['sales','team'];
-    if(role === 'finance') return ['finance','team'];
-    if(role === 'marketing') return ['marketing','team'];
+    if(role === 'sales') return ['sales','mentor','team'];
+    if(role === 'finance') return ['finance','mentor','team'];
+    if(role === 'marketing') return ['marketing','mentor','team'];
     if(role === 'mentor') return ['mentor','team'];
     return [];
   }
@@ -7474,6 +7474,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   }
 
+  function mentorConfigAllowed(){
+    return ['owner','super_admin','admin','mentor'].includes(currentTeam?.role);
+  }
   function configureTabs(){
     const allowed = allowedPages();
     $('tabSales').classList.toggle('hidden', !allowed.includes('sales'));
@@ -7481,6 +7484,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('tabMarketing').classList.toggle('hidden', !allowed.includes('marketing'));
     $('tabMentor').classList.toggle('hidden', !allowed.includes('mentor'));
     $('tabTeam').classList.toggle('hidden', !allowed.includes('team'));
+    document.querySelector('[data-mentor-feature="autoreply"]')?.classList.toggle('hidden',!mentorConfigAllowed());
+    document.querySelector('[data-mentor-feature="log"]')?.classList.toggle('hidden',!mentorConfigAllowed());
   }
 
   function switchPage(page){
@@ -7510,7 +7515,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(page === 'mentor'){
       $('mentorFeatureAiBtn')?.classList.toggle('hidden',!mentorAiAllowed());
       loadMentorInbox();
-      loadMentorAutoReplyRules().catch(()=>{});
+      if(mentorConfigAllowed())loadMentorAutoReplyRules().catch(()=>{});
       refreshMentorWorkHours(true).catch(()=>{});
     }
     if(page === 'team'){
@@ -10618,6 +10623,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function switchMentorAdminFeature(feature){
     if(feature==='ai'&&!mentorAiAllowed())feature='chat';
+    if(['autoreply','log'].includes(feature)&&!mentorConfigAllowed())feature='chat';
     mentorAdminFeature=['chat','autoreply','log','hours','ai'].includes(feature)?feature:'chat';
     document.querySelectorAll('[data-mentor-feature]').forEach(btn=>{
       btn.classList.toggle('active',btn.dataset.mentorFeature===mentorAdminFeature);
@@ -10749,7 +10755,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       $('mentorThreadMeta').title=(row.member_email||'-')+' • '+(row.member_plan||'-');
     }
     if($('claimMentorChatBtn')){
-      $('claimMentorChatBtn').classList.remove('hidden');
+      const canAssign=mentorConfigAllowed();
+      $('claimMentorChatBtn').classList.toggle('hidden',!canAssign);
       const mine=row.assigned_team_id===currentTeam?.id;
       $('claimMentorChatBtn').textContent=mine?'CHAT SAYA ✓':'AMBIL CHAT';
       $('claimMentorChatBtn').disabled=mine;
@@ -10823,20 +10830,19 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   function adminCommunityCanSend(slug){
-    if(slug==='announcement')return ['owner','super_admin','admin','mentor'].includes(currentTeam?.role);
     return ['owner','super_admin','admin','mentor','sales','finance','marketing'].includes(currentTeam?.role);
   }
 
   function adminChatInfoData(){
     if(mentorAdminScreen==='announcement')return {
       avatar:'📢',title:'PENGUMUMAN BADAI',subtitle:'Channel resmi • Satu arah',
-      desc:'Channel resmi untuk menyampaikan informasi penting kepada seluruh Member BADAI. Hanya Owner, Super Admin, Admin, dan Mentor yang dapat mengirim pesan.',
-      details:[['Akses','Seluruh Member BADAI'],['Mode','Satu arah'],['Pengirim','Tim BADAI']]
+      desc:'Channel resmi untuk menyampaikan informasi penting kepada seluruh Member BADAI. Semua akun admin aktif dapat mengirim sebagai satu identitas Mentor BADAI.',
+      details:[['Akses','Seluruh Member BADAI'],['Mode','Satu arah'],['Pengirim','MENTOR BADAI']]
     };
     if(mentorAdminScreen==='group')return {
       avatar:'G',title:'Grup BADAI',subtitle:'Diskusi komunitas • Semua member',
-      desc:'Ruang diskusi bersama seluruh Member BADAI dan tim BADAI. Dipakai untuk bertanya, berbagi progres, diskusi karya, dan saling membantu selama belajar.',
-      details:[['Akses','Member aktif + Tim BADAI'],['Mode','Diskusi bersama'],['Status','Grup komunitas']]
+      desc:'Ruang diskusi bersama seluruh Member BADAI. Semua akun admin aktif tampil dengan satu identitas: Mentor BADAI.',
+      details:[['Akses','Member aktif + Mentor BADAI'],['Mode','Diskusi bersama'],['Status','Grup komunitas']]
     };
     const row=mentorActiveConversation||{};
     return {
@@ -11053,15 +11059,19 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     rows.forEach(m=>{
       const day=mentorAdminDateKey(m.created_at);
       if(day!==lastDay){html+='<div class="mentor-admin-date">'+mentorAdminDateLabel(m.created_at)+'</div>';lastDay=day}
-      const own=String(m.sender_user_id||'')===String(uid),side=own?'mentor':'member';
-      const senderName=m.sender_name||'Admin BADAI';
+      const staffMessage=m.sender_kind==='staff';
+      const own=staffMessage||String(m.sender_user_id||'')===String(uid),side=own?'mentor':'member';
+      const actualSenderName=String(m.sender_name||'');
+      const senderName=staffMessage?'MENTOR BADAI':(m.sender_name||'Member BADAI');
       const sender=slug==='group'&&!own
         ? '<div class="mentor-community-sender '+mentorAdminSenderTone(senderName)+'">'+esc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</div>'
         : '';
       const senderInitial=String(senderName||'A').trim().charAt(0).toUpperCase()||'A';
-      const announcementAvatar=m.sender_verified&&m.sender_avatar_url
-        ? '<div class="mentor-announcement-avatar verified"><img src="'+esc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
-        : '<div class="mentor-announcement-avatar">'+esc(senderInitial)+'</div>';
+      const announcementAvatar=staffMessage
+        ? '<div class="mentor-announcement-avatar verified">M</div>'
+        : (m.sender_verified&&m.sender_avatar_url
+          ? '<div class="mentor-announcement-avatar verified"><img src="'+esc(m.sender_avatar_url)+'" alt="" loading="lazy"></div>'
+          : '<div class="mentor-announcement-avatar">'+esc(senderInitial)+'</div>');
       const announcementHead=slug==='announcement'
         ? '<div class="mentor-announcement-head">'+announcementAvatar+
             '<div class="mentor-announcement-copy"><b>'+esc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</b><small>Admin komunitas</small></div>'+
@@ -11088,7 +11098,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const reactions=mentorAdminReactionHtml(state);
       const animateMsg=!mentorAdminAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAdminAnimatedMessageIds.add(m.id);
-      const bubble='<div id="mentor-msg-'+esc(m.id)+'" data-message-id="'+esc(m.id)+'" class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorAdminSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+
+      const auditTitle=staffMessage&&actualSenderName?' title="Internal: ditulis oleh '+esc(actualSenderName)+'"':'';
+      const bubble='<div id="mentor-msg-'+esc(m.id)+'" data-message-id="'+esc(m.id)+'"'+auditTitle+' class="mentor-admin-msg '+side+' '+esc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorAdminSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+
         '<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+esc(m.id)+'" aria-label="Opsi pesan">⌄</button>'+
         (state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+
         announcementHead+sender+reply+body+
@@ -11412,9 +11423,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     let label='Pesan';
     if(target){
       if(['group','announcement'].includes(mentorAdminScreen)){
-        label=String(target.sender_user_id||'')===String(session?.user?.id||'')?'Anda':String(target.sender_name||'Member BADAI');
+        label=target.sender_kind==='staff'?'MENTOR BADAI':String(target.sender_name||'Member BADAI');
       }else{
-        label=target.sender_kind==='mentor'?'Anda':'Member';
+        label=target.sender_kind==='mentor'?'MENTOR BADAI':'Member';
       }
     }
     const summary=target?mentorAdminMessageSummary(target):'Pesan sebelumnya';
@@ -11431,8 +11442,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const bar=$('mentorAdminReplyBar');
     if(bar){
       const replyLabel=['group','announcement'].includes(mentorAdminScreen)
-        ? (String(m.sender_user_id||'')===String(session?.user?.id||'')?'pesan Anda':String(m.sender_name||'Member BADAI'))
-        : (m.sender_kind==='mentor'?'pesan Anda':'Member');
+        ? (m.sender_kind==='staff'?'MENTOR BADAI':String(m.sender_name||'Member BADAI'))
+        : (m.sender_kind==='mentor'?'MENTOR BADAI':'Member');
       $('mentorAdminReplyTitle').textContent='Membalas '+replyLabel;
       $('mentorAdminReplyText').textContent=mentorAdminReply.summary.slice(0,130);
       bar.classList.remove('mentor-reply-closing','hidden');
