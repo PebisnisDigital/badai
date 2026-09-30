@@ -34,6 +34,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/admin/mentor-identity/avatar"
+  to = "https://badai.up.railway.app/api/admin/mentor-identity/avatar"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/admin/chat/permanent-delete"
   to = "https://badai.up.railway.app/api/admin/chat/permanent-delete"
   status = 200
