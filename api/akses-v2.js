@@ -3087,8 +3087,14 @@ document.addEventListener('DOMContentLoaded', function(){
     mentorReply={id:m.id,summary:mentorMessageSummary(m)};
     var bar=el('mentorReplyBar');
     if(bar){
-      var title=el('mentorReplyTitle'),txt=el('mentorReplyText');
-      if(title)title.textContent='Membalas '+(m.sender_kind==='member'?'pesan Anda':'Mentor');
+      var title=el('mentorReplyTitle'),txt=el('mentorReplyText'),replyLabel='Mentor';
+      if(mentorSelectedChat==='group'){
+        var sess=memberSession(),uid=sess&&sess.user?sess.user.id:'';
+        replyLabel=String(m.sender_user_id||'')===String(uid||'')?'pesan Anda':String(m.sender_name||'Member BADAI')
+      }else{
+        replyLabel=m.sender_kind==='member'?'pesan Anda':'Mentor'
+      }
+      if(title)title.textContent='Membalas '+replyLabel;
       if(txt)txt.textContent=mentorReply.summary.slice(0,130);
       bar.classList.remove('mentor-reply-closing','hidden')
     }
@@ -3104,6 +3110,7 @@ document.addEventListener('DOMContentLoaded', function(){
   async function mentorMessageAction(messageId,action,emoji){
     var m=mentorMessageRows.get(messageId);if(!m)return;
     var state=mentorUiState.get(messageId)||{};
+    var communityMode=mentorSelectedChat==='group';
     if(action==='reply'){setMentorReply(messageId);return}
     if(action==='copy'){
       var text=mentorMessageSummary(m);
@@ -3112,16 +3119,22 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     if(action==='react'){
       var next=state.my_reaction===emoji?'':emoji;
-      await mentorFetch('/rest/v1/rpc/mentor_message_react',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_emoji:next||null})});
-      mentorLastKey='';await loadMentorMessages();return
+      await mentorFetch(communityMode?'/rest/v1/rpc/community_chat_message_react':'/rest/v1/rpc/mentor_message_react',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_emoji:next||null})});
+      mentorLastKey='';
+      if(communityMode)await loadCommunityMessages('group');else await loadMentorMessages();
+      return
     }
     if(action==='star'){
-      await mentorFetch('/rest/v1/rpc/mentor_message_star',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_star:!state.starred})});
-      mentorLastKey='';await loadMentorMessages();mentorToast(state.starred?'Bintang dihapus':'Pesan diberi bintang');return
+      await mentorFetch(communityMode?'/rest/v1/rpc/community_chat_message_star':'/rest/v1/rpc/mentor_message_star',{method:'POST',body:JSON.stringify({p_message_id:messageId,p_star:!state.starred})});
+      mentorLastKey='';
+      if(communityMode)await loadCommunityMessages('group');else await loadMentorMessages();
+      mentorToast(state.starred?'Bintang dihapus':'Pesan diberi bintang');return
     }
     if(action==='delete'){
-      await mentorFetch('/rest/v1/rpc/mentor_message_hide',{method:'POST',body:JSON.stringify({p_message_id:messageId})});
-      mentorLastKey='';await loadMentorMessages();mentorToast('Pesan dihapus dari tampilan');return
+      await mentorFetch(communityMode?'/rest/v1/rpc/community_chat_message_hide':'/rest/v1/rpc/mentor_message_hide',{method:'POST',body:JSON.stringify({p_message_id:messageId})});
+      mentorLastKey='';
+      if(communityMode)await loadCommunityMessages('group');else await loadMentorMessages();
+      mentorToast('Pesan dihapus dari tampilan');return
     }
   }
   function openMentorMessageMenu(button,messageId){
@@ -3411,16 +3424,20 @@ document.addEventListener('DOMContentLoaded', function(){
   function renderCommunityMessages(rows,slug){
     var list=el('mentorMessageList');if(!list)return;
     var wasNear=mentorNearBottom(list),s=memberSession(),uid=s&&s.user?s.user.id:'';
-    rows=rows||[];var html='',lastDay='',rowMap=new Map(rows.map(function(m){return [m.id,m]}));
-    if(!rows.length){
+    rows=rows||[];
+    mentorMessageRows=new Map(rows.map(function(m){return [m.id,m]}));
+    var visible=rows.filter(function(m){var state=mentorUiState.get(m.id);return !(state&&state.hidden)});
+    var html='',lastDay='',rowMap=new Map(rows.map(function(m){return [m.id,m]}));
+    if(!visible.length){
       list.innerHTML='<div class="mentor-empty">'+(slug==='announcement'?'Belum ada pengumuman dari tim BADAI.':'Belum ada pesan di Grup BADAI. Jadi yang pertama ngobrol 👋')+'</div>';
       return
     }
-    rows.forEach(function(m){
+    visible.forEach(function(m){
       var day=mentorDateKey(m.created_at);
       if(day!==lastDay){html+='<div class="mentor-date-sep">'+mentorDateLabel(m.created_at)+'</div>';lastDay=day}
       var own=String(m.sender_user_id||'')===String(uid||''),side=own?'member':'mentor';
       var senderName=m.sender_name||'Member BADAI';
+      var state=mentorUiState.get(m.id)||{};
       var sender=(slug==='group'&&!own)?'<div class="mentor-community-sender '+communitySenderTone(senderName)+'">'+mentorEsc(senderName)+(m.sender_verified?' <span class="badai-pink-verified-inline">✓</span>':'')+'</div>':'';
       var senderInitial=String(senderName||'A').trim().charAt(0).toUpperCase()||'A';
       var announcementAvatar=m.sender_verified&&m.sender_avatar_url
@@ -3443,10 +3460,15 @@ document.addEventListener('DOMContentLoaded', function(){
         var summary=target?mentorMessageSummary(target):'Pesan sebelumnya';
         reply='<button type="button" class="mentor-reply-quote" data-mentor-jump-message="'+mentorEsc(m.reply_to_message_id)+'"><b>'+mentorEsc(label)+'</b><span>'+mentorEsc(summary.slice(0,120))+'</span></button>'
       }
+      var reactions=slug==='group'?mentorReactionHtml(state):'';
       var animateMsg=!mentorAnimatedMessageIds.has(m.id)&&Date.now()-new Date(m.created_at).getTime()<15000;
       if(animateMsg)mentorAnimatedMessageIds.add(m.id);
-      var bubble='<div id="mentor-msg-'+mentorEsc(m.id)+'" data-message-id="'+mentorEsc(m.id)+'" class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorChatSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+announcementHead+sender+reply+body+
-        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own&&slug!=='announcement'?'<span class="mentor-receipt read">✓✓</span>':'')+'</div></div>';
+      var bubble='<div id="mentor-msg-'+mentorEsc(m.id)+'" data-message-id="'+mentorEsc(m.id)+'" class="mentor-msg '+side+' '+mentorEsc(m.message_type)+(animateMsg?' mentor-msg-new':'')+(mentorChatSelectedIds.has(String(m.id))?' chat-selected':'')+'">'+
+        (slug==='group'?'<button type="button" class="mentor-bubble-menu-btn" data-mentor-message-menu="'+mentorEsc(m.id)+'" aria-label="Opsi pesan">⌄</button>':'')+
+        (slug==='group'&&state.starred?'<span class="mentor-message-star" title="Pesan berbintang">★</span>':'')+
+        announcementHead+sender+reply+body+
+        '<div class="mentor-msg-meta"><span>'+mentorClock(m.created_at)+'</span>'+(own&&slug!=='announcement'?'<span class="mentor-receipt read">✓✓</span>':'')+'</div>'+
+        (reactions?'<div class="mentor-reaction-chips">'+reactions+'</div>':'')+'</div>';
       if(slug==='group'&&!own){
         var tone=communitySenderTone(senderName);
         var avatar=m.sender_verified&&m.sender_avatar_url
@@ -3465,8 +3487,13 @@ document.addEventListener('DOMContentLoaded', function(){
   async function loadCommunityMessages(slug){
     if(!slug||slug==='mentor')return;
     if(slug==='group')await loadCommunityParticipants(false);
-    var rows=await mentorFetch('/rest/v1/rpc/community_chat_messages_list_v5',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})});
-    renderCommunityMessages(rows||[],slug);
+    var pair=await Promise.all([
+      mentorFetch('/rest/v1/rpc/community_chat_messages_list_v5',{method:'POST',body:JSON.stringify({p_channel_slug:slug,p_limit:120})}),
+      mentorFetch('/rest/v1/rpc/community_chat_message_ui_state',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(function(){return []})
+    ]);
+    var rows=pair[0]||[],uiRows=pair[1]||[];
+    mentorUiState=new Map(uiRows.map(function(x){return [x.message_id,x]}));
+    renderCommunityMessages(rows,slug);
     if(mentorView==='thread'){
       await mentorFetch('/rest/v1/rpc/community_chat_mark_read',{method:'POST',body:JSON.stringify({p_channel_slug:slug})}).catch(function(){});
       await refreshCommunityOverview()
@@ -3475,14 +3502,16 @@ document.addEventListener('DOMContentLoaded', function(){
 
   async function sendCommunityPayload(type,body,sticker,fileData){
     if(mentorSelectedChat!=='group')return;
-    await mentorFetch('/rest/v1/rpc/community_chat_send',{method:'POST',body:JSON.stringify({
+    await mentorFetch('/rest/v1/rpc/community_chat_send_v2',{method:'POST',body:JSON.stringify({
       p_channel_slug:'group',p_message_type:type,p_body:body||null,p_sticker_key:sticker||null,
       p_drive_file_id:fileData&&fileData.id?fileData.id:null,
       p_drive_web_view_link:fileData&&fileData.url?fileData.url:null,
       p_file_name:fileData&&fileData.name?fileData.name:null,
       p_file_mime:fileData&&fileData.mime?fileData.mime:null,
-      p_file_size:fileData&&fileData.size?fileData.size:null
+      p_file_size:fileData&&fileData.size?fileData.size:null,
+      p_reply_to_message_id:mentorReply&&mentorReply.id?mentorReply.id:null
     })});
+    clearMentorReply();
     await loadCommunityMessages('group');await refreshCommunityOverview();mentorScrollBottom(true)
   }
 
