@@ -11498,7 +11498,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     menu.className='mentor-message-menu';
     menu.dataset.messageId=messageId;
     const message=mentorAdminMessageRows.get(messageId);
-    const autoReplyAction=message&&message.sender_kind==='mentor'&&!message.is_auto_reply&&!message.is_ai_reply&&['text','image','file'].includes(message.message_type)
+    const autoReplyAction=mentorConfigAllowed()&&message&&message.sender_kind==='mentor'&&!message.is_auto_reply&&!message.is_ai_reply&&['text','image','file'].includes(message.message_type)
       ? '<button type="button" data-msg-action="autoreply"><span>⚡</span>Jadikan Auto Reply</button>'
       : '';
     menu.innerHTML=
