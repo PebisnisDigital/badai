@@ -2586,12 +2586,12 @@ document.addEventListener('DOMContentLoaded', function(){
     {title:'WEB RAHASIA KUMPULAN PROMPT GRATIS',video:'',description:'Bikin web sederhana untuk menyimpan dan membagikan koleksi prompt secara rapi.',content:''},
     {title:'BUAT VIDEO PENDEK DIBAYAR LYNK ID',video:'',description:'Pelajari alur membuat video pendek dan memanfaatkannya melalui fitur monetisasi Lynk ID.',content:''},
     {title:'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',video:'',description:'Susun alur konten dan promosi agar aktivitas jualan di Instagram dan Threads lebih teratur.',content:''},
-    {title:'STRATEGI JAGO JUALAN DI WHATSAPP',video:'',materialUrl:'https://akses-jjwa.pebisnisdigital.chatgpt.site/',description:'Pelajari cara membangun percakapan dan penawaran yang lebih nyaman lewat WhatsApp.',content:''},
-    {title:'CONTEKAN 3 PESAN BIAR KONTAK BARU LEBIH CEPAT JADI PEMBELI',video:'',materialUrl:'https://pebisnis.digital/contekan-3-pesan-biar-kontak-baru-lebih-cepat-jadi-pembeli',description:'Pelajari tiga pola pesan untuk menindaklanjuti kontak baru tanpa terasa memaksa.',content:''},
-    {title:'BIKIN KELAS ONLINE',video:'https://youtu.be/I4NbR8jdEY0',description:'Susun materi, struktur, dan akses kelas online dari pengetahuan yang kamu punya.',content:''},
-    {title:'5 STRATEGI DAPAT KONTAK BERKUALITAS',video:'',materialUrl:'https://pebisnis.digital/bonus1-5-strategi-dapat-kontak-berkualitas',description:'Pelajari cara mencari kontak yang lebih relevan dengan produk atau layananmu.',content:''},
-    {title:'9 STRATEGI DAPAT RIBUAN KONTAK NON STOP',video:'',materialUrl:'https://pebisnis.digital/bonus2-9-strategi-dapat-ribuan-kontak-non-stop#akses',description:'Pelajari beberapa jalur untuk memperluas jaringan kontak secara konsisten.',content:''},
-    {title:'DAPAT KONTAK LANGSUNG DAPAT TRANSFERAN',video:'',materialUrl:'https://pebisnis.digital/dapat-kontak-langsung-dapat-transferan',description:'Pelajari cara menghubungkan aktivitas mencari kontak dengan penawaran yang jelas dan terarah.',content:''}
+    {hideInactive:true,title:'STRATEGI JAGO JUALAN DI WHATSAPP',video:'',materialUrl:'https://akses-jjwa.pebisnisdigital.chatgpt.site/',description:'Pelajari cara membangun percakapan dan penawaran yang lebih nyaman lewat WhatsApp.',content:''},
+    {hideInactive:true,title:'CONTEKAN 3 PESAN BIAR KONTAK BARU LEBIH CEPAT JADI PEMBELI',video:'',materialUrl:'https://pebisnis.digital/contekan-3-pesan-biar-kontak-baru-lebih-cepat-jadi-pembeli',description:'Pelajari tiga pola pesan untuk menindaklanjuti kontak baru tanpa terasa memaksa.',content:''},
+    {hideInactive:true,title:'BIKIN KELAS ONLINE',video:'https://youtu.be/I4NbR8jdEY0',description:'Susun materi, struktur, dan akses kelas online dari pengetahuan yang kamu punya.',content:''},
+    {hideInactive:true,title:'5 STRATEGI DAPAT KONTAK BERKUALITAS',video:'',materialUrl:'https://pebisnis.digital/bonus1-5-strategi-dapat-kontak-berkualitas',description:'Pelajari cara mencari kontak yang lebih relevan dengan produk atau layananmu.',content:''},
+    {hideInactive:true,title:'9 STRATEGI DAPAT RIBUAN KONTAK NON STOP',video:'',materialUrl:'https://pebisnis.digital/bonus2-9-strategi-dapat-ribuan-kontak-non-stop#akses',description:'Pelajari beberapa jalur untuk memperluas jaringan kontak secara konsisten.',content:''},
+    {hideInactive:true,title:'DAPAT KONTAK LANGSUNG DAPAT TRANSFERAN',video:'',materialUrl:'https://pebisnis.digital/dapat-kontak-langsung-dapat-transferan',description:'Pelajari cara menghubungkan aktivitas mencari kontak dengan penawaran yang jelas dan terarah.',content:''}
   ];
 
   function youtubeEmbedUrl(url){
@@ -2622,16 +2622,19 @@ document.addEventListener('DOMContentLoaded', function(){
 
       var primaryUrl=hasMaterial?item.materialUrl:item.toolUrl;
       var primaryLabel=hasMaterial?'BUKA MATERI':'BUKA TOOLS';
-      var actionButtons=[];
-      if(hasMaterial||hasTool){
-        actionButtons.push('<a class="badai-card-action badai-card-action-tool" href="'+primaryUrl+'" target="_blank" rel="noopener noreferrer">'+primaryLabel+' <span>↗</span></a>');
-      }
-      if(hasVideo){
-        actionButtons.push('<a class="badai-card-action badai-card-action-video" href="'+item.video+'" target="_blank" rel="noopener noreferrer">▶ TUTORIAL</a>');
-      }
-      var actionsHtml=actionButtons.length
-        ? '<div class="badai-material-card-divider"></div><div class="badai-material-card-actions'+(actionButtons.length===1?' is-single':'')+'">'+actionButtons.join('')+'</div>'
-        : '';
+      var hideInactive=item.hideInactive===true;
+
+      var toolButton=(hasMaterial||hasTool)
+        ? '<a class="badai-card-action badai-card-action-tool" href="'+primaryUrl+'" target="_blank" rel="noopener noreferrer">'+primaryLabel+' <span>↗</span></a>'
+        : (hideInactive?'':'<button class="badai-card-action badai-card-action-tool is-disabled" type="button" disabled>MATERI</button>');
+
+      var videoButton=hasVideo
+        ? '<a class="badai-card-action badai-card-action-video" href="'+item.video+'" target="_blank" rel="noopener noreferrer">▶ TUTORIAL</a>'
+        : (hideInactive?'':'<button class="badai-card-action badai-card-action-video is-disabled" type="button" disabled>▶ TUTORIAL</button>');
+
+      var visibleActionCount=(toolButton?1:0)+(videoButton?1:0);
+      var actionsHtml='<div class="badai-material-card-divider"></div>'+
+        '<div class="badai-material-card-actions'+(visibleActionCount===1?' is-single':'')+'">'+toolButton+videoButton+'</div>';
 
       return '<article class="badai-material-card'+(ready?' is-ready':' is-coming-soon')+'">'+
         (!ready?'<span class="badai-material-card-coming">SEGERA HADIR</span>':'')+
