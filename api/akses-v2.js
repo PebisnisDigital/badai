@@ -1239,6 +1239,9 @@ module.exports = async function handler(req, res) {
     gap:6px!important;
     align-items:stretch!important;
   }
+  .badai-material-card-actions.is-single{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
   .badai-card-action{
     width:100%!important;
     min-height:34px!important;
@@ -2619,21 +2622,23 @@ document.addEventListener('DOMContentLoaded', function(){
 
       var primaryUrl=hasMaterial?item.materialUrl:item.toolUrl;
       var primaryLabel=hasMaterial?'BUKA MATERI':'BUKA TOOLS';
-      var toolButton=(hasMaterial||hasTool)
-        ? '<a class="badai-card-action badai-card-action-tool" href="'+primaryUrl+'" target="_blank" rel="noopener noreferrer">'+primaryLabel+' <span>↗</span></a>'
-        : '<button class="badai-card-action badai-card-action-tool is-disabled" type="button" disabled>MATERI</button>';
-
-      var videoButton=hasVideo
-        ? '<a class="badai-card-action badai-card-action-video" href="'+item.video+'" target="_blank" rel="noopener noreferrer">▶ TUTORIAL</a>'
-        : '<button class="badai-card-action badai-card-action-video is-disabled" type="button" disabled>▶ TUTORIAL</button>';
+      var actionButtons=[];
+      if(hasMaterial||hasTool){
+        actionButtons.push('<a class="badai-card-action badai-card-action-tool" href="'+primaryUrl+'" target="_blank" rel="noopener noreferrer">'+primaryLabel+' <span>↗</span></a>');
+      }
+      if(hasVideo){
+        actionButtons.push('<a class="badai-card-action badai-card-action-video" href="'+item.video+'" target="_blank" rel="noopener noreferrer">▶ TUTORIAL</a>');
+      }
+      var actionsHtml=actionButtons.length
+        ? '<div class="badai-material-card-divider"></div><div class="badai-material-card-actions'+(actionButtons.length===1?' is-single':'')+'">'+actionButtons.join('')+'</div>'
+        : '';
 
       return '<article class="badai-material-card'+(ready?' is-ready':' is-coming-soon')+'">'+
         (!ready?'<span class="badai-material-card-coming">SEGERA HADIR</span>':'')+
         '<div class="badai-material-card-number">#'+number+'</div>'+
         '<h3 class="badai-material-card-title">'+item.title+'</h3>'+
         '<p class="badai-material-card-desc">'+description+'</p>'+
-        '<div class="badai-material-card-divider"></div>'+
-        '<div class="badai-material-card-actions">'+toolButton+videoButton+'</div>'+
+        actionsHtml+
       '</article>';
     }).join('');
   }
