@@ -4588,32 +4588,39 @@ main section > .container > .badai-copy-kicker,
   contain:layout paint;
   isolation:isolate;
   padding:2px 0 7px;
+  mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent);
 }
 .badai-demo-track{
-  --demo-gap:14px;
   display:flex;
-  align-items:flex-start;
-  gap:var(--demo-gap);
   width:max-content;
   min-width:max-content;
   will-change:transform;
   backface-visibility:hidden;
   transform:translate3d(0,0,0);
-  animation:badaiDemoLoopLeft var(--demo-speed,32s) linear infinite;
+}
+.badai-demo-set{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  padding-right:14px;
+  flex:none;
+}
+.badai-demo-row.is-left .badai-demo-track{
+  animation:badaiDemoMarqueeLeft var(--demo-speed,36s) linear infinite;
 }
 .badai-demo-row.is-right .badai-demo-track{
-  animation-name:badaiDemoLoopRight;
+  animation:badaiDemoMarqueeRight var(--demo-speed,36s) linear infinite;
 }
-.badai-demo-row.is-playing .badai-demo-track,
-.badai-demo-row:hover .badai-demo-track{
+.badai-demo-row.is-playing .badai-demo-track{
   animation-play-state:paused;
 }
-@keyframes badaiDemoLoopLeft{
+@keyframes badaiDemoMarqueeLeft{
   from{transform:translate3d(0,0,0)}
-  to{transform:translate3d(calc(-50% - 7px),0,0)}
+  to{transform:translate3d(-50%,0,0)}
 }
-@keyframes badaiDemoLoopRight{
-  from{transform:translate3d(calc(-50% - 7px),0,0)}
+@keyframes badaiDemoMarqueeRight{
+  from{transform:translate3d(-50%,0,0)}
   to{transform:translate3d(0,0,0)}
 }
 
@@ -4815,14 +4822,6 @@ main section > .container > .badai-copy-kicker,
   .badai-demo-card-top{min-height:32px}
   .badai-demo-card-foot span{display:none}
 }
-@media(prefers-reduced-motion:reduce){
-  .badai-demo-track{
-    animation:none!important;
-    transform:none!important;
-  }
-}
-
-
 /* END BADAI PREMIUM 3D DEMO SHOWCASE */
 
 
@@ -7332,7 +7331,7 @@ main section > .container > .badai-copy-kicker,
     return match ? match[1] : '';
   }
 
-  function makePoster(card){
+  function turnIntoPoster(card){
     const frame = card.querySelector('iframe');
     const base = card.dataset.demoBase || frame?.dataset.demoBase || frame?.src || '';
     if(!base) return;
@@ -7347,27 +7346,25 @@ main section > .container > .badai-copy-kicker,
     if(videoId) poster.src = 'https://i.ytimg.com/vi/' + videoId + '/hqdefault.jpg';
 
     if(frame) frame.replaceWith(poster);
-    else {
-      const device = card.querySelector('.badai-demo-device');
-      if(device && !device.querySelector('.badai-demo-poster')) device.prepend(poster);
-    }
+  }
+
+  function posterFor(card, frame){
+    const poster = document.createElement('img');
+    const base = card.dataset.demoBase || '';
+    const videoId = getYoutubeId(base);
+    poster.className = 'badai-demo-poster';
+    poster.loading = 'lazy';
+    poster.decoding = 'async';
+    poster.alt = frame?.title || 'Contoh hasil video AI BADAI';
+    if(videoId) poster.src = 'https://i.ytimg.com/vi/' + videoId + '/hqdefault.jpg';
+    return poster;
   }
 
   function stopPlaying(exceptCard){
     stage.querySelectorAll('.badai-demo-card.demo-playing').forEach(card => {
       if(card === exceptCard) return;
       const frame = card.querySelector('iframe');
-      if(frame){
-        const poster = document.createElement('img');
-        const base = card.dataset.demoBase || '';
-        const videoId = getYoutubeId(base);
-        poster.className = 'badai-demo-poster';
-        poster.loading = 'lazy';
-        poster.decoding = 'async';
-        poster.alt = frame.title || 'Contoh hasil video AI BADAI';
-        if(videoId) poster.src = 'https://i.ytimg.com/vi/' + videoId + '/hqdefault.jpg';
-        frame.replaceWith(poster);
-      }
+      if(frame) frame.replaceWith(posterFor(card, frame));
       card.classList.remove('demo-playing');
       card.closest('.badai-demo-row')?.classList.remove('is-playing');
     });
@@ -7396,30 +7393,45 @@ main section > .container > .badai-copy-kicker,
   }
 
   function bindCard(card){
-    const playButton = card.querySelector('.badai-demo-play');
-    playButton?.addEventListener('click', e => {
+    card.querySelector('.badai-demo-play')?.addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
       playCard(card);
     });
   }
 
-  sourceCards.forEach(makePoster);
+  sourceCards.forEach(turnIntoPoster);
+
+  const originalTemplates = sourceCards.map(card => card.cloneNode(true));
   stage.innerHTML = '';
 
-  const rows = [
-    {direction:'right', speed:'34s', cards:[0,1,2]},
-    {direction:'left',  speed:'30s', cards:[3,4,5]},
-    {direction:'right', speed:'36s', cards:[6,7,8]}
+  const rowConfigs = [
+    {direction:'right', speed:'38s', start:0},
+    {direction:'left',  speed:'34s', start:3},
+    {direction:'right', speed:'40s', start:6}
   ];
 
-  rows.forEach((config,rowIndex) => {
-    const picked = config.cards
-      .map(index => sourceCards[index])
-      .filter(Boolean);
+  function orderedTemplates(start){
+    return originalTemplates.map((_, i) => originalTemplates[(start + i) % originalTemplates.length]);
+  }
 
-    if(!picked.length) return;
+  function buildSet(templates, duplicate){
+    const set = document.createElement('div');
+    set.className = 'badai-demo-set';
+    set.setAttribute('aria-hidden', duplicate ? 'true' : 'false');
 
+    templates.forEach(template => {
+      const card = template.cloneNode(true);
+      card.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+      if(duplicate) card.querySelectorAll('button').forEach(btn => btn.tabIndex = -1);
+      bindCard(card);
+      set.appendChild(card);
+    });
+
+    return set;
+  }
+
+  rowConfigs.forEach((config,rowIndex) => {
     const row = document.createElement('div');
     row.className = 'badai-demo-row ' + (config.direction === 'right' ? 'is-right' : 'is-left');
     row.setAttribute('aria-label','Baris contoh hasil ' + (rowIndex + 1));
@@ -7428,18 +7440,9 @@ main section > .container > .badai-copy-kicker,
     track.className = 'badai-demo-track';
     track.style.setProperty('--demo-speed', config.speed);
 
-    const firstSet = picked;
-    const secondSet = picked.map(card => {
-      const clone = card.cloneNode(true);
-      clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-      clone.querySelectorAll('button').forEach(btn => btn.tabIndex = -1);
-      return clone;
-    });
-
-    [...firstSet, ...secondSet].forEach(card => {
-      bindCard(card);
-      track.appendChild(card);
-    });
+    const templates = orderedTemplates(config.start);
+    track.appendChild(buildSet(templates, false));
+    track.appendChild(buildSet(templates, true));
 
     row.appendChild(track);
     stage.appendChild(row);
