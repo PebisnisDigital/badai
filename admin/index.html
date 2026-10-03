@@ -5643,6 +5643,23 @@ th,td{padding:14px 12px!important}
 }
 /* END BADAI SALES PAYMENT METHOD */
 
+
+/* FAST ADMIN — action feedback */
+button[data-admin-busy="1"]{
+  opacity:.72!important;
+  cursor:wait!important;
+  pointer-events:none!important;
+}
+button[data-admin-busy="1"]::after{
+  content:"";
+  width:8px;height:8px;margin-left:6px;
+  border:1.5px solid currentColor;border-right-color:transparent;border-radius:50%;
+  display:inline-block;vertical-align:-1px;
+  animation:badaiAdminSpin .65s linear infinite;
+}
+@keyframes badaiAdminSpin{to{transform:rotate(360deg)}}
+/* END FAST ADMIN */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -7271,6 +7288,11 @@ th,td{padding:14px 12px!important}
   let adminActionDepth = 0;
   let salesLifecycleLastRefresh = 0;
   let salesLightRefreshPromise = null;
+  let financeSnapshotPromise = null;
+  let marketingBaseLoaded = false;
+  let marketingBasePromise = null;
+  let marketingTabLoaded = {pricing:false,payments:false,notifications:false,affiliate:false,materials:false};
+  const adminActionLocks = new Set();
   let teamMembers = [];
   let mentorConversations = [];
   let mentorActiveConversation = null;
@@ -7883,8 +7905,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       tab.classList.toggle('active', name === page);
     });
 
-    if(page === 'finance') loadFinanceTransactions();
-    if(page === 'marketing') loadMarketing();
+    if(page === 'finance') loadFinanceSnapshot().catch(err => console.warn('Finance refresh:',err?.message || err));
+    if(page === 'marketing') loadMarketing().catch(err => {
+      if($('marketingStatus')) $('marketingStatus').textContent = '✕ ' + (err.message || 'Gagal memuat Marketing.');
+    });
     if(page === 'mentor'){
       $('mentorFeatureAiBtn')?.classList.toggle('hidden',!mentorAiAllowed());
       loadMentorInbox();
@@ -7923,11 +7947,17 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       populateAdminSelfSettings();
 
       const allowed = allowedPages();
-      if(allowed.includes('sales') || allowed.includes('finance')){
+      if(allowed.includes('sales')){
         await loadMarketingSettings();
+        marketingBaseLoaded = true;
         await loadRegistrations();
+      }else if(allowed.includes('finance')){
+        await loadMarketingSettings();
+        marketingBaseLoaded = true;
+        await loadFinanceSnapshot();
       }else if(allowed.includes('marketing')){
-        await loadMarketing();
+        await ensureMarketingBase();
+        await loadMarketingTab(currentMarketingTab(),false);
       }
 
       const first = allowed[0];
@@ -7988,6 +8018,45 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   }
 
+  async function runAdminAction(key, button, task, busyText=''){
+    const lockKey = String(key || 'action');
+    if(adminActionLocks.has(lockKey)) return false;
+
+    adminActionLocks.add(lockKey);
+    beginAdminAction();
+
+    const oldHtml = button?.innerHTML;
+    if(button){
+      button.dataset.adminBusy = '1';
+      button.disabled = true;
+      button.setAttribute('aria-busy','true');
+      if(busyText) button.textContent = busyText;
+    }
+
+    try{
+      await nextUiPaint();
+      await task();
+      return true;
+    }finally{
+      adminActionLocks.delete(lockKey);
+      endAdminAction();
+      if(button?.isConnected){
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+        delete button.dataset.adminBusy;
+        if(busyText && oldHtml != null) button.innerHTML = oldHtml;
+      }
+    }
+  }
+
+  // Capture-phase shield: a second click never reaches an action already in flight.
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-admin-busy="1"]');
+    if(!btn) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }, true);
+
   function backgroundSalesRefresh(delay=80){
     window.setTimeout(() => {
       loadRegistrations({light:true,lifecycle:false}).catch(err => {
@@ -8029,7 +8098,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
         api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
         api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc'),
-        api('/rest/v1/marketing_coupons?active=eq.true&select=id,code,discount_type,discount_value,usage_limit,active&order=created_at.desc')
+        api('/rest/v1/marketing_coupons?active=eq.true&select=id,code,discount_type,discount_value,usage_limit,active&order=created_at.desc'),
+        api('/rest/v1/payment_methods?active=eq.true&select=id,method_type,provider,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc')
       ]);
 
       registrations = results[0] || [];
@@ -8038,7 +8108,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       financeTransactions = results[3] || [];
       membershipRenewals = results[4] || [];
       salesActiveCoupons = results[5] || [];
+      paymentMethods = results[6] || paymentMethods;
       populateManualAffiliateOptions();
+      populateManualPaymentOptions();
       renderSales();
       renderFinance();
       updateExportMatchCount();
@@ -8707,6 +8779,30 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     renderFinance();
   }
 
+  async function loadFinanceSnapshot(){
+    if(financeSnapshotPromise) return financeSnapshotPromise;
+
+    financeSnapshotPromise = (async () => {
+      const results = await Promise.all([
+        api('/rest/v1/registrations?select=' + SALES_SELECT + '&order=created_at.desc'),
+        api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
+        api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc')
+      ]);
+
+      registrations = results[0] || registrations;
+      financeTransactions = results[1] || [];
+      membershipRenewals = results[2] || [];
+      renderFinance();
+      return true;
+    })();
+
+    try{
+      return await financeSnapshotPromise;
+    }finally{
+      financeSnapshotPromise = null;
+    }
+  }
+
 
   async function loadMarketingSettings(){
     try{
@@ -8717,45 +8813,12 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     }catch(_){}
   }
 
-  async function loadMarketing(){
-    await loadMarketingSettings();
-
-    const results = await Promise.all([
-      api('/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,usage_limit,active,created_at&order=created_at.desc'),
-      api('/rest/v1/affiliate_settings?id=eq.1&select=id,commission_type,commission_value,inactivity_months'),
-      api('/rest/v1/affiliate_accounts?select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
-      api('/rest/v1/affiliate_sales?select=id,affiliate_user_id,registration_id,sale_amount,commission_amount,status,sale_at&order=sale_at.desc'),
-      api('/rest/v1/affiliate_payouts?select=id,affiliate_user_id,amount,status,paid_at,created_at&order=paid_at.desc'),
-      api('/rest/v1/profiles?select=id,full_name,email,whatsapp,membership_plan,member_status'),
-      api('/rest/v1/affiliate_materials?select=id,material_type,title,content,media_url,active,sort_order,created_at&order=sort_order.asc,created_at.desc'),
-      api('/rest/v1/payment_methods?select=id,method_type,provider,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc'),
-      api('/rest/v1/rpc/admin_get_buatqris_settings', {
-        method:'POST',
-        body:JSON.stringify({})
-      }),
-      api('/rest/v1/rpc/admin_marketing_coupon_usage', {
-        method:'POST',
-        body:JSON.stringify({})
-      })
-    ]);
-
-    marketingCoupons = results[0] || [];
-    const couponUsageRows = results[9] || [];
-    const couponUsageMap = new Map(couponUsageRows.map(row => [row.coupon_id,row]));
-    marketingCoupons = marketingCoupons.map(coupon => Object.assign({},coupon,couponUsageMap.get(coupon.id)||{}));
-    if(results[1]?.[0]) affiliateSettings = results[1][0];
-    affiliateAccounts = results[2] || [];
-    affiliateSales = results[3] || [];
-    affiliatePayouts = results[4] || [];
-    affiliateProfiles = results[5] || [];
-    affiliateMaterials = results[6] || [];
-    paymentMethods = results[7] || [];
-    if(results[8]?.[0]) buatQrisSettings = results[8][0];
-
+  function applyMarketingSettingsForm(){
     $('marketingNewbiePrice').value = marketingSettings.newbie_price || marketingSettings.product_price || 123000;
     $('marketingProPrice').value = marketingSettings.pro_price || marketingSettings.product_price || 123000;
     if($('marketingRegistrationOpen')) $('marketingRegistrationOpen').checked = marketingSettings.registration_open !== false;
     syncRegistrationModeAdmin();
+
     $('marketingRegisterMessage').value = marketingSettings.registration_notification || '';
     $('marketingFollow1').value = marketingSettings.followup_1 || '';
     $('marketingFollow2').value = marketingSettings.followup_2 || '';
@@ -8778,19 +8841,104 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       max:Number(marketingSettings.manual_unique_max || 999)
     };
     populateManualUniqueSettings();
+  }
 
-    $('affiliateCommissionType').value = affiliateSettings.commission_type || 'percent';
-    $('affiliateCommissionValue').value = affiliateSettings.commission_value || 30;
-    $('affiliateInactivityMonths').value = affiliateSettings.inactivity_months || 3;
+  async function ensureMarketingBase(force=false){
+    if(marketingBaseLoaded && !force){
+      applyMarketingSettingsForm();
+      return marketingSettings;
+    }
+    if(marketingBasePromise && !force) return marketingBasePromise;
 
-    renderCoupons();
-    renderAffiliateOverview();
-    renderAffiliateMaterials();
-    toggleAffiliateMaterialFields();
-    renderPaymentMethods();
-    togglePaymentMethodFields();
-    populateManualPaymentOptions();
-    populateBuatQrisSettings();
+    marketingBasePromise = (async () => {
+      await loadMarketingSettings();
+      marketingBaseLoaded = true;
+      applyMarketingSettingsForm();
+      return marketingSettings;
+    })();
+
+    try{
+      return await marketingBasePromise;
+    }finally{
+      marketingBasePromise = null;
+    }
+  }
+
+  function currentMarketingTab(){
+    return document.querySelector('[data-marketing-tab].active')?.dataset?.marketingTab || 'pricing';
+  }
+
+  async function loadMarketingTab(tab='pricing',force=false){
+    const valid = ['pricing','payments','notifications','affiliate','materials'];
+    if(!valid.includes(tab)) tab = 'pricing';
+
+    await ensureMarketingBase(force && (tab === 'pricing' || tab === 'notifications'));
+
+    if(marketingTabLoaded[tab] && !force) return;
+
+    const status = $('marketingStatus');
+    if(status) status.textContent = 'Memuat ' + tab + '...';
+
+    if(tab === 'pricing'){
+      const [coupons,usageRows] = await Promise.all([
+        api('/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,usage_limit,active,created_at&order=created_at.desc'),
+        api('/rest/v1/rpc/admin_marketing_coupon_usage',{method:'POST',body:JSON.stringify({})})
+      ]);
+      const usageMap = new Map((usageRows||[]).map(row => [row.coupon_id,row]));
+      marketingCoupons = (coupons||[]).map(coupon => Object.assign({},coupon,usageMap.get(coupon.id)||{}));
+      salesActiveCoupons = marketingCoupons.filter(coupon => coupon.active === true);
+      renderCoupons();
+    }
+
+    if(tab === 'payments'){
+      const [methods,qrisRows] = await Promise.all([
+        api('/rest/v1/payment_methods?select=id,method_type,provider,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc'),
+        api('/rest/v1/rpc/admin_get_buatqris_settings',{method:'POST',body:JSON.stringify({})})
+      ]);
+      paymentMethods = methods || [];
+      if(qrisRows?.[0]) buatQrisSettings = qrisRows[0];
+      renderPaymentMethods();
+      togglePaymentMethodFields();
+      populateManualPaymentOptions();
+      populateBuatQrisSettings();
+    }
+
+    if(tab === 'affiliate'){
+      const results = await Promise.all([
+        api('/rest/v1/affiliate_settings?id=eq.1&select=id,commission_type,commission_value,inactivity_months'),
+        api('/rest/v1/affiliate_accounts?select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
+        api('/rest/v1/affiliate_sales?select=id,affiliate_user_id,registration_id,sale_amount,commission_amount,status,sale_at&order=sale_at.desc'),
+        api('/rest/v1/affiliate_payouts?select=id,affiliate_user_id,amount,status,paid_at,created_at&order=paid_at.desc'),
+        api('/rest/v1/profiles?select=id,full_name,email,whatsapp,membership_plan,member_status')
+      ]);
+      if(results[0]?.[0]) affiliateSettings = results[0][0];
+      affiliateAccounts = results[1] || [];
+      affiliateSales = results[2] || [];
+      affiliatePayouts = results[3] || [];
+      affiliateProfiles = results[4] || [];
+
+      $('affiliateCommissionType').value = affiliateSettings.commission_type || 'percent';
+      $('affiliateCommissionValue').value = affiliateSettings.commission_value || 30;
+      $('affiliateInactivityMonths').value = affiliateSettings.inactivity_months || 3;
+      renderAffiliateOverview();
+    }
+
+    if(tab === 'materials'){
+      affiliateMaterials = await api(
+        '/rest/v1/affiliate_materials?select=id,material_type,title,content,media_url,active,sort_order,created_at&order=sort_order.asc,created_at.desc'
+      ) || [];
+      renderAffiliateMaterials();
+      toggleAffiliateMaterialFields();
+    }
+
+    // Notifications need only marketing_settings, already loaded in the base.
+    marketingTabLoaded[tab] = true;
+    if(status && status.textContent.startsWith('Memuat ')) status.textContent = '';
+  }
+
+  async function loadMarketing(){
+    await ensureMarketingBase();
+    await loadMarketingTab(currentMarketingTab(),false);
   }
 
   function syncRegistrationModeAdmin(){
@@ -8952,7 +9100,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     $('couponCode').value = '';
     $('couponValue').value = '';
     $('couponUsageLimit').value = '';
-    await loadMarketing();
+    await loadMarketingTab('pricing',true);
   }
 
   async function couponAction(id, action){
@@ -8997,7 +9145,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       });
     }
 
-    await loadMarketing();
+    await loadMarketingTab('pricing',true);
   }
 
   function affiliateCommissionState(userId){
@@ -9062,7 +9210,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     });
     const paid = Number(rows?.[0]?.amount || state.unpaid);
     alert('Komisi berhasil ditandai sudah dicairkan senilai ' + rupiah(paid) + '.');
-    await loadMarketing();
+    await loadMarketingTab('affiliate',true);
   }
 
   function renderAffiliateOverview(){
@@ -9165,7 +9313,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     $('affiliateMaterialTitle').value = '';
     $('affiliateMaterialContent').value = '';
     $('affiliateMaterialUrl').value = '';
-    await loadMarketing();
+    await loadMarketingTab('materials',true);
   }
 
   async function affiliateMaterialAction(id, action){
@@ -9189,7 +9337,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       });
     }
 
-    await loadMarketing();
+    await loadMarketingTab('materials',true);
   }
 
   function syncManualUniquePreview(){
@@ -9317,7 +9465,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       ? 'BuatQris aktif dan tersinkron ke Landing Page.'
       : 'BuatQris dinonaktifkan.';
 
-    await loadMarketing();
+    await loadMarketingTab('payments',true);
   }
 
   async function testBuatQrisConnection(){
@@ -9450,7 +9598,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     $('paymentGatewayUrl').value = '';
     $('paymentInstructions').value = '';
 
-    await loadMarketing();
+    await loadMarketingTab('payments',true);
   }
 
   async function paymentMethodAction(id, action){
@@ -9474,7 +9622,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       });
     }
 
-    await loadMarketing();
+    await loadMarketingTab('materials',true);
   }
 
   function fillMarketingTemplate(template, values){
@@ -13276,6 +13424,12 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     });
 
     try{ sessionStorage.setItem('badai_marketing_tab', tab); }catch(_){}
+
+    if(session?.access_token && currentTeam && currentAdminPage() === 'marketing'){
+      loadMarketingTab(tab,false).catch(err => {
+        if($('marketingStatus')) $('marketingStatus').textContent = '✕ ' + (err.message || 'Gagal memuat tab Marketing.');
+      });
+    }
   }
 
   document.querySelectorAll('[data-marketing-tab]').forEach(btn => {
@@ -13366,9 +13520,12 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   });
 
   $('refreshAffiliateBtn').addEventListener('click', async () => {
-    $('refreshAffiliateBtn').disabled = true;
-    try{ await loadMarketing(); }
-    finally{ $('refreshAffiliateBtn').disabled = false; }
+    const btn = $('refreshAffiliateBtn');
+    try{
+      await runAdminAction('marketing:affiliate:refresh',btn,() => loadMarketingTab('affiliate',true),'REFRESH...');
+    }catch(err){
+      if($('marketingStatus')) $('marketingStatus').textContent = '✕ ' + (err.message || 'Gagal refresh afiliasi.');
+    }
   });
 
   $('teamForm').addEventListener('submit', async (e)=>{
@@ -13441,77 +13598,101 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
         openAffiliatePayoutWhatsapp(userId);
         return;
       }
-      payoutBtn.disabled = true;
       try{
-        if(action === 'mark-paid') await markAffiliatePayoutPaid(userId);
-      }catch(err){
-        alert('Pencairan komisi gagal: ' + err.message);
-      }finally{
-        payoutBtn.disabled = false;
-      }
+        await runAdminAction(
+          'affiliate-payout:' + userId + ':' + action,
+          payoutBtn,
+          async () => {
+            if(action === 'mark-paid') await markAffiliatePayoutPaid(userId);
+          },
+          'PROSES...'
+        );
+      }catch(err){ alert('Pencairan komisi gagal: ' + err.message); }
       return;
     }
 
     const paymentBtn = e.target.closest('[data-payment-action]');
     if(paymentBtn){
-      paymentBtn.disabled = true;
-      try{ await paymentMethodAction(paymentBtn.dataset.id, paymentBtn.dataset.paymentAction); }
-      catch(err){ alert('Aksi metode pembayaran gagal: ' + err.message); }
-      finally{ paymentBtn.disabled = false; }
+      try{
+        await runAdminAction(
+          'payment:' + paymentBtn.dataset.id + ':' + paymentBtn.dataset.paymentAction,
+          paymentBtn,
+          () => paymentMethodAction(paymentBtn.dataset.id,paymentBtn.dataset.paymentAction),
+          'PROSES...'
+        );
+      }catch(err){ alert('Aksi metode pembayaran gagal: ' + err.message); }
       return;
     }
 
     const affiliateMaterialBtn = e.target.closest('[data-affiliate-material-action]');
     if(affiliateMaterialBtn){
-      affiliateMaterialBtn.disabled = true;
-      try{ await affiliateMaterialAction(affiliateMaterialBtn.dataset.id, affiliateMaterialBtn.dataset.affiliateMaterialAction); }
-      catch(err){ alert('Aksi bahan promosi gagal: ' + err.message); }
-      finally{ affiliateMaterialBtn.disabled = false; }
+      try{
+        await runAdminAction(
+          'material:' + affiliateMaterialBtn.dataset.id + ':' + affiliateMaterialBtn.dataset.affiliateMaterialAction,
+          affiliateMaterialBtn,
+          () => affiliateMaterialAction(affiliateMaterialBtn.dataset.id,affiliateMaterialBtn.dataset.affiliateMaterialAction),
+          'PROSES...'
+        );
+      }catch(err){ alert('Aksi bahan promosi gagal: ' + err.message); }
       return;
     }
 
     const couponBtn = e.target.closest('[data-coupon-action]');
     if(couponBtn){
-      couponBtn.disabled = true;
-      try{ await couponAction(couponBtn.dataset.id, couponBtn.dataset.couponAction); }
-      catch(err){ alert('Aksi kupon gagal: ' + err.message); }
-      finally{ couponBtn.disabled = false; }
+      try{
+        await runAdminAction(
+          'coupon:' + couponBtn.dataset.id + ':' + couponBtn.dataset.couponAction,
+          couponBtn,
+          () => couponAction(couponBtn.dataset.id,couponBtn.dataset.couponAction),
+          'PROSES...'
+        );
+      }catch(err){ alert('Aksi kupon gagal: ' + err.message); }
       return;
     }
 
     const financeBtn = e.target.closest('[data-finance-action]');
     if(financeBtn){
       const action = financeBtn.dataset.financeAction;
-
       if(action === 'add'){
         openManualTransactionModal();
         return;
       }
-
       if(action === 'delete'){
-        financeBtn.disabled = true;
-        try{ await deleteManualTransaction(financeBtn.dataset.id); }
-        catch(err){ alert('Aksi transaksi gagal: ' + err.message); }
-        finally{ financeBtn.disabled = false; }
+        try{
+          await runAdminAction(
+            'finance:' + financeBtn.dataset.id + ':delete',
+            financeBtn,
+            () => deleteManualTransaction(financeBtn.dataset.id),
+            'PROSES...'
+          );
+        }catch(err){ alert('Aksi transaksi gagal: ' + err.message); }
         return;
       }
     }
 
     const teamBtn = e.target.closest('[data-team-action]');
     if(teamBtn){
-      teamBtn.disabled = true;
-      try{ await teamAction(teamBtn.dataset.id, teamBtn.dataset.teamAction); }
-      catch(err){ alert('Aksi tim gagal: ' + err.message); }
-      finally{ teamBtn.disabled = false; }
+      try{
+        await runAdminAction(
+          'team:' + teamBtn.dataset.id + ':' + teamBtn.dataset.teamAction,
+          teamBtn,
+          () => teamAction(teamBtn.dataset.id,teamBtn.dataset.teamAction),
+          'PROSES...'
+        );
+      }catch(err){ alert('Aksi tim gagal: ' + err.message); }
       return;
     }
 
     const btn = e.target.closest('[data-action]');
     if(!btn) return;
-    btn.disabled = true;
-    try{ await updateRegistration(btn.dataset.id, btn.dataset.action); }
-    catch(err){ alert('Aksi gagal: ' + err.message); }
-    finally{ btn.disabled = false; }
+    try{
+      await runAdminAction(
+        'sales:' + btn.dataset.id + ':' + btn.dataset.action,
+        btn,
+        () => updateRegistration(btn.dataset.id,btn.dataset.action),
+        btn.dataset.action === 'manage' ? '' : 'PROSES...'
+      );
+    }catch(err){ alert('Aksi gagal: ' + err.message); }
   });
 
   function adminHasFocusedEditor(){
@@ -13544,14 +13725,11 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
       if(page === 'sales'){
         await loadRegistrations({light:true,lifecycle:false});
       }else if(page === 'finance'){
-        await Promise.all([
-          loadRegistrations({light:true,lifecycle:false}),
-          loadFinanceTransactions()
-        ]);
+        await loadFinanceSnapshot();
       }else if(page === 'marketing'){
         if(force || now - adminAutoSyncLastMarketing >= 30000){
           adminAutoSyncLastMarketing = now;
-          await loadMarketing();
+          await loadMarketingTab(currentMarketingTab(),true);
         }
       }else if(page === 'team'){
         if(force || now - adminAutoSyncLastTeam >= 30000){
