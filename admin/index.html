@@ -3037,6 +3037,100 @@ th,td{padding:14px 12px!important}
   color:#ff7b8d;
 }
 
+.manual-reg-payment-detail{
+  margin-top:6px;
+  padding:9px 10px;
+  border:1px solid #2b2b2b;
+  border-radius:10px;
+  background:#0a0a0a;
+  color:#8e8e8e;
+  font-size:8px;
+  line-height:1.45;
+}
+.manual-reg-payment-detail b{
+  color:#fff;
+  font-size:9px;
+}
+.manual-pending-notice{
+  margin-top:12px;
+  padding:13px;
+  border:1px solid #5c3d1c;
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 95% 0,rgba(243,190,78,.10),transparent 34%),
+    #100d08;
+}
+.manual-pending-notice-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.manual-pending-notice-head b{
+  display:block;
+  color:#f4c76d;
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:10px;
+  font-weight:950;
+}
+.manual-pending-notice-head span{
+  display:block;
+  margin-top:2px;
+  color:#80725d;
+  font-size:7.5px;
+  line-height:1.35;
+}
+.manual-pending-message{
+  width:100%;
+  min-height:210px;
+  resize:vertical;
+  box-sizing:border-box;
+  padding:11px;
+  border:1px solid #3a3021;
+  border-radius:11px;
+  background:#080706;
+  color:#f3f3f3;
+  outline:none;
+  font-family:"Nunito",Arial,sans-serif;
+  font-size:10px;
+  line-height:1.5;
+}
+.manual-pending-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:8px;
+}
+.manual-pending-actions button,
+.manual-pending-actions a{
+  min-height:39px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 10px;
+  text-align:center;
+  text-decoration:none;
+  font-size:8px;
+  font-weight:950;
+}
+.manual-pending-actions button{
+  border:0;
+  background:#f2c15f;
+  color:#15100a;
+  cursor:pointer;
+}
+.manual-pending-actions a{
+  border:1px solid #31523c;
+  background:#0c1710;
+  color:#89dca5;
+}
+@media(max-width:480px){
+  .manual-pending-actions{grid-template-columns:1fr}
+  .manual-pending-message{min-height:230px;font-size:9.5px}
+}
+
 .export-match-card strong{
   color:#fff;
   font-size:13px;
@@ -6915,6 +7009,14 @@ th,td{padding:14px 12px!important}
           </select>
         </div>
 
+        <div id="manualRegPaymentWrap" class="manage-field full">
+          <label>Rekening Tagihan</label>
+          <select id="manualRegPayment">
+            <option value="">-- Pilih Rekening --</option>
+          </select>
+          <div id="manualRegPaymentDetail" class="manual-reg-payment-detail">Pilih rekening transfer untuk tagihan peserta.</div>
+        </div>
+
         <div class="manage-field full">
           <label>Kode Kupon <span style="color:#777;font-weight:700">(Opsional)</span></label>
           <input id="manualRegCoupon" type="text" autocomplete="off" placeholder="Contoh: BADAI20"/>
@@ -6939,6 +7041,20 @@ th,td{padding:14px 12px!important}
       </div>
 
       <div id="manualRegisterStatus" class="team-status-note"></div>
+
+      <div id="manualPendingNotice" class="manual-pending-notice hidden">
+        <div class="manual-pending-notice-head">
+          <div>
+            <b>TAGIHAN WHATSAPP — PENDING</b>
+            <span>Sudah dibuat dari rekening, nominal, dan kode unik transaksi ini.</span>
+          </div>
+        </div>
+        <textarea id="manualPendingMessage" class="manual-pending-message" readonly></textarea>
+        <div class="manual-pending-actions">
+          <button id="copyManualPendingBtn" type="button">SALIN TAGIHAN WA</button>
+          <a id="openManualPendingWa" href="#" target="_blank" rel="noopener">BUKA WHATSAPP</a>
+        </div>
+      </div>
 
       <div class="cred-actions manage-member-actions">
         <button id="saveManualRegisterBtn" class="primary-act" type="submit">SIMPAN PENDAFTARAN</button>
@@ -7738,6 +7854,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const discountInfo = $('manualRegDiscountInfo');
     const statusSelect = $('manualRegStatus');
 
+    syncManualPaymentSelection();
+
     if(statusSelect){
       const activeOption = [...statusSelect.options].find(o => o.value === 'active');
       if(activeOption) activeOption.disabled = plan === 'free';
@@ -7816,6 +7934,164 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if([...select.options].some(o => o.value === current)) select.value = current;
   }
 
+  function manualTransferMethods(){
+    return (paymentMethods || []).filter(item =>
+      item && item.active === true && item.method_type === 'manual_transfer'
+    );
+  }
+
+  function manualPaymentDetailText(item){
+    if(!item) return '';
+    const lines = [
+      item.display_name || 'Transfer Bank',
+      item.bank_name ? 'Bank: ' + item.bank_name : '',
+      item.account_number ? 'No. Rekening: ' + item.account_number : '',
+      item.account_holder ? 'Atas Nama: ' + item.account_holder : '',
+      item.instructions || ''
+    ].filter(Boolean);
+    return lines.join('\n');
+  }
+
+  function populateManualPaymentOptions(){
+    const select = $('manualRegPayment');
+    if(!select) return;
+
+    const current = select.value;
+    const methods = manualTransferMethods();
+
+    select.innerHTML = '<option value="">-- Pilih Rekening --</option>' + methods.map(item => {
+      const summary = [item.bank_name,item.account_number].filter(Boolean).join(' • ');
+      return '<option value="' + esc(item.id) + '">' +
+        esc(item.display_name || item.bank_name || 'Transfer Bank') +
+        (summary ? ' — ' + esc(summary) : '') +
+      '</option>';
+    }).join('');
+
+    if([...select.options].some(o => o.value === current)) select.value = current;
+    else if(methods.length === 1) select.value = methods[0].id;
+
+    syncManualPaymentSelection();
+  }
+
+  function selectedManualPayment(){
+    const id = $('manualRegPayment')?.value || '';
+    return manualTransferMethods().find(item => String(item.id) === String(id)) || null;
+  }
+
+  function syncManualPaymentSelection(){
+    const plan = $('manualRegPlan')?.value || 'newbie';
+    const wrap = $('manualRegPaymentWrap');
+    const select = $('manualRegPayment');
+    const detail = $('manualRegPaymentDetail');
+    const isFree = plan === 'free';
+
+    if(wrap) wrap.classList.toggle('hidden', isFree);
+    if(select){
+      select.disabled = isFree;
+      select.required = !isFree;
+    }
+
+    if(detail){
+      if(isFree){
+        detail.textContent = 'Paket Gratisan tidak membutuhkan rekening pembayaran.';
+        return;
+      }
+
+      const payment = selectedManualPayment();
+      if(!payment){
+        detail.textContent = manualTransferMethods().length
+          ? 'Pilih rekening yang akan dipakai untuk tagihan peserta.'
+          : 'Belum ada rekening transfer aktif. Tambahkan dulu di Marketing → Pembayaran.';
+        return;
+      }
+
+      detail.innerHTML =
+        '<b>' + esc(payment.display_name || payment.bank_name || 'Transfer Bank') + '</b><br>' +
+        [payment.bank_name,payment.account_number,payment.account_holder ? 'a.n. ' + payment.account_holder : '']
+          .filter(Boolean).map(esc).join(' • ');
+    }
+  }
+
+  function resetManualPendingNotice(){
+    $('manualPendingNotice')?.classList.add('hidden');
+    if($('manualPendingMessage')) $('manualPendingMessage').value = '';
+    if($('openManualPendingWa')) $('openManualPendingWa').href = '#';
+    if($('copyManualPendingBtn')){
+      $('copyManualPendingBtn').textContent = 'SALIN TAGIHAN WA';
+      $('copyManualPendingBtn').disabled = false;
+    }
+  }
+
+  function manualPendingTemplateFallback(){
+    return `Halo Kak [nama] 👋
+
+Pendaftaran BADAI Kakak sudah tercatat dan saat ini statusnya masih *PENDING*.
+
+Paket: [paket]
+Tagihan: [total_bayar]
+Metode: [metode_bayar]
+
+[detail_bayar]
+
+Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayaran diverifikasi, akses member akan kami aktifkan.`;
+  }
+
+  function buildManualPendingMessage(row){
+    const baseAmount = Number(row?.amount || 0);
+    const totalAmount = Number(row?.payment_total_amount || baseAmount);
+    const uniqueCode = Number(row?.payment_unique_code || 0);
+    const sign = totalAmount >= baseAmount ? '+' : '-';
+    const payment = (paymentMethods || []).find(item => String(item.id) === String(row?.payment_method_id)) || selectedManualPayment();
+    const paymentDetail = [
+      row?.payment_method_details || manualPaymentDetailText(payment),
+      uniqueCode ? 'Kode Unik: ' + sign + rupiah(uniqueCode) : '',
+      'TOTAL TRANSFER: ' + rupiah(totalAmount),
+      'Mohon transfer PERSIS sesuai total di atas agar pembayaran mudah dicocokkan.'
+    ].filter(Boolean).join('\n');
+
+    return fillMarketingTemplate(marketingSettings.followup_1 || manualPendingTemplateFallback(), {
+      nama:row?.full_name || 'Kak',
+      email:row?.email || '',
+      wa:row?.whatsapp || '',
+      paket:row?.membership_plan === 'pro' ? 'Paket Untung' : row?.membership_plan === 'free' ? 'Paket Gratisan' : 'Paket Pemula',
+      harga:rupiah(baseAmount),
+      metode_bayar:row?.payment_method_name || payment?.display_name || '-',
+      detail_bayar:paymentDetail,
+      kode_unik:uniqueCode ? sign + rupiah(uniqueCode) : '-',
+      total_bayar:rupiah(totalAmount)
+    });
+  }
+
+  function showManualPendingNotice(row){
+    const message = buildManualPendingMessage(row);
+    if($('manualPendingMessage')) $('manualPendingMessage').value = message;
+    if($('openManualPendingWa')){
+      $('openManualPendingWa').href = 'https://wa.me/' + encodeURIComponent(row.whatsapp || '') + '?text=' + encodeURIComponent(message);
+    }
+    $('manualPendingNotice')?.classList.remove('hidden');
+  }
+
+  async function copyManualPendingMessage(){
+    const text = $('manualPendingMessage')?.value || '';
+    if(!text) return;
+
+    try{
+      await navigator.clipboard.writeText(text);
+    }catch(_){
+      const box = $('manualPendingMessage');
+      box?.focus();
+      box?.select();
+      document.execCommand('copy');
+      window.getSelection()?.removeAllRanges();
+    }
+
+    const btn = $('copyManualPendingBtn');
+    if(btn){
+      btn.textContent = 'TERSALIN ✓';
+      setTimeout(() => { if(btn) btn.textContent = 'SALIN TAGIHAN WA'; }, 1400);
+    }
+  }
+
   function openManualRegisterModal(){
     if(!canManageSales()){
       alert('Role ini tidak punya izin mendaftarkan peserta.');
@@ -7827,8 +8103,11 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     $('manualRegStatus').value = 'pending';
     $('manualRegCoupon').value = '';
     $('manualRegisterStatus').textContent = '';
+    resetManualPendingNotice();
     populateManualAffiliateOptions();
+    populateManualPaymentOptions();
     updateManualRegistrationAmount();
+    syncManualPaymentSelection();
     $('manualRegisterModal').classList.remove('hidden');
     setTimeout(() => $('manualRegName')?.focus(), 80);
   }
@@ -7848,6 +8127,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const affiliateCode = affiliateUserId
       ? (affiliateSelect.selectedOptions[0]?.dataset?.code || null)
       : null;
+    const payment = membershipPlan === 'free' ? null : selectedManualPayment();
     const amount = manualRegistrationAmount();
 
     if(!fullName || !email || !whatsapp) throw new Error('Nama, email, dan WhatsApp wajib diisi.');
@@ -7855,6 +8135,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(!['free','newbie','pro'].includes(membershipPlan)) throw new Error('Paket belum valid.');
     if(!['pending','active'].includes(targetStatus)) throw new Error('Status belum valid.');
     if(couponCode && !couponPricing.valid) throw new Error('Kode kupon tidak valid atau sedang nonaktif.');
+    if(membershipPlan !== 'free' && !payment) throw new Error('Pilih rekening tagihan terlebih dahulu.');
 
     const duplicate = registrations.find(r =>
       String(r.email || '').toLowerCase() === email ||
@@ -7867,36 +8148,73 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     btn.disabled = true;
     btn.textContent = 'MENYIMPAN...';
     $('manualRegisterStatus').textContent = 'Menyimpan pendaftaran manual...';
+    resetManualPendingNotice();
 
     try{
-      const createdRows = await api('/rest/v1/registrations?select=*', {
-        method:'POST',
-        headers:{'Prefer':'return=representation'},
-        body:JSON.stringify({
-          full_name:fullName,
-          email,
-          whatsapp,
-          product:'BADAI',
-          amount:amount,
-          payment_status:'pending',
-          member_status:'pending',
-          membership_plan:membershipPlan,
-          source:'admin_manual',
-          coupon_code:membershipPlan === 'free' ? null : couponCode,
-          affiliate_user_id:affiliateUserId,
-          referred_by_code:affiliateCode,
-          admin_note:'Pendaftaran manual oleh ' + (currentTeam?.email || 'admin BADAI')
-        })
-      });
+      let created = null;
 
-      const created = createdRows?.[0];
+      if(membershipPlan === 'free'){
+        const createdRows = await api('/rest/v1/registrations?select=*', {
+          method:'POST',
+          headers:{'Prefer':'return=representation'},
+          body:JSON.stringify({
+            full_name:fullName,
+            email,
+            whatsapp,
+            product:'BADAI',
+            amount:0,
+            payment_status:'pending',
+            member_status:'pending',
+            membership_plan:'free',
+            source:'admin_manual',
+            coupon_code:null,
+            affiliate_user_id:affiliateUserId,
+            referred_by_code:affiliateCode,
+            admin_note:'Pendaftaran manual oleh ' + (currentTeam?.email || 'admin BADAI')
+          })
+        });
+        created = createdRows?.[0] || null;
+      }else{
+        const invoiceRows = await api('/rest/v1/rpc/create_manual_registration', {
+          method:'POST',
+          body:JSON.stringify({
+            p_full_name:fullName,
+            p_email:email,
+            p_whatsapp:whatsapp,
+            p_membership_plan:membershipPlan,
+            p_payment_method_id:payment.id,
+            p_referred_by_code:affiliateCode,
+            p_coupon_code:couponCode
+          })
+        });
+
+        const invoice = Array.isArray(invoiceRows) ? invoiceRows[0] : invoiceRows;
+        if(!invoice?.registration_id) throw new Error('Invoice transfer manual belum berhasil dibuat.');
+
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(invoice.registration_id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({
+            source:'admin_manual',
+            affiliate_user_id:affiliateUserId,
+            referred_by_code:affiliateCode,
+            admin_note:'Pendaftaran manual oleh ' + (currentTeam?.email || 'admin BADAI')
+          })
+        });
+
+        const createdRows = await api(
+          '/rest/v1/registrations?id=eq.' + encodeURIComponent(invoice.registration_id) +
+          '&select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,payment_unique_code,payment_total_amount,admin_note,created_at'
+        );
+        created = createdRows?.[0] || null;
+      }
+
       if(!created?.id) throw new Error('Pendaftaran tersimpan tetapi ID data tidak ditemukan.');
 
       if(targetStatus === 'active'){
         if(membershipPlan === 'free'){
           $('manualRegisterStatus').textContent = '✓ Data Gratisan sudah masuk ke Penjualan sebagai PENDING.';
           await loadRegistrations();
-          setTimeout(() => $('manualRegisterModal').classList.add('hidden'), 650);
           return;
         }
 
@@ -7910,16 +8228,28 @@ Kalau mau aktif lagi, balas pesan ini ya.`
           return;
         }catch(accessErr){
           await loadRegistrations();
+          const refreshed = registrations.find(r => r.id === created.id) || created;
           $('manualRegisterStatus').textContent =
             '✓ Data sudah masuk ke Penjualan sebagai PENDING. ACC akses belum berhasil: ' +
             (accessErr.message || 'coba ACC dari tombol Edit.');
+          showManualPendingNotice(refreshed);
           return;
         }
       }
 
-      $('manualRegisterStatus').textContent = '✓ Peserta berhasil didaftarkan sebagai PENDING.';
       await loadRegistrations();
-      setTimeout(() => $('manualRegisterModal').classList.add('hidden'), 450);
+      const refreshed = registrations.find(r => r.id === created.id) || created;
+
+      if(membershipPlan === 'free'){
+        $('manualRegisterStatus').textContent = '✓ Peserta Gratisan berhasil didaftarkan sebagai PENDING.';
+        return;
+      }
+
+      $('manualRegisterStatus').textContent =
+        '✓ Pendaftaran PENDING dibuat • ' +
+        (refreshed.payment_method_name || payment.display_name || 'Transfer Bank') +
+        ' • Tagihan ' + rupiah(refreshed.payment_total_amount || refreshed.amount || amount) + '.';
+      showManualPendingNotice(refreshed);
     }finally{
       btn.disabled = false;
       btn.textContent = oldText;
@@ -8188,6 +8518,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     toggleAffiliateMaterialFields();
     renderPaymentMethods();
     togglePaymentMethodFields();
+    populateManualPaymentOptions();
     populateBuatQrisSettings();
   }
 
@@ -12027,6 +12358,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   $('exportDataBtn').addEventListener('click', openExportDataModal);
 
   $('manualRegPlan').addEventListener('change', updateManualRegistrationAmount);
+  $('manualRegPayment')?.addEventListener('change', syncManualPaymentSelection);
+  $('copyManualPendingBtn')?.addEventListener('click', () => copyManualPendingMessage().catch(()=>{}));
   $('manualRegCoupon').addEventListener('input', updateManualRegistrationAmount);
   $('manualRegCoupon').addEventListener('change', updateManualRegistrationAmount);
   $('manualRegisterForm').addEventListener('submit', async (e) => {
