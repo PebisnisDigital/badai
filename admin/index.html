@@ -5973,12 +5973,16 @@ th,td{padding:14px 12px!important}
           <div class="marketing-card">
             <div class="marketing-card-head">
               <span class="marketing-number">2</span>
-              <div><h3>Notifikasi Follow Up</h3><p>Isi pesan untuk FU 1, FU 2, dan FU 3 di Penjualan.</p></div>
+              <div><h3>Notifikasi Follow Up</h3><p>Isi dan edit pesan FU 1 sampai FU 7 yang dipakai di menu Penjualan.</p></div>
             </div>
 
             <div class="manage-field full"><label>Follow Up 1</label><textarea id="marketingFollow1" rows="6"></textarea></div>
             <div class="manage-field full"><label>Follow Up 2</label><textarea id="marketingFollow2" rows="6"></textarea></div>
             <div class="manage-field full"><label>Follow Up 3</label><textarea id="marketingFollow3" rows="6"></textarea></div>
+            <div class="manage-field full"><label>Follow Up 4</label><textarea id="marketingFollow4" rows="6"></textarea></div>
+            <div class="manage-field full"><label>Follow Up 5</label><textarea id="marketingFollow5" rows="6"></textarea></div>
+            <div class="manage-field full"><label>Follow Up 6</label><textarea id="marketingFollow6" rows="6"></textarea></div>
+            <div class="manage-field full"><label>Follow Up 7</label><textarea id="marketingFollow7" rows="6"></textarea></div>
             <div class="template-help">Variabel: <b>[nama]</b> <b>[email]</b> <b>[wa]</b> <b>[paket]</b> <b>[harga]</b> <b>[metode_bayar]</b> <b>[detail_bayar]</b> <b>[kode_unik]</b> <b>[total_bayar]</b></div>
           </div>
 
@@ -7213,14 +7217,54 @@ Total: [harga]
 Akses member belum aktif karena pembayaran belum terverifikasi. Kalau Kakak masih mau lanjut, silakan selesaikan pembayarannya. Kalau sudah bayar, kirim bukti pembayaran ke chat ini supaya bisa segera diproses.`,
     followup_3:`Halo Kak [nama] 👋
 
-Ini follow up terakhir untuk pendaftaran BADAI Kakak.
-
-Status saat ini masih PENDING, jadi akses member belum aktif.
+Mau mengingatkan lagi, pendaftaran BADAI Kakak masih PENDING.
 
 Paket: [paket]
-Total: [harga]
+Total Tagihan: [total_bayar]
 
-Kalau masih mau lanjut, silakan selesaikan pembayaran dan kirim bukti ke chat ini. Kalau belum jadi lanjut sekarang, pesan ini boleh diabaikan ya.`,
+Kalau masih mau lanjut, tinggal selesaikan pembayaran lalu kirim bukti transfernya.`,
+    followup_4:`Halo Kak [nama] 👋
+
+Aku follow up lagi ya untuk pendaftaran BADAI Kakak.
+
+Statusnya masih *PENDING*, jadi akses [paket] belum aktif.
+
+Total Tagihan: [total_bayar]
+Metode Pembayaran: [metode_bayar]
+[detail_bayar]
+
+Kalau Kakak sudah transfer, langsung kirim bukti pembayarannya ke chat ini ya supaya bisa kami proses.`,
+    followup_5:`Hai Kak [nama] 👋
+
+Pendaftaran BADAI Kakak masih kami simpan.
+
+Paket: [paket]
+Total Tagihan: [total_bayar]
+
+Kalau Kakak masih mau lanjut, tinggal selesaikan pembayarannya. Setelah pembayaran diverifikasi, akses member akan langsung kami aktifkan.
+
+Kalau ada kendala saat transfer, balas pesan ini ya.`,
+    followup_6:`Halo Kak [nama] 👋
+
+Sedikit pengingat untuk pendaftaran BADAI Kakak.
+
+Sampai sekarang statusnya masih *PENDING*, jadi akses [paket] belum aktif.
+
+Total Tagihan: [total_bayar]
+[detail_bayar]
+
+Kalau sudah bayar, kirim bukti transfernya ya. Kalau ada yang bikin ragu atau bingung, boleh tanya dulu di chat ini.`,
+    followup_7:`Halo Kak [nama] 👋
+
+Ini follow up terakhir untuk pendaftaran BADAI Kakak.
+
+Status saat ini masih *PENDING*.
+Paket: [paket]
+Total Tagihan: [total_bayar]
+
+Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfernya supaya akses bisa diproses.
+
+Kalau belum jadi lanjut sekarang, pesan ini boleh diabaikan ya.`,
     success_notification:`🎉 Halo Kak [nama], pembayaran BADAI sudah berhasil dikonfirmasi.
 
 Akses member Kakak sekarang sudah AKTIF.
@@ -8431,7 +8475,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
   async function loadMarketingSettings(){
     try{
       const rows = await api(
-        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,newbie_price,pro_price,registration_open,registration_notification,followup_1,followup_2,followup_3,success_notification,membership_grace_days,membership_reminder_days,membership_active_notification,membership_grace_notification,membership_expired_notification,manual_unique_enabled,manual_unique_type,manual_unique_min,manual_unique_max'
+        '/rest/v1/marketing_settings?id=eq.1&select=id,product_price,newbie_price,pro_price,registration_open,registration_notification,followup_1,followup_2,followup_3,followup_4,followup_5,followup_6,followup_7,success_notification,membership_grace_days,membership_reminder_days,membership_active_notification,membership_grace_notification,membership_expired_notification,manual_unique_enabled,manual_unique_type,manual_unique_min,manual_unique_max'
       );
       if(rows?.[0]) marketingSettings = rows[0];
     }catch(_){}
@@ -8480,6 +8524,10 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     $('marketingFollow1').value = marketingSettings.followup_1 || '';
     $('marketingFollow2').value = marketingSettings.followup_2 || '';
     $('marketingFollow3').value = marketingSettings.followup_3 || '';
+    $('marketingFollow4').value = marketingSettings.followup_4 || '';
+    $('marketingFollow5').value = marketingSettings.followup_5 || '';
+    $('marketingFollow6').value = marketingSettings.followup_6 || '';
+    $('marketingFollow7').value = marketingSettings.followup_7 || '';
     $('marketingSuccessMessage').value = marketingSettings.success_notification || '';
     $('membershipGraceDays').value = marketingSettings.membership_grace_days || 7;
     $('membershipReminderDays').value = marketingSettings.membership_reminder_days || 30;
@@ -8539,6 +8587,10 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       followup_1:$('marketingFollow1').value.trim(),
       followup_2:$('marketingFollow2').value.trim(),
       followup_3:$('marketingFollow3').value.trim(),
+      followup_4:$('marketingFollow4').value.trim(),
+      followup_5:$('marketingFollow5').value.trim(),
+      followup_6:$('marketingFollow6').value.trim(),
+      followup_7:$('marketingFollow7').value.trim(),
       success_notification:$('marketingSuccessMessage').value.trim(),
       membership_grace_days:Math.round(Number($('membershipGraceDays').value || 7)),
       membership_reminder_days:Math.round(Number($('membershipReminderDays').value || 30)),
@@ -8548,7 +8600,8 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       updated_by:session.user.id
     };
 
-    if(!body.registration_notification || !body.followup_1 || !body.followup_2 || !body.followup_3 || !body.success_notification ||
+    if(!body.registration_notification || !body.followup_1 || !body.followup_2 || !body.followup_3 ||
+       !body.followup_4 || !body.followup_5 || !body.followup_6 || !body.followup_7 || !body.success_notification ||
        !body.membership_active_notification || !body.membership_grace_notification || !body.membership_expired_notification){
       throw new Error('Semua template notifikasi wajib diisi.');
     }
