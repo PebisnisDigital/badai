@@ -5599,6 +5599,50 @@ th,td{padding:14px 12px!important}
   .manage-pending-copy-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
 /* END BADAI FOLLOW-UP COPY-ONLY FINAL */
+
+/* BADAI SALES PAYMENT METHOD — below package price */
+#pageSales .sales-package-stack .sales-payment-method{
+  width:max-content!important;
+  max-width:100%!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:15px!important;
+  padding:0 5px!important;
+  border:1px solid #2e2e2e!important;
+  border-radius:999px!important;
+  background:#111!important;
+  color:#a9a9a9!important;
+  font-size:6.8px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#pageSales .sales-package-stack .sales-payment-method.qris{
+  border-color:#214c3b!important;
+  background:#0c1712!important;
+  color:#79dfaa!important;
+}
+#pageSales .sales-package-stack .sales-payment-method.bank{
+  border-color:#4e3545!important;
+  background:#160e13!important;
+  color:#ff95c8!important;
+}
+#pageSales .sales-package-stack .sales-payment-method.unknown{
+  border-color:#323232!important;
+  background:#0d0d0d!important;
+  color:#666!important;
+}
+@media(max-width:560px){
+  #pageSales .sales-package-stack .sales-payment-method{
+    min-height:14px!important;
+    padding:0 4px!important;
+    font-size:6.1px!important;
+  }
+}
+/* END BADAI SALES PAYMENT METHOD */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -9533,6 +9577,30 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       esc(rupiah(r.payment_total_amount)) + ' • ' + sign + esc(r.payment_unique_code) + '</span>';
   }
 
+  function salesPaymentMethodHtml(r){
+    const rawName = String(r?.payment_method_name || '').trim();
+    const type = String(r?.payment_method_type || '').trim().toLowerCase();
+
+    let label = rawName;
+    let kind = 'other';
+
+    if(type === 'qris' || /qris/i.test(rawName)){
+      label = rawName || 'QRIS';
+      kind = 'qris';
+    }else if(type === 'manual_transfer'){
+      label = rawName || 'Transfer Bank';
+      kind = 'bank';
+    }else if(rawName){
+      kind = 'other';
+    }else{
+      label = 'Belum tercatat';
+      kind = 'unknown';
+    }
+
+    return '<span class="sales-payment-method ' + kind + '" title="Metode pembayaran: ' +
+      esc(label) + '">Bayar: ' + esc(label) + '</span>';
+  }
+
   function followUpMessage(r, step){
     const fallbackTemplates = {
       1:`Halo Kak [nama] 👋
@@ -9707,6 +9775,7 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
             <div class="sales-package-stack">
               <strong>${planText(r.membership_plan)}</strong>
               <span>${rupiah(r.amount)}</span>
+              ${salesPaymentMethodHtml(r)}
               ${salesPaymentMetaHtml(r)}
             </div>
           </td>
@@ -9741,6 +9810,7 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
             <div class="sales-package-stack">
               <strong>${planText(r.membership_plan)}</strong>
               <span>${rupiah(r.amount)}</span>
+              ${salesPaymentMethodHtml(r)}
               ${salesPaymentMetaHtml(r)}
             </div>
             <div class="sales-affiliate-stack">
