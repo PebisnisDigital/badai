@@ -5457,6 +5457,55 @@ th,td{padding:14px 12px!important}
 }
 /* END BADAI MANUAL SALES + FOLLOWUP ACTIONS */
 
+
+/* BADAI FOLLOW-UP COPY-ONLY FINAL */
+.manage-pending-followup{padding:13px!important}
+.manage-pending-followup-head span{max-width:100%!important}
+.manage-pending-copy-grid{
+  display:grid!important;
+  grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin-top:11px!important;
+}
+.manage-pending-copy-grid button{
+  min-width:0!important;
+  min-height:38px!important;
+  padding:0 6px!important;
+  border:1px solid #6a5426!important;
+  border-radius:9px!important;
+  background:#0f0d07!important;
+  color:#f4d36d!important;
+  font-family:"Nunito",Arial,sans-serif!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  cursor:pointer!important;
+  white-space:nowrap!important;
+}
+.manage-pending-copy-grid button:hover{
+  border-color:#f4d36d!important;
+  background:#1b1609!important;
+}
+.manage-pending-copy-grid button.copied{
+  border-color:#31523c!important;
+  background:#0c1710!important;
+  color:#89dca5!important;
+}
+.manage-fu-copy-status{
+  min-height:15px!important;
+  margin-top:7px!important;
+  color:#89dca5!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  text-align:right!important;
+}
+@media(max-width:620px){
+  .manage-pending-copy-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}
+  .manage-pending-copy-grid button{min-height:36px!important;font-size:8px!important}
+}
+@media(max-width:390px){
+  .manage-pending-copy-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+/* END BADAI FOLLOW-UP COPY-ONLY FINAL */
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -6886,28 +6935,19 @@ th,td{padding:14px 12px!important}
       <div id="managePendingFollowup" class="manage-pending-followup hidden">
         <div class="manage-pending-followup-head">
           <b>Follow Up Pending</b>
-          <span>Setiap follow-up bisa langsung dibuka di WhatsApp atau disalin pesannya.</span>
+          <span>Klik FU untuk langsung menyalin pesan follow-up.</span>
         </div>
-        <div class="manage-pending-followup-actions">
-          <div class="manage-followup-item">
-            <span class="manage-followup-label">FOLLOW UP 1</span>
-            <a id="manageFu1" href="#" target="_blank" rel="noopener">BUKA WHATSAPP</a>
-            <button id="manageFuCopy1" type="button">SALIN PESAN</button>
-          </div>
-          <div class="manage-followup-item">
-            <span class="manage-followup-label">FOLLOW UP 2</span>
-            <a id="manageFu2" href="#" target="_blank" rel="noopener">BUKA WHATSAPP</a>
-            <button id="manageFuCopy2" type="button">SALIN PESAN</button>
-          </div>
-          <div class="manage-followup-item">
-            <span class="manage-followup-label">FOLLOW UP 3</span>
-            <a id="manageFu3" href="#" target="_blank" rel="noopener">BUKA WHATSAPP</a>
-            <button id="manageFuCopy3" type="button">SALIN PESAN</button>
-          </div>
+        <div class="manage-pending-copy-grid" aria-label="Salin pesan follow up">
+          <button id="manageFuCopy1" type="button">FU 1</button>
+          <button id="manageFuCopy2" type="button">FU 2</button>
+          <button id="manageFuCopy3" type="button">FU 3</button>
+          <button id="manageFuCopy4" type="button">FU 4</button>
+          <button id="manageFuCopy5" type="button">FU 5</button>
+          <button id="manageFuCopy6" type="button">FU 6</button>
+          <button id="manageFuCopy7" type="button">FU 7</button>
         </div>
+        <div id="manageFuCopyStatus" class="manage-fu-copy-status" aria-live="polite"></div>
       </div>
-    </div>
-
     <div class="cred-actions manage-member-actions">
       <button id="saveManageBtn" class="primary-act" type="button">UPDATE MEMBER</button>
       <button id="closeManageBtn" type="button">TUTUP</button>
@@ -9346,17 +9386,87 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
   }
 
   function followUpMessage(r, step){
-    const templates = {
-      1:marketingSettings.followup_1,
-      2:marketingSettings.followup_2,
-      3:marketingSettings.followup_3
+    const fallbackTemplates = {
+      1:`Halo Kak [nama] 👋
+
+Pendaftaran BADAI Kakak untuk [paket] sudah masuk, tapi status pembayarannya masih PENDING.
+
+Total: [total_bayar]
+Metode Pembayaran: [metode_bayar]
+[detail_bayar]
+
+Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya.`,
+      2:`Hai Kak [nama] 👋
+
+Izin follow up pendaftaran BADAI Kakak ya.
+
+Paket: [paket]
+Total Tagihan: [total_bayar]
+
+Akses member belum aktif karena pembayaran belum terverifikasi. Kalau sudah bayar, kirim bukti pembayarannya ya.`,
+      3:`Halo Kak [nama] 👋
+
+Mau mengingatkan lagi, pendaftaran BADAI Kakak masih PENDING.
+
+Paket: [paket]
+Total Tagihan: [total_bayar]
+
+Kalau masih mau lanjut, tinggal selesaikan pembayaran lalu kirim bukti transfernya.`,
+      4:`Halo Kak [nama] 👋
+
+Aku follow up lagi ya untuk pendaftaran BADAI [paket].
+
+Statusnya masih PENDING dan akses member belum aktif.
+
+Total Tagihan: [total_bayar]
+[detail_bayar]
+
+Kalau sudah transfer, langsung kirim bukti pembayarannya ke sini ya.`,
+      5:`Hai Kak [nama] 👋
+
+Pendaftaran BADAI Kakak masih aku simpan.
+
+Paket: [paket]
+Total Tagihan: [total_bayar]
+
+Kalau Kakak masih mau lanjut, pembayaran bisa diselesaikan lalu kirim bukti transfer. Setelah diverifikasi, akses langsung kami aktifkan.`,
+      6:`Halo Kak [nama] 👋
+
+Sedikit pengingat untuk pendaftaran BADAI Kakak.
+
+Sampai sekarang statusnya masih PENDING, jadi akses [paket] belum aktif.
+
+Total Tagihan: [total_bayar]
+
+Kalau sudah bayar, kirim bukti transfernya ya supaya bisa segera diproses.`,
+      7:`Halo Kak [nama] 👋
+
+Ini follow up terakhir untuk pendaftaran BADAI Kakak.
+
+Status saat ini masih PENDING.
+Paket: [paket]
+Total Tagihan: [total_bayar]
+
+Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfernya. Kalau belum jadi lanjut sekarang, pesan ini boleh diabaikan ya.`
     };
 
-    return fillMarketingTemplate(templates[step] || templates[1], {
+    const configured = {
+      1:marketingSettings.followup_1,
+      2:marketingSettings.followup_2,
+      3:marketingSettings.followup_3,
+      4:marketingSettings.followup_4,
+      5:marketingSettings.followup_5,
+      6:marketingSettings.followup_6,
+      7:marketingSettings.followup_7
+    };
+
+    const template = configured[step] || fallbackTemplates[step] || fallbackTemplates[1];
+
+    return fillMarketingTemplate(template, {
       nama:r.full_name || 'Kak',
       email:r.email || '',
       wa:r.whatsapp || '',
-      paket:r.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula',
+      paket:r.membership_plan === 'pro' ? 'Paket Untung' : r.membership_plan === 'free' ? 'Paket Gratisan' : 'Paket Pemula',
       harga:rupiah(r.amount || marketingSettings.product_price || 123000),
       metode_bayar:r.payment_method_name || '-',
       detail_bayar:[
@@ -9366,10 +9476,6 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       kode_unik:r.payment_unique_code || 0,
       total_bayar:rupiah(r.payment_total_amount || r.amount || 0)
     });
-  }
-
-  function followUpLink(r, step){
-    return waMessageLink(r, followUpMessage(r,step));
   }
 
   async function copyTextToClipboard(text){
@@ -9398,13 +9504,17 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     const ok = await copyTextToClipboard(followUpMessage(row,step));
     if(!ok) throw new Error('Pesan belum berhasil disalin.');
 
+    const status = $('manageFuCopyStatus');
+    if(status) status.textContent = 'FU ' + step + ' tersalin ✓';
+
     if(button){
-      const original = 'SALIN PESAN';
+      const original = 'FU ' + step;
       button.textContent = 'TERSALIN ✓';
       button.classList.add('copied');
       setTimeout(() => {
         button.textContent = original;
         button.classList.remove('copied');
+        if(status?.textContent === 'FU ' + step + ' tersalin ✓') status.textContent = '';
       },1400);
     }
   }
@@ -9801,32 +9911,31 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
 
     $('managePendingFollowup').classList.toggle('hidden', !showFollowup);
     if(showFollowup){
-      $('manageFu1').href = followUpLink(row,1);
-      $('manageFu2').href = followUpLink(row,2);
-      $('manageFu3').href = followUpLink(row,3);
-
-      [1,2,3].forEach(step => {
+      if($('manageFuCopyStatus')) $('manageFuCopyStatus').textContent = '';
+      for(let step=1; step<=7; step++){
         const btn = $('manageFuCopy' + step);
-        if(!btn) return;
+        if(!btn) continue;
+        btn.textContent = 'FU ' + step;
+        btn.classList.remove('copied');
         btn.onclick = async () => {
           try{
             await copyFollowUpMessage(row,step,btn);
           }catch(err){
-            alert(err.message || 'Gagal menyalin pesan.');
+            if($('manageFuCopyStatus')) $('manageFuCopyStatus').textContent = err.message || 'Gagal menyalin pesan.';
           }
         };
-      });
+      }
     }
 
     const help = $('manageStatusHelp');
     if(row.member_status === 'active'){
       help.textContent = targetStatus === 'pending'
-        ? 'Member aktif akan diubah menjadi PENDING. Follow-up akan tersedia di bawah.'
+        ? 'Member aktif akan diubah menjadi PENDING. Tombol FU tersedia untuk menyalin pesan.'
         : 'Member tetap AKTIF. Reset akses tersedia jika ingin membuat password baru.';
     }else{
       help.textContent = targetStatus === 'active'
         ? 'UPDATE akan sekaligus ACC member. Jika belum punya akun, sistem akan membuat akses baru.'
-        : 'Data tetap berstatus PENDING. Gunakan tombol follow-up di bawah untuk menghubungi member.';
+        : 'Data tetap berstatus PENDING. Klik FU 1–FU 7 untuk menyalin pesan follow-up.';
     }
   }
 
