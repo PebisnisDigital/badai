@@ -2348,25 +2348,52 @@ th,td{padding:14px 12px!important}
 }
 .manage-pending-followup-actions{
   display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  gap:6px!important;
+  grid-template-columns:1fr!important;
+  gap:8px!important;
   margin-top:10px!important;
 }
-.manage-pending-followup-actions a{
+.manage-followup-item{
+  display:grid!important;
+  grid-template-columns:82px minmax(0,1fr) minmax(0,1fr)!important;
+  gap:6px!important;
+  align-items:center!important;
+}
+.manage-followup-label{
+  color:#d7bb65!important;
+  font-family:"Raleway",Arial,sans-serif!important;
+  font-size:8px!important;
+  font-weight:950!important;
+  letter-spacing:.05em!important;
+}
+.manage-followup-item a,
+.manage-followup-item button{
   min-height:36px!important;
   padding:0 7px!important;
-  border:1px solid #6a5426!important;
   border-radius:9px!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  background:#0f0d07!important;
-  color:#f4d36d!important;
-  text-decoration:none!important;
   text-align:center!important;
   font-family:"Nunito",Arial,sans-serif!important;
-  font-size:9px!important;
+  font-size:8.5px!important;
   font-weight:900!important;
+  cursor:pointer!important;
+}
+.manage-followup-item a{
+  border:1px solid #31523c!important;
+  background:#0c1710!important;
+  color:#89dca5!important;
+  text-decoration:none!important;
+}
+.manage-followup-item button{
+  border:1px solid #6a5426!important;
+  background:#0f0d07!important;
+  color:#f4d36d!important;
+}
+.manage-followup-item button.copied{
+  border-color:#31523c!important;
+  background:#0c1710!important;
+  color:#89dca5!important;
 }
 @media(max-width:560px){
   #pageSales .sales-compact-head,
@@ -2374,13 +2401,16 @@ th,td{padding:14px 12px!important}
     grid-template-columns:24px minmax(165px,1.8fr) minmax(92px,.95fr) 62px 70px!important;
     gap:4px!important;
   }
-  .manage-pending-followup-actions{
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-    gap:5px!important;
+  .manage-followup-item{
+    grid-template-columns:1fr 1fr!important;
   }
-  .manage-pending-followup-actions a{
+  .manage-followup-label{
+    grid-column:1/-1!important;
+    font-size:7.5px!important;
+  }
+  .manage-followup-item a,
+  .manage-followup-item button{
     min-height:34px!important;
-    padding:0 4px!important;
     font-size:8px!important;
   }
 }
@@ -6949,12 +6979,24 @@ th,td{padding:14px 12px!important}
       <div id="managePendingFollowup" class="manage-pending-followup hidden">
         <div class="manage-pending-followup-head">
           <b>Follow Up Pending</b>
-          <span>Kirim follow-up langsung ke WhatsApp member.</span>
+          <span>Setiap follow-up bisa langsung dibuka di WhatsApp atau disalin pesannya.</span>
         </div>
         <div class="manage-pending-followup-actions">
-          <a id="manageFu1" href="#" target="_blank" rel="noopener">FOLLOW UP 1</a>
-          <a id="manageFu2" href="#" target="_blank" rel="noopener">FOLLOW UP 2</a>
-          <a id="manageFu3" href="#" target="_blank" rel="noopener">FOLLOW UP 3</a>
+          <div class="manage-followup-item">
+            <span class="manage-followup-label">FOLLOW UP 1</span>
+            <a id="manageFu1" href="#" target="_blank" rel="noopener">BUKA WHATSAPP</a>
+            <button id="manageFuCopy1" type="button">SALIN PESAN</button>
+          </div>
+          <div class="manage-followup-item">
+            <span class="manage-followup-label">FOLLOW UP 2</span>
+            <a id="manageFu2" href="#" target="_blank" rel="noopener">BUKA WHATSAPP</a>
+            <button id="manageFuCopy2" type="button">SALIN PESAN</button>
+          </div>
+          <div class="manage-followup-item">
+            <span class="manage-followup-label">FOLLOW UP 3</span>
+            <a id="manageFu3" href="#" target="_blank" rel="noopener">BUKA WHATSAPP</a>
+            <button id="manageFuCopy3" type="button">SALIN PESAN</button>
+          </div>
         </div>
       </div>
     </div>
@@ -9398,14 +9440,14 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       esc(rupiah(r.payment_total_amount)) + ' • ' + sign + esc(r.payment_unique_code) + '</span>';
   }
 
-  function followUpLink(r, step){
+  function followUpMessage(r, step){
     const templates = {
       1:marketingSettings.followup_1,
       2:marketingSettings.followup_2,
       3:marketingSettings.followup_3
     };
 
-    const message = fillMarketingTemplate(templates[step] || templates[1], {
+    return fillMarketingTemplate(templates[step] || templates[1], {
       nama:r.full_name || 'Kak',
       email:r.email || '',
       wa:r.whatsapp || '',
@@ -9419,8 +9461,47 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       kode_unik:r.payment_unique_code || 0,
       total_bayar:rupiah(r.payment_total_amount || r.amount || 0)
     });
+  }
 
-    return waMessageLink(r, message);
+  function followUpLink(r, step){
+    return waMessageLink(r, followUpMessage(r,step));
+  }
+
+  async function copyTextToClipboard(text){
+    const value = String(text || '');
+    if(!value) return false;
+
+    try{
+      await navigator.clipboard.writeText(value);
+      return true;
+    }catch(_){
+      const area = document.createElement('textarea');
+      area.value = value;
+      area.setAttribute('readonly','');
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      area.style.pointerEvents = 'none';
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand('copy');
+      area.remove();
+      return ok;
+    }
+  }
+
+  async function copyFollowUpMessage(row, step, button){
+    const ok = await copyTextToClipboard(followUpMessage(row,step));
+    if(!ok) throw new Error('Pesan belum berhasil disalin.');
+
+    if(button){
+      const original = 'SALIN PESAN';
+      button.textContent = 'TERSALIN ✓';
+      button.classList.add('copied');
+      setTimeout(() => {
+        button.textContent = original;
+        button.classList.remove('copied');
+      },1400);
+    }
   }
 
   function canManageSales(){
@@ -9791,7 +9872,8 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
 
     $('copyCredentialBtn').onclick = async () => {
       try{
-        await navigator.clipboard.writeText(message);
+        const ok = await copyTextToClipboard(message);
+        if(!ok) throw new Error('Belum berhasil menyalin.');
         $('copyCredentialBtn').textContent = 'TERSALIN ✓';
         setTimeout(() => $('copyCredentialBtn').textContent = 'SALIN AKSES', 1600);
       }catch(_){ alert(message); }
@@ -9817,6 +9899,18 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       $('manageFu1').href = followUpLink(row,1);
       $('manageFu2').href = followUpLink(row,2);
       $('manageFu3').href = followUpLink(row,3);
+
+      [1,2,3].forEach(step => {
+        const btn = $('manageFuCopy' + step);
+        if(!btn) return;
+        btn.onclick = async () => {
+          try{
+            await copyFollowUpMessage(row,step,btn);
+          }catch(err){
+            alert(err.message || 'Gagal menyalin pesan.');
+          }
+        };
+      });
     }
 
     const help = $('manageStatusHelp');
