@@ -7268,6 +7268,9 @@ th,td{padding:14px 12px!important}
   let adminAutoSyncBusy = false;
   let adminAutoSyncLastMarketing = 0;
   let adminAutoSyncLastTeam = 0;
+  let adminActionDepth = 0;
+  let salesLifecycleLastRefresh = 0;
+  let salesLightRefreshPromise = null;
   let teamMembers = [];
   let mentorConversations = [];
   let mentorActiveConversation = null;
@@ -7942,32 +7945,114 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   }
 
-  async function loadRegistrations(){
-    try{
-      await api('/rest/v1/rpc/refresh_membership_lifecycle', {
-        method:'POST',
-        body:JSON.stringify({})
-      });
-    }catch(_){}
+  const SALES_SELECT = 'id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,payment_unique_code,payment_total_amount,admin_note,created_at,activated_at,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at';
 
-    const results = await Promise.all([
-      api('/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,payment_unique_code,payment_total_amount,admin_note,created_at,activated_at,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at&order=created_at.desc'),
-      api('/rest/v1/profiles?select=id,full_name,email'),
-      api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
-      api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
-      api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc'),
-      api('/rest/v1/marketing_coupons?active=eq.true&select=id,code,discount_type,discount_value,usage_limit,active&order=created_at.desc')
-    ]);
-    registrations = results[0] || [];
-    salesAffiliateProfiles = results[1] || [];
-    salesAffiliateAccounts = results[2] || [];
-    financeTransactions = results[3] || [];
-    membershipRenewals = results[4] || [];
-    salesActiveCoupons = results[5] || [];
-    populateManualAffiliateOptions();
+  function beginAdminAction(){
+    adminActionDepth += 1;
+  }
+
+  function endAdminAction(){
+    adminActionDepth = Math.max(0,adminActionDepth - 1);
+  }
+
+  function adminModalIsOpen(){
+    return Boolean(document.querySelector('[id$="Modal"]:not(.hidden)'));
+  }
+
+  function patchRegistrationLocal(id, patch){
+    const index = registrations.findIndex(r => r.id === id);
+    if(index < 0) return null;
+    registrations[index] = Object.assign({},registrations[index],patch || {});
     renderSales();
-    renderFinance();
     updateExportMatchCount();
+    return registrations[index];
+  }
+
+  function upsertRegistrationLocal(row){
+    if(!row?.id) return row;
+    const index = registrations.findIndex(r => r.id === row.id);
+    if(index >= 0) registrations[index] = Object.assign({},registrations[index],row);
+    else registrations.unshift(row);
+    renderSales();
+    updateExportMatchCount();
+    return registrations.find(r => r.id === row.id) || row;
+  }
+
+  function removeRegistrationLocal(id){
+    registrations = registrations.filter(r => r.id !== id);
+    renderSales();
+    updateExportMatchCount();
+  }
+
+  function nextUiPaint(){
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+
+  function backgroundSalesRefresh(delay=80){
+    window.setTimeout(() => {
+      loadRegistrations({light:true,lifecycle:false}).catch(err => {
+        console.warn('BADAI background sales refresh:',err?.message || err);
+      });
+    },Math.max(0,Number(delay||0)));
+  }
+
+  async function loadRegistrations(options={}){
+    const light = options.light === true;
+    const lifecycle = options.lifecycle === true ||
+      (!light && Date.now() - salesLifecycleLastRefresh > 60000);
+
+    if(light && salesLightRefreshPromise) return salesLightRefreshPromise;
+
+    const runner = (async () => {
+      if(lifecycle){
+        try{
+          await api('/rest/v1/rpc/refresh_membership_lifecycle', {
+            method:'POST',
+            body:JSON.stringify({})
+          });
+          salesLifecycleLastRefresh = Date.now();
+        }catch(_){}
+      }
+
+      if(light){
+        registrations = await api(
+          '/rest/v1/registrations?select=' + SALES_SELECT + '&order=created_at.desc'
+        ) || [];
+        renderSales();
+        updateExportMatchCount();
+        return registrations;
+      }
+
+      const results = await Promise.all([
+        api('/rest/v1/registrations?select=' + SALES_SELECT + '&order=created_at.desc'),
+        api('/rest/v1/profiles?select=id,full_name,email'),
+        api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
+        api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
+        api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc'),
+        api('/rest/v1/marketing_coupons?active=eq.true&select=id,code,discount_type,discount_value,usage_limit,active&order=created_at.desc')
+      ]);
+
+      registrations = results[0] || [];
+      salesAffiliateProfiles = results[1] || [];
+      salesAffiliateAccounts = results[2] || [];
+      financeTransactions = results[3] || [];
+      membershipRenewals = results[4] || [];
+      salesActiveCoupons = results[5] || [];
+      populateManualAffiliateOptions();
+      renderSales();
+      renderFinance();
+      updateExportMatchCount();
+      return registrations;
+    })();
+
+    if(!light) return runner;
+
+    salesLightRefreshPromise = runner;
+    try{
+      return await runner;
+    }finally{
+      salesLightRefreshPromise = null;
+    }
   }
 
   function manualRegistrationBaseAmount(){
@@ -8320,6 +8405,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     $('manualRegisterStatus').textContent = 'Menyimpan pendaftaran manual...';
     resetManualPendingNotice();
 
+    beginAdminAction();
     try{
       let created = null;
 
@@ -8384,21 +8470,28 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       if(targetStatus === 'active'){
         if(membershipPlan === 'free'){
           $('manualRegisterStatus').textContent = '✓ Data Gratisan sudah masuk ke Penjualan sebagai PENDING.';
-          await loadRegistrations();
+          upsertRegistrationLocal(created);
+          backgroundSalesRefresh();
           return;
         }
 
         $('manualRegisterStatus').textContent = 'Pendaftaran sudah masuk ke Penjualan. Membuat akses member...';
         try{
           const access = await approveOrResetAccess(created);
+          const refreshed = Object.assign({},created,{
+            user_id:access.user_id || created.user_id || null,
+            payment_status:'paid',
+            member_status:'active',
+            activated_at:created.activated_at || new Date().toISOString()
+          });
+          upsertRegistrationLocal(refreshed);
           $('manualRegisterModal').classList.add('hidden');
-          await loadRegistrations();
-          const refreshed = registrations.find(r => r.id === created.id) || created;
           openCredentialModal(refreshed, access.password);
+          backgroundSalesRefresh();
           return;
         }catch(accessErr){
-          await loadRegistrations();
-          const refreshed = registrations.find(r => r.id === created.id) || created;
+          const refreshed = upsertRegistrationLocal(created) || created;
+          backgroundSalesRefresh();
           $('manualRegisterStatus').textContent =
             '✓ Data sudah masuk ke Penjualan sebagai PENDING. ACC akses belum berhasil: ' +
             (accessErr.message || 'coba ACC dari tombol Edit.');
@@ -8407,8 +8500,8 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
         }
       }
 
-      await loadRegistrations();
-      const refreshed = registrations.find(r => r.id === created.id) || created;
+      const refreshed = upsertRegistrationLocal(created) || created;
+      backgroundSalesRefresh();
 
       if(membershipPlan === 'free'){
         $('manualRegisterStatus').textContent = '✓ Peserta Gratisan berhasil didaftarkan sebagai PENDING.';
@@ -8421,6 +8514,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
         ' • Tagihan ' + rupiah(refreshed.payment_total_amount || refreshed.amount || amount) + '.';
       showManualPendingNotice(refreshed);
     }finally{
+      endAdminAction();
       btn.disabled = false;
       btn.textContent = oldText;
     }
@@ -8594,6 +8688,9 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
 
     const format = $('exportFormat').value;
     $('exportDataStatus').textContent = 'Menyiapkan ' + rows.length + ' data...';
+
+    // Give the browser two paint frames so the UI reacts before XLSX/PDF work starts.
+    await nextUiPaint();
 
     if(format === 'csv') downloadCsv(rows);
     else if(format === 'pdf') downloadPdf(rows);
@@ -10330,28 +10427,17 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
 
     const fullName = $('manageName').value.trim();
     const email = $('manageEmail').value.trim().toLowerCase();
-    const whatsapp = $('manageWhatsapp').value.trim();
+    const whatsapp = normalizeManualWhatsapp($('manageWhatsapp').value);
     const membershipPlan = $('managePlan').value;
     const targetStatus = $('manageStatus').value;
     const resetAccess = row.member_status === 'active'
       && targetStatus === 'active'
       && $('manageResetAccess').checked;
 
-    if(!fullName || !email || !whatsapp){
-      throw new Error('Nama, email, dan WhatsApp wajib diisi.');
-    }
-
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-      throw new Error('Format email belum valid.');
-    }
-
-    if(!['newbie','pro'].includes(membershipPlan)){
-      throw new Error('Paket member belum valid.');
-    }
-
-    if(!['pending','active'].includes(targetStatus)){
-      throw new Error('Status member belum valid.');
-    }
+    if(!fullName || !email || !whatsapp) throw new Error('Nama, email, dan WhatsApp wajib diisi.');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Format email belum valid.');
+    if(!['newbie','pro'].includes(membershipPlan)) throw new Error('Paket member belum valid.');
+    if(!['pending','active'].includes(targetStatus)) throw new Error('Status member belum valid.');
 
     const emailChanged = String(row.email || '').toLowerCase() !== email;
     if(row.user_id && emailChanged && !confirm(
@@ -10361,9 +10447,50 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     const oldText = $('saveManageBtn').textContent;
     $('saveManageBtn').disabled = true;
     $('saveManageBtn').textContent = 'MEMPROSES...';
+    beginAdminAction();
 
     try{
-      // 1. Sinkronkan identitas member ke registration + Auth + profile (jika akun sudah ada).
+      const identityPatch = {
+        full_name:fullName,
+        email,
+        whatsapp,
+        membership_plan:membershipPlan
+      };
+
+      // Pending tanpa akun tidak perlu melewati Edge Function update-auth.
+      if(!row.user_id){
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify(identityPatch)
+        });
+
+        if(targetStatus === 'active'){
+          const access = await approveOrResetAccess(Object.assign({},row,identityPatch));
+          const refreshed = Object.assign({},row,identityPatch,{
+            user_id:access.user_id || null,
+            payment_status:'paid',
+            member_status:'active',
+            activated_at:row.activated_at || new Date().toISOString()
+          });
+          patchRegistrationLocal(id,refreshed);
+          $('manageModal').classList.add('hidden');
+          openCredentialModal(refreshed,access.password);
+          backgroundSalesRefresh();
+          return;
+        }
+
+        const refreshed = Object.assign({},row,identityPatch,{
+          payment_status:'pending',
+          member_status:'pending'
+        });
+        patchRegistrationLocal(id,refreshed);
+        $('manageModal').classList.add('hidden');
+        backgroundSalesRefresh();
+        return;
+      }
+
+      // Akun yang sudah ada tetap perlu sinkron Auth/Profile.
       const res = await fetch(SUPABASE_URL + '/functions/v1/admin-update-member', {
         method:'POST',
         headers:{
@@ -10381,62 +10508,43 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
       });
 
       const baseData = await res.json().catch(()=>null);
-      if(!res.ok){
-        throw new Error(baseData?.error || 'Gagal menyinkronkan data member.');
-      }
+      if(!res.ok) throw new Error(baseData?.error || 'Gagal menyinkronkan data member.');
 
-      // 2. Pending yang belum punya akun: simpan paket dulu, lalu ACC akan membuat akun.
-      if(targetStatus === 'active' && !row.user_id){
-        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+      const active = targetStatus === 'active';
+      const activatedAt = active ? (row.activated_at || new Date().toISOString()) : row.activated_at;
+
+      await Promise.all([
+        api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
           method:'PATCH',
           headers:{'Prefer':'return=minimal'},
-          body:JSON.stringify({membership_plan:membershipPlan})
-        });
+          body:JSON.stringify({
+            membership_plan:membershipPlan,
+            payment_status:active ? 'paid' : 'pending',
+            member_status:active ? 'active' : 'pending',
+            activated_at:activatedAt
+          })
+        }),
+        syncPaymentStatus(id,active ? 'paid' : 'pending',Number(row.amount || 0))
+      ]);
 
-        const access = await approveOrResetAccess(row);
-        $('manageModal').classList.add('hidden');
-        await loadRegistrations();
-
-        const refreshed = registrations.find(r => r.id === id) || Object.assign({},row,{
-          full_name:fullName,email,whatsapp,membership_plan:membershipPlan,member_status:'active'
-        });
-        openCredentialModal(refreshed, access.password);
-        return;
-      }
-
-      // 3. Semua akun yang sudah ada disinkronkan lewat registration.
-      // Trigger database BADAI ikut menyinkronkan profile, paket, status, dan afiliasi.
-      const active = targetStatus === 'active';
-      const updatedRows = await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id) + '&select=id,amount', {
-        method:'PATCH',
-        headers:{'Prefer':'return=representation'},
-        body:JSON.stringify({
-          membership_plan:membershipPlan,
-          payment_status:active ? 'paid' : 'pending',
-          member_status:active ? 'active' : 'pending',
-          activated_at:active ? (row.activated_at || new Date().toISOString()) : row.activated_at
-        })
+      const refreshed = Object.assign({},row,identityPatch,{
+        payment_status:active ? 'paid' : 'pending',
+        member_status:active ? 'active' : 'pending',
+        activated_at:activatedAt
       });
+      patchRegistrationLocal(id,refreshed);
+      $('manageModal').classList.add('hidden');
 
-      const syncedAmount = Number(updatedRows?.[0]?.amount ?? row.amount ?? 0);
-      await syncPaymentStatus(id, active ? 'paid' : 'pending', syncedAmount);
-
-      // 4. Reset akses hanya tersedia untuk member yang memang sudah AKTIF.
       if(resetAccess){
-        const access = await approveOrResetAccess(row);
-        $('manageModal').classList.add('hidden');
-        await loadRegistrations();
-
-        const refreshed = registrations.find(r => r.id === id) || Object.assign({},row,{
-          full_name:fullName,email,whatsapp,membership_plan:membershipPlan,member_status:'active'
-        });
-        openCredentialModal(refreshed, access.password);
-        return;
+        const access = await approveOrResetAccess(refreshed);
+        const withAccess = Object.assign({},refreshed,{user_id:access.user_id || refreshed.user_id});
+        patchRegistrationLocal(id,withAccess);
+        openCredentialModal(withAccess,access.password);
       }
 
-      $('manageModal').classList.add('hidden');
-      await loadRegistrations();
+      backgroundSalesRefresh();
     }finally{
+      endAdminAction();
       $('saveManageBtn').disabled = false;
       $('saveManageBtn').textContent = oldText;
     }
@@ -10464,97 +10572,106 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
 
     if(action === 'manage'){ openManageModal(row); return; }
 
-    if(action === 'approve'){
-      if(!confirm('ACC pembayaran dan buat akses member untuk ' + row.full_name + '?')) return;
-      const access = await approveOrResetAccess(row);
-      await loadRegistrations();
-      openCredentialModal(row, access.password);
-      return;
-    }
-
-    if(action === 'reset-access'){
-      if(!confirm('Buat password baru untuk ' + row.full_name + '? Password lama akan berhenti berlaku.')) return;
-      const access = await approveOrResetAccess(row);
-      await loadRegistrations();
-      openCredentialModal(row, access.password);
-      return;
-    }
-
-    if(action === 'approve-existing'){
-      if(!confirm('Aktifkan kembali member ' + row.full_name + ' dan ubah status menjadi PAID?')) return;
-
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
+    beginAdminAction();
+    try{
+      if(action === 'approve'){
+        if(!confirm('ACC pembayaran dan buat akses member untuk ' + row.full_name + '?')) return;
+        const access = await approveOrResetAccess(row);
+        const refreshed = Object.assign({},row,{
+          user_id:access.user_id || row.user_id || null,
           payment_status:'paid',
           member_status:'active',
           activated_at:row.activated_at || new Date().toISOString()
-        })
-      });
+        });
+        patchRegistrationLocal(id,refreshed);
+        openCredentialModal(refreshed,access.password);
+        backgroundSalesRefresh();
+        return;
+      }
 
-      await loadRegistrations();
-      return;
-    }
+      if(action === 'reset-access'){
+        if(!confirm('Buat password baru untuk ' + row.full_name + '? Password lama akan berhenti berlaku.')) return;
+        const access = await approveOrResetAccess(row);
+        const refreshed = Object.assign({},row,{user_id:access.user_id || row.user_id || null});
+        patchRegistrationLocal(id,refreshed);
+        openCredentialModal(refreshed,access.password);
+        backgroundSalesRefresh();
+        return;
+      }
 
-    if(action === 'reject'){
-      if(!confirm('Tolak pendaftaran ' + row.full_name + '?')) return;
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH', headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({payment_status:'rejected',member_status:'pending'})
-      });
-      await loadRegistrations(); return;
-    }
+      if(action === 'approve-existing'){
+        if(!confirm('Aktifkan kembali member ' + row.full_name + ' dan ubah status menjadi PAID?')) return;
+        const activatedAt = row.activated_at || new Date().toISOString();
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({payment_status:'paid',member_status:'active',activated_at:activatedAt})
+        });
+        patchRegistrationLocal(id,{payment_status:'paid',member_status:'active',activated_at:activatedAt});
+        backgroundSalesRefresh();
+        return;
+      }
 
-    if(action === 'suspend'){
-      if(!confirm('Suspend akses member ' + row.full_name + '? Status pembayaran akan kembali menjadi PENDING.')) return;
+      if(action === 'reject'){
+        if(!confirm('Tolak pendaftaran ' + row.full_name + '?')) return;
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({payment_status:'rejected',member_status:'pending'})
+        });
+        patchRegistrationLocal(id,{payment_status:'rejected',member_status:'pending'});
+        backgroundSalesRefresh();
+        return;
+      }
 
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
-          payment_status:'pending',
-          member_status:'suspended'
-        })
-      });
+      if(action === 'suspend'){
+        if(!confirm('Suspend akses member ' + row.full_name + '? Status pembayaran akan kembali menjadi PENDING.')) return;
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({payment_status:'pending',member_status:'suspended'})
+        });
+        patchRegistrationLocal(id,{payment_status:'pending',member_status:'suspended'});
+        backgroundSalesRefresh();
+        return;
+      }
 
-      await loadRegistrations();
-      return;
-    }
+      if(action === 'activate'){
+        if(!confirm('Aktifkan kembali akses ' + row.full_name + '?')) return;
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({member_status:'active'})
+        });
+        patchRegistrationLocal(id,{member_status:'active'});
+        backgroundSalesRefresh();
+        return;
+      }
 
-    if(action === 'activate'){
-      if(!confirm('Aktifkan kembali akses ' + row.full_name + '?')) return;
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH', headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({member_status:'active'})
-      });
-      await loadRegistrations(); return;
-    }
+      if(action === 'pending'){
+        if(!confirm('Ubah status ' + row.full_name + ' menjadi PENDING?')) return;
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({payment_status:'pending',member_status:'pending'})
+        });
+        patchRegistrationLocal(id,{payment_status:'pending',member_status:'pending'});
+        backgroundSalesRefresh();
+        return;
+      }
 
-    if(action === 'pending'){
-      if(!confirm('Ubah status ' + row.full_name + ' menjadi PENDING?')) return;
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
-          payment_status:'pending',
-          member_status:'pending'
-        })
-      });
-      await loadRegistrations();
-      return;
-    }
+      if(action === 'delete'){
+        if(row.user_id || ['active','suspended'].includes(row.member_status)){
+          const typed = prompt('HAPUS TOTAL akan menghapus pendaftaran, pembayaran, profile, dan akun login member. Ketik HAPUS.');
+          if(typed !== 'HAPUS') return;
+        }else if(!confirm('Hapus pendaftaran ' + row.full_name + ' secara permanen?')) return;
 
-    if(action === 'delete'){
-      if(row.user_id || ['active','suspended'].includes(row.member_status)){
-        const typed = prompt('HAPUS TOTAL akan menghapus pendaftaran, pembayaran, profile, dan akun login member. Ketik HAPUS.');
-        if(typed !== 'HAPUS') return;
-      }else if(!confirm('Hapus pendaftaran ' + row.full_name + ' secara permanen?')) return;
-
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'DELETE', headers:{'Prefer':'return=minimal'}
-      });
-      await loadRegistrations();
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'DELETE',headers:{'Prefer':'return=minimal'}
+        });
+        removeRegistrationLocal(id);
+        backgroundSalesRefresh();
+      }
+    }finally{
+      endAdminAction();
     }
   }
 
@@ -13410,6 +13527,9 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   async function autoSyncAdmin(force=false){
     if(
       adminAutoSyncBusy ||
+      adminActionDepth > 0 ||
+      adminModalIsOpen() ||
+      adminHasFocusedEditor() ||
       !session?.access_token ||
       !currentTeam ||
       document.visibilityState !== 'visible'
@@ -13422,19 +13542,19 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
       const now = Date.now();
 
       if(page === 'sales'){
-        await loadRegistrations();
+        await loadRegistrations({light:true,lifecycle:false});
       }else if(page === 'finance'){
         await Promise.all([
-          loadRegistrations(),
+          loadRegistrations({light:true,lifecycle:false}),
           loadFinanceTransactions()
         ]);
       }else if(page === 'marketing'){
-        if(!adminHasFocusedEditor() && (force || now - adminAutoSyncLastMarketing >= 10000)){
+        if(force || now - adminAutoSyncLastMarketing >= 30000){
           adminAutoSyncLastMarketing = now;
           await loadMarketing();
         }
       }else if(page === 'team'){
-        if(!adminHasFocusedEditor() && (force || now - adminAutoSyncLastTeam >= 10000)){
+        if(force || now - adminAutoSyncLastTeam >= 30000){
           adminAutoSyncLastTeam = now;
           await loadTeamMembers();
         }
@@ -13446,7 +13566,8 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     }
   }
 
-  setInterval(() => autoSyncAdmin(false), 3000);
+  // 12s is frequent enough for fresh sales data without constantly re-rendering the dashboard.
+  setInterval(() => autoSyncAdmin(false), 12000);
 
   window.addEventListener('focus', () => autoSyncAdmin(true));
 
