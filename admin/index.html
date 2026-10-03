@@ -8996,42 +8996,53 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       throw new Error('Reminder expired harus 1–90 hari.');
     }
 
-    $('saveMarketingBtn').disabled = true;
-    const oldText = $('saveMarketingBtn').textContent;
-    $('saveMarketingBtn').textContent = 'MENYIMPAN...';
+    const btn = $('saveMarketingBtn');
+    const oldText = btn.textContent;
 
-    try{
+    await runAdminAction('marketing:save',btn,async () => {
       await api('/rest/v1/marketing_settings?id=eq.1', {
         method:'PATCH',
         headers:{'Prefer':'return=minimal'},
         body:JSON.stringify(body)
       });
 
-      const commissionType = $('affiliateCommissionType').value;
-      const commissionValue = Number($('affiliateCommissionValue').value);
-      const inactivityMonths = Number($('affiliateInactivityMonths').value);
+      Object.assign(marketingSettings,body);
+      marketingBaseLoaded = true;
 
-      if(!['percent','fixed'].includes(commissionType)) throw new Error('Tipe komisi belum valid.');
-      if(!commissionValue || commissionValue < 1) throw new Error('Nilai komisi belum valid.');
-      if(commissionType === 'percent' && commissionValue > 100) throw new Error('Komisi persen maksimal 100%.');
-      if(!inactivityMonths || inactivityMonths < 1 || inactivityMonths > 60) throw new Error('Masa aktif affiliate harus 1–60 bulan.');
+      // Affiliate settings are saved only after that tab has actually been loaded.
+      // This prevents blank, not-yet-loaded fields from blocking saves on other tabs.
+      if(marketingTabLoaded.affiliate){
+        const commissionType = $('affiliateCommissionType').value;
+        const commissionValue = Number($('affiliateCommissionValue').value);
+        const inactivityMonths = Number($('affiliateInactivityMonths').value);
 
-      await api('/rest/v1/affiliate_settings?id=eq.1', {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
+        if(!['percent','fixed'].includes(commissionType)) throw new Error('Tipe komisi belum valid.');
+        if(!commissionValue || commissionValue < 1) throw new Error('Nilai komisi belum valid.');
+        if(commissionType === 'percent' && commissionValue > 100) throw new Error('Komisi persen maksimal 100%.');
+        if(!inactivityMonths || inactivityMonths < 1 || inactivityMonths > 60) throw new Error('Masa aktif affiliate harus 1–60 bulan.');
+
+        await api('/rest/v1/affiliate_settings?id=eq.1', {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({
+            commission_type:commissionType,
+            commission_value:Math.round(commissionValue),
+            inactivity_months:Math.round(inactivityMonths),
+            updated_by:session.user.id
+          })
+        });
+
+        affiliateSettings = Object.assign({},affiliateSettings,{
           commission_type:commissionType,
           commission_value:Math.round(commissionValue),
-          inactivity_months:Math.round(inactivityMonths),
-          updated_by:session.user.id
-        })
-      });
-      $('marketingStatus').textContent = 'Pengaturan marketing berhasil disimpan.';
-      await loadMarketingSettings();
-    }finally{
-      $('saveMarketingBtn').disabled = false;
-      $('saveMarketingBtn').textContent = oldText;
-    }
+          inactivity_months:Math.round(inactivityMonths)
+        });
+      }
+
+      $('marketingStatus').textContent = '✓ Pengaturan marketing berhasil disimpan.';
+    },'MENYIMPAN...');
+
+    if(btn?.isConnected) btn.textContent = oldText;
   }
 
   function couponValueText(coupon){
