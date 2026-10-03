@@ -2946,23 +2946,20 @@ th,td{padding:14px 12px!important}
 /* END BADAI SALES REVENUE CARDS FINAL */
 
 
-/* BADAI SALES MANUAL + EXPORT FINAL */
+/* BADAI SALES EXPORT FINAL */
 #pageSales .sales-toolbar{
   grid-template-columns:minmax(0,1fr) 122px auto!important;
   gap:6px!important;
   align-items:stretch!important;
 }
-
 .sales-toolbar-actions{
   display:flex;
   align-items:stretch;
-  gap:5px;
   min-width:0;
 }
-
 .sales-tool-btn{
   min-height:46px;
-  padding:0 9px;
+  padding:0 12px;
   border-radius:11px;
   border:1px solid #343434;
   background:#111;
@@ -2974,45 +2971,15 @@ th,td{padding:14px 12px!important}
   white-space:nowrap;
   cursor:pointer;
 }
-
-.sales-tool-btn span{
-  font-size:13px;
-  vertical-align:-1px;
-}
-
-.sales-tool-btn.manual{
-  border-color:#5e2b48;
-  background:#1a0e15;
-  color:#ff91c5;
-}
-
+.sales-tool-btn span{font-size:13px;vertical-align:-1px}
 .sales-tool-btn.export{
   border-color:#33414b;
   background:#0e1418;
   color:#b8d7ea;
 }
-
-.sales-tool-btn:hover{
-  transform:translateY(-1px);
-  filter:brightness(1.12);
-}
-
-.sales-tool-modal{
-  width:min(100%,520px)!important;
-}
-
-.sales-tool-modal form{
-  margin-top:12px;
-}
-
-.sales-tool-help{
-  margin-top:4px;
-  color:#777;
-  font-size:9px;
-  line-height:1.4;
-}
-
-.manual-reg-price-card,
+.sales-tool-btn:hover{transform:translateY(-1px);filter:brightness(1.12)}
+.sales-tool-modal{width:min(100%,520px)!important}
+.sales-tool-modal form{margin-top:12px}
 .export-match-card{
   display:flex;
   align-items:center;
@@ -3024,178 +2991,28 @@ th,td{padding:14px 12px!important}
   border-radius:12px;
   background:#0b0b0b;
 }
-
-.manual-reg-price-card span,
 .export-match-card span{
   color:#888;
   font-size:9px;
   font-weight:900;
   letter-spacing:.04em;
 }
-
-.manual-reg-price-card strong{
-  color:#ff91c5;
-  font-size:18px;
-  font-weight:900;
-  white-space:nowrap;
-}
-
-.manual-reg-price-copy{
-  display:grid;
-  gap:3px;
-  min-width:0;
-}
-
-.manual-reg-price-copy small{
-  color:#676767;
-  font-size:8px;
-  font-weight:800;
-  line-height:1.25;
-}
-
-#manualRegCoupon{
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  font-weight:900;
-}
-
-#manualRegCouponStatus.ok{
-  color:#76d99b;
-}
-
-#manualRegCouponStatus.error{
-  color:#ff7b8d;
-}
-
-.manual-reg-payment-detail{
-  margin-top:6px;
-  padding:9px 10px;
-  border:1px solid #2b2b2b;
-  border-radius:10px;
-  background:#0a0a0a;
-  color:#8e8e8e;
-  font-size:8px;
-  line-height:1.45;
-}
-.manual-reg-payment-detail b{
-  color:#fff;
-  font-size:9px;
-}
-.manual-pending-notice{
-  margin-top:12px;
-  padding:13px;
-  border:1px solid #5c3d1c;
-  border-radius:14px;
-  background:
-    radial-gradient(circle at 95% 0,rgba(243,190,78,.10),transparent 34%),
-    #100d08;
-}
-.manual-pending-notice-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:8px;
-}
-.manual-pending-notice-head b{
-  display:block;
-  color:#f4c76d;
-  font-family:"Raleway",Arial,sans-serif;
-  font-size:10px;
-  font-weight:950;
-}
-.manual-pending-notice-head span{
-  display:block;
-  margin-top:2px;
-  color:#80725d;
-  font-size:7.5px;
-  line-height:1.35;
-}
-.manual-pending-message{
-  width:100%;
-  min-height:210px;
-  resize:vertical;
-  box-sizing:border-box;
-  padding:11px;
-  border:1px solid #3a3021;
-  border-radius:11px;
-  background:#080706;
-  color:#f3f3f3;
-  outline:none;
-  font-family:"Nunito",Arial,sans-serif;
-  font-size:10px;
-  line-height:1.5;
-}
-.manual-pending-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:7px;
-  margin-top:8px;
-}
-.manual-pending-actions button,
-.manual-pending-actions a{
-  min-height:39px;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:0 10px;
-  text-align:center;
-  text-decoration:none;
-  font-size:8px;
-  font-weight:950;
-}
-.manual-pending-actions button{
-  border:0;
-  background:#f2c15f;
-  color:#15100a;
-  cursor:pointer;
-}
-.manual-pending-actions a{
-  border:1px solid #31523c;
-  background:#0c1710;
-  color:#89dca5;
-}
-@media(max-width:480px){
-  .manual-pending-actions{grid-template-columns:1fr}
-  .manual-pending-message{min-height:230px;font-size:9.5px}
-}
-
 .export-match-card strong{
   color:#fff;
   font-size:13px;
   font-weight:900;
   white-space:nowrap;
 }
-
 @media(max-width:620px){
-  #pageSales .sales-toolbar{
-    grid-template-columns:minmax(0,1fr) 112px!important;
-  }
-
-  #pageSales .sales-toolbar-actions{
-    grid-column:1/-1;
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .sales-tool-btn{
-    width:100%;
-    min-height:40px;
-    font-size:8.5px;
-  }
+  #pageSales .sales-toolbar{grid-template-columns:minmax(0,1fr) 112px!important}
+  #pageSales .sales-toolbar-actions{grid-column:1/-1}
+  .sales-tool-btn{width:100%;min-height:40px;font-size:8.5px}
 }
-
 @media(max-width:430px){
-  #pageSales .sales-toolbar{
-    grid-template-columns:1fr!important;
-  }
-
-  #pageSales .sales-toolbar-actions{
-    grid-column:auto;
-  }
+  #pageSales .sales-toolbar{grid-template-columns:1fr!important}
+  #pageSales .sales-toolbar-actions{grid-column:auto}
 }
-/* END BADAI SALES MANUAL + EXPORT FINAL */
+/* END BADAI SALES EXPORT FINAL */
 
 
 /* BADAI SALES CASH CARD FINAL */
@@ -5759,7 +5576,6 @@ button[data-admin-busy="1"]::after{
           <option value="suspended">Suspended Manual</option>
         </select>
         <div class="sales-toolbar-actions">
-          <button id="manualRegisterBtn" class="sales-tool-btn manual" type="button"><span>＋</span> MANUAL DAFTAR</button>
           <button id="exportDataBtn" class="sales-tool-btn export" type="button"><span>⇩</span> EXPORT DATA</button>
         </div>
       </div>
@@ -7114,103 +6930,6 @@ button[data-admin-busy="1"]::after{
 </div>
 
 
-<div id="manualRegisterModal" class="cred-modal hidden">
-  <div class="cred-box sales-tool-modal">
-    <div class="sales-action-modal-head">
-      <div>
-        <h2>Manual Daftar</h2>
-        <p>Daftarkan peserta langsung dari admin BADAI.</p>
-      </div>
-      <button id="closeManualRegisterIcon" class="sales-modal-close" type="button" aria-label="Tutup">×</button>
-    </div>
-
-    <form id="manualRegisterForm">
-      <div class="manage-grid">
-        <div class="manage-field full">
-          <label>Nama Peserta</label>
-          <input id="manualRegName" type="text" autocomplete="name" required placeholder="Nama lengkap"/>
-        </div>
-        <div class="manage-field full">
-          <label>Email</label>
-          <input id="manualRegEmail" type="email" autocomplete="email" required placeholder="email@contoh.com"/>
-        </div>
-        <div class="manage-field full">
-          <label>WhatsApp</label>
-          <input id="manualRegWhatsapp" type="text" inputmode="tel" required placeholder="628xxxxxxxxxx"/>
-        </div>
-
-        <div class="manage-field">
-          <label>Paket</label>
-          <select id="manualRegPlan" required>
-            <option value="free">Paket Gratisan</option>
-            <option value="newbie">Paket Pemula</option>
-            <option value="pro">Paket Untung</option>
-          </select>
-        </div>
-
-        <div class="manage-field">
-          <label>Status</label>
-          <select id="manualRegStatus" required>
-            <option value="pending">PENDING</option>
-            <option value="active">AKTIF / ACC</option>
-          </select>
-        </div>
-
-        <div id="manualRegPaymentWrap" class="manage-field full">
-          <label>Rekening Tagihan</label>
-          <select id="manualRegPayment">
-            <option value="">-- Pilih Rekening --</option>
-          </select>
-          <div id="manualRegPaymentDetail" class="manual-reg-payment-detail">Pilih rekening transfer untuk tagihan peserta.</div>
-        </div>
-
-        <div class="manage-field full">
-          <label>Kode Kupon <span style="color:#777;font-weight:700">(Opsional)</span></label>
-          <input id="manualRegCoupon" type="text" autocomplete="off" placeholder="Contoh: BADAI20"/>
-          <div id="manualRegCouponStatus" class="sales-tool-help">Masukkan kode kupon aktif dari menu Marketing.</div>
-        </div>
-
-        <div class="manage-field full">
-          <label>Afiliasi</label>
-          <select id="manualRegAffiliate">
-            <option value="">Tanpa Afiliasi</option>
-          </select>
-          <div class="sales-tool-help">Hanya menampilkan affiliate yang berstatus aktif.</div>
-        </div>
-
-        <div class="manual-reg-price-card full">
-          <div class="manual-reg-price-copy">
-            <span>Nilai Pendaftaran</span>
-            <small id="manualRegDiscountInfo">Harga normal</small>
-          </div>
-          <strong id="manualRegAmountPreview">Rp0</strong>
-        </div>
-      </div>
-
-      <div id="manualRegisterStatus" class="team-status-note"></div>
-
-      <div id="manualPendingNotice" class="manual-pending-notice hidden">
-        <div class="manual-pending-notice-head">
-          <div>
-            <b>TAGIHAN WHATSAPP — PENDING</b>
-            <span>Sudah dibuat dari rekening, nominal, dan kode unik transaksi ini.</span>
-          </div>
-        </div>
-        <textarea id="manualPendingMessage" class="manual-pending-message" readonly></textarea>
-        <div class="manual-pending-actions">
-          <button id="copyManualPendingBtn" type="button">SALIN TAGIHAN WA</button>
-          <a id="openManualPendingWa" href="#" target="_blank" rel="noopener">BUKA WHATSAPP</a>
-        </div>
-      </div>
-
-      <div class="cred-actions manage-member-actions">
-        <button id="saveManualRegisterBtn" class="primary-act" type="submit">SIMPAN PENDAFTARAN</button>
-        <button id="closeManualRegisterBtn" type="button">TUTUP</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <div id="exportDataModal" class="cred-modal hidden">
   <div class="cred-box sales-tool-modal">
     <div class="sales-action-modal-head">
@@ -7489,14 +7208,12 @@ Member Area:
 Kalau mau aktif lagi, balas pesan ini ya.`
   };
   let marketingCoupons = [];
-  let salesActiveCoupons = [];
   let affiliateSettings = {commission_type:'percent', commission_value:30, inactivity_months:3};
   let affiliateAccounts = [];
   let affiliateSales = [];
   let affiliatePayouts = [];
   let affiliateProfiles = [];
   let salesAffiliateProfiles = [];
-  let salesAffiliateAccounts = [];
   let affiliateMaterials = [];
   let paymentMethods = [];
   let buatQrisSettings = {
@@ -8095,22 +7812,14 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       const results = await Promise.all([
         api('/rest/v1/registrations?select=' + SALES_SELECT + '&order=created_at.desc'),
         api('/rest/v1/profiles?select=id,full_name,email'),
-        api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
         api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
-        api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc'),
-        api('/rest/v1/marketing_coupons?active=eq.true&select=id,code,discount_type,discount_value,usage_limit,active&order=created_at.desc'),
-        api('/rest/v1/payment_methods?active=eq.true&select=id,method_type,provider,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc')
+        api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc')
       ]);
 
       registrations = results[0] || [];
       salesAffiliateProfiles = results[1] || [];
-      salesAffiliateAccounts = results[2] || [];
-      financeTransactions = results[3] || [];
-      membershipRenewals = results[4] || [];
-      salesActiveCoupons = results[5] || [];
-      paymentMethods = results[6] || paymentMethods;
-      populateManualAffiliateOptions();
-      populateManualPaymentOptions();
+      financeTransactions = results[2] || [];
+      membershipRenewals = results[3] || [];
       renderSales();
       renderFinance();
       updateExportMatchCount();
@@ -8127,110 +7836,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   }
 
-  function manualRegistrationBaseAmount(){
-    const plan = $('manualRegPlan')?.value || 'newbie';
-    if(plan === 'free') return 0;
-    if(plan === 'pro') return Number(marketingSettings.pro_price || marketingSettings.product_price || 0);
-    return Number(marketingSettings.newbie_price || marketingSettings.product_price || 0);
-  }
-
-  function manualCouponCode(){
-    return String($('manualRegCoupon')?.value || '').trim().toUpperCase();
-  }
-
-  function manualCouponPricing(){
-    const plan = $('manualRegPlan')?.value || 'newbie';
-    const base = manualRegistrationBaseAmount();
-    const code = manualCouponCode();
-
-    if(plan === 'free'){
-      return {base,discount:0,final:0,code:'',coupon:null,valid:true};
-    }
-
-    if(!code){
-      return {base,discount:0,final:base,code:'',coupon:null,valid:true};
-    }
-
-    const coupon = (salesActiveCoupons || []).find(item =>
-      item.active === true && String(item.code || '').trim().toUpperCase() === code
-    );
-
-    if(!coupon){
-      return {base,discount:0,final:base,code,coupon:null,valid:false};
-    }
-
-    let discount = 0;
-    if(coupon.discount_type === 'percent'){
-      discount = Math.floor(base * Number(coupon.discount_value || 0) / 100);
-    }else{
-      discount = Number(coupon.discount_value || 0);
-    }
-
-    discount = Math.max(0, Math.min(discount, base));
-    return {base,discount,final:Math.max(0,base-discount),code,coupon,valid:true};
-  }
-
-  function manualRegistrationAmount(){
-    return manualCouponPricing().final;
-  }
-
-  function updateManualRegistrationAmount(){
-    const plan = $('manualRegPlan')?.value || 'newbie';
-    const couponInput = $('manualRegCoupon');
-    const couponStatus = $('manualRegCouponStatus');
-    const discountInfo = $('manualRegDiscountInfo');
-    const statusSelect = $('manualRegStatus');
-
-    syncManualPaymentSelection();
-
-    if(statusSelect){
-      const activeOption = [...statusSelect.options].find(o => o.value === 'active');
-      if(activeOption) activeOption.disabled = plan === 'free';
-      if(plan === 'free' && statusSelect.value === 'active') statusSelect.value = 'pending';
-    }
-
-    if(couponInput){
-      couponInput.disabled = plan === 'free';
-      if(plan === 'free') couponInput.value = '';
-      else couponInput.value = couponInput.value.toUpperCase().replace(/\s+/g,'');
-    }
-
-    const pricing = manualCouponPricing();
-
-    if($('manualRegAmountPreview')){
-      $('manualRegAmountPreview').textContent = rupiah(pricing.final);
-    }
-
-    if(discountInfo){
-      if(plan === 'free'){
-        discountInfo.textContent = 'Gratisan • kupon tidak diperlukan';
-      }else if(pricing.coupon){
-        discountInfo.textContent = rupiah(pricing.base) + ' − ' + rupiah(pricing.discount) + ' diskon';
-      }else{
-        discountInfo.textContent = 'Harga normal ' + rupiah(pricing.base);
-      }
-    }
-
-    if(couponStatus){
-      couponStatus.classList.remove('ok','error');
-      if(plan === 'free'){
-        couponStatus.textContent = 'Kupon tidak berlaku untuk Paket Gratisan.';
-      }else if(!pricing.code){
-        couponStatus.textContent = 'Masukkan kode kupon aktif dari menu Marketing.';
-      }else if(!pricing.valid){
-        couponStatus.textContent = 'Kode kupon tidak ditemukan atau sedang nonaktif.';
-        couponStatus.classList.add('error');
-      }else{
-        const label = pricing.coupon.discount_type === 'percent'
-          ? Number(pricing.coupon.discount_value || 0) + '%'
-          : rupiah(pricing.coupon.discount_value || 0);
-        couponStatus.textContent = '✓ Kupon ' + pricing.code + ' aktif • diskon ' + label;
-        couponStatus.classList.add('ok');
-      }
-    }
-  }
-
-  function normalizeManualWhatsapp(value){
+  function normalizeAdminWhatsapp(value){
     let digits = String(value || '').replace(/\D/g,'');
     if(digits.startsWith('0')) digits = '62' + digits.slice(1);
     else if(digits.startsWith('8')) digits = '62' + digits;
@@ -8240,356 +7846,6 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       throw new Error('Nomor WhatsApp belum valid. Gunakan format 08xxxxxxxxxx atau 628xxxxxxxxxx.');
     }
     return digits;
-  }
-
-  function populateManualAffiliateOptions(){
-    const select = $('manualRegAffiliate');
-    if(!select) return;
-
-    const current = select.value;
-    const rows = (salesAffiliateAccounts || []).filter(a => a.status === 'active');
-
-    select.innerHTML = '<option value="">Tanpa Afiliasi</option>' + rows.map(a => {
-      const profile = salesAffiliateProfiles.find(p => p.id === a.user_id) || {};
-      const label = profile.full_name || profile.email || a.affiliate_code || 'Affiliate';
-      const code = a.affiliate_code || '';
-      return '<option value="' + esc(a.user_id) + '" data-code="' + esc(code) + '">' +
-        esc(label) + (code ? ' — ' + esc(code) : '') +
-      '</option>';
-    }).join('');
-
-    if([...select.options].some(o => o.value === current)) select.value = current;
-  }
-
-  function manualTransferMethods(){
-    return (paymentMethods || []).filter(item =>
-      item && item.active === true && item.method_type === 'manual_transfer'
-    );
-  }
-
-  function manualPaymentDetailText(item){
-    if(!item) return '';
-    const lines = [
-      item.display_name || 'Transfer Bank',
-      item.bank_name ? 'Bank: ' + item.bank_name : '',
-      item.account_number ? 'No. Rekening: ' + item.account_number : '',
-      item.account_holder ? 'Atas Nama: ' + item.account_holder : '',
-      item.instructions || ''
-    ].filter(Boolean);
-    return lines.join('\n');
-  }
-
-  function populateManualPaymentOptions(){
-    const select = $('manualRegPayment');
-    if(!select) return;
-
-    const current = select.value;
-    const methods = manualTransferMethods();
-
-    select.innerHTML = '<option value="">-- Pilih Rekening --</option>' + methods.map(item => {
-      const summary = [item.bank_name,item.account_number].filter(Boolean).join(' • ');
-      return '<option value="' + esc(item.id) + '">' +
-        esc(item.display_name || item.bank_name || 'Transfer Bank') +
-        (summary ? ' — ' + esc(summary) : '') +
-      '</option>';
-    }).join('');
-
-    if([...select.options].some(o => o.value === current)) select.value = current;
-    else if(methods.length === 1) select.value = methods[0].id;
-
-    syncManualPaymentSelection();
-  }
-
-  function selectedManualPayment(){
-    const id = $('manualRegPayment')?.value || '';
-    return manualTransferMethods().find(item => String(item.id) === String(id)) || null;
-  }
-
-  function syncManualPaymentSelection(){
-    const plan = $('manualRegPlan')?.value || 'newbie';
-    const wrap = $('manualRegPaymentWrap');
-    const select = $('manualRegPayment');
-    const detail = $('manualRegPaymentDetail');
-    const isFree = plan === 'free';
-
-    if(wrap) wrap.classList.toggle('hidden', isFree);
-    if(select){
-      select.disabled = isFree;
-      select.required = !isFree;
-    }
-
-    if(detail){
-      if(isFree){
-        detail.textContent = 'Paket Gratisan tidak membutuhkan rekening pembayaran.';
-        return;
-      }
-
-      const payment = selectedManualPayment();
-      if(!payment){
-        detail.textContent = manualTransferMethods().length
-          ? 'Pilih rekening yang akan dipakai untuk tagihan peserta.'
-          : 'Belum ada rekening transfer aktif. Tambahkan dulu di Marketing → Pembayaran.';
-        return;
-      }
-
-      detail.innerHTML =
-        '<b>' + esc(payment.display_name || payment.bank_name || 'Transfer Bank') + '</b><br>' +
-        [payment.bank_name,payment.account_number,payment.account_holder ? 'a.n. ' + payment.account_holder : '']
-          .filter(Boolean).map(esc).join(' • ');
-    }
-  }
-
-  function resetManualPendingNotice(){
-    $('manualPendingNotice')?.classList.add('hidden');
-    if($('manualPendingMessage')) $('manualPendingMessage').value = '';
-    if($('openManualPendingWa')) $('openManualPendingWa').href = '#';
-    if($('copyManualPendingBtn')){
-      $('copyManualPendingBtn').textContent = 'SALIN TAGIHAN WA';
-      $('copyManualPendingBtn').disabled = false;
-    }
-  }
-
-  function manualPendingTemplateFallback(){
-    return `Halo Kak [nama] 👋
-
-Pendaftaran BADAI Kakak sudah tercatat dan saat ini statusnya masih *PENDING*.
-
-Paket: [paket]
-Tagihan: [total_bayar]
-Metode: [metode_bayar]
-
-[detail_bayar]
-
-Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayaran diverifikasi, akses member akan kami aktifkan.`;
-  }
-
-  function buildManualPendingMessage(row){
-    const baseAmount = Number(row?.amount || 0);
-    const totalAmount = Number(row?.payment_total_amount || baseAmount);
-    const uniqueCode = Number(row?.payment_unique_code || 0);
-    const sign = totalAmount >= baseAmount ? '+' : '-';
-    const payment = (paymentMethods || []).find(item => String(item.id) === String(row?.payment_method_id)) || selectedManualPayment();
-    const paymentDetail = [
-      row?.payment_method_details || manualPaymentDetailText(payment),
-      uniqueCode ? 'Kode Unik: ' + sign + rupiah(uniqueCode) : '',
-      'TOTAL TRANSFER: ' + rupiah(totalAmount),
-      'Mohon transfer PERSIS sesuai total di atas agar pembayaran mudah dicocokkan.'
-    ].filter(Boolean).join('\n');
-
-    return fillMarketingTemplate(marketingSettings.followup_1 || manualPendingTemplateFallback(), {
-      nama:row?.full_name || 'Kak',
-      email:row?.email || '',
-      wa:row?.whatsapp || '',
-      paket:row?.membership_plan === 'pro' ? 'Paket Untung' : row?.membership_plan === 'free' ? 'Paket Gratisan' : 'Paket Pemula',
-      harga:rupiah(baseAmount),
-      metode_bayar:row?.payment_method_name || payment?.display_name || '-',
-      detail_bayar:paymentDetail,
-      kode_unik:uniqueCode ? sign + rupiah(uniqueCode) : '-',
-      total_bayar:rupiah(totalAmount)
-    });
-  }
-
-  function showManualPendingNotice(row){
-    const message = buildManualPendingMessage(row);
-    if($('manualPendingMessage')) $('manualPendingMessage').value = message;
-    if($('openManualPendingWa')){
-      $('openManualPendingWa').href = 'https://wa.me/' + encodeURIComponent(row.whatsapp || '') + '?text=' + encodeURIComponent(message);
-    }
-    $('manualPendingNotice')?.classList.remove('hidden');
-  }
-
-  async function copyManualPendingMessage(){
-    const text = $('manualPendingMessage')?.value || '';
-    if(!text) return;
-
-    try{
-      await navigator.clipboard.writeText(text);
-    }catch(_){
-      const box = $('manualPendingMessage');
-      box?.focus();
-      box?.select();
-      document.execCommand('copy');
-      window.getSelection()?.removeAllRanges();
-    }
-
-    const btn = $('copyManualPendingBtn');
-    if(btn){
-      btn.textContent = 'TERSALIN ✓';
-      setTimeout(() => { if(btn) btn.textContent = 'SALIN TAGIHAN WA'; }, 1400);
-    }
-  }
-
-  function openManualRegisterModal(){
-    if(!canManageSales()){
-      alert('Role ini tidak punya izin mendaftarkan peserta.');
-      return;
-    }
-
-    $('manualRegisterForm').reset();
-    $('manualRegPlan').value = 'newbie';
-    $('manualRegStatus').value = 'pending';
-    $('manualRegCoupon').value = '';
-    $('manualRegisterStatus').textContent = '';
-    resetManualPendingNotice();
-    populateManualAffiliateOptions();
-    populateManualPaymentOptions();
-    updateManualRegistrationAmount();
-    syncManualPaymentSelection();
-    $('manualRegisterModal').classList.remove('hidden');
-    setTimeout(() => $('manualRegName')?.focus(), 80);
-  }
-
-  async function saveManualRegistration(){
-    if(!canManageSales()) throw new Error('Role ini tidak punya izin mendaftarkan peserta.');
-
-    const fullName = $('manualRegName').value.trim();
-    const email = $('manualRegEmail').value.trim().toLowerCase();
-    const whatsapp = normalizeManualWhatsapp($('manualRegWhatsapp').value);
-    const membershipPlan = $('manualRegPlan').value;
-    const targetStatus = $('manualRegStatus').value;
-    const couponPricing = manualCouponPricing();
-    const couponCode = couponPricing.code || null;
-    const affiliateSelect = $('manualRegAffiliate');
-    const affiliateUserId = affiliateSelect.value || null;
-    const affiliateCode = affiliateUserId
-      ? (affiliateSelect.selectedOptions[0]?.dataset?.code || null)
-      : null;
-    const payment = membershipPlan === 'free' ? null : selectedManualPayment();
-    const amount = manualRegistrationAmount();
-
-    if(!fullName || !email || !whatsapp) throw new Error('Nama, email, dan WhatsApp wajib diisi.');
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Format email belum valid.');
-    if(!['free','newbie','pro'].includes(membershipPlan)) throw new Error('Paket belum valid.');
-    if(!['pending','active'].includes(targetStatus)) throw new Error('Status belum valid.');
-    if(couponCode && !couponPricing.valid) throw new Error('Kode kupon tidak valid atau sedang nonaktif.');
-    if(membershipPlan !== 'free' && !payment) throw new Error('Pilih rekening tagihan terlebih dahulu.');
-
-    const duplicate = registrations.find(r =>
-      String(r.email || '').toLowerCase() === email ||
-      String(r.whatsapp || '').replace(/\D/g,'') === whatsapp.replace(/\D/g,'')
-    );
-    if(duplicate && !confirm('Email atau WhatsApp ini sudah ada di data pendaftaran. Tetap lanjutkan?')) return;
-
-    const btn = $('saveManualRegisterBtn');
-    const oldText = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = 'MENYIMPAN...';
-    $('manualRegisterStatus').textContent = 'Menyimpan pendaftaran manual...';
-    resetManualPendingNotice();
-
-    beginAdminAction();
-    try{
-      let created = null;
-
-      if(membershipPlan === 'free'){
-        const createdRows = await api('/rest/v1/registrations?select=*', {
-          method:'POST',
-          headers:{'Prefer':'return=representation'},
-          body:JSON.stringify({
-            full_name:fullName,
-            email,
-            whatsapp,
-            product:'BADAI',
-            amount:0,
-            payment_status:'pending',
-            member_status:'pending',
-            membership_plan:'free',
-            source:'admin_manual',
-            coupon_code:null,
-            affiliate_user_id:affiliateUserId,
-            referred_by_code:affiliateCode,
-            admin_note:'Pendaftaran manual oleh ' + (currentTeam?.email || 'admin BADAI')
-          })
-        });
-        created = createdRows?.[0] || null;
-      }else{
-        const invoiceRows = await api('/rest/v1/rpc/create_manual_registration', {
-          method:'POST',
-          body:JSON.stringify({
-            p_full_name:fullName,
-            p_email:email,
-            p_whatsapp:whatsapp,
-            p_membership_plan:membershipPlan,
-            p_payment_method_id:payment.id,
-            p_referred_by_code:affiliateCode,
-            p_coupon_code:couponCode
-          })
-        });
-
-        const invoice = Array.isArray(invoiceRows) ? invoiceRows[0] : invoiceRows;
-        if(!invoice?.registration_id) throw new Error('Invoice transfer manual belum berhasil dibuat.');
-
-        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(invoice.registration_id), {
-          method:'PATCH',
-          headers:{'Prefer':'return=minimal'},
-          body:JSON.stringify({
-            source:'admin_manual',
-            affiliate_user_id:affiliateUserId,
-            referred_by_code:affiliateCode,
-            admin_note:'Pendaftaran manual oleh ' + (currentTeam?.email || 'admin BADAI')
-          })
-        });
-
-        const createdRows = await api(
-          '/rest/v1/registrations?id=eq.' + encodeURIComponent(invoice.registration_id) +
-          '&select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,payment_unique_code,payment_total_amount,admin_note,created_at'
-        );
-        created = createdRows?.[0] || null;
-      }
-
-      if(!created?.id) throw new Error('Pendaftaran tersimpan tetapi ID data tidak ditemukan.');
-
-      if(targetStatus === 'active'){
-        if(membershipPlan === 'free'){
-          $('manualRegisterStatus').textContent = '✓ Data Gratisan sudah masuk ke Penjualan sebagai PENDING.';
-          upsertRegistrationLocal(created);
-          backgroundSalesRefresh();
-          return;
-        }
-
-        $('manualRegisterStatus').textContent = 'Pendaftaran sudah masuk ke Penjualan. Membuat akses member...';
-        try{
-          const access = await approveOrResetAccess(created);
-          const refreshed = Object.assign({},created,{
-            user_id:access.user_id || created.user_id || null,
-            payment_status:'paid',
-            member_status:'active',
-            activated_at:created.activated_at || new Date().toISOString()
-          });
-          upsertRegistrationLocal(refreshed);
-          $('manualRegisterModal').classList.add('hidden');
-          openCredentialModal(refreshed, access.password);
-          backgroundSalesRefresh();
-          return;
-        }catch(accessErr){
-          const refreshed = upsertRegistrationLocal(created) || created;
-          backgroundSalesRefresh();
-          $('manualRegisterStatus').textContent =
-            '✓ Data sudah masuk ke Penjualan sebagai PENDING. ACC akses belum berhasil: ' +
-            (accessErr.message || 'coba ACC dari tombol Edit.');
-          showManualPendingNotice(refreshed);
-          return;
-        }
-      }
-
-      const refreshed = upsertRegistrationLocal(created) || created;
-      backgroundSalesRefresh();
-
-      if(membershipPlan === 'free'){
-        $('manualRegisterStatus').textContent = '✓ Peserta Gratisan berhasil didaftarkan sebagai PENDING.';
-        return;
-      }
-
-      $('manualRegisterStatus').textContent =
-        '✓ Pendaftaran PENDING dibuat • ' +
-        (refreshed.payment_method_name || payment.display_name || 'Transfer Bank') +
-        ' • Tagihan ' + rupiah(refreshed.payment_total_amount || refreshed.amount || amount) + '.';
-      showManualPendingNotice(refreshed);
-    }finally{
-      endAdminAction();
-      btn.disabled = false;
-      btn.textContent = oldText;
-    }
   }
 
   function localDateTimeInputValue(date){
@@ -8886,7 +8142,6 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       ]);
       const usageMap = new Map((usageRows||[]).map(row => [row.coupon_id,row]));
       marketingCoupons = (coupons||[]).map(coupon => Object.assign({},coupon,usageMap.get(coupon.id)||{}));
-      salesActiveCoupons = marketingCoupons.filter(coupon => coupon.active === true);
       renderCoupons();
     }
 
@@ -8899,7 +8154,6 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       if(qrisRows?.[0]) buatQrisSettings = qrisRows[0];
       renderPaymentMethods();
       togglePaymentMethodFields();
-      populateManualPaymentOptions();
       populateBuatQrisSettings();
     }
 
@@ -10586,7 +9840,7 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
 
     const fullName = $('manageName').value.trim();
     const email = $('manageEmail').value.trim().toLowerCase();
-    const whatsapp = normalizeManualWhatsapp($('manageWhatsapp').value);
+    const whatsapp = normalizeAdminWhatsapp($('manageWhatsapp').value);
     const membershipPlan = $('managePlan').value;
     const targetStatus = $('manageStatus').value;
     const resetAccess = row.member_status === 'active'
@@ -12956,24 +12210,7 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   });
 
   logoutBtn.addEventListener('click', logout);
-  $('manualRegisterBtn').addEventListener('click', openManualRegisterModal);
   $('exportDataBtn').addEventListener('click', openExportDataModal);
-
-  $('manualRegPlan').addEventListener('change', updateManualRegistrationAmount);
-  $('manualRegPayment')?.addEventListener('change', syncManualPaymentSelection);
-  $('copyManualPendingBtn')?.addEventListener('click', () => copyManualPendingMessage().catch(()=>{}));
-  $('manualRegCoupon').addEventListener('input', updateManualRegistrationAmount);
-  $('manualRegCoupon').addEventListener('change', updateManualRegistrationAmount);
-  $('manualRegisterForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    try{ await saveManualRegistration(); }
-    catch(err){ $('manualRegisterStatus').textContent = '✕ ' + (err.message || 'Gagal menyimpan pendaftaran.'); }
-  });
-  $('closeManualRegisterBtn').addEventListener('click', () => $('manualRegisterModal').classList.add('hidden'));
-  $('closeManualRegisterIcon').addEventListener('click', () => $('manualRegisterModal').classList.add('hidden'));
-  $('manualRegisterModal').addEventListener('click', (e) => {
-    if(e.target === $('manualRegisterModal')) $('manualRegisterModal').classList.add('hidden');
-  });
 
   $('exportFrom').addEventListener('change', updateExportMatchCount);
   $('exportTo').addEventListener('change', updateExportMatchCount);
