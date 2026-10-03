@@ -9585,7 +9585,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     let kind = 'other';
 
     if(type === 'qris' || /qris/i.test(rawName)){
-      label = rawName || 'QRIS';
+      label = 'QRIS';
       kind = 'qris';
     }else if(type === 'manual_transfer'){
       label = rawName || 'Transfer Bank';
@@ -9598,7 +9598,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     }
 
     return '<span class="sales-payment-method ' + kind + '" title="Metode pembayaran: ' +
-      esc(label) + '">Bayar: ' + esc(label) + '</span>';
+      esc(label) + '">' + esc(label) + '</span>';
   }
 
   function followUpMessage(r, step){
