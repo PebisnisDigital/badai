@@ -2916,23 +2916,20 @@ th,td{padding:14px 12px!important}
 /* END BADAI SALES REVENUE CARDS FINAL */
 
 
-/* BADAI SALES MANUAL + EXPORT FINAL */
+/* BADAI SALES EXPORT FINAL */
 #pageSales .sales-toolbar{
   grid-template-columns:minmax(0,1fr) 122px auto!important;
   gap:6px!important;
   align-items:stretch!important;
 }
-
 .sales-toolbar-actions{
   display:flex;
   align-items:stretch;
-  gap:5px;
   min-width:0;
 }
-
 .sales-tool-btn{
   min-height:46px;
-  padding:0 9px;
+  padding:0 12px;
   border-radius:11px;
   border:1px solid #343434;
   background:#111;
@@ -2944,45 +2941,15 @@ th,td{padding:14px 12px!important}
   white-space:nowrap;
   cursor:pointer;
 }
-
-.sales-tool-btn span{
-  font-size:13px;
-  vertical-align:-1px;
-}
-
-.sales-tool-btn.manual{
-  border-color:#5e2b48;
-  background:#1a0e15;
-  color:#ff91c5;
-}
-
+.sales-tool-btn span{font-size:13px;vertical-align:-1px}
 .sales-tool-btn.export{
   border-color:#33414b;
   background:#0e1418;
   color:#b8d7ea;
 }
-
-.sales-tool-btn:hover{
-  transform:translateY(-1px);
-  filter:brightness(1.12);
-}
-
-.sales-tool-modal{
-  width:min(100%,520px)!important;
-}
-
-.sales-tool-modal form{
-  margin-top:12px;
-}
-
-.sales-tool-help{
-  margin-top:4px;
-  color:#777;
-  font-size:9px;
-  line-height:1.4;
-}
-
-.manual-reg-price-card,
+.sales-tool-btn:hover{transform:translateY(-1px);filter:brightness(1.12)}
+.sales-tool-modal{width:min(100%,520px)!important}
+.sales-tool-modal form{margin-top:12px}
 .export-match-card{
   display:flex;
   align-items:center;
@@ -2994,84 +2961,28 @@ th,td{padding:14px 12px!important}
   border-radius:12px;
   background:#0b0b0b;
 }
-
-.manual-reg-price-card span,
 .export-match-card span{
   color:#888;
   font-size:9px;
   font-weight:900;
   letter-spacing:.04em;
 }
-
-.manual-reg-price-card strong{
-  color:#ff91c5;
-  font-size:18px;
-  font-weight:900;
-  white-space:nowrap;
-}
-
-.manual-reg-price-copy{
-  display:grid;
-  gap:3px;
-  min-width:0;
-}
-
-.manual-reg-price-copy small{
-  color:#676767;
-  font-size:8px;
-  font-weight:800;
-  line-height:1.25;
-}
-
-#manualRegCoupon{
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  font-weight:900;
-}
-
-#manualRegCouponStatus.ok{
-  color:#76d99b;
-}
-
-#manualRegCouponStatus.error{
-  color:#ff7b8d;
-}
-
 .export-match-card strong{
   color:#fff;
   font-size:13px;
   font-weight:900;
   white-space:nowrap;
 }
-
 @media(max-width:620px){
-  #pageSales .sales-toolbar{
-    grid-template-columns:minmax(0,1fr) 112px!important;
-  }
-
-  #pageSales .sales-toolbar-actions{
-    grid-column:1/-1;
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .sales-tool-btn{
-    width:100%;
-    min-height:40px;
-    font-size:8.5px;
-  }
+  #pageSales .sales-toolbar{grid-template-columns:minmax(0,1fr) 112px!important}
+  #pageSales .sales-toolbar-actions{grid-column:1/-1}
+  .sales-tool-btn{width:100%;min-height:40px;font-size:8.5px}
 }
-
 @media(max-width:430px){
-  #pageSales .sales-toolbar{
-    grid-template-columns:1fr!important;
-  }
-
-  #pageSales .sales-toolbar-actions{
-    grid-column:auto;
-  }
+  #pageSales .sales-toolbar{grid-template-columns:1fr!important}
+  #pageSales .sales-toolbar-actions{grid-column:auto}
 }
-/* END BADAI SALES MANUAL + EXPORT FINAL */
+/* END BADAI SALES EXPORT FINAL */
 
 
 /* BADAI SALES CASH CARD FINAL */
@@ -5506,13 +5417,191 @@ th,td{padding:14px 12px!important}
   .manage-pending-copy-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
 /* END BADAI FOLLOW-UP COPY-ONLY FINAL */
+
+/* BADAI SALES PAYMENT METHOD — below package price */
+#pageSales .sales-package-stack .sales-payment-method{
+  width:max-content!important;
+  max-width:100%!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:15px!important;
+  padding:0 5px!important;
+  border:1px solid #2e2e2e!important;
+  border-radius:999px!important;
+  background:#111!important;
+  color:#a9a9a9!important;
+  font-size:6.8px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#pageSales .sales-package-stack .sales-payment-method.qris{
+  border-color:#214c3b!important;
+  background:#0c1712!important;
+  color:#79dfaa!important;
+}
+#pageSales .sales-package-stack .sales-payment-method.bank{
+  border-color:#4e3545!important;
+  background:#160e13!important;
+  color:#ff95c8!important;
+}
+#pageSales .sales-package-stack .sales-payment-method.unknown{
+  border-color:#323232!important;
+  background:#0d0d0d!important;
+  color:#666!important;
+}
+@media(max-width:560px){
+  #pageSales .sales-package-stack .sales-payment-method{
+    min-height:14px!important;
+    padding:0 4px!important;
+    font-size:6.1px!important;
+  }
+}
+/* END BADAI SALES PAYMENT METHOD */
+
+
+/* FAST ADMIN — action feedback */
+button[data-admin-busy="1"]{
+  opacity:.72!important;
+  cursor:wait!important;
+  pointer-events:none!important;
+}
+button[data-admin-busy="1"]::after{
+  content:"";
+  width:8px;height:8px;margin-left:6px;
+  border:1.5px solid currentColor;border-right-color:transparent;border-radius:50%;
+  display:inline-block;vertical-align:-1px;
+  animation:badaiAdminSpin .65s linear infinite;
+}
+@keyframes badaiAdminSpin{to{transform:rotate(360deg)}}
+/* END FAST ADMIN */
+
+
+/* FAST EXPORT — keep modal cheap to paint */
+#exportDataModal{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background:rgba(0,0,0,.78)!important;
+}
+#exportDataModal .cred-box{
+  contain:layout paint style;
+}
+/* END FAST EXPORT */
+
+
+/* BADAI SALES SERVER PAGINATION */
+.sales-table-controls{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  margin:2px 0 7px;
+}
+.sales-page-size-control{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#8f8f8f;
+  font-size:9px;
+  font-weight:800;
+}
+.sales-page-size-control select{
+  min-width:66px;
+  height:34px;
+  padding:0 9px;
+  border:1px solid #303030;
+  border-radius:9px;
+  background:#0c0c0c;
+  color:#fff;
+  outline:none;
+  font-size:10px;
+  font-weight:900;
+}
+.sales-page-size-control select:focus{border-color:var(--pink)}
+.sales-pagination-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:12px 0 0;
+  min-height:38px;
+}
+.sales-pagination-info{
+  color:#7f7f7f;
+  font-size:8.5px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.sales-pagination-buttons{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:4px;
+  min-width:0;
+}
+.sales-pagination-buttons button,
+.sales-page-ellipsis{
+  min-width:31px;
+  height:31px;
+  padding:0 8px;
+  border:1px solid #2c2c2c;
+  border-radius:8px;
+  background:#0e0e0e;
+  color:#bcbcbc;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:8.5px;
+  font-weight:900;
+}
+.sales-pagination-buttons button:hover:not(:disabled){
+  border-color:#70445d;
+  color:#fff;
+}
+.sales-pagination-buttons button.active{
+  border-color:var(--pink);
+  background:var(--pink);
+  color:#080808;
+}
+.sales-pagination-buttons button:disabled{
+  opacity:.35;
+  cursor:not-allowed;
+}
+.sales-page-ellipsis{
+  border-color:transparent;
+  background:transparent;
+  min-width:20px;
+  padding:0;
+}
+@media(max-width:620px){
+  .sales-pagination-bar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .sales-pagination-buttons{
+    width:100%;
+    justify-content:flex-start;
+    overflow-x:auto;
+    padding-bottom:3px;
+  }
+  .sales-pagination-buttons button{
+    flex:0 0 auto;
+  }
+}
+/* END BADAI SALES SERVER PAGINATION */
+
+
+#pageSales .sales-package-stack .sales-payment-method.qris-expired{
+  border-color:#6a4a1f!important;
+  background:#1a1208!important;
+  color:#f3c36d!important;
+}
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="apple-touch-icon" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -5593,8 +5682,21 @@ th,td{padding:14px 12px!important}
         </div>
       </div>
 
+      <div class="sales-table-controls">
+        <label class="sales-page-size-control">
+          <span>Tampilkan</span>
+          <select id="salesPageSize" aria-label="Jumlah data per halaman">
+            <option value="10">10</option>
+            <option value="25" selected>25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+          <span>data</span>
+        </label>
+      </div>
+
       <div class="toolbar sales-toolbar">
-        <input id="searchBox" type="search" placeholder="Cari nama, WA, atau email..."/>
+        <input id="searchBox" type="search" placeholder="Cari nama, WA, email, pembayaran, afiliasi..."/>
         <select id="statusFilter">
           <option value="all">Semua status</option>
           <option value="pending">Pending</option>
@@ -5605,7 +5707,6 @@ th,td{padding:14px 12px!important}
           <option value="suspended">Suspended Manual</option>
         </select>
         <div class="sales-toolbar-actions">
-          <button id="manualRegisterBtn" class="sales-tool-btn manual" type="button"><span>＋</span> MANUAL DAFTAR</button>
           <button id="exportDataBtn" class="sales-tool-btn export" type="button"><span>⇩</span> EXPORT DATA</button>
         </div>
       </div>
@@ -5624,6 +5725,11 @@ th,td{padding:14px 12px!important}
 
       <div id="mobileList" class="mobile-list"></div>
       <div id="emptyMobile" class="empty hidden">Belum ada pendaftaran.</div>
+
+      <div id="salesPaginationBar" class="sales-pagination-bar">
+        <div id="salesPaginationInfo" class="sales-pagination-info">Memuat data...</div>
+        <div id="salesPaginationButtons" class="sales-pagination-buttons" aria-label="Navigasi halaman penjualan"></div>
+      </div>
     </section>
 
     <section id="pageFinance" class="admin-page hidden">
@@ -6952,6 +7058,7 @@ th,td{padding:14px 12px!important}
         </div>
         <div id="manageFuCopyStatus" class="manage-fu-copy-status" aria-live="polite"></div>
       </div>
+    </div>
     <div class="cred-actions manage-member-actions">
       <button id="saveManageBtn" class="primary-act" type="button">UPDATE MEMBER</button>
       <button id="closeManageBtn" type="button">TUTUP</button>
@@ -6959,103 +7066,6 @@ th,td{padding:14px 12px!important}
   </div>
 </div>
 
-
-<div id="manualRegisterModal" class="cred-modal hidden">
-  <div class="cred-box sales-tool-modal">
-    <div class="sales-action-modal-head">
-      <div>
-        <h2>Manual Daftar</h2>
-        <p>Daftarkan peserta langsung dari admin BADAI.</p>
-      </div>
-      <button id="closeManualRegisterIcon" class="sales-modal-close" type="button" aria-label="Tutup">×</button>
-    </div>
-
-    <form id="manualRegisterForm">
-      <div class="manage-grid">
-        <div class="manage-field full">
-          <label>Nama Peserta</label>
-          <input id="manualRegName" type="text" autocomplete="name" required placeholder="Nama lengkap"/>
-        </div>
-        <div class="manage-field full">
-          <label>Email</label>
-          <input id="manualRegEmail" type="email" autocomplete="email" required placeholder="email@contoh.com"/>
-        </div>
-        <div class="manage-field full">
-          <label>WhatsApp</label>
-          <input id="manualRegWhatsapp" type="text" inputmode="tel" required placeholder="628xxxxxxxxxx"/>
-        </div>
-
-        <div class="manage-field">
-          <label>Paket</label>
-          <select id="manualRegPlan" required>
-            <option value="free">Paket Gratisan</option>
-            <option value="newbie">Paket Pemula</option>
-            <option value="pro">Paket Untung</option>
-          </select>
-        </div>
-
-        <div class="manage-field">
-          <label>Status</label>
-          <select id="manualRegStatus" required>
-            <option value="pending">PENDING</option>
-            <option value="active">AKTIF / ACC</option>
-          </select>
-        </div>
-
-        <div id="manualRegPaymentWrap" class="manage-field full">
-          <label>Rekening Tagihan</label>
-          <select id="manualRegPayment">
-            <option value="">-- Pilih Rekening --</option>
-          </select>
-          <div id="manualRegPaymentDetail" class="manual-reg-payment-detail">Pilih rekening transfer untuk tagihan peserta.</div>
-        </div>
-
-        <div class="manage-field full">
-          <label>Kode Kupon <span style="color:#777;font-weight:700">(Opsional)</span></label>
-          <input id="manualRegCoupon" type="text" autocomplete="off" placeholder="Contoh: BADAI20"/>
-          <div id="manualRegCouponStatus" class="sales-tool-help">Masukkan kode kupon aktif dari menu Marketing.</div>
-        </div>
-
-        <div class="manage-field full">
-          <label>Afiliasi</label>
-          <select id="manualRegAffiliate">
-            <option value="">Tanpa Afiliasi</option>
-          </select>
-          <div class="sales-tool-help">Hanya menampilkan affiliate yang berstatus aktif.</div>
-        </div>
-
-        <div class="manual-reg-price-card full">
-          <div class="manual-reg-price-copy">
-            <span>Nilai Pendaftaran</span>
-            <small id="manualRegDiscountInfo">Harga normal</small>
-          </div>
-          <strong id="manualRegAmountPreview">Rp0</strong>
-        </div>
-      </div>
-
-      <div id="manualRegisterStatus" class="team-status-note"></div>
-
-      <div id="manualPendingNotice" class="manual-pending-notice hidden">
-        <div class="manual-pending-notice-head">
-          <div>
-            <b>TAGIHAN WHATSAPP — PENDING</b>
-            <span>Sudah dibuat dari rekening, nominal, dan kode unik transaksi ini.</span>
-          </div>
-        </div>
-        <textarea id="manualPendingMessage" class="manual-pending-message" readonly></textarea>
-        <div class="manual-pending-actions">
-          <button id="copyManualPendingBtn" type="button">SALIN TAGIHAN WA</button>
-          <a id="openManualPendingWa" href="#" target="_blank" rel="noopener">BUKA WHATSAPP</a>
-        </div>
-      </div>
-
-      <div class="cred-actions manage-member-actions">
-        <button id="saveManualRegisterBtn" class="primary-act" type="submit">SIMPAN PENDAFTARAN</button>
-        <button id="closeManualRegisterBtn" type="button">TUTUP</button>
-      </div>
-    </form>
-  </div>
-</div>
 
 <div id="exportDataModal" class="cred-modal hidden">
   <div class="cred-box sales-tool-modal">
@@ -7127,10 +7137,27 @@ th,td{padding:14px 12px!important}
 
   let session = null;
   let registrations = [];
+  let financeRegistrations = [];
+  let salesPage = 1;
+  let salesPageSize = 25;
+  let salesTotal = 0;
+  let salesSummary = {active_revenue:0,pending_revenue:0,current_cash:0};
+  let salesFallbackBca = null;
+  let salesSearchTimer = null;
+  let salesLoadSequence = 0;
   let currentTeam = null;
   let adminAutoSyncBusy = false;
   let adminAutoSyncLastMarketing = 0;
   let adminAutoSyncLastTeam = 0;
+  let adminActionDepth = 0;
+  let salesLifecycleLastRefresh = 0;
+  let salesLightRefreshPromise = null;
+  let financeSnapshotPromise = null;
+  const exportLibraryPromises = new Map();
+  let marketingBaseLoaded = false;
+  let marketingBasePromise = null;
+  let marketingTabLoaded = {pricing:false,payments:false,notifications:false,affiliate:false,materials:false};
+  const adminActionLocks = new Set();
   let teamMembers = [];
   let mentorConversations = [];
   let mentorActiveConversation = null;
@@ -7327,14 +7354,12 @@ Member Area:
 Kalau mau aktif lagi, balas pesan ini ya.`
   };
   let marketingCoupons = [];
-  let salesActiveCoupons = [];
   let affiliateSettings = {commission_type:'percent', commission_value:30, inactivity_months:3};
   let affiliateAccounts = [];
   let affiliateSales = [];
   let affiliatePayouts = [];
   let affiliateProfiles = [];
   let salesAffiliateProfiles = [];
-  let salesAffiliateAccounts = [];
   let affiliateMaterials = [];
   let paymentMethods = [];
   let buatQrisSettings = {
@@ -7743,8 +7768,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       tab.classList.toggle('active', name === page);
     });
 
-    if(page === 'finance') loadFinanceTransactions();
-    if(page === 'marketing') loadMarketing();
+    if(page === 'finance') loadFinanceSnapshot().catch(err => console.warn('Finance refresh:',err?.message || err));
+    if(page === 'marketing') loadMarketing().catch(err => {
+      if($('marketingStatus')) $('marketingStatus').textContent = '✕ ' + (err.message || 'Gagal memuat Marketing.');
+    });
     if(page === 'mentor'){
       $('mentorFeatureAiBtn')?.classList.toggle('hidden',!mentorAiAllowed());
       loadMentorInbox();
@@ -7783,11 +7810,17 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       populateAdminSelfSettings();
 
       const allowed = allowedPages();
-      if(allowed.includes('sales') || allowed.includes('finance')){
+      if(allowed.includes('sales')){
         await loadMarketingSettings();
+        marketingBaseLoaded = true;
         await loadRegistrations();
+      }else if(allowed.includes('finance')){
+        await loadMarketingSettings();
+        marketingBaseLoaded = true;
+        await loadFinanceSnapshot();
       }else if(allowed.includes('marketing')){
-        await loadMarketing();
+        await ensureMarketingBase();
+        await loadMarketingTab(currentMarketingTab(),false);
       }
 
       const first = allowed[0];
@@ -7805,136 +7838,155 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
   }
 
-  async function loadRegistrations(){
-    try{
-      await api('/rest/v1/rpc/refresh_membership_lifecycle', {
-        method:'POST',
-        body:JSON.stringify({})
-      });
-    }catch(_){}
+  const SALES_SELECT = 'id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,payment_unique_code,payment_total_amount,admin_note,created_at,activated_at,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at';
 
-    const results = await Promise.all([
-      api('/rest/v1/registrations?select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,payment_unique_code,payment_total_amount,admin_note,created_at,activated_at,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at&order=created_at.desc'),
-      api('/rest/v1/profiles?select=id,full_name,email'),
-      api('/rest/v1/affiliate_accounts?status=eq.active&select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
-      api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
-      api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc'),
-      api('/rest/v1/marketing_coupons?active=eq.true&select=id,code,discount_type,discount_value,usage_limit,active&order=created_at.desc')
-    ]);
-    registrations = results[0] || [];
-    salesAffiliateProfiles = results[1] || [];
-    salesAffiliateAccounts = results[2] || [];
-    financeTransactions = results[3] || [];
-    membershipRenewals = results[4] || [];
-    salesActiveCoupons = results[5] || [];
-    populateManualAffiliateOptions();
+  function beginAdminAction(){
+    adminActionDepth += 1;
+  }
+
+  function endAdminAction(){
+    adminActionDepth = Math.max(0,adminActionDepth - 1);
+  }
+
+  function adminModalIsOpen(){
+    return Boolean(document.querySelector('[id$="Modal"]:not(.hidden)'));
+  }
+
+  function patchRegistrationLocal(id, patch){
+    const index = registrations.findIndex(r => r.id === id);
+    if(index < 0) return null;
+    registrations[index] = Object.assign({},registrations[index],patch || {});
     renderSales();
-    renderFinance();
+    updateExportMatchCount();
+    return registrations[index];
+  }
+
+  function upsertRegistrationLocal(row){
+    if(!row?.id) return row;
+    const index = registrations.findIndex(r => r.id === row.id);
+    if(index >= 0) registrations[index] = Object.assign({},registrations[index],row);
+    else registrations.unshift(row);
+    renderSales();
+    updateExportMatchCount();
+    return registrations.find(r => r.id === row.id) || row;
+  }
+
+  function removeRegistrationLocal(id){
+    registrations = registrations.filter(r => r.id !== id);
+    renderSales();
     updateExportMatchCount();
   }
 
-  function manualRegistrationBaseAmount(){
-    const plan = $('manualRegPlan')?.value || 'newbie';
-    if(plan === 'free') return 0;
-    if(plan === 'pro') return Number(marketingSettings.pro_price || marketingSettings.product_price || 0);
-    return Number(marketingSettings.newbie_price || marketingSettings.product_price || 0);
+  function nextUiPaint(){
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   }
 
-  function manualCouponCode(){
-    return String($('manualRegCoupon')?.value || '').trim().toUpperCase();
+  async function runAdminAction(key, button, task, busyText=''){
+    const lockKey = String(key || 'action');
+    if(adminActionLocks.has(lockKey)) return false;
+
+    adminActionLocks.add(lockKey);
+    beginAdminAction();
+
+    const oldHtml = button?.innerHTML;
+    if(button){
+      button.dataset.adminBusy = '1';
+      button.disabled = true;
+      button.setAttribute('aria-busy','true');
+      if(busyText) button.textContent = busyText;
+    }
+
+    try{
+      await nextUiPaint();
+      await task();
+      return true;
+    }finally{
+      adminActionLocks.delete(lockKey);
+      endAdminAction();
+      if(button?.isConnected){
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+        delete button.dataset.adminBusy;
+        if(busyText && oldHtml != null) button.innerHTML = oldHtml;
+      }
+    }
   }
 
-  function manualCouponPricing(){
-    const plan = $('manualRegPlan')?.value || 'newbie';
-    const base = manualRegistrationBaseAmount();
-    const code = manualCouponCode();
+  // Capture-phase shield: a second click never reaches an action already in flight.
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-admin-busy="1"]');
+    if(!btn) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }, true);
 
-    if(plan === 'free'){
-      return {base,discount:0,final:0,code:'',coupon:null,valid:true};
+  function backgroundSalesRefresh(delay=80){
+    window.setTimeout(() => {
+      loadRegistrations({light:true,lifecycle:false}).catch(err => {
+        console.warn('BADAI background sales refresh:',err?.message || err);
+      });
+    },Math.max(0,Number(delay||0)));
+  }
+
+  async function loadRegistrations(options={}){
+    const light = options.light === true;
+    const lifecycle = options.lifecycle === true ||
+      (!light && Date.now() - salesLifecycleLastRefresh > 60000);
+    const sequence = ++salesLoadSequence;
+
+    if(lifecycle){
+      try{
+        await api('/rest/v1/rpc/refresh_membership_lifecycle', {
+          method:'POST',
+          body:JSON.stringify({})
+        });
+        salesLifecycleLastRefresh = Date.now();
+      }catch(_){}
     }
 
-    if(!code){
-      return {base,discount:0,final:base,code:'',coupon:null,valid:true};
+    const pageSize = Math.max(10,Math.min(100,Number(salesPageSize || 25)));
+    const offset = Math.max(0,(salesPage - 1) * pageSize);
+    const search = String($('searchBox')?.value || '').trim();
+    const status = String($('statusFilter')?.value || 'all');
+
+    if($('salesPaginationInfo')) $('salesPaginationInfo').textContent = 'Memuat data...';
+
+    const data = await api('/rest/v1/rpc/admin_sales_page', {
+      method:'POST',
+      body:JSON.stringify({
+        p_limit:pageSize,
+        p_offset:offset,
+        p_search:search,
+        p_status:status,
+        p_from:null,
+        p_to:null
+      })
+    });
+
+    // A newer search/page request won the race; ignore this older response.
+    if(sequence !== salesLoadSequence) return registrations;
+
+    const total = Math.max(0,Number(data?.total || 0));
+    const maxPage = Math.max(1,Math.ceil(total / pageSize));
+
+    if(salesPage > maxPage){
+      salesPage = maxPage;
+      return loadRegistrations({light:true,lifecycle:false});
     }
 
-    const coupon = (salesActiveCoupons || []).find(item =>
-      item.active === true && String(item.code || '').trim().toUpperCase() === code
+    registrations = Array.isArray(data?.rows) ? data.rows : [];
+    salesTotal = total;
+    salesSummary = Object.assign(
+      {active_revenue:0,pending_revenue:0,current_cash:0},
+      data?.summary || {}
     );
+    salesFallbackBca = data?.fallback_bca || salesFallbackBca || null;
 
-    if(!coupon){
-      return {base,discount:0,final:base,code,coupon:null,valid:false};
-    }
-
-    let discount = 0;
-    if(coupon.discount_type === 'percent'){
-      discount = Math.floor(base * Number(coupon.discount_value || 0) / 100);
-    }else{
-      discount = Number(coupon.discount_value || 0);
-    }
-
-    discount = Math.max(0, Math.min(discount, base));
-    return {base,discount,final:Math.max(0,base-discount),code,coupon,valid:true};
+    renderSales();
+    return registrations;
   }
 
-  function manualRegistrationAmount(){
-    return manualCouponPricing().final;
-  }
-
-  function updateManualRegistrationAmount(){
-    const plan = $('manualRegPlan')?.value || 'newbie';
-    const couponInput = $('manualRegCoupon');
-    const couponStatus = $('manualRegCouponStatus');
-    const discountInfo = $('manualRegDiscountInfo');
-    const statusSelect = $('manualRegStatus');
-
-    if(statusSelect){
-      const activeOption = [...statusSelect.options].find(o => o.value === 'active');
-      if(activeOption) activeOption.disabled = plan === 'free';
-      if(plan === 'free' && statusSelect.value === 'active') statusSelect.value = 'pending';
-    }
-
-    if(couponInput){
-      couponInput.disabled = plan === 'free';
-      if(plan === 'free') couponInput.value = '';
-      else couponInput.value = couponInput.value.toUpperCase().replace(/\s+/g,'');
-    }
-
-    const pricing = manualCouponPricing();
-
-    if($('manualRegAmountPreview')){
-      $('manualRegAmountPreview').textContent = rupiah(pricing.final);
-    }
-
-    if(discountInfo){
-      if(plan === 'free'){
-        discountInfo.textContent = 'Gratisan • kupon tidak diperlukan';
-      }else if(pricing.coupon){
-        discountInfo.textContent = rupiah(pricing.base) + ' − ' + rupiah(pricing.discount) + ' diskon';
-      }else{
-        discountInfo.textContent = 'Harga normal ' + rupiah(pricing.base);
-      }
-    }
-
-    if(couponStatus){
-      couponStatus.classList.remove('ok','error');
-      if(plan === 'free'){
-        couponStatus.textContent = 'Kupon tidak berlaku untuk Paket Gratisan.';
-      }else if(!pricing.code){
-        couponStatus.textContent = 'Masukkan kode kupon aktif dari menu Marketing.';
-      }else if(!pricing.valid){
-        couponStatus.textContent = 'Kode kupon tidak ditemukan atau sedang nonaktif.';
-        couponStatus.classList.add('error');
-      }else{
-        const label = pricing.coupon.discount_type === 'percent'
-          ? Number(pricing.coupon.discount_value || 0) + '%'
-          : rupiah(pricing.coupon.discount_value || 0);
-        couponStatus.textContent = '✓ Kupon ' + pricing.code + ' aktif • diskon ' + label;
-        couponStatus.classList.add('ok');
-      }
-    }
-  }
-
-  function normalizeManualWhatsapp(value){
+  function normalizeAdminWhatsapp(value){
     let digits = String(value || '').replace(/\D/g,'');
     if(digits.startsWith('0')) digits = '62' + digits.slice(1);
     else if(digits.startsWith('8')) digits = '62' + digits;
@@ -7946,347 +7998,6 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     return digits;
   }
 
-  function populateManualAffiliateOptions(){
-    const select = $('manualRegAffiliate');
-    if(!select) return;
-
-    const current = select.value;
-    const rows = (salesAffiliateAccounts || []).filter(a => a.status === 'active');
-
-    select.innerHTML = '<option value="">Tanpa Afiliasi</option>' + rows.map(a => {
-      const profile = salesAffiliateProfiles.find(p => p.id === a.user_id) || {};
-      const label = profile.full_name || profile.email || a.affiliate_code || 'Affiliate';
-      const code = a.affiliate_code || '';
-      return '<option value="' + esc(a.user_id) + '" data-code="' + esc(code) + '">' +
-        esc(label) + (code ? ' — ' + esc(code) : '') +
-      '</option>';
-    }).join('');
-
-    if([...select.options].some(o => o.value === current)) select.value = current;
-  }
-
-  function manualTransferMethods(){
-    return (paymentMethods || []).filter(item =>
-      item && item.active === true && item.method_type === 'manual_transfer'
-    );
-  }
-
-  function manualPaymentDetailText(item){
-    if(!item) return '';
-    const lines = [
-      item.display_name || 'Transfer Bank',
-      item.bank_name ? 'Bank: ' + item.bank_name : '',
-      item.account_number ? 'No. Rekening: ' + item.account_number : '',
-      item.account_holder ? 'Atas Nama: ' + item.account_holder : '',
-      item.instructions || ''
-    ].filter(Boolean);
-    return lines.join('\n');
-  }
-
-  function populateManualPaymentOptions(){
-    const select = $('manualRegPayment');
-    if(!select) return;
-
-    const current = select.value;
-    const methods = manualTransferMethods();
-
-    select.innerHTML = '<option value="">-- Pilih Rekening --</option>' + methods.map(item => {
-      const summary = [item.bank_name,item.account_number].filter(Boolean).join(' • ');
-      return '<option value="' + esc(item.id) + '">' +
-        esc(item.display_name || item.bank_name || 'Transfer Bank') +
-        (summary ? ' — ' + esc(summary) : '') +
-      '</option>';
-    }).join('');
-
-    if([...select.options].some(o => o.value === current)) select.value = current;
-    else if(methods.length === 1) select.value = methods[0].id;
-
-    syncManualPaymentSelection();
-  }
-
-  function selectedManualPayment(){
-    const id = $('manualRegPayment')?.value || '';
-    return manualTransferMethods().find(item => String(item.id) === String(id)) || null;
-  }
-
-  function syncManualPaymentSelection(){
-    const plan = $('manualRegPlan')?.value || 'newbie';
-    const wrap = $('manualRegPaymentWrap');
-    const select = $('manualRegPayment');
-    const detail = $('manualRegPaymentDetail');
-    const isFree = plan === 'free';
-
-    if(wrap) wrap.classList.toggle('hidden', isFree);
-    if(select){
-      select.disabled = isFree;
-      select.required = !isFree;
-    }
-
-    if(detail){
-      if(isFree){
-        detail.textContent = 'Paket Gratisan tidak membutuhkan rekening pembayaran.';
-        return;
-      }
-
-      const payment = selectedManualPayment();
-      if(!payment){
-        detail.textContent = manualTransferMethods().length
-          ? 'Pilih rekening yang akan dipakai untuk tagihan peserta.'
-          : 'Belum ada rekening transfer aktif. Tambahkan dulu di Marketing → Pembayaran.';
-        return;
-      }
-
-      detail.innerHTML =
-        '<b>' + esc(payment.display_name || payment.bank_name || 'Transfer Bank') + '</b><br>' +
-        [payment.bank_name,payment.account_number,payment.account_holder ? 'a.n. ' + payment.account_holder : '']
-          .filter(Boolean).map(esc).join(' • ');
-    }
-  }
-
-  function resetManualPendingNotice(){
-    $('manualPendingNotice')?.classList.add('hidden');
-    if($('manualPendingMessage')) $('manualPendingMessage').value = '';
-    if($('openManualPendingWa')) $('openManualPendingWa').href = '#';
-    if($('copyManualPendingBtn')){
-      $('copyManualPendingBtn').textContent = 'SALIN TAGIHAN WA';
-      $('copyManualPendingBtn').disabled = false;
-    }
-  }
-
-  function manualPendingTemplateFallback(){
-    return `Halo Kak [nama] 👋
-
-Pendaftaran BADAI Kakak sudah tercatat dan saat ini statusnya masih *PENDING*.
-
-Paket: [paket]
-Tagihan: [total_bayar]
-Metode: [metode_bayar]
-
-[detail_bayar]
-
-Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayaran diverifikasi, akses member akan kami aktifkan.`;
-  }
-
-  function buildManualPendingMessage(row){
-    const baseAmount = Number(row?.amount || 0);
-    const totalAmount = Number(row?.payment_total_amount || baseAmount);
-    const uniqueCode = Number(row?.payment_unique_code || 0);
-    const sign = totalAmount >= baseAmount ? '+' : '-';
-    const payment = (paymentMethods || []).find(item => String(item.id) === String(row?.payment_method_id)) || selectedManualPayment();
-    const paymentDetail = [
-      row?.payment_method_details || manualPaymentDetailText(payment),
-      uniqueCode ? 'Kode Unik: ' + sign + rupiah(uniqueCode) : '',
-      'TOTAL TRANSFER: ' + rupiah(totalAmount),
-      'Mohon transfer PERSIS sesuai total di atas agar pembayaran mudah dicocokkan.'
-    ].filter(Boolean).join('\n');
-
-    return fillMarketingTemplate(marketingSettings.followup_1 || manualPendingTemplateFallback(), {
-      nama:row?.full_name || 'Kak',
-      email:row?.email || '',
-      wa:row?.whatsapp || '',
-      paket:row?.membership_plan === 'pro' ? 'Paket Untung' : row?.membership_plan === 'free' ? 'Paket Gratisan' : 'Paket Pemula',
-      harga:rupiah(baseAmount),
-      metode_bayar:row?.payment_method_name || payment?.display_name || '-',
-      detail_bayar:paymentDetail,
-      kode_unik:uniqueCode ? sign + rupiah(uniqueCode) : '-',
-      total_bayar:rupiah(totalAmount)
-    });
-  }
-
-  function showManualPendingNotice(row){
-    const message = buildManualPendingMessage(row);
-    if($('manualPendingMessage')) $('manualPendingMessage').value = message;
-    if($('openManualPendingWa')){
-      $('openManualPendingWa').href = 'https://wa.me/' + encodeURIComponent(row.whatsapp || '') + '?text=' + encodeURIComponent(message);
-    }
-    $('manualPendingNotice')?.classList.remove('hidden');
-  }
-
-  async function copyManualPendingMessage(){
-    const text = $('manualPendingMessage')?.value || '';
-    if(!text) return;
-
-    try{
-      await navigator.clipboard.writeText(text);
-    }catch(_){
-      const box = $('manualPendingMessage');
-      box?.focus();
-      box?.select();
-      document.execCommand('copy');
-      window.getSelection()?.removeAllRanges();
-    }
-
-    const btn = $('copyManualPendingBtn');
-    if(btn){
-      btn.textContent = 'TERSALIN ✓';
-      setTimeout(() => { if(btn) btn.textContent = 'SALIN TAGIHAN WA'; }, 1400);
-    }
-  }
-
-  function openManualRegisterModal(){
-    if(!canManageSales()){
-      alert('Role ini tidak punya izin mendaftarkan peserta.');
-      return;
-    }
-
-    $('manualRegisterForm').reset();
-    $('manualRegPlan').value = 'newbie';
-    $('manualRegStatus').value = 'pending';
-    $('manualRegCoupon').value = '';
-    $('manualRegisterStatus').textContent = '';
-    resetManualPendingNotice();
-    populateManualAffiliateOptions();
-    populateManualPaymentOptions();
-    updateManualRegistrationAmount();
-    syncManualPaymentSelection();
-    $('manualRegisterModal').classList.remove('hidden');
-    setTimeout(() => $('manualRegName')?.focus(), 80);
-  }
-
-  async function saveManualRegistration(){
-    if(!canManageSales()) throw new Error('Role ini tidak punya izin mendaftarkan peserta.');
-
-    const fullName = $('manualRegName').value.trim();
-    const email = $('manualRegEmail').value.trim().toLowerCase();
-    const whatsapp = normalizeManualWhatsapp($('manualRegWhatsapp').value);
-    const membershipPlan = $('manualRegPlan').value;
-    const targetStatus = $('manualRegStatus').value;
-    const couponPricing = manualCouponPricing();
-    const couponCode = couponPricing.code || null;
-    const affiliateSelect = $('manualRegAffiliate');
-    const affiliateUserId = affiliateSelect.value || null;
-    const affiliateCode = affiliateUserId
-      ? (affiliateSelect.selectedOptions[0]?.dataset?.code || null)
-      : null;
-    const payment = membershipPlan === 'free' ? null : selectedManualPayment();
-    const amount = manualRegistrationAmount();
-
-    if(!fullName || !email || !whatsapp) throw new Error('Nama, email, dan WhatsApp wajib diisi.');
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Format email belum valid.');
-    if(!['free','newbie','pro'].includes(membershipPlan)) throw new Error('Paket belum valid.');
-    if(!['pending','active'].includes(targetStatus)) throw new Error('Status belum valid.');
-    if(couponCode && !couponPricing.valid) throw new Error('Kode kupon tidak valid atau sedang nonaktif.');
-    if(membershipPlan !== 'free' && !payment) throw new Error('Pilih rekening tagihan terlebih dahulu.');
-
-    const duplicate = registrations.find(r =>
-      String(r.email || '').toLowerCase() === email ||
-      String(r.whatsapp || '').replace(/\D/g,'') === whatsapp.replace(/\D/g,'')
-    );
-    if(duplicate && !confirm('Email atau WhatsApp ini sudah ada di data pendaftaran. Tetap lanjutkan?')) return;
-
-    const btn = $('saveManualRegisterBtn');
-    const oldText = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = 'MENYIMPAN...';
-    $('manualRegisterStatus').textContent = 'Menyimpan pendaftaran manual...';
-    resetManualPendingNotice();
-
-    try{
-      let created = null;
-
-      if(membershipPlan === 'free'){
-        const createdRows = await api('/rest/v1/registrations?select=*', {
-          method:'POST',
-          headers:{'Prefer':'return=representation'},
-          body:JSON.stringify({
-            full_name:fullName,
-            email,
-            whatsapp,
-            product:'BADAI',
-            amount:0,
-            payment_status:'pending',
-            member_status:'pending',
-            membership_plan:'free',
-            source:'admin_manual',
-            coupon_code:null,
-            affiliate_user_id:affiliateUserId,
-            referred_by_code:affiliateCode,
-            admin_note:'Pendaftaran manual oleh ' + (currentTeam?.email || 'admin BADAI')
-          })
-        });
-        created = createdRows?.[0] || null;
-      }else{
-        const invoiceRows = await api('/rest/v1/rpc/create_manual_registration', {
-          method:'POST',
-          body:JSON.stringify({
-            p_full_name:fullName,
-            p_email:email,
-            p_whatsapp:whatsapp,
-            p_membership_plan:membershipPlan,
-            p_payment_method_id:payment.id,
-            p_referred_by_code:affiliateCode,
-            p_coupon_code:couponCode
-          })
-        });
-
-        const invoice = Array.isArray(invoiceRows) ? invoiceRows[0] : invoiceRows;
-        if(!invoice?.registration_id) throw new Error('Invoice transfer manual belum berhasil dibuat.');
-
-        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(invoice.registration_id), {
-          method:'PATCH',
-          headers:{'Prefer':'return=minimal'},
-          body:JSON.stringify({
-            source:'admin_manual',
-            affiliate_user_id:affiliateUserId,
-            referred_by_code:affiliateCode,
-            admin_note:'Pendaftaran manual oleh ' + (currentTeam?.email || 'admin BADAI')
-          })
-        });
-
-        const createdRows = await api(
-          '/rest/v1/registrations?id=eq.' + encodeURIComponent(invoice.registration_id) +
-          '&select=id,user_id,full_name,email,whatsapp,product,amount,payment_status,member_status,membership_plan,affiliate_user_id,referred_by_code,payment_method_id,payment_method_type,payment_method_name,payment_method_details,payment_unique_code,payment_total_amount,admin_note,created_at'
-        );
-        created = createdRows?.[0] || null;
-      }
-
-      if(!created?.id) throw new Error('Pendaftaran tersimpan tetapi ID data tidak ditemukan.');
-
-      if(targetStatus === 'active'){
-        if(membershipPlan === 'free'){
-          $('manualRegisterStatus').textContent = '✓ Data Gratisan sudah masuk ke Penjualan sebagai PENDING.';
-          await loadRegistrations();
-          return;
-        }
-
-        $('manualRegisterStatus').textContent = 'Pendaftaran sudah masuk ke Penjualan. Membuat akses member...';
-        try{
-          const access = await approveOrResetAccess(created);
-          $('manualRegisterModal').classList.add('hidden');
-          await loadRegistrations();
-          const refreshed = registrations.find(r => r.id === created.id) || created;
-          openCredentialModal(refreshed, access.password);
-          return;
-        }catch(accessErr){
-          await loadRegistrations();
-          const refreshed = registrations.find(r => r.id === created.id) || created;
-          $('manualRegisterStatus').textContent =
-            '✓ Data sudah masuk ke Penjualan sebagai PENDING. ACC akses belum berhasil: ' +
-            (accessErr.message || 'coba ACC dari tombol Edit.');
-          showManualPendingNotice(refreshed);
-          return;
-        }
-      }
-
-      await loadRegistrations();
-      const refreshed = registrations.find(r => r.id === created.id) || created;
-
-      if(membershipPlan === 'free'){
-        $('manualRegisterStatus').textContent = '✓ Peserta Gratisan berhasil didaftarkan sebagai PENDING.';
-        return;
-      }
-
-      $('manualRegisterStatus').textContent =
-        '✓ Pendaftaran PENDING dibuat • ' +
-        (refreshed.payment_method_name || payment.display_name || 'Transfer Bank') +
-        ' • Tagihan ' + rupiah(refreshed.payment_total_amount || refreshed.amount || amount) + '.';
-      showManualPendingNotice(refreshed);
-    }finally{
-      btn.disabled = false;
-      btn.textContent = oldText;
-    }
-  }
-
   function localDateTimeInputValue(date){
     const pad = n => String(n).padStart(2,'0');
     return date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) +
@@ -8294,40 +8005,105 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
   }
 
   function openExportDataModal(){
+    const modal = $('exportDataModal');
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+
+    // Show the modal first. Any counting/preparation happens after the browser paints it.
+    modal.classList.remove('hidden');
+    $('exportDataStatus').textContent = '';
+    $('exportMatchCount').textContent = 'Menghitung...';
+
     $('exportFrom').value = localDateTimeInputValue(start);
     $('exportTo').value = localDateTimeInputValue(now);
     $('exportFormat').value = 'xlsx';
-    $('exportDataStatus').textContent = '';
-    updateExportMatchCount();
-    $('exportDataModal').classList.remove('hidden');
-  }
 
-  function exportFilteredRows(){
-    const fromValue = $('exportFrom')?.value || '';
-    const toValue = $('exportTo')?.value || '';
-    const from = fromValue ? new Date(fromValue).getTime() : -Infinity;
-    const to = toValue ? new Date(toValue).getTime() : Infinity;
-
-    if(Number.isFinite(from) && Number.isFinite(to) && from > to){
-      throw new Error('Tanggal mulai tidak boleh melewati tanggal akhir.');
-    }
-
-    return registrations.filter(r => {
-      const ts = new Date(r.created_at).getTime();
-      return Number.isFinite(ts) && ts >= from && ts <= to;
+    requestAnimationFrame(() => {
+      updateExportMatchCount();
     });
   }
 
-  function updateExportMatchCount(){
-    if(!$('exportMatchCount')) return;
-    try{
-      const count = exportFilteredRows().length;
-      $('exportMatchCount').textContent = count + ' pendaftar';
-    }catch(_){
-      $('exportMatchCount').textContent = 'Periksa rentang tanggal';
+  function exportDateRange(){
+    const fromValue = $('exportFrom')?.value || '';
+    const toValue = $('exportTo')?.value || '';
+    const fromDate = fromValue ? new Date(fromValue) : null;
+    const toDate = toValue ? new Date(toValue) : null;
+
+    if(fromDate && toDate && fromDate.getTime() > toDate.getTime()){
+      throw new Error('Tanggal mulai tidak boleh melewati tanggal akhir.');
     }
+
+    return {
+      from:fromDate && Number.isFinite(fromDate.getTime()) ? fromDate.toISOString() : null,
+      to:toDate && Number.isFinite(toDate.getTime()) ? toDate.toISOString() : null
+    };
+  }
+
+  async function fetchSalesExportRows(updateProgress=true){
+    const range = exportDateRange();
+    const batchSize = 500;
+    let offset = 0;
+    let total = null;
+    const rows = [];
+
+    do{
+      const data = await api('/rest/v1/rpc/admin_sales_page', {
+        method:'POST',
+        body:JSON.stringify({
+          p_limit:batchSize,
+          p_offset:offset,
+          p_search:'',
+          p_status:'all',
+          p_from:range.from,
+          p_to:range.to
+        })
+      });
+
+      const batch = Array.isArray(data?.rows) ? data.rows : [];
+      total = Math.max(0,Number(data?.total || 0));
+      rows.push(...batch);
+      offset += batch.length;
+
+      if(updateProgress && $('exportDataStatus')){
+        $('exportDataStatus').textContent =
+          'Mengambil data ' + Math.min(rows.length,total) + ' / ' + total + '...';
+        await nextUiPaint();
+      }
+
+      if(!batch.length) break;
+    }while(rows.length < total);
+
+    return {rows,total:total || 0};
+  }
+
+  let exportCountTimer = null;
+  function updateExportMatchCount(){
+    const node = $('exportMatchCount');
+    const modal = $('exportDataModal');
+    if(!node || !modal || modal.classList.contains('hidden')) return;
+
+    clearTimeout(exportCountTimer);
+    node.textContent = 'Menghitung...';
+
+    exportCountTimer = setTimeout(async () => {
+      try{
+        const range = exportDateRange();
+        const data = await api('/rest/v1/rpc/admin_sales_page', {
+          method:'POST',
+          body:JSON.stringify({
+            p_limit:1,
+            p_offset:0,
+            p_search:'',
+            p_status:'all',
+            p_from:range.from,
+            p_to:range.to
+          })
+        });
+        node.textContent = Number(data?.total || 0) + ' pendaftar';
+      }catch(_){
+        node.textContent = 'Periksa rentang tanggal';
+      }
+    },180);
   }
 
   function exportRowsForFile(rows){
@@ -8362,6 +8138,61 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     const pad = n => String(n).padStart(2,'0');
     return 'BADAI-PENDAFTARAN-' + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) +
       '-' + pad(now.getHours()) + pad(now.getMinutes());
+  }
+
+  function loadExportScript(src, readyCheck){
+    if(readyCheck()) return Promise.resolve();
+    if(exportLibraryPromises.has(src)) return exportLibraryPromises.get(src);
+
+    const promise = new Promise((resolve,reject) => {
+      const existing = document.querySelector('script[data-export-lib="' + src + '"]');
+      if(existing){
+        existing.addEventListener('load',() => readyCheck() ? resolve() : reject(new Error('Library export gagal aktif.')),{once:true});
+        existing.addEventListener('error',() => reject(new Error('Library export gagal dimuat.')),{once:true});
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.dataset.exportLib = src;
+      script.onload = () => readyCheck() ? resolve() : reject(new Error('Library export gagal aktif.'));
+      script.onerror = () => reject(new Error('Library export gagal dimuat.'));
+      document.head.appendChild(script);
+    }).catch(err => {
+      exportLibraryPromises.delete(src);
+      throw err;
+    });
+
+    exportLibraryPromises.set(src,promise);
+    return promise;
+  }
+
+  async function ensureExportLibrary(format){
+    if(format === 'csv') return;
+
+    if(format === 'xlsx'){
+      $('exportDataStatus').textContent = 'Memuat mesin Excel...';
+      await nextUiPaint();
+      await loadExportScript(
+        'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+        () => Boolean(window.XLSX)
+      );
+      return;
+    }
+
+    if(format === 'pdf'){
+      $('exportDataStatus').textContent = 'Memuat mesin PDF...';
+      await nextUiPaint();
+      await loadExportScript(
+        'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+        () => Boolean(window.jspdf?.jsPDF)
+      );
+      await loadExportScript(
+        'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js',
+        () => Boolean(window.jspdf?.jsPDF?.API?.autoTable)
+      );
+    }
   }
 
   function downloadCsv(rows){
@@ -8450,11 +8281,22 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
   }
 
   async function runExportData(){
-    const rows = exportFilteredRows();
+    exportDateRange();
+
+    $('exportDataStatus').textContent = 'Mengambil data dari database...';
+    await nextUiPaint();
+
+    const exported = await fetchSalesExportRows(true);
+    const rows = exported.rows;
     if(!rows.length) throw new Error('Tidak ada data pada rentang tanggal dan waktu tersebut.');
 
     const format = $('exportFormat').value;
     $('exportDataStatus').textContent = 'Menyiapkan ' + rows.length + ' data...';
+
+    await nextUiPaint();
+    await ensureExportLibrary(format);
+    $('exportDataStatus').textContent = 'Membuat file ' + format.toUpperCase() + '...';
+    await nextUiPaint();
 
     if(format === 'csv') downloadCsv(rows);
     else if(format === 'pdf') downloadPdf(rows);
@@ -8471,6 +8313,30 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     renderFinance();
   }
 
+  async function loadFinanceSnapshot(){
+    if(financeSnapshotPromise) return financeSnapshotPromise;
+
+    financeSnapshotPromise = (async () => {
+      const results = await Promise.all([
+        api('/rest/v1/registrations?select=' + SALES_SELECT + '&order=created_at.desc'),
+        api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
+        api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc')
+      ]);
+
+      financeRegistrations = results[0] || [];
+      financeTransactions = results[1] || [];
+      membershipRenewals = results[2] || [];
+      renderFinance();
+      return true;
+    })();
+
+    try{
+      return await financeSnapshotPromise;
+    }finally{
+      financeSnapshotPromise = null;
+    }
+  }
+
 
   async function loadMarketingSettings(){
     try{
@@ -8481,45 +8347,12 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     }catch(_){}
   }
 
-  async function loadMarketing(){
-    await loadMarketingSettings();
-
-    const results = await Promise.all([
-      api('/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,usage_limit,active,created_at&order=created_at.desc'),
-      api('/rest/v1/affiliate_settings?id=eq.1&select=id,commission_type,commission_value,inactivity_months'),
-      api('/rest/v1/affiliate_accounts?select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
-      api('/rest/v1/affiliate_sales?select=id,affiliate_user_id,registration_id,sale_amount,commission_amount,status,sale_at&order=sale_at.desc'),
-      api('/rest/v1/affiliate_payouts?select=id,affiliate_user_id,amount,status,paid_at,created_at&order=paid_at.desc'),
-      api('/rest/v1/profiles?select=id,full_name,email,whatsapp,membership_plan,member_status'),
-      api('/rest/v1/affiliate_materials?select=id,material_type,title,content,media_url,active,sort_order,created_at&order=sort_order.asc,created_at.desc'),
-      api('/rest/v1/payment_methods?select=id,method_type,provider,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc'),
-      api('/rest/v1/rpc/admin_get_buatqris_settings', {
-        method:'POST',
-        body:JSON.stringify({})
-      }),
-      api('/rest/v1/rpc/admin_marketing_coupon_usage', {
-        method:'POST',
-        body:JSON.stringify({})
-      })
-    ]);
-
-    marketingCoupons = results[0] || [];
-    const couponUsageRows = results[9] || [];
-    const couponUsageMap = new Map(couponUsageRows.map(row => [row.coupon_id,row]));
-    marketingCoupons = marketingCoupons.map(coupon => Object.assign({},coupon,couponUsageMap.get(coupon.id)||{}));
-    if(results[1]?.[0]) affiliateSettings = results[1][0];
-    affiliateAccounts = results[2] || [];
-    affiliateSales = results[3] || [];
-    affiliatePayouts = results[4] || [];
-    affiliateProfiles = results[5] || [];
-    affiliateMaterials = results[6] || [];
-    paymentMethods = results[7] || [];
-    if(results[8]?.[0]) buatQrisSettings = results[8][0];
-
+  function applyMarketingSettingsForm(){
     $('marketingNewbiePrice').value = marketingSettings.newbie_price || marketingSettings.product_price || 123000;
     $('marketingProPrice').value = marketingSettings.pro_price || marketingSettings.product_price || 123000;
     if($('marketingRegistrationOpen')) $('marketingRegistrationOpen').checked = marketingSettings.registration_open !== false;
     syncRegistrationModeAdmin();
+
     $('marketingRegisterMessage').value = marketingSettings.registration_notification || '';
     $('marketingFollow1').value = marketingSettings.followup_1 || '';
     $('marketingFollow2').value = marketingSettings.followup_2 || '';
@@ -8542,19 +8375,102 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       max:Number(marketingSettings.manual_unique_max || 999)
     };
     populateManualUniqueSettings();
+  }
 
-    $('affiliateCommissionType').value = affiliateSettings.commission_type || 'percent';
-    $('affiliateCommissionValue').value = affiliateSettings.commission_value || 30;
-    $('affiliateInactivityMonths').value = affiliateSettings.inactivity_months || 3;
+  async function ensureMarketingBase(force=false){
+    if(marketingBaseLoaded && !force){
+      applyMarketingSettingsForm();
+      return marketingSettings;
+    }
+    if(marketingBasePromise && !force) return marketingBasePromise;
 
-    renderCoupons();
-    renderAffiliateOverview();
-    renderAffiliateMaterials();
-    toggleAffiliateMaterialFields();
-    renderPaymentMethods();
-    togglePaymentMethodFields();
-    populateManualPaymentOptions();
-    populateBuatQrisSettings();
+    marketingBasePromise = (async () => {
+      await loadMarketingSettings();
+      marketingBaseLoaded = true;
+      applyMarketingSettingsForm();
+      return marketingSettings;
+    })();
+
+    try{
+      return await marketingBasePromise;
+    }finally{
+      marketingBasePromise = null;
+    }
+  }
+
+  function currentMarketingTab(){
+    return document.querySelector('[data-marketing-tab].active')?.dataset?.marketingTab || 'pricing';
+  }
+
+  async function loadMarketingTab(tab='pricing',force=false){
+    const valid = ['pricing','payments','notifications','affiliate','materials'];
+    if(!valid.includes(tab)) tab = 'pricing';
+
+    await ensureMarketingBase(force && (tab === 'pricing' || tab === 'notifications'));
+
+    if(marketingTabLoaded[tab] && !force) return;
+
+    const status = $('marketingStatus');
+    if(status) status.textContent = 'Memuat ' + tab + '...';
+
+    if(tab === 'pricing'){
+      const [coupons,usageRows] = await Promise.all([
+        api('/rest/v1/marketing_coupons?select=id,code,discount_type,discount_value,usage_limit,active,created_at&order=created_at.desc'),
+        api('/rest/v1/rpc/admin_marketing_coupon_usage',{method:'POST',body:JSON.stringify({})})
+      ]);
+      const usageMap = new Map((usageRows||[]).map(row => [row.coupon_id,row]));
+      marketingCoupons = (coupons||[]).map(coupon => Object.assign({},coupon,usageMap.get(coupon.id)||{}));
+      renderCoupons();
+    }
+
+    if(tab === 'payments'){
+      const [methods,qrisRows] = await Promise.all([
+        api('/rest/v1/payment_methods?select=id,method_type,provider,display_name,active,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order,created_at&order=sort_order.asc,created_at.asc'),
+        api('/rest/v1/rpc/admin_get_buatqris_settings',{method:'POST',body:JSON.stringify({})})
+      ]);
+      paymentMethods = methods || [];
+      if(qrisRows?.[0]) buatQrisSettings = qrisRows[0];
+      renderPaymentMethods();
+      togglePaymentMethodFields();
+      populateBuatQrisSettings();
+    }
+
+    if(tab === 'affiliate'){
+      const results = await Promise.all([
+        api('/rest/v1/affiliate_settings?id=eq.1&select=id,commission_type,commission_value,inactivity_months'),
+        api('/rest/v1/affiliate_accounts?select=user_id,affiliate_code,status,activated_at,created_at&order=created_at.desc'),
+        api('/rest/v1/affiliate_sales?select=id,affiliate_user_id,registration_id,sale_amount,commission_amount,status,sale_at&order=sale_at.desc'),
+        api('/rest/v1/affiliate_payouts?select=id,affiliate_user_id,amount,status,paid_at,created_at&order=paid_at.desc'),
+        api('/rest/v1/profiles?select=id,full_name,email,whatsapp,membership_plan,member_status')
+      ]);
+      if(results[0]?.[0]) affiliateSettings = results[0][0];
+      affiliateAccounts = results[1] || [];
+      affiliateSales = results[2] || [];
+      affiliatePayouts = results[3] || [];
+      affiliateProfiles = results[4] || [];
+
+      $('affiliateCommissionType').value = affiliateSettings.commission_type || 'percent';
+      $('affiliateCommissionValue').value = affiliateSettings.commission_value || 30;
+      $('affiliateInactivityMonths').value = affiliateSettings.inactivity_months || 3;
+      renderAffiliateOverview();
+    }
+
+    if(tab === 'materials'){
+      affiliateMaterials = await api(
+        '/rest/v1/affiliate_materials?select=id,material_type,title,content,media_url,active,sort_order,created_at&order=sort_order.asc,created_at.desc'
+      ) || [];
+      renderAffiliateMaterials();
+      toggleAffiliateMaterialFields();
+    }
+
+    // Notifications need only marketing_settings, already loaded in the base.
+    marketingTabLoaded[tab] = true;
+    if(status && status.textContent.startsWith('Memuat ')) status.textContent = '';
+  }
+
+  async function loadMarketing(){
+    await ensureMarketingBase();
+    await loadMarketingTab(currentMarketingTab(),false);
   }
 
   function syncRegistrationModeAdmin(){
@@ -8612,42 +8528,53 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       throw new Error('Reminder expired harus 1–90 hari.');
     }
 
-    $('saveMarketingBtn').disabled = true;
-    const oldText = $('saveMarketingBtn').textContent;
-    $('saveMarketingBtn').textContent = 'MENYIMPAN...';
+    const btn = $('saveMarketingBtn');
+    const oldText = btn.textContent;
 
-    try{
+    await runAdminAction('marketing:save',btn,async () => {
       await api('/rest/v1/marketing_settings?id=eq.1', {
         method:'PATCH',
         headers:{'Prefer':'return=minimal'},
         body:JSON.stringify(body)
       });
 
-      const commissionType = $('affiliateCommissionType').value;
-      const commissionValue = Number($('affiliateCommissionValue').value);
-      const inactivityMonths = Number($('affiliateInactivityMonths').value);
+      Object.assign(marketingSettings,body);
+      marketingBaseLoaded = true;
 
-      if(!['percent','fixed'].includes(commissionType)) throw new Error('Tipe komisi belum valid.');
-      if(!commissionValue || commissionValue < 1) throw new Error('Nilai komisi belum valid.');
-      if(commissionType === 'percent' && commissionValue > 100) throw new Error('Komisi persen maksimal 100%.');
-      if(!inactivityMonths || inactivityMonths < 1 || inactivityMonths > 60) throw new Error('Masa aktif affiliate harus 1–60 bulan.');
+      // Affiliate settings are saved only after that tab has actually been loaded.
+      // This prevents blank, not-yet-loaded fields from blocking saves on other tabs.
+      if(marketingTabLoaded.affiliate){
+        const commissionType = $('affiliateCommissionType').value;
+        const commissionValue = Number($('affiliateCommissionValue').value);
+        const inactivityMonths = Number($('affiliateInactivityMonths').value);
 
-      await api('/rest/v1/affiliate_settings?id=eq.1', {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
+        if(!['percent','fixed'].includes(commissionType)) throw new Error('Tipe komisi belum valid.');
+        if(!commissionValue || commissionValue < 1) throw new Error('Nilai komisi belum valid.');
+        if(commissionType === 'percent' && commissionValue > 100) throw new Error('Komisi persen maksimal 100%.');
+        if(!inactivityMonths || inactivityMonths < 1 || inactivityMonths > 60) throw new Error('Masa aktif affiliate harus 1–60 bulan.');
+
+        await api('/rest/v1/affiliate_settings?id=eq.1', {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({
+            commission_type:commissionType,
+            commission_value:Math.round(commissionValue),
+            inactivity_months:Math.round(inactivityMonths),
+            updated_by:session.user.id
+          })
+        });
+
+        affiliateSettings = Object.assign({},affiliateSettings,{
           commission_type:commissionType,
           commission_value:Math.round(commissionValue),
-          inactivity_months:Math.round(inactivityMonths),
-          updated_by:session.user.id
-        })
-      });
-      $('marketingStatus').textContent = 'Pengaturan marketing berhasil disimpan.';
-      await loadMarketingSettings();
-    }finally{
-      $('saveMarketingBtn').disabled = false;
-      $('saveMarketingBtn').textContent = oldText;
-    }
+          inactivity_months:Math.round(inactivityMonths)
+        });
+      }
+
+      $('marketingStatus').textContent = '✓ Pengaturan marketing berhasil disimpan.';
+    },'MENYIMPAN...');
+
+    if(btn?.isConnected) btn.textContent = oldText;
   }
 
   function couponValueText(coupon){
@@ -8716,7 +8643,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     $('couponCode').value = '';
     $('couponValue').value = '';
     $('couponUsageLimit').value = '';
-    await loadMarketing();
+    await loadMarketingTab('pricing',true);
   }
 
   async function couponAction(id, action){
@@ -8761,7 +8688,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       });
     }
 
-    await loadMarketing();
+    await loadMarketingTab('pricing',true);
   }
 
   function affiliateCommissionState(userId){
@@ -8826,7 +8753,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     });
     const paid = Number(rows?.[0]?.amount || state.unpaid);
     alert('Komisi berhasil ditandai sudah dicairkan senilai ' + rupiah(paid) + '.');
-    await loadMarketing();
+    await loadMarketingTab('affiliate',true);
   }
 
   function renderAffiliateOverview(){
@@ -8929,7 +8856,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     $('affiliateMaterialTitle').value = '';
     $('affiliateMaterialContent').value = '';
     $('affiliateMaterialUrl').value = '';
-    await loadMarketing();
+    await loadMarketingTab('materials',true);
   }
 
   async function affiliateMaterialAction(id, action){
@@ -8953,7 +8880,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       });
     }
 
-    await loadMarketing();
+    await loadMarketingTab('materials',true);
   }
 
   function syncManualUniquePreview(){
@@ -9081,7 +9008,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       ? 'BuatQris aktif dan tersinkron ke Landing Page.'
       : 'BuatQris dinonaktifkan.';
 
-    await loadMarketing();
+    await loadMarketingTab('payments',true);
   }
 
   async function testBuatQrisConnection(){
@@ -9214,7 +9141,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     $('paymentGatewayUrl').value = '';
     $('paymentInstructions').value = '';
 
-    await loadMarketing();
+    await loadMarketingTab('payments',true);
   }
 
   async function paymentMethodAction(id, action){
@@ -9238,7 +9165,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
       });
     }
 
-    await loadMarketing();
+    await loadMarketingTab('materials',true);
   }
 
   function fillMarketingTemplate(template, values){
@@ -9281,7 +9208,7 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     }
     const profile = salesAffiliateProfiles.find(p => p.id === row.affiliate_user_id) || {};
     return {
-      name:profile.full_name || profile.email || row.referred_by_code || 'Afiliasi',
+      name:row.affiliate_name || profile.full_name || profile.email || row.referred_by_code || 'Afiliasi',
       code:row.referred_by_code || ''
     };
   }
@@ -9349,8 +9276,9 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
 
   function registrationNumber(row){
     const position = registrations.indexOf(row);
-    const sequence = position >= 0 ? registrations.length - position : 1;
-    return String(sequence);
+    if(position < 0) return '1';
+    const offset = (salesPage - 1) * salesPageSize;
+    return String(Math.max(1,salesTotal - offset - position));
   }
 
   function compactRupiah(value){
@@ -9373,50 +9301,58 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
   }
 
   function filtered(){
-    const q = $('searchBox').value.trim().toLowerCase();
-    const status = $('statusFilter').value;
-    return registrations.filter(r => {
-      const hay = [
-        r.full_name,r.email,r.whatsapp,
-        r.payment_unique_code,
-        r.payment_total_amount,
-        r.payment_method_name
-      ].join(' ').toLowerCase();
-      return (!q || hay.includes(q))
-        && (status === 'all' || membershipLifecycle(r) === status || r.payment_status === status);
-    });
+    // Search/status filtering now happens in PostgreSQL, not in the browser.
+    return registrations;
   }
 
   function renderSalesStats(){
-    const activeRevenue = registrations
-      .filter(r => r.member_status === 'active')
-      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+    $('statActiveRevenue').textContent = rupiah(salesSummary.active_revenue || 0);
+    $('statPendingRevenue').textContent = rupiah(salesSummary.pending_revenue || 0);
+    $('statCurrentCash').textContent = rupiah(salesSummary.current_cash || 0);
+  }
 
-    const pendingRevenue = registrations
-      .filter(r => r.member_status === 'pending')
-      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+  function salesPaginationTokens(current,totalPages){
+    if(totalPages <= 7) return Array.from({length:totalPages},(_,i)=>i+1);
 
-    const salesRevenue = registrations
-      .filter(r => r.payment_status === 'paid')
-      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+    const pages = new Set([1,totalPages,current,current-1,current+1]);
+    if(current <= 3){ pages.add(2); pages.add(3); pages.add(4); }
+    if(current >= totalPages-2){ pages.add(totalPages-1); pages.add(totalPages-2); pages.add(totalPages-3); }
 
-    const renewalRevenue = membershipRenewals
-      .filter(r => r.payment_status === 'paid')
-      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+    const sorted = [...pages].filter(p => p >= 1 && p <= totalPages).sort((a,b)=>a-b);
+    const tokens = [];
+    sorted.forEach((p,i) => {
+      if(i && p - sorted[i-1] > 1) tokens.push('…');
+      tokens.push(p);
+    });
+    return tokens;
+  }
 
-    const manualIn = financeTransactions
-      .filter(t => t.flow_type === 'in')
-      .reduce((sum,t) => sum + Number(t.amount || 0), 0);
+  function renderSalesPagination(){
+    const info = $('salesPaginationInfo');
+    const buttons = $('salesPaginationButtons');
+    if(!info || !buttons) return;
 
-    const manualOut = financeTransactions
-      .filter(t => t.flow_type === 'out')
-      .reduce((sum,t) => sum + Number(t.amount || 0), 0);
+    const totalPages = Math.max(1,Math.ceil(salesTotal / salesPageSize));
+    const start = salesTotal ? ((salesPage - 1) * salesPageSize) + 1 : 0;
+    const end = salesTotal ? Math.min(salesTotal,salesPage * salesPageSize) : 0;
 
-    const currentCash = salesRevenue + renewalRevenue + manualIn - manualOut;
+    info.textContent = salesTotal
+      ? 'Menampilkan ' + start + '–' + end + ' dari ' + salesTotal + ' pembeli'
+      : 'Tidak ada data';
 
-    $('statActiveRevenue').textContent = rupiah(activeRevenue);
-    $('statPendingRevenue').textContent = rupiah(pendingRevenue);
-    $('statCurrentCash').textContent = rupiah(currentCash);
+    if(totalPages <= 1){
+      buttons.innerHTML = '';
+      return;
+    }
+
+    const tokens = salesPaginationTokens(salesPage,totalPages);
+    buttons.innerHTML =
+      '<button type="button" data-sales-page="' + (salesPage-1) + '" ' + (salesPage<=1?'disabled':'') + '>‹ Prev</button>' +
+      tokens.map(token => token === '…'
+        ? '<span class="sales-page-ellipsis">…</span>'
+        : '<button type="button" class="' + (token===salesPage?'active':'') + '" data-sales-page="' + token + '">' + token + '</button>'
+      ).join('') +
+      '<button type="button" data-sales-page="' + (salesPage+1) + '" ' + (salesPage>=totalPages?'disabled':'') + '>Next ›</button>';
   }
 
   function waMessageLink(r, msg){
@@ -9436,6 +9372,57 @@ Kalau sudah transfer, kirim bukti pembayarannya ke chat ini ya. Setelah pembayar
     const sign = Number(r.payment_total_amount || 0) >= Number(r.amount || 0) ? '+' : '-';
     return '<span class="sales-unique-meta" title="Kode unik pembayaran">Transfer ' +
       esc(rupiah(r.payment_total_amount)) + ' • ' + sign + esc(r.payment_unique_code) + '</span>';
+  }
+
+  function salesPaymentMethodHtml(r){
+    const rawName = String(r?.payment_method_name || '').trim();
+    const type = String(r?.payment_method_type || '').trim().toLowerCase();
+
+    let label = rawName;
+    let kind = 'other';
+
+    if(type === 'qris' || /qris/i.test(rawName)){
+      const qrisExpired = String(r?.qris_status || '').toLowerCase() === 'expired' ||
+        (r?.qris_expires_at && Date.now() >= new Date(r.qris_expires_at).getTime() && String(r?.payment_status || '').toLowerCase() !== 'paid');
+      label = qrisExpired ? 'QRIS EXP → BCA' : 'QRIS';
+      kind = qrisExpired ? 'qris-expired' : 'qris';
+    }else if(type === 'manual_transfer'){
+      label = rawName || 'Transfer Bank';
+      kind = 'bank';
+    }else if(rawName){
+      kind = 'other';
+    }else{
+      label = 'Belum tercatat';
+      kind = 'unknown';
+    }
+
+    return '<span class="sales-payment-method ' + kind + '" title="Metode pembayaran: ' +
+      esc(label) + '">' + esc(label) + '</span>';
+  }
+
+  function expiredQrisFallbackPayment(row){
+    const type = String(row?.payment_method_type || '').toLowerCase();
+    const name = String(row?.payment_method_name || '');
+    const qris = type === 'qris' || /qris/i.test(name);
+    const qrisStatus = String(row?.qris_status || '').toLowerCase();
+    const expiresAt = row?.qris_expires_at ? new Date(row.qris_expires_at).getTime() : NaN;
+    const expiredByTime = Number.isFinite(expiresAt) && Date.now() >= expiresAt;
+    const unpaid = String(row?.payment_status || '').toLowerCase() !== 'paid';
+
+    if(!qris || !unpaid || !(qrisStatus === 'expired' || expiredByTime)) return null;
+    if(!salesFallbackBca?.account_number) return null;
+
+    return salesFallbackBca;
+  }
+
+  function fallbackBankPaymentDetail(bank){
+    if(!bank) return '';
+    return [
+      bank.bank_name ? 'Bank: ' + bank.bank_name : '',
+      bank.account_number ? 'No. Rekening: ' + bank.account_number : '',
+      bank.account_holder ? 'Atas Nama: ' + bank.account_holder : '',
+      bank.instructions || ''
+    ].filter(Boolean).join('\n');
   }
 
   function followUpMessage(r, step){
@@ -9514,6 +9501,25 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     };
 
     const template = configured[step] || fallbackTemplates[step] || fallbackTemplates[1];
+    const fallbackBank = expiredQrisFallbackPayment(r);
+    const isExpiredQrisFallback = Boolean(fallbackBank);
+
+    const paymentName = isExpiredQrisFallback
+      ? (fallbackBank.display_name || fallbackBank.bank_name || 'Bank BCA')
+      : (r.payment_method_name || '-');
+
+    const paymentDetail = isExpiredQrisFallback
+      ? fallbackBankPaymentDetail(fallbackBank)
+      : [
+          r.payment_method_details || '-',
+          manualPaymentMetaText(r)
+        ].filter(Boolean).join('\n');
+
+    // If the original QRIS invoice expired, do not reuse its fee/total.
+    // Follow-up asks the buyer to transfer the actual BADAI price to BCA.
+    const followupTotal = isExpiredQrisFallback
+      ? Number(r.amount || 0)
+      : Number(r.payment_total_amount || r.amount || 0);
 
     return fillMarketingTemplate(template, {
       nama:r.full_name || 'Kak',
@@ -9521,13 +9527,10 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
       wa:r.whatsapp || '',
       paket:r.membership_plan === 'pro' ? 'Paket Untung' : r.membership_plan === 'free' ? 'Paket Gratisan' : 'Paket Pemula',
       harga:rupiah(r.amount || marketingSettings.product_price || 123000),
-      metode_bayar:r.payment_method_name || '-',
-      detail_bayar:[
-        r.payment_method_details || '-',
-        manualPaymentMetaText(r)
-      ].filter(Boolean).join('\n'),
-      kode_unik:r.payment_unique_code || 0,
-      total_bayar:rupiah(r.payment_total_amount || r.amount || 0)
+      metode_bayar:paymentName,
+      detail_bayar:paymentDetail,
+      kode_unik:isExpiredQrisFallback ? 0 : (r.payment_unique_code || 0),
+      total_bayar:rupiah(followupTotal)
     });
   }
 
@@ -9612,6 +9615,7 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
             <div class="sales-package-stack">
               <strong>${planText(r.membership_plan)}</strong>
               <span>${rupiah(r.amount)}</span>
+              ${salesPaymentMethodHtml(r)}
               ${salesPaymentMetaHtml(r)}
             </div>
           </td>
@@ -9646,6 +9650,7 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
             <div class="sales-package-stack">
               <strong>${planText(r.membership_plan)}</strong>
               <span>${rupiah(r.amount)}</span>
+              ${salesPaymentMethodHtml(r)}
               ${salesPaymentMetaHtml(r)}
             </div>
             <div class="sales-affiliate-stack">
@@ -9658,10 +9663,12 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
         </div>
       `;
     }).join('');
+
+    renderSalesPagination();
   }
 
   function paidRows(){
-    return registrations.filter(r => r.payment_status === 'paid');
+    return financeRegistrations.filter(r => r.payment_status === 'paid');
   }
 
   function localDayKey(value){
@@ -10165,28 +10172,17 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
 
     const fullName = $('manageName').value.trim();
     const email = $('manageEmail').value.trim().toLowerCase();
-    const whatsapp = $('manageWhatsapp').value.trim();
+    const whatsapp = normalizeAdminWhatsapp($('manageWhatsapp').value);
     const membershipPlan = $('managePlan').value;
     const targetStatus = $('manageStatus').value;
     const resetAccess = row.member_status === 'active'
       && targetStatus === 'active'
       && $('manageResetAccess').checked;
 
-    if(!fullName || !email || !whatsapp){
-      throw new Error('Nama, email, dan WhatsApp wajib diisi.');
-    }
-
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-      throw new Error('Format email belum valid.');
-    }
-
-    if(!['newbie','pro'].includes(membershipPlan)){
-      throw new Error('Paket member belum valid.');
-    }
-
-    if(!['pending','active'].includes(targetStatus)){
-      throw new Error('Status member belum valid.');
-    }
+    if(!fullName || !email || !whatsapp) throw new Error('Nama, email, dan WhatsApp wajib diisi.');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Format email belum valid.');
+    if(!['newbie','pro'].includes(membershipPlan)) throw new Error('Paket member belum valid.');
+    if(!['pending','active'].includes(targetStatus)) throw new Error('Status member belum valid.');
 
     const emailChanged = String(row.email || '').toLowerCase() !== email;
     if(row.user_id && emailChanged && !confirm(
@@ -10196,9 +10192,50 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     const oldText = $('saveManageBtn').textContent;
     $('saveManageBtn').disabled = true;
     $('saveManageBtn').textContent = 'MEMPROSES...';
+    beginAdminAction();
 
     try{
-      // 1. Sinkronkan identitas member ke registration + Auth + profile (jika akun sudah ada).
+      const identityPatch = {
+        full_name:fullName,
+        email,
+        whatsapp,
+        membership_plan:membershipPlan
+      };
+
+      // Pending tanpa akun tidak perlu melewati Edge Function update-auth.
+      if(!row.user_id){
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify(identityPatch)
+        });
+
+        if(targetStatus === 'active'){
+          const access = await approveOrResetAccess(Object.assign({},row,identityPatch));
+          const refreshed = Object.assign({},row,identityPatch,{
+            user_id:access.user_id || null,
+            payment_status:'paid',
+            member_status:'active',
+            activated_at:row.activated_at || new Date().toISOString()
+          });
+          patchRegistrationLocal(id,refreshed);
+          $('manageModal').classList.add('hidden');
+          openCredentialModal(refreshed,access.password);
+          backgroundSalesRefresh();
+          return;
+        }
+
+        const refreshed = Object.assign({},row,identityPatch,{
+          payment_status:'pending',
+          member_status:'pending'
+        });
+        patchRegistrationLocal(id,refreshed);
+        $('manageModal').classList.add('hidden');
+        backgroundSalesRefresh();
+        return;
+      }
+
+      // Akun yang sudah ada tetap perlu sinkron Auth/Profile.
       const res = await fetch(SUPABASE_URL + '/functions/v1/admin-update-member', {
         method:'POST',
         headers:{
@@ -10216,62 +10253,43 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
       });
 
       const baseData = await res.json().catch(()=>null);
-      if(!res.ok){
-        throw new Error(baseData?.error || 'Gagal menyinkronkan data member.');
-      }
+      if(!res.ok) throw new Error(baseData?.error || 'Gagal menyinkronkan data member.');
 
-      // 2. Pending yang belum punya akun: simpan paket dulu, lalu ACC akan membuat akun.
-      if(targetStatus === 'active' && !row.user_id){
-        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+      const active = targetStatus === 'active';
+      const activatedAt = active ? (row.activated_at || new Date().toISOString()) : row.activated_at;
+
+      await Promise.all([
+        api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
           method:'PATCH',
           headers:{'Prefer':'return=minimal'},
-          body:JSON.stringify({membership_plan:membershipPlan})
-        });
+          body:JSON.stringify({
+            membership_plan:membershipPlan,
+            payment_status:active ? 'paid' : 'pending',
+            member_status:active ? 'active' : 'pending',
+            activated_at:activatedAt
+          })
+        }),
+        syncPaymentStatus(id,active ? 'paid' : 'pending',Number(row.amount || 0))
+      ]);
 
-        const access = await approveOrResetAccess(row);
-        $('manageModal').classList.add('hidden');
-        await loadRegistrations();
-
-        const refreshed = registrations.find(r => r.id === id) || Object.assign({},row,{
-          full_name:fullName,email,whatsapp,membership_plan:membershipPlan,member_status:'active'
-        });
-        openCredentialModal(refreshed, access.password);
-        return;
-      }
-
-      // 3. Semua akun yang sudah ada disinkronkan lewat registration.
-      // Trigger database BADAI ikut menyinkronkan profile, paket, status, dan afiliasi.
-      const active = targetStatus === 'active';
-      const updatedRows = await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id) + '&select=id,amount', {
-        method:'PATCH',
-        headers:{'Prefer':'return=representation'},
-        body:JSON.stringify({
-          membership_plan:membershipPlan,
-          payment_status:active ? 'paid' : 'pending',
-          member_status:active ? 'active' : 'pending',
-          activated_at:active ? (row.activated_at || new Date().toISOString()) : row.activated_at
-        })
+      const refreshed = Object.assign({},row,identityPatch,{
+        payment_status:active ? 'paid' : 'pending',
+        member_status:active ? 'active' : 'pending',
+        activated_at:activatedAt
       });
+      patchRegistrationLocal(id,refreshed);
+      $('manageModal').classList.add('hidden');
 
-      const syncedAmount = Number(updatedRows?.[0]?.amount ?? row.amount ?? 0);
-      await syncPaymentStatus(id, active ? 'paid' : 'pending', syncedAmount);
-
-      // 4. Reset akses hanya tersedia untuk member yang memang sudah AKTIF.
       if(resetAccess){
-        const access = await approveOrResetAccess(row);
-        $('manageModal').classList.add('hidden');
-        await loadRegistrations();
-
-        const refreshed = registrations.find(r => r.id === id) || Object.assign({},row,{
-          full_name:fullName,email,whatsapp,membership_plan:membershipPlan,member_status:'active'
-        });
-        openCredentialModal(refreshed, access.password);
-        return;
+        const access = await approveOrResetAccess(refreshed);
+        const withAccess = Object.assign({},refreshed,{user_id:access.user_id || refreshed.user_id});
+        patchRegistrationLocal(id,withAccess);
+        openCredentialModal(withAccess,access.password);
       }
 
-      $('manageModal').classList.add('hidden');
-      await loadRegistrations();
+      backgroundSalesRefresh();
     }finally{
+      endAdminAction();
       $('saveManageBtn').disabled = false;
       $('saveManageBtn').textContent = oldText;
     }
@@ -10299,97 +10317,106 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
 
     if(action === 'manage'){ openManageModal(row); return; }
 
-    if(action === 'approve'){
-      if(!confirm('ACC pembayaran dan buat akses member untuk ' + row.full_name + '?')) return;
-      const access = await approveOrResetAccess(row);
-      await loadRegistrations();
-      openCredentialModal(row, access.password);
-      return;
-    }
-
-    if(action === 'reset-access'){
-      if(!confirm('Buat password baru untuk ' + row.full_name + '? Password lama akan berhenti berlaku.')) return;
-      const access = await approveOrResetAccess(row);
-      await loadRegistrations();
-      openCredentialModal(row, access.password);
-      return;
-    }
-
-    if(action === 'approve-existing'){
-      if(!confirm('Aktifkan kembali member ' + row.full_name + ' dan ubah status menjadi PAID?')) return;
-
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
+    beginAdminAction();
+    try{
+      if(action === 'approve'){
+        if(!confirm('ACC pembayaran dan buat akses member untuk ' + row.full_name + '?')) return;
+        const access = await approveOrResetAccess(row);
+        const refreshed = Object.assign({},row,{
+          user_id:access.user_id || row.user_id || null,
           payment_status:'paid',
           member_status:'active',
           activated_at:row.activated_at || new Date().toISOString()
-        })
-      });
+        });
+        patchRegistrationLocal(id,refreshed);
+        openCredentialModal(refreshed,access.password);
+        backgroundSalesRefresh();
+        return;
+      }
 
-      await loadRegistrations();
-      return;
-    }
+      if(action === 'reset-access'){
+        if(!confirm('Buat password baru untuk ' + row.full_name + '? Password lama akan berhenti berlaku.')) return;
+        const access = await approveOrResetAccess(row);
+        const refreshed = Object.assign({},row,{user_id:access.user_id || row.user_id || null});
+        patchRegistrationLocal(id,refreshed);
+        openCredentialModal(refreshed,access.password);
+        backgroundSalesRefresh();
+        return;
+      }
 
-    if(action === 'reject'){
-      if(!confirm('Tolak pendaftaran ' + row.full_name + '?')) return;
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH', headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({payment_status:'rejected',member_status:'pending'})
-      });
-      await loadRegistrations(); return;
-    }
+      if(action === 'approve-existing'){
+        if(!confirm('Aktifkan kembali member ' + row.full_name + ' dan ubah status menjadi PAID?')) return;
+        const activatedAt = row.activated_at || new Date().toISOString();
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({payment_status:'paid',member_status:'active',activated_at:activatedAt})
+        });
+        patchRegistrationLocal(id,{payment_status:'paid',member_status:'active',activated_at:activatedAt});
+        backgroundSalesRefresh();
+        return;
+      }
 
-    if(action === 'suspend'){
-      if(!confirm('Suspend akses member ' + row.full_name + '? Status pembayaran akan kembali menjadi PENDING.')) return;
+      if(action === 'reject'){
+        if(!confirm('Tolak pendaftaran ' + row.full_name + '?')) return;
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({payment_status:'rejected',member_status:'pending'})
+        });
+        patchRegistrationLocal(id,{payment_status:'rejected',member_status:'pending'});
+        backgroundSalesRefresh();
+        return;
+      }
 
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
-          payment_status:'pending',
-          member_status:'suspended'
-        })
-      });
+      if(action === 'suspend'){
+        if(!confirm('Suspend akses member ' + row.full_name + '? Status pembayaran akan kembali menjadi PENDING.')) return;
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({payment_status:'pending',member_status:'suspended'})
+        });
+        patchRegistrationLocal(id,{payment_status:'pending',member_status:'suspended'});
+        backgroundSalesRefresh();
+        return;
+      }
 
-      await loadRegistrations();
-      return;
-    }
+      if(action === 'activate'){
+        if(!confirm('Aktifkan kembali akses ' + row.full_name + '?')) return;
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({member_status:'active'})
+        });
+        patchRegistrationLocal(id,{member_status:'active'});
+        backgroundSalesRefresh();
+        return;
+      }
 
-    if(action === 'activate'){
-      if(!confirm('Aktifkan kembali akses ' + row.full_name + '?')) return;
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH', headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({member_status:'active'})
-      });
-      await loadRegistrations(); return;
-    }
+      if(action === 'pending'){
+        if(!confirm('Ubah status ' + row.full_name + ' menjadi PENDING?')) return;
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'PATCH',
+          headers:{'Prefer':'return=minimal'},
+          body:JSON.stringify({payment_status:'pending',member_status:'pending'})
+        });
+        patchRegistrationLocal(id,{payment_status:'pending',member_status:'pending'});
+        backgroundSalesRefresh();
+        return;
+      }
 
-    if(action === 'pending'){
-      if(!confirm('Ubah status ' + row.full_name + ' menjadi PENDING?')) return;
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'PATCH',
-        headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({
-          payment_status:'pending',
-          member_status:'pending'
-        })
-      });
-      await loadRegistrations();
-      return;
-    }
+      if(action === 'delete'){
+        if(row.user_id || ['active','suspended'].includes(row.member_status)){
+          const typed = prompt('HAPUS TOTAL akan menghapus pendaftaran, pembayaran, profile, dan akun login member. Ketik HAPUS.');
+          if(typed !== 'HAPUS') return;
+        }else if(!confirm('Hapus pendaftaran ' + row.full_name + ' secara permanen?')) return;
 
-    if(action === 'delete'){
-      if(row.user_id || ['active','suspended'].includes(row.member_status)){
-        const typed = prompt('HAPUS TOTAL akan menghapus pendaftaran, pembayaran, profile, dan akun login member. Ketik HAPUS.');
-        if(typed !== 'HAPUS') return;
-      }else if(!confirm('Hapus pendaftaran ' + row.full_name + ' secara permanen?')) return;
-
-      await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
-        method:'DELETE', headers:{'Prefer':'return=minimal'}
-      });
-      await loadRegistrations();
+        await api('/rest/v1/registrations?id=eq.' + encodeURIComponent(id), {
+          method:'DELETE',headers:{'Prefer':'return=minimal'}
+        });
+        removeRegistrationLocal(id);
+        backgroundSalesRefresh();
+      }
+    }finally{
+      endAdminAction();
     }
   }
 
@@ -12515,24 +12542,7 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   });
 
   logoutBtn.addEventListener('click', logout);
-  $('manualRegisterBtn').addEventListener('click', openManualRegisterModal);
   $('exportDataBtn').addEventListener('click', openExportDataModal);
-
-  $('manualRegPlan').addEventListener('change', updateManualRegistrationAmount);
-  $('manualRegPayment')?.addEventListener('change', syncManualPaymentSelection);
-  $('copyManualPendingBtn')?.addEventListener('click', () => copyManualPendingMessage().catch(()=>{}));
-  $('manualRegCoupon').addEventListener('input', updateManualRegistrationAmount);
-  $('manualRegCoupon').addEventListener('change', updateManualRegistrationAmount);
-  $('manualRegisterForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    try{ await saveManualRegistration(); }
-    catch(err){ $('manualRegisterStatus').textContent = '✕ ' + (err.message || 'Gagal menyimpan pendaftaran.'); }
-  });
-  $('closeManualRegisterBtn').addEventListener('click', () => $('manualRegisterModal').classList.add('hidden'));
-  $('closeManualRegisterIcon').addEventListener('click', () => $('manualRegisterModal').classList.add('hidden'));
-  $('manualRegisterModal').addEventListener('click', (e) => {
-    if(e.target === $('manualRegisterModal')) $('manualRegisterModal').classList.add('hidden');
-  });
 
   $('exportFrom').addEventListener('change', updateExportMatchCount);
   $('exportTo').addEventListener('change', updateExportMatchCount);
@@ -12551,8 +12561,43 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   $('exportDataModal').addEventListener('click', (e) => {
     if(e.target === $('exportDataModal')) $('exportDataModal').classList.add('hidden');
   });
-  $('searchBox').addEventListener('input', renderSales);
-  $('statusFilter').addEventListener('change', renderSales);
+  $('searchBox').addEventListener('input', () => {
+    clearTimeout(salesSearchTimer);
+    salesPage = 1;
+    salesSearchTimer = setTimeout(() => {
+      loadRegistrations({light:true,lifecycle:false}).catch(err => {
+        console.warn('Sales search:',err?.message || err);
+      });
+    },280);
+  });
+
+  $('statusFilter').addEventListener('change', () => {
+    salesPage = 1;
+    loadRegistrations({light:true,lifecycle:false}).catch(err => {
+      console.warn('Sales filter:',err?.message || err);
+    });
+  });
+
+  $('salesPageSize').addEventListener('change', () => {
+    salesPageSize = Number($('salesPageSize').value || 25);
+    salesPage = 1;
+    loadRegistrations({light:true,lifecycle:false}).catch(err => {
+      console.warn('Sales page size:',err?.message || err);
+    });
+  });
+
+  $('salesPaginationButtons').addEventListener('click', e => {
+    const btn = e.target.closest('[data-sales-page]');
+    if(!btn || btn.disabled) return;
+    const next = Number(btn.dataset.salesPage || 1);
+    const totalPages = Math.max(1,Math.ceil(salesTotal / salesPageSize));
+    if(!Number.isFinite(next) || next < 1 || next > totalPages || next === salesPage) return;
+    salesPage = next;
+    loadRegistrations({light:true,lifecycle:false}).catch(err => {
+      console.warn('Sales pagination:',err?.message || err);
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
   document.querySelectorAll('[data-finance-type]').forEach(btn => {
     btn.addEventListener('click', () => setFinanceType(btn.dataset.financeType));
   });
@@ -12994,6 +13039,12 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     });
 
     try{ sessionStorage.setItem('badai_marketing_tab', tab); }catch(_){}
+
+    if(session?.access_token && currentTeam && currentAdminPage() === 'marketing'){
+      loadMarketingTab(tab,false).catch(err => {
+        if($('marketingStatus')) $('marketingStatus').textContent = '✕ ' + (err.message || 'Gagal memuat tab Marketing.');
+      });
+    }
   }
 
   document.querySelectorAll('[data-marketing-tab]').forEach(btn => {
@@ -13084,9 +13135,12 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   });
 
   $('refreshAffiliateBtn').addEventListener('click', async () => {
-    $('refreshAffiliateBtn').disabled = true;
-    try{ await loadMarketing(); }
-    finally{ $('refreshAffiliateBtn').disabled = false; }
+    const btn = $('refreshAffiliateBtn');
+    try{
+      await runAdminAction('marketing:affiliate:refresh',btn,() => loadMarketingTab('affiliate',true),'REFRESH...');
+    }catch(err){
+      if($('marketingStatus')) $('marketingStatus').textContent = '✕ ' + (err.message || 'Gagal refresh afiliasi.');
+    }
   });
 
   $('teamForm').addEventListener('submit', async (e)=>{
@@ -13159,77 +13213,101 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
         openAffiliatePayoutWhatsapp(userId);
         return;
       }
-      payoutBtn.disabled = true;
       try{
-        if(action === 'mark-paid') await markAffiliatePayoutPaid(userId);
-      }catch(err){
-        alert('Pencairan komisi gagal: ' + err.message);
-      }finally{
-        payoutBtn.disabled = false;
-      }
+        await runAdminAction(
+          'affiliate-payout:' + userId + ':' + action,
+          payoutBtn,
+          async () => {
+            if(action === 'mark-paid') await markAffiliatePayoutPaid(userId);
+          },
+          'PROSES...'
+        );
+      }catch(err){ alert('Pencairan komisi gagal: ' + err.message); }
       return;
     }
 
     const paymentBtn = e.target.closest('[data-payment-action]');
     if(paymentBtn){
-      paymentBtn.disabled = true;
-      try{ await paymentMethodAction(paymentBtn.dataset.id, paymentBtn.dataset.paymentAction); }
-      catch(err){ alert('Aksi metode pembayaran gagal: ' + err.message); }
-      finally{ paymentBtn.disabled = false; }
+      try{
+        await runAdminAction(
+          'payment:' + paymentBtn.dataset.id + ':' + paymentBtn.dataset.paymentAction,
+          paymentBtn,
+          () => paymentMethodAction(paymentBtn.dataset.id,paymentBtn.dataset.paymentAction),
+          'PROSES...'
+        );
+      }catch(err){ alert('Aksi metode pembayaran gagal: ' + err.message); }
       return;
     }
 
     const affiliateMaterialBtn = e.target.closest('[data-affiliate-material-action]');
     if(affiliateMaterialBtn){
-      affiliateMaterialBtn.disabled = true;
-      try{ await affiliateMaterialAction(affiliateMaterialBtn.dataset.id, affiliateMaterialBtn.dataset.affiliateMaterialAction); }
-      catch(err){ alert('Aksi bahan promosi gagal: ' + err.message); }
-      finally{ affiliateMaterialBtn.disabled = false; }
+      try{
+        await runAdminAction(
+          'material:' + affiliateMaterialBtn.dataset.id + ':' + affiliateMaterialBtn.dataset.affiliateMaterialAction,
+          affiliateMaterialBtn,
+          () => affiliateMaterialAction(affiliateMaterialBtn.dataset.id,affiliateMaterialBtn.dataset.affiliateMaterialAction),
+          'PROSES...'
+        );
+      }catch(err){ alert('Aksi bahan promosi gagal: ' + err.message); }
       return;
     }
 
     const couponBtn = e.target.closest('[data-coupon-action]');
     if(couponBtn){
-      couponBtn.disabled = true;
-      try{ await couponAction(couponBtn.dataset.id, couponBtn.dataset.couponAction); }
-      catch(err){ alert('Aksi kupon gagal: ' + err.message); }
-      finally{ couponBtn.disabled = false; }
+      try{
+        await runAdminAction(
+          'coupon:' + couponBtn.dataset.id + ':' + couponBtn.dataset.couponAction,
+          couponBtn,
+          () => couponAction(couponBtn.dataset.id,couponBtn.dataset.couponAction),
+          'PROSES...'
+        );
+      }catch(err){ alert('Aksi kupon gagal: ' + err.message); }
       return;
     }
 
     const financeBtn = e.target.closest('[data-finance-action]');
     if(financeBtn){
       const action = financeBtn.dataset.financeAction;
-
       if(action === 'add'){
         openManualTransactionModal();
         return;
       }
-
       if(action === 'delete'){
-        financeBtn.disabled = true;
-        try{ await deleteManualTransaction(financeBtn.dataset.id); }
-        catch(err){ alert('Aksi transaksi gagal: ' + err.message); }
-        finally{ financeBtn.disabled = false; }
+        try{
+          await runAdminAction(
+            'finance:' + financeBtn.dataset.id + ':delete',
+            financeBtn,
+            () => deleteManualTransaction(financeBtn.dataset.id),
+            'PROSES...'
+          );
+        }catch(err){ alert('Aksi transaksi gagal: ' + err.message); }
         return;
       }
     }
 
     const teamBtn = e.target.closest('[data-team-action]');
     if(teamBtn){
-      teamBtn.disabled = true;
-      try{ await teamAction(teamBtn.dataset.id, teamBtn.dataset.teamAction); }
-      catch(err){ alert('Aksi tim gagal: ' + err.message); }
-      finally{ teamBtn.disabled = false; }
+      try{
+        await runAdminAction(
+          'team:' + teamBtn.dataset.id + ':' + teamBtn.dataset.teamAction,
+          teamBtn,
+          () => teamAction(teamBtn.dataset.id,teamBtn.dataset.teamAction),
+          'PROSES...'
+        );
+      }catch(err){ alert('Aksi tim gagal: ' + err.message); }
       return;
     }
 
     const btn = e.target.closest('[data-action]');
     if(!btn) return;
-    btn.disabled = true;
-    try{ await updateRegistration(btn.dataset.id, btn.dataset.action); }
-    catch(err){ alert('Aksi gagal: ' + err.message); }
-    finally{ btn.disabled = false; }
+    try{
+      await runAdminAction(
+        'sales:' + btn.dataset.id + ':' + btn.dataset.action,
+        btn,
+        () => updateRegistration(btn.dataset.id,btn.dataset.action),
+        btn.dataset.action === 'manage' ? '' : 'PROSES...'
+      );
+    }catch(err){ alert('Aksi gagal: ' + err.message); }
   });
 
   function adminHasFocusedEditor(){
@@ -13245,6 +13323,9 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   async function autoSyncAdmin(force=false){
     if(
       adminAutoSyncBusy ||
+      adminActionDepth > 0 ||
+      adminModalIsOpen() ||
+      adminHasFocusedEditor() ||
       !session?.access_token ||
       !currentTeam ||
       document.visibilityState !== 'visible'
@@ -13257,19 +13338,16 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
       const now = Date.now();
 
       if(page === 'sales'){
-        await loadRegistrations();
+        await loadRegistrations({light:true,lifecycle:false});
       }else if(page === 'finance'){
-        await Promise.all([
-          loadRegistrations(),
-          loadFinanceTransactions()
-        ]);
+        await loadFinanceSnapshot();
       }else if(page === 'marketing'){
-        if(!adminHasFocusedEditor() && (force || now - adminAutoSyncLastMarketing >= 10000)){
+        if(force || now - adminAutoSyncLastMarketing >= 30000){
           adminAutoSyncLastMarketing = now;
-          await loadMarketing();
+          await loadMarketingTab(currentMarketingTab(),true);
         }
       }else if(page === 'team'){
-        if(!adminHasFocusedEditor() && (force || now - adminAutoSyncLastTeam >= 10000)){
+        if(force || now - adminAutoSyncLastTeam >= 30000){
           adminAutoSyncLastTeam = now;
           await loadTeamMembers();
         }
@@ -13281,7 +13359,8 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     }
   }
 
-  setInterval(() => autoSyncAdmin(false), 3000);
+  // 12s is frequent enough for fresh sales data without constantly re-rendering the dashboard.
+  setInterval(() => autoSyncAdmin(false), 12000);
 
   window.addEventListener('focus', () => autoSyncAdmin(true));
 
