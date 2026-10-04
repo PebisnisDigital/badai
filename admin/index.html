@@ -5489,6 +5489,107 @@ button[data-admin-busy="1"]::after{
 }
 /* END FAST EXPORT */
 
+
+/* BADAI SALES SERVER PAGINATION */
+.sales-table-controls{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  margin:2px 0 7px;
+}
+.sales-page-size-control{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#8f8f8f;
+  font-size:9px;
+  font-weight:800;
+}
+.sales-page-size-control select{
+  min-width:66px;
+  height:34px;
+  padding:0 9px;
+  border:1px solid #303030;
+  border-radius:9px;
+  background:#0c0c0c;
+  color:#fff;
+  outline:none;
+  font-size:10px;
+  font-weight:900;
+}
+.sales-page-size-control select:focus{border-color:var(--pink)}
+.sales-pagination-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:12px 0 0;
+  min-height:38px;
+}
+.sales-pagination-info{
+  color:#7f7f7f;
+  font-size:8.5px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.sales-pagination-buttons{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:4px;
+  min-width:0;
+}
+.sales-pagination-buttons button,
+.sales-page-ellipsis{
+  min-width:31px;
+  height:31px;
+  padding:0 8px;
+  border:1px solid #2c2c2c;
+  border-radius:8px;
+  background:#0e0e0e;
+  color:#bcbcbc;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:8.5px;
+  font-weight:900;
+}
+.sales-pagination-buttons button:hover:not(:disabled){
+  border-color:#70445d;
+  color:#fff;
+}
+.sales-pagination-buttons button.active{
+  border-color:var(--pink);
+  background:var(--pink);
+  color:#080808;
+}
+.sales-pagination-buttons button:disabled{
+  opacity:.35;
+  cursor:not-allowed;
+}
+.sales-page-ellipsis{
+  border-color:transparent;
+  background:transparent;
+  min-width:20px;
+  padding:0;
+}
+@media(max-width:620px){
+  .sales-pagination-bar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .sales-pagination-buttons{
+    width:100%;
+    justify-content:flex-start;
+    overflow-x:auto;
+    padding-bottom:3px;
+  }
+  .sales-pagination-buttons button{
+    flex:0 0 auto;
+  }
+}
+/* END BADAI SALES SERVER PAGINATION */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -5573,8 +5674,21 @@ button[data-admin-busy="1"]::after{
         </div>
       </div>
 
+      <div class="sales-table-controls">
+        <label class="sales-page-size-control">
+          <span>Tampilkan</span>
+          <select id="salesPageSize" aria-label="Jumlah data per halaman">
+            <option value="10">10</option>
+            <option value="25" selected>25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+          <span>data</span>
+        </label>
+      </div>
+
       <div class="toolbar sales-toolbar">
-        <input id="searchBox" type="search" placeholder="Cari nama, WA, atau email..."/>
+        <input id="searchBox" type="search" placeholder="Cari nama, WA, email, pembayaran, afiliasi..."/>
         <select id="statusFilter">
           <option value="all">Semua status</option>
           <option value="pending">Pending</option>
@@ -5603,6 +5717,11 @@ button[data-admin-busy="1"]::after{
 
       <div id="mobileList" class="mobile-list"></div>
       <div id="emptyMobile" class="empty hidden">Belum ada pendaftaran.</div>
+
+      <div id="salesPaginationBar" class="sales-pagination-bar">
+        <div id="salesPaginationInfo" class="sales-pagination-info">Memuat data...</div>
+        <div id="salesPaginationButtons" class="sales-pagination-buttons" aria-label="Navigasi halaman penjualan"></div>
+      </div>
     </section>
 
     <section id="pageFinance" class="admin-page hidden">
@@ -7009,6 +7128,13 @@ button[data-admin-busy="1"]::after{
 
   let session = null;
   let registrations = [];
+  let financeRegistrations = [];
+  let salesPage = 1;
+  let salesPageSize = 25;
+  let salesTotal = 0;
+  let salesSummary = {active_revenue:0,pending_revenue:0,current_cash:0};
+  let salesSearchTimer = null;
+  let salesLoadSequence = 0;
   let currentTeam = null;
   let adminAutoSyncBusy = false;
   let adminAutoSyncLastMarketing = 0;
@@ -7796,54 +7922,58 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const light = options.light === true;
     const lifecycle = options.lifecycle === true ||
       (!light && Date.now() - salesLifecycleLastRefresh > 60000);
+    const sequence = ++salesLoadSequence;
 
-    if(light && salesLightRefreshPromise) return salesLightRefreshPromise;
-
-    const runner = (async () => {
-      if(lifecycle){
-        try{
-          await api('/rest/v1/rpc/refresh_membership_lifecycle', {
-            method:'POST',
-            body:JSON.stringify({})
-          });
-          salesLifecycleLastRefresh = Date.now();
-        }catch(_){}
-      }
-
-      if(light){
-        registrations = await api(
-          '/rest/v1/registrations?select=' + SALES_SELECT + '&order=created_at.desc'
-        ) || [];
-        renderSales();
-        updateExportMatchCount();
-        return registrations;
-      }
-
-      const results = await Promise.all([
-        api('/rest/v1/registrations?select=' + SALES_SELECT + '&order=created_at.desc'),
-        api('/rest/v1/profiles?select=id,full_name,email'),
-        api('/rest/v1/finance_transactions?select=id,transaction_date,description,flow_type,amount,category,created_by,created_at&order=transaction_date.desc,created_at.desc'),
-        api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc')
-      ]);
-
-      registrations = results[0] || [];
-      salesAffiliateProfiles = results[1] || [];
-      financeTransactions = results[2] || [];
-      membershipRenewals = results[3] || [];
-      renderSales();
-      renderFinance();
-      updateExportMatchCount();
-      return registrations;
-    })();
-
-    if(!light) return runner;
-
-    salesLightRefreshPromise = runner;
-    try{
-      return await runner;
-    }finally{
-      salesLightRefreshPromise = null;
+    if(lifecycle){
+      try{
+        await api('/rest/v1/rpc/refresh_membership_lifecycle', {
+          method:'POST',
+          body:JSON.stringify({})
+        });
+        salesLifecycleLastRefresh = Date.now();
+      }catch(_){}
     }
+
+    const pageSize = Math.max(10,Math.min(100,Number(salesPageSize || 25)));
+    const offset = Math.max(0,(salesPage - 1) * pageSize);
+    const search = String($('searchBox')?.value || '').trim();
+    const status = String($('statusFilter')?.value || 'all');
+
+    if($('salesPaginationInfo')) $('salesPaginationInfo').textContent = 'Memuat data...';
+
+    const data = await api('/rest/v1/rpc/admin_sales_page', {
+      method:'POST',
+      body:JSON.stringify({
+        p_limit:pageSize,
+        p_offset:offset,
+        p_search:search,
+        p_status:status,
+        p_from:null,
+        p_to:null
+      })
+    });
+
+    // A newer search/page request won the race; ignore this older response.
+    if(sequence !== salesLoadSequence) return registrations;
+
+    const total = Math.max(0,Number(data?.total || 0));
+    const maxPage = Math.max(1,Math.ceil(total / pageSize));
+
+    if(salesPage > maxPage){
+      salesPage = maxPage;
+      return loadRegistrations({light:true,lifecycle:false});
+    }
+
+    registrations = Array.isArray(data?.rows) ? data.rows : [];
+    salesTotal = total;
+    salesSummary = Object.assign(
+      {active_revenue:0,pending_revenue:0,current_cash:0},
+      data?.summary || {}
+    );
+
+    renderSales();
+    updateExportMatchCount();
+    return registrations;
   }
 
   function normalizeAdminWhatsapp(value){
@@ -7883,30 +8013,86 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     });
   }
 
-  function exportFilteredRows(){
+  function exportDateRange(){
     const fromValue = $('exportFrom')?.value || '';
     const toValue = $('exportTo')?.value || '';
-    const from = fromValue ? new Date(fromValue).getTime() : -Infinity;
-    const to = toValue ? new Date(toValue).getTime() : Infinity;
+    const fromDate = fromValue ? new Date(fromValue) : null;
+    const toDate = toValue ? new Date(toValue) : null;
 
-    if(Number.isFinite(from) && Number.isFinite(to) && from > to){
+    if(fromDate && toDate && fromDate.getTime() > toDate.getTime()){
       throw new Error('Tanggal mulai tidak boleh melewati tanggal akhir.');
     }
 
-    return registrations.filter(r => {
-      const ts = new Date(r.created_at).getTime();
-      return Number.isFinite(ts) && ts >= from && ts <= to;
-    });
+    return {
+      from:fromDate && Number.isFinite(fromDate.getTime()) ? fromDate.toISOString() : null,
+      to:toDate && Number.isFinite(toDate.getTime()) ? toDate.toISOString() : null
+    };
   }
 
+  async function fetchSalesExportRows(updateProgress=true){
+    const range = exportDateRange();
+    const batchSize = 500;
+    let offset = 0;
+    let total = null;
+    const rows = [];
+
+    do{
+      const data = await api('/rest/v1/rpc/admin_sales_page', {
+        method:'POST',
+        body:JSON.stringify({
+          p_limit:batchSize,
+          p_offset:offset,
+          p_search:'',
+          p_status:'all',
+          p_from:range.from,
+          p_to:range.to
+        })
+      });
+
+      const batch = Array.isArray(data?.rows) ? data.rows : [];
+      total = Math.max(0,Number(data?.total || 0));
+      rows.push(...batch);
+      offset += batch.length;
+
+      if(updateProgress && $('exportDataStatus')){
+        $('exportDataStatus').textContent =
+          'Mengambil data ' + Math.min(rows.length,total) + ' / ' + total + '...';
+        await nextUiPaint();
+      }
+
+      if(!batch.length) break;
+    }while(rows.length < total);
+
+    return {rows,total:total || 0};
+  }
+
+  let exportCountTimer = null;
   function updateExportMatchCount(){
-    if(!$('exportMatchCount')) return;
-    try{
-      const count = exportFilteredRows().length;
-      $('exportMatchCount').textContent = count + ' pendaftar';
-    }catch(_){
-      $('exportMatchCount').textContent = 'Periksa rentang tanggal';
-    }
+    const node = $('exportMatchCount');
+    if(!node) return;
+
+    clearTimeout(exportCountTimer);
+    node.textContent = 'Menghitung...';
+
+    exportCountTimer = setTimeout(async () => {
+      try{
+        const range = exportDateRange();
+        const data = await api('/rest/v1/rpc/admin_sales_page', {
+          method:'POST',
+          body:JSON.stringify({
+            p_limit:1,
+            p_offset:0,
+            p_search:'',
+            p_status:'all',
+            p_from:range.from,
+            p_to:range.to
+          })
+        });
+        node.textContent = Number(data?.total || 0) + ' pendaftar';
+      }catch(_){
+        node.textContent = 'Periksa rentang tanggal';
+      }
+    },180);
   }
 
   function exportRowsForFile(rows){
@@ -8084,7 +8270,13 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   async function runExportData(){
-    const rows = exportFilteredRows();
+    exportDateRange();
+
+    $('exportDataStatus').textContent = 'Mengambil data dari database...';
+    await nextUiPaint();
+
+    const exported = await fetchSalesExportRows(true);
+    const rows = exported.rows;
     if(!rows.length) throw new Error('Tidak ada data pada rentang tanggal dan waktu tersebut.');
 
     const format = $('exportFormat').value;
@@ -8120,7 +8312,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
         api('/rest/v1/membership_renewals?payment_status=eq.paid&select=id,registration_id,user_id,membership_plan,amount,previous_expires_at,renewed_at,new_expires_at,payment_status,note&order=renewed_at.desc')
       ]);
 
-      registrations = results[0] || registrations;
+      financeRegistrations = results[0] || [];
       financeTransactions = results[1] || [];
       membershipRenewals = results[2] || [];
       renderFinance();
@@ -9005,7 +9197,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     }
     const profile = salesAffiliateProfiles.find(p => p.id === row.affiliate_user_id) || {};
     return {
-      name:profile.full_name || profile.email || row.referred_by_code || 'Afiliasi',
+      name:row.affiliate_name || profile.full_name || profile.email || row.referred_by_code || 'Afiliasi',
       code:row.referred_by_code || ''
     };
   }
@@ -9073,8 +9265,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
   function registrationNumber(row){
     const position = registrations.indexOf(row);
-    const sequence = position >= 0 ? registrations.length - position : 1;
-    return String(sequence);
+    if(position < 0) return '1';
+    const offset = (salesPage - 1) * salesPageSize;
+    return String(Math.max(1,salesTotal - offset - position));
   }
 
   function compactRupiah(value){
@@ -9097,50 +9290,58 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   function filtered(){
-    const q = $('searchBox').value.trim().toLowerCase();
-    const status = $('statusFilter').value;
-    return registrations.filter(r => {
-      const hay = [
-        r.full_name,r.email,r.whatsapp,
-        r.payment_unique_code,
-        r.payment_total_amount,
-        r.payment_method_name
-      ].join(' ').toLowerCase();
-      return (!q || hay.includes(q))
-        && (status === 'all' || membershipLifecycle(r) === status || r.payment_status === status);
-    });
+    // Search/status filtering now happens in PostgreSQL, not in the browser.
+    return registrations;
   }
 
   function renderSalesStats(){
-    const activeRevenue = registrations
-      .filter(r => r.member_status === 'active')
-      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+    $('statActiveRevenue').textContent = rupiah(salesSummary.active_revenue || 0);
+    $('statPendingRevenue').textContent = rupiah(salesSummary.pending_revenue || 0);
+    $('statCurrentCash').textContent = rupiah(salesSummary.current_cash || 0);
+  }
 
-    const pendingRevenue = registrations
-      .filter(r => r.member_status === 'pending')
-      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+  function salesPaginationTokens(current,totalPages){
+    if(totalPages <= 7) return Array.from({length:totalPages},(_,i)=>i+1);
 
-    const salesRevenue = registrations
-      .filter(r => r.payment_status === 'paid')
-      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+    const pages = new Set([1,totalPages,current,current-1,current+1]);
+    if(current <= 3){ pages.add(2); pages.add(3); pages.add(4); }
+    if(current >= totalPages-2){ pages.add(totalPages-1); pages.add(totalPages-2); pages.add(totalPages-3); }
 
-    const renewalRevenue = membershipRenewals
-      .filter(r => r.payment_status === 'paid')
-      .reduce((sum,r) => sum + Number(r.amount || 0), 0);
+    const sorted = [...pages].filter(p => p >= 1 && p <= totalPages).sort((a,b)=>a-b);
+    const tokens = [];
+    sorted.forEach((p,i) => {
+      if(i && p - sorted[i-1] > 1) tokens.push('…');
+      tokens.push(p);
+    });
+    return tokens;
+  }
 
-    const manualIn = financeTransactions
-      .filter(t => t.flow_type === 'in')
-      .reduce((sum,t) => sum + Number(t.amount || 0), 0);
+  function renderSalesPagination(){
+    const info = $('salesPaginationInfo');
+    const buttons = $('salesPaginationButtons');
+    if(!info || !buttons) return;
 
-    const manualOut = financeTransactions
-      .filter(t => t.flow_type === 'out')
-      .reduce((sum,t) => sum + Number(t.amount || 0), 0);
+    const totalPages = Math.max(1,Math.ceil(salesTotal / salesPageSize));
+    const start = salesTotal ? ((salesPage - 1) * salesPageSize) + 1 : 0;
+    const end = salesTotal ? Math.min(salesTotal,salesPage * salesPageSize) : 0;
 
-    const currentCash = salesRevenue + renewalRevenue + manualIn - manualOut;
+    info.textContent = salesTotal
+      ? 'Menampilkan ' + start + '–' + end + ' dari ' + salesTotal + ' pembeli'
+      : 'Tidak ada data';
 
-    $('statActiveRevenue').textContent = rupiah(activeRevenue);
-    $('statPendingRevenue').textContent = rupiah(pendingRevenue);
-    $('statCurrentCash').textContent = rupiah(currentCash);
+    if(totalPages <= 1){
+      buttons.innerHTML = '';
+      return;
+    }
+
+    const tokens = salesPaginationTokens(salesPage,totalPages);
+    buttons.innerHTML =
+      '<button type="button" data-sales-page="' + (salesPage-1) + '" ' + (salesPage<=1?'disabled':'') + '>‹ Prev</button>' +
+      tokens.map(token => token === '…'
+        ? '<span class="sales-page-ellipsis">…</span>'
+        : '<button type="button" class="' + (token===salesPage?'active':'') + '" data-sales-page="' + token + '">' + token + '</button>'
+      ).join('') +
+      '<button type="button" data-sales-page="' + (salesPage+1) + '" ' + (salesPage>=totalPages?'disabled':'') + '>Next ›</button>';
   }
 
   function waMessageLink(r, msg){
@@ -9408,10 +9609,12 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
         </div>
       `;
     }).join('');
+
+    renderSalesPagination();
   }
 
   function paidRows(){
-    return registrations.filter(r => r.payment_status === 'paid');
+    return financeRegistrations.filter(r => r.payment_status === 'paid');
   }
 
   function localDayKey(value){
@@ -12304,8 +12507,43 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   $('exportDataModal').addEventListener('click', (e) => {
     if(e.target === $('exportDataModal')) $('exportDataModal').classList.add('hidden');
   });
-  $('searchBox').addEventListener('input', renderSales);
-  $('statusFilter').addEventListener('change', renderSales);
+  $('searchBox').addEventListener('input', () => {
+    clearTimeout(salesSearchTimer);
+    salesPage = 1;
+    salesSearchTimer = setTimeout(() => {
+      loadRegistrations({light:true,lifecycle:false}).catch(err => {
+        console.warn('Sales search:',err?.message || err);
+      });
+    },280);
+  });
+
+  $('statusFilter').addEventListener('change', () => {
+    salesPage = 1;
+    loadRegistrations({light:true,lifecycle:false}).catch(err => {
+      console.warn('Sales filter:',err?.message || err);
+    });
+  });
+
+  $('salesPageSize').addEventListener('change', () => {
+    salesPageSize = Number($('salesPageSize').value || 25);
+    salesPage = 1;
+    loadRegistrations({light:true,lifecycle:false}).catch(err => {
+      console.warn('Sales page size:',err?.message || err);
+    });
+  });
+
+  $('salesPaginationButtons').addEventListener('click', e => {
+    const btn = e.target.closest('[data-sales-page]');
+    if(!btn || btn.disabled) return;
+    const next = Number(btn.dataset.salesPage || 1);
+    const totalPages = Math.max(1,Math.ceil(salesTotal / salesPageSize));
+    if(!Number.isFinite(next) || next < 1 || next > totalPages || next === salesPage) return;
+    salesPage = next;
+    loadRegistrations({light:true,lifecycle:false}).catch(err => {
+      console.warn('Sales pagination:',err?.message || err);
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
   document.querySelectorAll('[data-finance-type]').forEach(btn => {
     btn.addEventListener('click', () => setFinanceType(btn.dataset.financeType));
   });
