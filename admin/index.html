@@ -5590,6 +5590,13 @@ button[data-admin-busy="1"]::after{
 }
 /* END BADAI SALES SERVER PAGINATION */
 
+
+#pageSales .sales-package-stack .sales-payment-method.qris-expired{
+  border-color:#6a4a1f!important;
+  background:#1a1208!important;
+  color:#f3c36d!important;
+}
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -7134,6 +7141,7 @@ button[data-admin-busy="1"]::after{
   let salesPageSize = 25;
   let salesTotal = 0;
   let salesSummary = {active_revenue:0,pending_revenue:0,current_cash:0};
+  let salesFallbackBca = null;
   let salesSearchTimer = null;
   let salesLoadSequence = 0;
   let currentTeam = null;
@@ -7971,6 +7979,7 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       {active_revenue:0,pending_revenue:0,current_cash:0},
       data?.summary || {}
     );
+    salesFallbackBca = data?.fallback_bca || salesFallbackBca || null;
 
     renderSales();
     return registrations;
@@ -9372,8 +9381,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     let kind = 'other';
 
     if(type === 'qris' || /qris/i.test(rawName)){
-      label = 'QRIS';
-      kind = 'qris';
+      const qrisExpired = String(r?.qris_status || '').toLowerCase() === 'expired' ||
+        (r?.qris_expires_at && Date.now() >= new Date(r.qris_expires_at).getTime() && String(r?.payment_status || '').toLowerCase() !== 'paid');
+      label = qrisExpired ? 'QRIS EXP → BCA' : 'QRIS';
+      kind = qrisExpired ? 'qris-expired' : 'qris';
     }else if(type === 'manual_transfer'){
       label = rawName || 'Transfer Bank';
       kind = 'bank';
@@ -9386,6 +9397,31 @@ Kalau mau aktif lagi, balas pesan ini ya.`
 
     return '<span class="sales-payment-method ' + kind + '" title="Metode pembayaran: ' +
       esc(label) + '">' + esc(label) + '</span>';
+  }
+
+  function expiredQrisFallbackPayment(row){
+    const type = String(row?.payment_method_type || '').toLowerCase();
+    const name = String(row?.payment_method_name || '');
+    const qris = type === 'qris' || /qris/i.test(name);
+    const qrisStatus = String(row?.qris_status || '').toLowerCase();
+    const expiresAt = row?.qris_expires_at ? new Date(row.qris_expires_at).getTime() : NaN;
+    const expiredByTime = Number.isFinite(expiresAt) && Date.now() >= expiresAt;
+    const unpaid = String(row?.payment_status || '').toLowerCase() !== 'paid';
+
+    if(!qris || !unpaid || !(qrisStatus === 'expired' || expiredByTime)) return null;
+    if(!salesFallbackBca?.account_number) return null;
+
+    return salesFallbackBca;
+  }
+
+  function fallbackBankPaymentDetail(bank){
+    if(!bank) return '';
+    return [
+      bank.bank_name ? 'Bank: ' + bank.bank_name : '',
+      bank.account_number ? 'No. Rekening: ' + bank.account_number : '',
+      bank.account_holder ? 'Atas Nama: ' + bank.account_holder : '',
+      bank.instructions || ''
+    ].filter(Boolean).join('\n');
   }
 
   function followUpMessage(r, step){
@@ -9464,6 +9500,25 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     };
 
     const template = configured[step] || fallbackTemplates[step] || fallbackTemplates[1];
+    const fallbackBank = expiredQrisFallbackPayment(r);
+    const isExpiredQrisFallback = Boolean(fallbackBank);
+
+    const paymentName = isExpiredQrisFallback
+      ? (fallbackBank.display_name || fallbackBank.bank_name || 'Bank BCA')
+      : (r.payment_method_name || '-');
+
+    const paymentDetail = isExpiredQrisFallback
+      ? fallbackBankPaymentDetail(fallbackBank)
+      : [
+          r.payment_method_details || '-',
+          manualPaymentMetaText(r)
+        ].filter(Boolean).join('\n');
+
+    // If the original QRIS invoice expired, do not reuse its fee/total.
+    // Follow-up asks the buyer to transfer the actual BADAI price to BCA.
+    const followupTotal = isExpiredQrisFallback
+      ? Number(r.amount || 0)
+      : Number(r.payment_total_amount || r.amount || 0);
 
     return fillMarketingTemplate(template, {
       nama:r.full_name || 'Kak',
@@ -9471,13 +9526,10 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
       wa:r.whatsapp || '',
       paket:r.membership_plan === 'pro' ? 'Paket Untung' : r.membership_plan === 'free' ? 'Paket Gratisan' : 'Paket Pemula',
       harga:rupiah(r.amount || marketingSettings.product_price || 123000),
-      metode_bayar:r.payment_method_name || '-',
-      detail_bayar:[
-        r.payment_method_details || '-',
-        manualPaymentMetaText(r)
-      ].filter(Boolean).join('\n'),
-      kode_unik:r.payment_unique_code || 0,
-      total_bayar:rupiah(r.payment_total_amount || r.amount || 0)
+      metode_bayar:paymentName,
+      detail_bayar:paymentDetail,
+      kode_unik:isExpiredQrisFallback ? 0 : (r.payment_unique_code || 0),
+      total_bayar:rupiah(followupTotal)
     });
   }
 
