@@ -7972,7 +7972,6 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     );
 
     renderSales();
-    updateExportMatchCount();
     return registrations;
   }
 
@@ -8069,7 +8068,8 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   let exportCountTimer = null;
   function updateExportMatchCount(){
     const node = $('exportMatchCount');
-    if(!node) return;
+    const modal = $('exportDataModal');
+    if(!node || !modal || modal.classList.contains('hidden')) return;
 
     clearTimeout(exportCountTimer);
     node.textContent = 'Menghitung...';
