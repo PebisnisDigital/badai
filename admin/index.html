@@ -5477,13 +5477,22 @@ button[data-admin-busy="1"]::after{
 @keyframes badaiAdminSpin{to{transform:rotate(360deg)}}
 /* END FAST ADMIN */
 
+
+/* FAST EXPORT — keep modal cheap to paint */
+#exportDataModal{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background:rgba(0,0,0,.78)!important;
+}
+#exportDataModal .cred-box{
+  contain:layout paint style;
+}
+/* END FAST EXPORT */
+
 </style>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="shortcut icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
 <link rel="apple-touch-icon" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -7008,6 +7017,7 @@ button[data-admin-busy="1"]::after{
   let salesLifecycleLastRefresh = 0;
   let salesLightRefreshPromise = null;
   let financeSnapshotPromise = null;
+  const exportLibraryPromises = new Map();
   let marketingBaseLoaded = false;
   let marketingBasePromise = null;
   let marketingTabLoaded = {pricing:false,payments:false,notifications:false,affiliate:false,materials:false};
@@ -7855,14 +7865,22 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   function openExportDataModal(){
+    const modal = $('exportDataModal');
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+
+    // Show the modal first. Any counting/preparation happens after the browser paints it.
+    modal.classList.remove('hidden');
+    $('exportDataStatus').textContent = '';
+    $('exportMatchCount').textContent = 'Menghitung...';
+
     $('exportFrom').value = localDateTimeInputValue(start);
     $('exportTo').value = localDateTimeInputValue(now);
     $('exportFormat').value = 'xlsx';
-    $('exportDataStatus').textContent = '';
-    updateExportMatchCount();
-    $('exportDataModal').classList.remove('hidden');
+
+    requestAnimationFrame(() => {
+      updateExportMatchCount();
+    });
   }
 
   function exportFilteredRows(){
@@ -7923,6 +7941,61 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const pad = n => String(n).padStart(2,'0');
     return 'BADAI-PENDAFTARAN-' + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) +
       '-' + pad(now.getHours()) + pad(now.getMinutes());
+  }
+
+  function loadExportScript(src, readyCheck){
+    if(readyCheck()) return Promise.resolve();
+    if(exportLibraryPromises.has(src)) return exportLibraryPromises.get(src);
+
+    const promise = new Promise((resolve,reject) => {
+      const existing = document.querySelector('script[data-export-lib="' + src + '"]');
+      if(existing){
+        existing.addEventListener('load',() => readyCheck() ? resolve() : reject(new Error('Library export gagal aktif.')),{once:true});
+        existing.addEventListener('error',() => reject(new Error('Library export gagal dimuat.')),{once:true});
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.dataset.exportLib = src;
+      script.onload = () => readyCheck() ? resolve() : reject(new Error('Library export gagal aktif.'));
+      script.onerror = () => reject(new Error('Library export gagal dimuat.'));
+      document.head.appendChild(script);
+    }).catch(err => {
+      exportLibraryPromises.delete(src);
+      throw err;
+    });
+
+    exportLibraryPromises.set(src,promise);
+    return promise;
+  }
+
+  async function ensureExportLibrary(format){
+    if(format === 'csv') return;
+
+    if(format === 'xlsx'){
+      $('exportDataStatus').textContent = 'Memuat mesin Excel...';
+      await nextUiPaint();
+      await loadExportScript(
+        'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+        () => Boolean(window.XLSX)
+      );
+      return;
+    }
+
+    if(format === 'pdf'){
+      $('exportDataStatus').textContent = 'Memuat mesin PDF...';
+      await nextUiPaint();
+      await loadExportScript(
+        'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+        () => Boolean(window.jspdf?.jsPDF)
+      );
+      await loadExportScript(
+        'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js',
+        () => Boolean(window.jspdf?.jsPDF?.API?.autoTable)
+      );
+    }
   }
 
   function downloadCsv(rows){
@@ -8017,7 +8090,9 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     const format = $('exportFormat').value;
     $('exportDataStatus').textContent = 'Menyiapkan ' + rows.length + ' data...';
 
-    // Give the browser two paint frames so the UI reacts before XLSX/PDF work starts.
+    await nextUiPaint();
+    await ensureExportLibrary(format);
+    $('exportDataStatus').textContent = 'Membuat file ' + format.toUpperCase() + '...';
     await nextUiPaint();
 
     if(format === 'csv') downloadCsv(rows);
