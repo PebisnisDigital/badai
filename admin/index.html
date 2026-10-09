@@ -7560,6 +7560,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
   }
 
   async function api(path, options = {}, useAuth = true){
+    if(useAuth && session?.expires_at && Number(session.expires_at) * 1000 <= Date.now() + 5000){
+      logout();
+      throw new Error('Sesi admin berakhir. Silakan masuk kembali.');
+    }
     const headers = Object.assign({
       'apikey': SUPABASE_KEY,
       'Content-Type':'application/json'
@@ -12988,11 +12992,16 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     }
   });
 
+  let mentorAdminUnreadLastPoll = 0;
   function refreshAdminChatRealtime(){
-    if(document.visibilityState!=='visible')return;
+    if(document.visibilityState!=='visible'||!session?.access_token||!currentTeam)return;
 
-    /* Badge is global: keep it fresh on Penjualan/Keuangan/Marketing/Akun too. */
-    refreshMentorAdminUnread().catch(()=>{});
+    /* Poll the global badge less often, without affecting immediate chat actions. */
+    const now=Date.now();
+    if(now-mentorAdminUnreadLastPoll>=20000){
+      mentorAdminUnreadLastPoll=now;
+      refreshMentorAdminUnread().catch(()=>{});
+    }
 
     /* Heavy chat refresh only while Chat page is actually open. */
     const page=$('pageMentor');
@@ -13003,7 +13012,7 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   }
 
   if(!mentorAdminPollTimer){
-    mentorAdminPollTimer=setInterval(refreshAdminChatRealtime,2000);
+    mentorAdminPollTimer=setInterval(refreshAdminChatRealtime,5000);
   }
 
   window.addEventListener('focus',refreshAdminChatRealtime);
