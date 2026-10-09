@@ -929,7 +929,12 @@
 
   async function refreshMemberProfile(){
     if(membershipRefreshBusy || !session?.access_token || !currentUser?.id) return;
-
+    // Never repeat profile requests using an expired login session.
+    if(Number(session.expires_at || 0) && Number(session.expires_at) * 1000 <= Date.now() + 5000){
+      clearSession();
+      location.reload();
+      return;
+    }
     membershipRefreshBusy = true;
 
     try{
@@ -1106,5 +1111,5 @@
     ){
       refreshMemberProfile();
     }
-  }, 5000);
+  }, 60000);
 })();
