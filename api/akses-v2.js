@@ -3990,15 +3990,24 @@ document.addEventListener('DOMContentLoaded', function(){
     var jump=el('mentorJumpLatest');if(jump)jump.classList.toggle('hidden',mentorNearBottom(messageList))
   });
 
+  var mentorUnreadLastPoll = 0;
+  var mentorPollUnauthorized = false;
+  function mentorCanPoll(){
+    var s=memberSession();
+    return !mentorPollUnauthorized && !!(s&&s.access_token&&Number(s.expires_at||0)*1000>Date.now()+5000);
+  }
   function refreshAllChatUnread(){
-    if(document.visibilityState!=='visible')return;
+    if(document.visibilityState!=='visible'||!mentorCanPoll())return;
+    var now=Date.now();
+    if(now-mentorUnreadLastPoll<20000)return;
+    mentorUnreadLastPoll=now;
     refreshMentorWorkHours(false).catch(function(){});
     refreshMentorOverview().catch(function(){});
     refreshCommunityOverview().catch(function(){});
   }
 
   mentorPollTimer=setInterval(function(){
-    if(document.visibilityState!=='visible')return;
+    if(document.visibilityState!=='visible'||!mentorCanPoll())return;
 
     /* Unread badge is global: update it even while member is on Pemula/Untung/Afiliasi/Akun. */
     refreshAllChatUnread();
@@ -4009,7 +4018,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(mentorView==='thread'&&mentorSelectedChat!=='mentor')loadCommunityMessages(mentorSelectedChat).catch(function(){});
       else if(mentorConversationId)loadMentorMessages().catch(function(){});else bootMentor()
     }
-  },2000);
+  },5000);
 
   document.addEventListener('visibilitychange',function(){
     if(document.visibilityState==='visible')refreshAllChatUnread()
