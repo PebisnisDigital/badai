@@ -2536,7 +2536,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   var kelas=el('kelas');
-  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-intro"><div class="badai-pemula-intro-title-row"><div class="badai-pemula-intro-title">MEMBER <span>PEMULA</span></div><span class="badai-pemula-update-badge">SELALU UPDATE</span></div></div><div class="badai-pemula-heading-actions"><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
+  if(kelas&&!kelas.querySelector('.screen-heading')) kelas.insertAdjacentHTML('afterbegin','<div class="screen-heading badai-pemula-heading"><div class="badai-pemula-intro"><div class="badai-pemula-intro-title-row"><div class="badai-pemula-intro-title">MEMBER <span id="badaiMemberPlanHeadline">PEMULA</span></div><span class="badai-pemula-update-badge">SELALU UPDATE</span></div></div><div class="badai-pemula-heading-actions"><div class="badai-pemula-bonus"><small>TOOLS BONUS</small><a href="https://gemini.google.com/share/8c83a628ffbd" target="_blank" rel="noopener noreferrer">TOOL VO <span>↗</span></a></div></div></div>');
   var bonus=el('jaluruntung');
   if(bonus&&!bonus.querySelector('.screen-heading')) bonus.insertAdjacentHTML('afterbegin','<div class="screen-heading"><h1>Untung BADAI</h1></div>');
   var akun=el('akun');
@@ -2682,9 +2682,13 @@ document.addEventListener('DOMContentLoaded', function(){
     document.documentElement.dataset.membershipPlan=plan;
     var pn=el('memberPlanName'),pd=el('memberPlanDesc');
     if(pn)pn.textContent=plan==='pro'?'PAKET UNTUNG':plan==='free'?'PAKET GRATISAN':'PAKET PEMULA';
+    var heading=el('badaiMemberPlanHeadline');if(heading)heading.textContent=plan==='pro'?'UNTUNG':plan==='free'?'GRATISAN':'PEMULA';
     if(pd)pd.textContent=plan==='pro'?'Ilmu + Bonus + Program Affiliasi':plan==='free'?'Komunitas + KulWA':'Belajar Ilmu AI + Update';
     syncPlanAccess()
   }
+
+  // Allow verified membership data from auth.js to update navigation directly.
+  window.badaiApplyVerifiedMembership=applyResolvedPlan;
 
   var upgradeModal=null;
   function getUpgradeModal(){if(upgradeModal)return upgradeModal;upgradeModal=document.createElement('div');upgradeModal.className='badai-upgrade-modal';upgradeModal.innerHTML='<div class="badai-upgrade-card" role="dialog" aria-modal="true"><div class="badai-upgrade-lock">🔒</div><div class="badai-upgrade-kicker">AKSES TERKUNCI</div><h2 id="badaiUpgradeTitle">Menu ini masih terkunci</h2><p id="badaiUpgradeText">Naik paket untuk membuka akses ini.</p><div id="badaiUpgradeBenefits" class="badai-upgrade-benefits"></div><div class="badai-upgrade-actions"><a id="badaiUpgradeButton" href="#" target="_blank" rel="noopener noreferrer">UPGRADE SEKARANG</a><button type="button" data-close-upgrade>NANTI DULU</button></div></div>';document.body.appendChild(upgradeModal);upgradeModal.addEventListener('click',function(e){if(e.target===upgradeModal||(e.target.closest&&e.target.closest('[data-close-upgrade]')))upgradeModal.classList.remove('open')});return upgradeModal}
