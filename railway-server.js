@@ -1713,8 +1713,4 @@ server.listen(PORT, '0.0.0.0', () => {
   mentorDriveConfigured().then(v=>console.log('Mentor Drive configured:',v)).catch(()=>{});
   setTimeout(() => runMentorArchiveWorker().catch(()=>{}), 15000);
   setInterval(() => runMentorArchiveWorker().catch(()=>{}), 5*60*1000);
-  setTimeout(() => processAiMentorQueueOnce().catch(()=>{}), 5000);
-  setInterval(() => processAiMentorQueueOnce().catch(()=>{}), 3000);
-  setTimeout(() => syncAiKnowledgeFromMemberArea().then(r=>console.log('AI Knowledge sync:',r?.ready||0,'ready')).catch(error=>console.warn('AI Knowledge sync:',error?.message||error)), 30000);
-  setInterval(() => syncAiKnowledgeFromMemberArea().catch(error=>console.warn('AI Knowledge auto sync:',error?.message||error)), AI_KNOWLEDGE_AUTO_SYNC_MS);
 });
