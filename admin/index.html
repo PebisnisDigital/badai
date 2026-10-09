@@ -7579,6 +7579,10 @@ Kalau mau aktif lagi, balas pesan ini ya.`
     if(text){ try{ data = JSON.parse(text); }catch(_){ data = text; } }
 
     if(!res.ok){
+      if(useAuth && res.status === 401){
+        logout();
+        throw new Error('Sesi admin habis. Silakan masuk kembali.');
+      }
       const msg = data?.msg || data?.message || data?.error_description || data?.error || 'Request gagal';
       throw new Error(msg);
     }
