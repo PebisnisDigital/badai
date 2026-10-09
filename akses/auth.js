@@ -107,6 +107,11 @@
     }
 
     if(!res.ok){
+      if(withAuth && res.status === 401){
+        clearSession();
+        location.reload();
+        throw new Error('Sesi member habis. Silakan masuk kembali.');
+      }
       const msg = data?.msg || data?.message || data?.error_description || data?.error || 'Request gagal';
       throw new Error(msg);
     }
