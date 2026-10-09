@@ -2926,6 +2926,11 @@ document.addEventListener('DOMContentLoaded', function(){
     var res=await fetch(SUPABASE_URL+path,Object.assign({},options||{},{headers:Object.assign(mentorHeaders(true),(options&&options.headers)||{})}));
     var text=await res.text(),data=null;
     if(text){try{data=JSON.parse(text)}catch(_){data=text}}
+    if(res.status===401){
+      mentorPollUnauthorized=true;
+      var status=el('mentorMemberStatus');
+      if(status)status.textContent='Sesi login berakhir. Muat ulang halaman untuk masuk kembali.';
+    }
     if(!res.ok)throw new Error((data&&(data.message||data.error||data.msg))||'Gagal memuat Mentor');
     return data
   }
