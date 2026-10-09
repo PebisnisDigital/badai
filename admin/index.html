@@ -6229,7 +6229,6 @@ button[data-admin-busy="1"]::after{
         <button id="mentorFeatureAutoBtn" type="button" data-mentor-feature="autoreply">AUTO REPLY <span id="mentorAutoActiveBadge" class="mentor-feature-count hidden">0</span></button>
         <button id="mentorFeatureLogBtn" type="button" data-mentor-feature="log">LOG AUTO REPLY</button>
         <button id="mentorFeatureHoursBtn" type="button" data-mentor-feature="hours">JAM OPERASIONAL</button>
-        <button id="mentorFeatureAiBtn" type="button" data-mentor-feature="ai">AI MENTOR</button>
         <button id="mentorChatSettingsBtn" class="mentor-feature-settings" type="button" aria-expanded="false" title="Pengaturan Chat" aria-label="Pengaturan Chat">⚙</button>
       </div>
 
@@ -6308,17 +6307,6 @@ button[data-admin-busy="1"]::after{
               <div id="mentorAdminPendingPreview" class="mentor-admin-pending-preview"></div>
               <div class="mentor-admin-pending-copy"><b id="mentorAdminPendingName">Lampiran</b><span id="mentorAdminPendingSize"></span></div>
               <button id="mentorAdminPendingCancel" type="button">×</button>
-            </div>
-            <div id="mentorAdminAiDraft" class="mentor-ai-draft hidden">
-              <div class="mentor-ai-draft-copy">
-                <b>✨ DRAFT AI MENTOR <span id="mentorAdminAiDraftConfidence"></span></b>
-                <span id="mentorAdminAiDraftText"></span>
-                <small id="mentorAdminAiDraftReason"></small>
-              </div>
-              <div class="mentor-ai-draft-actions">
-                <button id="mentorAdminAiDraftUse" type="button">PAKAI DRAFT</button>
-                <button id="mentorAdminAiDraftDismiss" type="button">×</button>
-              </div>
             </div>
             <div id="mentorAdminReplyBar" class="mentor-reply-bar hidden">
               <div><b id="mentorAdminReplyTitle">Membalas pesan</b><span id="mentorAdminReplyText"></span></div>
@@ -7773,7 +7761,6 @@ Kalau mau aktif lagi, balas pesan ini ya.`
       if($('marketingStatus')) $('marketingStatus').textContent = '✕ ' + (err.message || 'Gagal memuat Marketing.');
     });
     if(page === 'mentor'){
-      $('mentorFeatureAiBtn')?.classList.toggle('hidden',!mentorAiAllowed());
       loadMentorInbox();
       if(mentorConfigAllowed())loadMentorAutoReplyRules().catch(()=>{});
       refreshMentorWorkHours(true).catch(()=>{});
@@ -11240,7 +11227,6 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
       $('mentorChatSettingsBtn')?.classList.remove('active');
     }
     $('mentorChatSettingsBtn')?.classList.toggle('hidden',!isChat);
-    $('mentorFeatureAiBtn')?.classList.toggle('hidden',!mentorAiAllowed());
     $('mentorAutoReplyPanel')?.classList.toggle('hidden',mentorAdminFeature!=='autoreply');
     $('mentorAutoReplyLogPanel')?.classList.toggle('hidden',mentorAdminFeature!=='log');
     $('mentorWorkHoursPanel')?.classList.toggle('hidden',mentorAdminFeature!=='hours');
@@ -12176,7 +12162,6 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
     await api('/rest/v1/rpc/mentor_mark_read',{method:'POST',body:JSON.stringify({p_conversation_id:id})}).catch(()=>{});
     refreshMentorAdminUnread().catch(()=>{});
     refreshMentorWorkHours(false).catch(()=>{});
-    loadMentorAdminAiDraft().catch(()=>{});
   }
 
   async function mentorAdminSetTyping(value){
