@@ -587,6 +587,11 @@
       window.dispatchEvent(new CustomEvent('badai:membership-updated',{
         detail:{plan:plan,profile:profile || null}
       }));
+      // Synchronize locked navigation from the verified database profile,
+      // even if a UI listener was registered after the event.
+      if(typeof window.badaiApplyVerifiedMembership === 'function'){
+        window.badaiApplyVerifiedMembership(plan);
+      }
     }catch(_){}
 
     window.BADAI_AFFILIATE_LINK = '';
