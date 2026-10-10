@@ -7303,12 +7303,18 @@ main section > .container > .badai-copy-kicker,
             <span>Email login</span>
             <b id="qrisAccessEmail">-</b>
           </div>
+          <div id="qrisCredentialBox" class="hidden" style="margin:12px 0;padding:15px;background:#17171c;border:1px solid #ff4fa3;border-radius:14px;text-align:left">
+            <div style="font-weight:800;margin-bottom:8px">DATA AKSES MEMBER — SIMPAN SEKARANG</div>
+            <div style="font-size:12px;opacity:.8">Email login</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b id="qrisCredentialEmail" style="overflow-wrap:anywhere">-</b><button type="button" id="qrisCopyEmail" style="padding:7px;border-radius:8px">SALIN</button></div>
+            <div style="font-size:12px;opacity:.8;margin-top:12px">Password awal</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b id="qrisCredentialPassword" style="overflow-wrap:anywhere">-</b><button type="button" id="qrisCopyPassword" style="padding:7px;border-radius:8px">SALIN</button></div>
+            <small style="display:block;margin-top:10px">Password ini hanya ditampilkan sekali. Salin dan simpan sebelum menutup halaman.</small>
+          </div>
           <a id="qrisMemberAccessBtn" class="qris-member-access" href="#">
             MASUK MEMBER AREA SEKARANG →
           </a>
-          <small>
-            Login pertama tidak perlu mengetik password. Setelah berhasil masuk, buka menu AKUN lalu buat password sendiri untuk login berikutnya.
-          </small>
+          <small id="qrisAccessTip">Klik tombol di atas untuk langsung masuk. Password awal tidak perlu dibuat sendiri.</small>
         </div>
 
         <a id="qrisStagePaymentLink" class="qris-stage-link hidden" href="#" target="_blank" rel="noopener">
@@ -8017,6 +8023,21 @@ Mohon dibantu proses pendaftarannya ya.`
       accessBtn.textContent = data.login_url
         ? 'MASUK MEMBER AREA SEKARANG →'
         : 'BUKA MEMBER AREA →';
+    }
+
+    const credentialBox = document.getElementById('qrisCredentialBox');
+    const initialPassword = String(data.initial_password || '');
+    if(initialPassword && credentialBox){
+      const email = String(qrisBuyerEmail || '');
+      document.getElementById('qrisCredentialEmail').textContent = email;
+      document.getElementById('qrisCredentialPassword').textContent = initialPassword;
+      document.getElementById('qrisCopyEmail').onclick = () => navigator.clipboard.writeText(email);
+      document.getElementById('qrisCopyPassword').onclick = () => navigator.clipboard.writeText(initialPassword);
+      credentialBox.classList.remove('hidden');
+      const tip = document.getElementById('qrisAccessTip');
+      if(tip) tip.textContent = 'Simpan email dan password. Tombol masuk akan login otomatis untuk pertama kali.';
+    }else{
+      credentialBox?.classList.add('hidden');
     }
 
     accessPanel?.classList.remove('hidden');
