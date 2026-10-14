@@ -108,17 +108,22 @@ data. Replay and expiration are tested.
   with exactly one provider attempt. Zawa returned HTTP 200 and message ID
   `3EB0E897951283E065BEEC`; API acceptance was recorded at
   `2026-10-14 06:40:54.725291 UTC` (13:40:54 WIB). Its status is `api_accepted`,
-  not `delivered`. Actual observation of `BADAI-TEST-DA383085` in the approved
-  `#22 IMAGO` group remains pending.
+  until recipient evidence is recorded.
+- The user subsequently confirmed in chat: “sip berhasil terkirim ke grup nya”.
+  This confirms reception of the approved Admin trial in `#22 IMAGO`. The job
+  was marked `delivered` with that exact evidence and one attempt. The timestamp
+  `2026-10-14 06:43:29.399348 UTC` records confirmation; the exact WhatsApp arrival
+  time was not supplied. Group/text ordinary sending is now enabled for this
+  session. Old drafts remain inactive; scheduler is still disabled.
 
 ## Remaining acceptance work
 
-No real recipient-delivery result is claimed in this record. The prepared trial
-must be sent from Admin by an authenticated Owner, and the exact message marker
-must be observed in the approved group. Record its provider ID and recipient
-evidence in the delivery log. Only then enable group/text ordinary sending.
+The first real Admin group/text trial and recipient observation are complete,
+with the provider ID and user evidence recorded above. An image trial to the same
+approved group is prepared but needs actual reception evidence.
 
-Channel and Story need their own approved destinations/audience and real tests.
+Story's current privacy audience is explicitly authorized; a text trial is
+prepared. The specific Channel still needs confirmation and its real test.
 Media tests follow successful text reception. A real scheduled delivery is still
 required before claiming scheduler delivery works; no existing campaign is migrated
 into an active run. Final production frontend publication follows
