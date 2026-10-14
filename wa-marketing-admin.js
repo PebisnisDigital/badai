@@ -74,6 +74,27 @@ function renderTarget(kind){
     catch(error){alert(error.message)}finally{button.disabled=false}
   }));
 }
+
+function renderStory(){
+  const root=document.querySelector('[data-wa-content="story"]');
+  if(!root)return;
+  const target=catalog.find(t=>t.kind==='status');
+  root.innerHTML='<article class="wa-feature-card"><h3>Story / Status WhatsApp BADAI</h3>'+
+    '<p>Status bisa dijadikan tujuan tersendiri pada setiap kampanye. Nantinya Status menggunakan metode posting khusus Zawa, bukan ID grup/Channel. Pengiriman belum diaktifkan.</p>'+
+    '<label class="wa-story-switch"><input type="checkbox" id="waStoryEnabled" '+(target?.enabled?'checked':'')+' '+(target?'':'disabled')+'>'+
+      'Sertakan Story sebagai pilihan target kampanye</label>'+
+    '<div class="wa-alert">Setelah dicentang, Status WA muncul di pilihan tujuan kampanye. Ini hanya menyimpan rencana. Tidak ada Story dipublikasikan.</div></article>';
+  $('waStoryEnabled')?.addEventListener('change',async(event)=>{
+    const enabled=event.target.checked;
+    event.target.disabled=true;
+    try{
+      await db('wa_marketing_targets?id=eq.'+encodeURIComponent(target.id),'PATCH',{enabled});
+      await db('wa_marketing_delivery_plan?target_id=eq.'+encodeURIComponent(target.id),'DELETE');
+      await refresh();
+    }catch(error){alert(error.message);await refresh().catch(()=>{})}
+  });
+}
+
 function selectedLinks(){
   return links.filter(link=>link.campaign_id===selected);
 }
@@ -84,7 +105,7 @@ function targetsMarkup(){
   return enabled.map(target=>{
     const match=chosen.find(x=>x.target_id===target.id);
     return '<div class="wa-campaign-target"><label><input type="checkbox" data-wa-select="'+escapeHtml(target.id)+'" '+(match?'checked':'')+'>'+
-      '<b>'+escapeHtml(target.name)+'</b> <small>'+(target.kind==='group'?'GRUP':'CHANNEL')+'</small></label>'+
+      '<b>'+escapeHtml(target.name)+'</b> <small>'+(target.kind==='group'?'GRUP':target.kind==='status'?'STORY':'CHANNEL')+'</small></label>'+
       '<input aria-label="Jeda khusus '+escapeHtml(target.name)+'" type="number" min="30" max="3600" step="1" data-wa-override="'+escapeHtml(target.id)+'" placeholder="Ikuti jeda kampanye" value="'+(match?.delay_seconds??'')+'">'+
       '</div>';
   }).join('');
@@ -146,7 +167,7 @@ function renderCalendar(){
   const items=rows.length?rows.map((r,i)=>
     '<div class="wa-plan-item '+(r.status==='cancelled'?'cancelled':'')+'">'+
       '<span class="wa-plan-position">'+(i+1)+'</span><div><b>'+escapeHtml(r.target_name)+'</b>'+
-      '<small>'+(r.target_kind==='group'?'GRUP':'CHANNEL')+' • '+new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'short'}).format(new Date(r.send_after))+' WIB</small>'+
+      '<small>'+(r.target_kind==='group'?'GRUP':r.target_kind==='status'?'STORY':'CHANNEL')+' • '+new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'short'}).format(new Date(r.send_after))+' WIB</small>'+
       '<small>Jeda: '+r.interval_seconds+' detik • '+(r.status==='planned'?'RENCANA':'DIBATALKAN')+'</small>'+
       '</div></div>'
   ).join(''):'<p>Belum ada rencana antrean untuk kampanye ini.</p>';
@@ -244,7 +265,7 @@ async function refresh(){
   links=Array.isArray(linkRows)?linkRows:[];
   planRows=Array.isArray(plannedRows)?plannedRows:[];
   if(selected&&!campaigns.some(c=>c.id===selected))selected=null;
-  renderTarget('group');renderTarget('channel');renderCampaigns();renderCalendar();renderReports();
+  renderTarget('group');renderTarget('channel');renderStory();renderCampaigns();renderCalendar();renderReports();
   loaded=true;
 }
 async function saveCampaign(event){
@@ -318,6 +339,7 @@ function attachStyle(){
     '#pageWamarketing .wa-campaign-target label input{width:auto}',
     '#pageWamarketing .wa-campaign-target small{font-size:9px;color:#ff9aca}',
     '#pageWamarketing .wa-preview-list{margin:8px 0;font-size:11px;line-height:1.8}',
+    '#pageWamarketing .wa-story-switch{display:flex;align-items:center;gap:9px;font-size:12px;color:#fff;font-weight:900}',
     '#pageWamarketing .wa-plan-toolbar{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}',
     '#pageWamarketing .wa-plan-toolbar label{display:grid;gap:5px;font-size:11px;color:#aaa}',
     '#pageWamarketing .wa-plan-toolbar select{background:#0a0a0a;color:#fff;padding:10px;border:1px solid #333;border-radius:10px;max-width:100%}',
