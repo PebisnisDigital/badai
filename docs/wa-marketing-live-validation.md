@@ -104,6 +104,12 @@ data. Replay and expiration are tested.
   claim/enqueue jobs or submit a message. Actual Admin retry and receipt remain
   required. Database diagnostic logs include only fixed routes/status/SQLSTATE,
   never raw messages, payloads, queries, credentials, or signed URLs.
+- The subsequent Admin trial created job `29beeca0-687c-446b-8cc2-eb21b03193a2`
+  with exactly one provider attempt. Zawa returned HTTP 200 and message ID
+  `3EB0E897951283E065BEEC`; API acceptance was recorded at
+  `2026-10-14 06:40:54.725291 UTC` (13:40:54 WIB). Its status is `api_accepted`,
+  not `delivered`. Actual observation of `BADAI-TEST-DA383085` in the approved
+  `#22 IMAGO` group remains pending.
 
 ## Remaining acceptance work
 
