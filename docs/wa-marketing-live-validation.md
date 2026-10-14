@@ -77,7 +77,7 @@ data. Replay and expiration are tested.
 
 ## Validation completed
 
-- 57 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
+- 58 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
   provider contracts, ambiguous outcomes, frontend gating, sync/QR contracts, and
   worker proof verification/replay. These are not real WhatsApp delivery tests.
 - Deno type checks pass for all three Edge Functions. Netlify asset build passes.
@@ -190,6 +190,23 @@ data. Replay and expiration are tested.
   lock. That fix is committed and locally tested. No new UI deployment or
   Production publication is claimed. Production is still held for Story proof
   as explicitly requested by the user.
+  Later, native Git deployments were found to be working despite the earlier
+  direct API quota rejection. Commit `840a36e` is READY as preview
+  `https://badai-ff4u94ld5-cuanify25-2175s-projects.vercel.app` (deployment
+  `dpl_E5VA9ogb456skCZYwcsagYzYGcME`). Its origin was added alongside the original
+  trial origin; CORS preflight returned HTTP 204 with the exact approved origin.
+  Anonymous Admin requests still redirect to Vercel SSO, not an authenticated
+  application readiness result. Production remains unchanged.
+  The user reported the post-pairing test button stayed disabled. Live checks
+  confirmed connected=true, testing enabled, one selected enabled/approved group,
+  and a text/draft campaign, with no new dispatch. The preview now displays the
+  actual frontend reason (selection, unsaved changes, auth/capability failure,
+  pending check, or prerequisite test) and provides an explicit read-only
+  readiness refresh. Errors are not silently hidden; an older asynchronous check
+  cannot overwrite a newer one. UI verification covers failed readiness and
+  recovery, leaving ordinary sending locked without current delivery evidence.
+  The user has been asked for the displayed reason and actual receipt result;
+  no specific browser-state cause or successful post-pairing send is assumed.
 
 ## Prepared documented session reset
 
