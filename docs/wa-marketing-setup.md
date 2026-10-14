@@ -1,6 +1,8 @@
 # BADAI — WA Marketing Automation (internal)
 
-Status (2026-10-14): **Admin panel, draft editor, Story target toggle, and dry-run delivery plan deployed to Vercel production (READY)**. WhatsApp device sync and actual sending are NOT active.
+The sections below are historical deployment notes. Current dispatch implementation,
+verified provider contracts, security controls, test evidence and outstanding real
+delivery checks are recorded in [wa-marketing-live-validation.md](wa-marketing-live-validation.md).
 
 ## Scope
 Internal marketing only; **NOT SaaS**. Planned destinations:

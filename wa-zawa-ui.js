@@ -133,8 +133,8 @@ function boot(){
     '<div class="wa-step"><b>2</b><span>Buka WhatsApp di HP yang ingin digunakan untuk marketing.</span></div>'+
     '<div class="wa-step"><b>3</b><span>Pilih <strong>Perangkat tertaut → Tautkan perangkat</strong>, lalu arahkan kamera ke QR di dashboard.</span></div>'+
     '<div class="wa-step"><b>4</b><span>Status akan diperiksa otomatis setiap 12 detik selama QR tersedia.</span></div>'+
-    '<div class="wa-alert">Integrasi ini menggunakan Zawa, layanan pihak ketiga tidak resmi Meta. Sesi dapat terputus dan pemakaian berisiko pembatasan akun WhatsApp. Fitur pengiriman pesan BADAI tetap belum aktif.</div>'+
-    '<a href="https://azickri.gitbook.io/zawa/session-api/buat-session" rel="noopener noreferrer" target="_blank" class="wa-secondary-link">PANDUAN ZAWA ↗</a>'+
+    '<div class="wa-alert">Koneksi QR tidak otomatis mengaktifkan pengiriman. Jenis tujuan dan media dibuka setelah uji pesan nyata terkonfirmasi di tujuan.</div>'+
+    '<a href="https://zawa.azickri.com/api/session/create-session.html" rel="noopener noreferrer" target="_blank" class="wa-secondary-link">PANDUAN ZAWA ↗</a>'+
     '</article></div>';
   const style=document.createElement('style');
   style.textContent=[
