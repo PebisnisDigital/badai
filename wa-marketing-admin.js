@@ -8,6 +8,7 @@ const STORAGE = 'badai_admin_session';
 const $ = id => document.getElementById(id);
 const escapeHtml = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let catalog = [], campaigns = [], links = [], planRows = [], selected = null, calendarCampaign = null, busy = false, loaded = false;
+const syncFeedback={group:'',channel:''};
 
 function token(){
   let session = null;
@@ -31,13 +32,42 @@ function note(message,isError){
   const el=$('waCampaignMessage');
   if(el){el.textContent=message||'';el.style.color=isError?'#ff8585':'#8ce5af';}
 }
+async function syncTargets(kind){
+  if(busy)return;
+  busy=true;
+  const btn=document.querySelector('[data-wa-sync="'+kind+'"]');
+  if(btn){btn.disabled=true;btn.textContent='MENYINKRONKAN...';}
+  syncFeedback[kind]='Meminta daftar '+(kind==='group'?'Grup':'Channel')+' dari Zawa...';
+  const msg=document.querySelector('[data-wa-sync-note="'+kind+'"]');
+  if(msg)msg.textContent=syncFeedback[kind];
+  try{
+    const response=await fetch('https://tlvxlekqrllkvcpgwmic.supabase.co/functions/v1/badai-zawa-sync',{
+      method:'POST',cache:'no-store',
+      headers:{apikey:KEY,Authorization:'Bearer '+token(),'Content-Type':'application/json'},
+      body:JSON.stringify({kind})
+    });
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw Error((result.error||'Gagal mengambil daftar tujuan.')+
+      (result.tested?' Detail pemeriksaan API: '+result.tested:''));
+    syncFeedback[kind]='✓ Ditemukan '+result.found+' '+(kind==='group'?'grup':'Channel')+
+      ', '+result.added+' baru, '+result.preserved+' sudah ada. '+
+      (result.truncated?'Daftar dibatasi; hubungi admin bila ada tujuan yang belum tampil. ':'')+
+      'Tujuan baru tidak otomatis diaktifkan.';
+    await refresh();
+  }catch(error){
+    syncFeedback[kind]='✕ '+(error.message||'Sinkronisasi gagal.');
+    if(msg){msg.textContent=syncFeedback[kind];msg.style.color='#ff9595';}
+    if(btn){btn.disabled=false;btn.textContent='COBA SINKRONKAN LAGI';}
+  }finally{busy=false}
+}
 function renderTarget(kind){
   const root=document.querySelector('[data-wa-content="'+(kind==='group'?'groups':'channel')+'"]');
   if(!root)return;
   const targets=catalog.filter(t=>t.kind===kind);
   root.innerHTML=
     '<div class="wa-feature-card"><h3>'+ (kind==='group'?'Grup WhatsApp':'WhatsApp Channel')+'</h3>'+
-    '<p><b>Daftar otomatis:</b> belum tersedia melalui endpoint Zawa yang terdokumentasi. Untuk sementara, masukkan tujuan milik BADAI dari ID yang valid. Hanya tujuan yang terdaftar yang bisa dipilih dalam draft kampanye.</p>'+
+    '<p>Ambil daftar nama dan ID '+(kind==='group'?'grup':'Channel')+' langsung dari WhatsApp yang terhubung ke Zawa. Pilih tujuan aktif sesuai kampanye. Jika ada tujuan yang belum ditemukan, masih bisa ditambahkan manual.</p>'+
+    '<div class="wa-sync-row"><button type="button" class="wa-primary-link" data-wa-sync="'+kind+'">↻ SINKRONKAN DARI ZAWA</button><small data-wa-sync-note="'+kind+'" aria-live="polite">'+escapeHtml(syncFeedback[kind]||'Tidak mengambil daftar anggota/pesan. Pengiriman otomatis tetap nonaktif.')+'</small></div>'+
     '<form class="wa-target-form" data-wa-target-form="'+kind+'">'+
       '<label>Nama '+(kind==='group'?'grup':'Channel')+'<input name="targetName" maxlength="140" required placeholder="'+(kind==='group'?'BADAI Grup 1':'Channel BADAI')+'"></label>'+
       '<label>ID WhatsApp tujuan<input name="targetId" maxlength="200" minlength="3" required placeholder="'+(kind==='group'?'...@g.us':'...@newsletter')+'"></label>'+
@@ -49,7 +79,8 @@ function renderTarget(kind){
       '<div class="wa-target-actions"><label><input type="checkbox" data-wa-enable="'+escapeHtml(t.id)+'" '+(t.enabled?'checked':'')+'> Aktif</label>'+
       '<button type="button" data-wa-remove="'+escapeHtml(t.id)+'" class="wa-danger-button">HAPUS</button></div></div>'
     ).join(''):'<p>Belum ada '+(kind==='group'?'grup':'Channel')+' yang ditambahkan.</p>')+'</div>'+
-    '<div class="wa-alert">Sinkronisasi otomatis, pengiriman dan broadcast <b>belum diaktifkan</b>. ID yang dimasukkan belum diverifikasi terhadap WhatsApp.</div></div>';
+    '<div class="wa-alert">Tujuan baru dari Zawa disimpan <b>nonaktif</b> sampai Teh Vini mengaktifkan dan memilihnya dalam kampanye. Penyelarasan ini hanya membaca daftar; pengiriman, broadcast, dan scheduler tetap nonaktif.</div></div>';
+  root.querySelector('[data-wa-sync]')?.addEventListener('click',()=>syncTargets(kind));
   const form=root.querySelector('[data-wa-target-form]');
   form?.addEventListener('submit',async event=>{
     event.preventDefault();
@@ -318,6 +349,8 @@ function attachStyle(){
     '#pageWamarketing .wa-target-form input,#pageWamarketing .wa-campaign-form input,#pageWamarketing .wa-campaign-form textarea,#pageWamarketing .wa-campaign-form select{min-width:0;width:100%;background:#080808;border:1px solid #383038;border-radius:9px;padding:10px;color:#fff;font-size:12px;font-weight:500}',
     '#pageWamarketing .wa-campaign-form textarea{resize:vertical;font-family:inherit}',
     '#pageWamarketing .wa-target-list{display:grid;gap:7px;margin-top:15px}',
+    '#pageWamarketing .wa-sync-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:11px 0 17px}',
+    '#pageWamarketing .wa-sync-row small{font-size:11px;color:#bbb;flex:1;min-width:180px;overflow-wrap:anywhere}',
     '#pageWamarketing .wa-target-item{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:11px;border:1px solid #303030;border-radius:11px}',
     '#pageWamarketing .wa-target-item b,#pageWamarketing .wa-target-item small{display:block;overflow-wrap:anywhere}',
     '#pageWamarketing .wa-target-item b{font-size:12px}',
