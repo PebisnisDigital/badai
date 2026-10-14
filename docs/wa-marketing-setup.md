@@ -78,3 +78,15 @@ Deployed production commit: `a63d88503e4d2c172cfef233b5195c68fefb0781`. Vercel c
 **Important unresolved dependency:** The accessible Zawa docs document session creation, message/status sending headings, but do not clearly expose an endpoint to list all WhatsApp groups/Channels, nor a complete verified QR status flow. Do not build or claim auto detection without provider verification. In the meantime the admin supports manual group/channel ID entry and a separate Story planning target.
 
 **Do not enable live publishing** until a dedicated number is connected, the actual provider endpoint/body is confirmed using a single test destination, and an idempotent worker with a global rate limiter, audit logs, pause, and fail-safe uncertain delivery handling is built and tested. No background worker exists yet. Sessions not linked after four hours may be deleted by Zawa per their session documentation.
+
+
+## Tahap 4 — Direct QR pairing in BADAI Admin (14 Oktober 2026)
+
+Production release verified READY on Vercel, commit `d23afd1e88c3a4b4a98546d65122c7b35f31b97b`.
+Added:
+- `wa-zawa-ui.js`: Admin BADAI → WA Marketing → Koneksi WA: create-session button, secure QR image, refresh status, controlled 12-second polling while QR is waiting, explicit replace-session confirmation. Only displays provider-sourced QR, never example/fake QR.
+- Supabase Edge Function `badai-zawa-connect`, `verify_jwt=true`, active: admin-authorized POST create/replace via **documented** Zawa `POST https://api-zawa.azickri.com/session`, and status read via `GET /session` with Zawa ID headers. GET QR/status response schema remains to be field-validated with a real session because the corresponding GitBook page could not be retrieved.
+- Secure singleton table `wa_marketing_connection_secure`: stores `provider_id` and `session_secret`. RLS enabled; no table privileges for anon or authenticated; only service_role can read/write, Edge Function verifies active Owner/Super Admin from server-side admin_team_members. Credentials do not enter browser code, URLs, logs, or GitHub.
+- Header button checks provider status; QR shown only if provider returns valid image data or raw pairing string successfully encoded locally. QR is short-lived and is intended only for WhatsApp **Linked Devices** scan.
+- Live WA sending/scheduler remain disabled. Real pairing/connected status still **unverified** until the user scans a device and observes the provider response.
+- First test: open https://badai.vercel.app/admin, log in as Owner, WA Marketing → Koneksi WA → Buat QR Koneksi. If QR does not appear, report the exact non-secret error shown. Do not send ID/sessionId/token/QR as screenshot to third parties.
