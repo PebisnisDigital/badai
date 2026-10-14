@@ -224,6 +224,19 @@ data. Replay and expiration are tested.
   and zero prior jobs for this draft. The Owner was asked to refresh readiness
   and submit one confirmed Story test from the existing approved preview.
   No operator Story request or automatic retry was made.
+  The Owner subsequently confirmed and submitted the Story draft from Admin.
+  Job `803df861-849e-4007-b1ac-7df06f3f8169` made one attempt starting
+  `2026-10-14 08:50:51 UTC` (`15:50:51 WIB`). Zawa returned HTTP 504 after
+  60.049 seconds, no statusId; the job remains `unknown` and its test run
+  `2b00e80e-7307-4e72-9f18-c5c56f4b4e56` is automatically paused. Its pairing
+  generation matches the newly confirmed Group/text job. No retry occurred.
+  A subsequent read-only session check returned HTTP 200, connected=true.
+  The user reported the Admin unknown/no-retry notification; actual Status
+  reception was requested again because a 504 cannot establish non-delivery.
+  One reset and narrowing the audience have not resolved the gateway timeout.
+  The provider diagnostic report now includes all three authorized Story tests;
+  Zawa engine/gateway logs are needed to determine the cause. No support message
+  was sent by Codex, and Production remains held pending Story reception proof.
 
 ## Prepared documented session reset
 
