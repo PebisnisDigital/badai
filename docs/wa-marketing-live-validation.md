@@ -205,8 +205,16 @@ data. Replay and expiration are tested.
   readiness refresh. Errors are not silently hidden; an older asynchronous check
   cannot overwrite a newer one. UI verification covers failed readiness and
   recovery, leaving ordinary sending locked without current delivery evidence.
-  The user has been asked for the displayed reason and actual receipt result;
-  no specific browser-state cause or successful post-pairing send is assumed.
+  The user subsequently identified the selected draft as
+  `UJI STORY SETELAH PAIRING - BADAI-PAIR-STORY-C949BA77`. Story correctly requires
+  a new Group/text receipt after pairing. The Group draft was then submitted
+  from Admin: job `dbd88eeb-0aee-47f8-a8c2-ea871fb38898`, one attempt,
+  HTTP 200, message ID `3EB05E0765ECA5DDB68582`, accepted at
+  `2026-10-14 08:23:30 UTC` (`15:23:30 WIB`). The user reported that the Group
+  test succeeded; clarification was requested that marker
+  `BADAI-PAIR-GROUP-C949BA77` is actually visible in WhatsApp. Until that
+  destination evidence is confirmed, this job remains `api_accepted` and
+  does not unlock Story on the new pairing generation. No Story was retried.
 
 ## Prepared documented session reset
 
