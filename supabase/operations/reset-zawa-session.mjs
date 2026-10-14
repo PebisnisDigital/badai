@@ -37,7 +37,7 @@ if (!reset && !verifyGuards) {
     redirect: 'error', signal: AbortSignal.timeout(30000) });
   const data = await response.json().catch(() => null);
   console.log(JSON.stringify({ mode: 'read_only', provider_http_status: response.status,
-    connected: response.ok && data?.isConnected === true, pairing_epoch_active: Boolean(credentials.session_epoch),
+    connected: response.ok && data?.isConnected === true, qr_ready: typeof data?.qrcode === 'string' && data.qrcode.startsWith('iVBORw0KGgo'), pairing_epoch_active: Boolean(credentials.session_epoch),
     flags: configuration[0] && { enabled: configuration[0].enabled, testing_enabled: configuration[0].testing_enabled,
       scheduler_enabled: configuration[0].scheduler_enabled }, reset_performed: false }));
 } else {

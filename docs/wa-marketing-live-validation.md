@@ -217,8 +217,18 @@ freezes all sending gates, rotates the epoch, calls the documented PUT once,
 and leaves gates disabled until pairing and new real delivery tests. Credential
 values remain in trusted operator memory and are not printed or saved.
 
-The user must approve the temporary WhatsApp disconnection and be ready to scan
-the QR in Admin; reset has not yet been performed. QRIS/member code is unchanged.
+The user explicitly approved one reset and readiness to scan QR. The operator
+ran it once at about `14:43 WIB` on 14 October 2026: documented PUT returned HTTP
+200 and the expected session ID. All sending gates were disabled first; the
+pairing epoch rotated, while credentials and previous receipt records were
+preserved. The exclusive attempt file records `reset_accepted` without secrets.
+A read-only check showed disconnected with QR ready. The user then scanned the
+QR and reported TERHUBUNG; a read-only backend check confirmed HTTP 200, connected
+true, no pending QR, and the new pairing generation. Only testing is now enabled.
+Ordinary sending and scheduler remain off. Fresh Group/Story trial drafts are
+prepared; no message from an old campaign was activated. A real Group/text test
+from Admin must be received before Story can be tested on this generation.
+Reset does not establish that Story was fixed. QRIS/member code is unchanged.
 
 ## Remaining acceptance work
 

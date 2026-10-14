@@ -67,7 +67,17 @@ tanpa meminta pengguna memposting token di chat atau repository:
 
 Tidak ada API diagnostik sinkronisasi kontak atau tanda terima Story yang
 didokumentasikan. BADAI tidak mencoba endpoint dugaan, memperlakukan 504 sebagai
-gagal pasti, mereset sesi, ataupun mengubah konfigurasi akun secara otomatis.
+gagal pasti, ataupun mengubah konfigurasi akun secara otomatis.
+
+## Langkah reset yang disetujui kemudian
+
+Pengguna kemudian mengirim halaman Error & Solusi dan menyetujui **satu** reset
+serta kesiapan scan QR. `PUT /session` dijalankan sekali sekitar 14:43 WIB pada
+14 Oktober 2026, menghasilkan HTTP 200 sesuai dokumentasi. Pengiriman dibekukan,
+riwayat tetap disimpan, dan generasi pairing privat diperbarui karena Zawa
+mempertahankan ID/token setelah reset. Pengguna scan QR ulang; koneksi baru sudah
+diverifikasi terhubung dari backend. Uji penerimaan baru masih diperlukan;
+keberhasilan reset/pairing tidak diklaim sebagai perbaikan Story.
 
 ## Pesan yang bisa dikirim pengguna ke dukungan Zawa
 
