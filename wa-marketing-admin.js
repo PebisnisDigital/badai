@@ -112,7 +112,7 @@ function renderTarget(kind){
       '<div class="wa-target-actions"><label><input type="checkbox" data-wa-enable="'+escapeHtml(t.id)+'" '+(t.enabled?'checked':'')+'> Aktif</label>'+
       '<button type="button" data-wa-remove="'+escapeHtml(t.id)+'" class="wa-danger-button">HAPUS</button></div></div>'
     ).join(''):'<p>Belum ada '+(kind==='group'?'grup':'Channel')+' yang ditambahkan.</p>')+'</div>'+
-    '<div class="wa-alert">Tujuan baru dari Zawa disimpan <b>nonaktif</b> sampai Teh Vini mengaktifkan dan memilihnya dalam kampanye. Penyelarasan ini hanya membaca daftar; pengiriman, broadcast, dan scheduler tetap nonaktif.</div></div>';
+    '<div class="wa-alert">Tujuan baru dari Zawa disimpan <b>nonaktif</b> sampai diaktifkan dan dipilih dalam kampanye. Sinkronisasi hanya membaca daftar. Pengiriman dimulai dari kampanye dengan konfirmasi, untuk jenis pesan dan tujuan yang sudah teruji.</div></div>';
   root.querySelector('[data-wa-sync]')?.addEventListener('click',()=>syncTargets(kind));
   const form=root.querySelector('[data-wa-target-form]');
   form?.addEventListener('submit',async event=>{
@@ -222,8 +222,10 @@ async function sendRealMessage(action='send_one'){
   }
   if(action==='schedule'&&(!sendCapabilities.scheduler_enabled||current.delivery_mode!=='scheduled'))return;
   const names=selectedTargets.map(s=>catalog.find(t=>t.id===s.target_id)?.name||'Tujuan').join(', ');
+  const storyNotice=selectedTargets.some(s=>catalog.find(t=>t.id===s.target_id)?.kind==='status')
+    ?'\n\nStory tampil kepada audiens privasi Status pada nomor pengirim; tidak dibatasi ke grup atau Channel yang dipilih.':'';
   if(!confirm((action==='schedule'?'Aktifkan jadwal pengiriman SUNGGUHAN':'Kirim pesan WhatsApp SUNGGUHAN')+' dari kampanye "'+
-      current.name+'" ke "'+names+'"?\n\nPesan tersimpan:\n'+current.content_text+(current.cta_url?'\n'+current.cta_url:'')))return;
+      current.name+'" ke "'+names+'"?\n\nPesan tersimpan:\n'+current.content_text+(current.cta_url?'\n'+current.cta_url:'')+storyNotice))return;
   busy=true;updateRealSendButton();
   try{
     const key=JSON.stringify([action,current,selectedTargets]);
@@ -399,7 +401,7 @@ function renderReports(){
     if(action!=='pause'&&!confirm(action==='resume'?'Lanjutkan antrean nyata yang sudah diaktifkan ini?':'Batalkan pesan yang belum dikirim dalam antrean ini?'))return;
     busy=true;button.disabled=true;
     try{await liveCall(action,{run_id:button.dataset.waRun,confirm:true});await refreshHistory();}
-    catch(error){alert(error.message)}finally{busy=false;updateRealSendButton()}
+    catch(error){alert(error.message)}finally{button.disabled=false;busy=false;updateRealSendButton()}
   }));
   root.querySelectorAll('[data-wa-received]').forEach(button=>button.addEventListener('click',async()=>{
     if(busy)return;

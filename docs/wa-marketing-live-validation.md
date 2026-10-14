@@ -77,7 +77,7 @@ data. Replay and expiration are tested.
 
 ## Validation completed
 
-- 51 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
+- 53 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
   provider contracts, ambiguous outcomes, frontend gating, sync/QR contracts, and
   worker proof verification/replay. These are not real WhatsApp delivery tests.
 - Deno type checks pass for all three Edge Functions. Netlify asset build passes.
@@ -114,17 +114,36 @@ data. Replay and expiration are tested.
   was marked `delivered` with that exact evidence and one attempt. The timestamp
   `2026-10-14 06:43:29.399348 UTC` records confirmation; the exact WhatsApp arrival
   time was not supplied. Group/text ordinary sending is now enabled for this
-  session. Old drafts remain inactive; scheduler is still disabled.
+  session. Old drafts remain inactive.
+- The Admin image trial `BADAI-MEDIA-32955A8A` returned HTTP 200 with Zawa ID
+  `3EB0F5F5EA1857385B59A2`. The user confirmed the image arrived in `#22 IMAGO`;
+  job `5f0fcb45-3423-42ec-92bc-6daa73114ac8` is delivered, with one attempt.
+- The explicitly approved Channel trial `BADAI-CHANNEL-EEA998E0` returned HTTP 200
+  with ID `3EB0C693FD9FCC0F250C16`. The user confirmed reception in
+  `Pebisnis.Digital`; job `acca0bdf-629a-4a7e-93d0-5e0d6deff86d` is delivered.
+  This trial used the authenticated backend queue after explicit chat approval,
+  rather than another browser send. Ordinary Channel/text sending is now gated
+  by this recorded evidence. Both receipt timestamps record chat confirmation.
+- Story trial `BADAI-STORY-6A7407A1` returned HTTP 504, with no status ID.
+  Job `480d0cf3-6e63-49bf-a20f-e016fb70dc3a` remains unknown, with one attempt and
+  a paused run. The user reports the Story is not visible. It is not retried;
+  Story has no verification proof and remains locked for ordinary sending.
+  The documented payload/header contract was followed. A 504 does not establish
+  the cause or prove non-delivery; no guessed route, session reset, or privacy
+  change was attempted.
+- Scheduler activation is available only for verified destination/message types.
+  A new group/text schedule trial is prepared; no legacy campaign was activated.
+  Local UI checks cover pause/resume confirmation and recovery of the control
+  after an HTTP failure. Actual scheduled dispatch remains under validation.
 
 ## Remaining acceptance work
 
-The first real Admin group/text trial and recipient observation are complete,
-with the provider ID and user evidence recorded above. An image trial to the same
-approved group is prepared but needs actual reception evidence.
+Real group/text, group/image, and Channel/text reception are confirmed, with the
+provider IDs and user evidence recorded above. Video/PDF and Channel media remain
+locked because they have not been tested with actual reception evidence.
 
-Story's current privacy audience is explicitly authorized; a text trial is
-prepared. The specific Channel still needs confirmation and its real test.
-Media tests follow successful text reception. A real scheduled delivery is still
+Story's current privacy audience is explicitly authorized, but its trial is
+blocked by the provider's HTTP 504 and missing receipt evidence. A real scheduled delivery is still
 required before claiming scheduler delivery works; no existing campaign is migrated
 into an active run. Final production frontend publication follows
 the relevant successful real tests and verification of the active website.

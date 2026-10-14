@@ -18,7 +18,7 @@ async function boot(overrides={}){
     requests.push({url,options});
     const u=new URL(url),path=u.pathname;
     if(path.includes('/functions/v1/')){
-      if(u.searchParams.get('action')==='history')return Response.json({jobs:overrides.jobs||[],runs:[]});
+      if(u.searchParams.get('action')==='history')return Response.json({jobs:overrides.jobs||[],runs:overrides.runs||[]});
       if((options.method||'GET')==='GET')return Response.json(caps);
       return overrides.post?overrides.post(JSON.parse(options.body)):Response.json({status:'queued'});
     }
@@ -83,4 +83,28 @@ test('saving drafts never schedules a campaign, and scheduler is locked by defau
   assert.equal(h.$('waScheduleReal').disabled,true);h.$('waCampaignForm').dispatchEvent(new h.w.Event('submit',{bubbles:true,cancelable:true}));
   await wait(()=>h.$('waCampaignMessage').textContent.includes('berhasil disimpan'));
   assert.equal(h.requests.filter(c=>c.options.method==='POST'&&c.url.includes('/functions/v1/')).length,0);h.dom.window.close();
+});
+test('queue controls pause the selected run and require confirmation to resume',async()=>{
+  const run='00000000-0000-4000-8000-000000000004';
+  const h=await boot({runs:[{id:run,campaign_id:campaignId,status:'active',mode:'scheduled'}]});
+  const pauseButton=h.w.document.querySelector('[data-wa-action="pause"]');pauseButton.click();
+  await wait(()=>h.requests.some(c=>c.options.method==='POST'&&JSON.parse(c.options.body).action==='pause'));
+  const call=h.requests.find(c=>c.options.method==='POST'&&JSON.parse(c.options.body).action==='pause');
+  await wait(()=>!pauseButton.disabled);
+  assert.deepEqual(JSON.parse(call.options.body),{action:'pause',run_id:run,confirm:true});h.dom.window.close();
+  const paused=await boot({runs:[{id:run,campaign_id:campaignId,status:'paused',mode:'scheduled'}]});
+  paused.w.confirm=()=>false;paused.w.document.querySelector('[data-wa-action="resume"]').click();
+  await new Promise(r=>setTimeout(r,10));
+  assert.equal(paused.requests.some(c=>c.options.method==='POST'),false);
+  paused.w.confirm=()=>true;const resumeButton=paused.w.document.querySelector('[data-wa-action="resume"]');resumeButton.click();
+  await wait(()=>paused.requests.some(c=>c.options.method==='POST'));
+  await wait(()=>!resumeButton.disabled);
+  assert.deepEqual(JSON.parse(paused.requests.find(c=>c.options.method==='POST').options.body),{action:'resume',run_id:run,confirm:true});paused.dom.window.close();
+});
+test('a failed pause request leaves its control available for a manual retry',async()=>{
+  const run='00000000-0000-4000-8000-000000000004';
+  const h=await boot({runs:[{id:run,campaign_id:campaignId,status:'active',mode:'scheduled'}],post:()=>Response.json({error:'wa_backend_transport_failed'},{status:503})});
+  const button=h.w.document.querySelector('[data-wa-action="pause"]');button.click();
+  await wait(()=>h.requests.some(c=>c.options.method==='POST')&&!button.disabled);
+  assert.equal(h.requests.filter(c=>c.options.method==='POST').length,1);h.dom.window.close();
 });
