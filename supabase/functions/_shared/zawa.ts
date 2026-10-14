@@ -3,7 +3,7 @@
 export const ZAWA_BASE = 'https://api-zawa.azickri.com';
 export type Destination = 'group' | 'channel' | 'status';
 export type MessageType = 'text' | 'image' | 'video' | 'document';
-export type Credentials = { provider_id: string; session_secret: string };
+export type Credentials = { provider_id: string; session_secret: string; session_epoch?: string | null };
 export type Snapshot = {
   kind: Destination; external_id: string; content_text: string; cta_url?: string | null;
   message_type: 'text' | 'media'; media_path?: string | null;
@@ -137,7 +137,11 @@ export async function ownsChannel(id: string, credentials: Credentials, fetcher:
 }
 
 export async function fingerprint(credentials: Credentials) {
-  const bytes = new TextEncoder().encode(JSON.stringify([credentials.provider_id, credentials.session_secret]));
+  // Provider reset keeps its credentials. A private pairing generation prevents
+  // an earlier link's delivery tests from unlocking a newly paired WhatsApp link.
+  const parts = [credentials.provider_id, credentials.session_secret];
+  if (credentials.session_epoch) parts.push(credentials.session_epoch);
+  const bytes = new TextEncoder().encode(JSON.stringify(parts));
   const hash = await crypto.subtle.digest('SHA-256', bytes);
   return Array.from(new Uint8Array(hash), v => v.toString(16).padStart(2, '0')).join('');
 }

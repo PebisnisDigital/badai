@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { requestBody, classifyResponse, submit, connected, ownsChannel, fingerprint } from '../supabase/functions/_shared/zawa.ts';
+import { requestBody, classifyResponse, submit, connected, ownsChannel, fingerprint, providerHeaders } from '../supabase/functions/_shared/zawa.ts';
 
 const credentials={provider_id:'fixture-provider',session_secret:'fixture-secret'};
 const group={kind:'group',external_id:'120363123456789012@g.us',content_text:'Pesan uji BADAI',message_type:'text'};
@@ -79,4 +79,12 @@ test('session transport and invalid JSON failures have safe specific codes',asyn
 test('verification fingerprints change with session rotation',async()=>{
   const a=await fingerprint(credentials),b=await fingerprint({...credentials,session_secret:'different-fixture'});
   assert.match(a,/^[a-f0-9]{64}$/);assert.notEqual(a,b);
+});
+test('pairing epochs revoke previous verification even when Zawa keeps credentials',async()=>{
+  const legacy=await fingerprint(credentials);
+  assert.equal(await fingerprint({...credentials,session_epoch:null}),legacy);
+  const reset=await fingerprint({...credentials,session_epoch:'00000000-0000-4000-8000-000000000001'});
+  const again=await fingerprint({...credentials,session_epoch:'00000000-0000-4000-8000-000000000002'});
+  assert.notEqual(reset,legacy);assert.notEqual(reset,again);
+  assert.deepEqual(providerHeaders({...credentials,session_epoch:'00000000-0000-4000-8000-000000000001'}),providerHeaders(credentials));
 });

@@ -77,7 +77,7 @@ data. Replay and expiration are tested.
 
 ## Validation completed
 
-- 56 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
+- 57 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
   provider contracts, ambiguous outcomes, frontend gating, sync/QR contracts, and
   worker proof verification/replay. These are not real WhatsApp delivery tests.
 - Deno type checks pass for all three Edge Functions. Netlify asset build passes.
@@ -175,6 +175,10 @@ data. Replay and expiration are tested.
   The job was then resumed from Admin and dispatched by the cron worker at
   `07:01:44 UTC`, returning HTTP 200 and ID `3EB0009CC6D22BD887BC19` at `07:01:51 UTC`.
   It has one attempt and a finished run; recipient observation remains pending.
+  The user later reported the scheduled message is not visible in `#22 IMAGO`.
+  Its job remains `api_accepted`, without fabricated delivery evidence, and it
+  is not retried. Backend pause/resume/dispatch is tested; actual scheduled
+  recipient delivery is not proven.
   A subsequent resume error was investigated: this schedule run was already
   finished, while the original Story run still had an unknown outcome. UI now
   disables resume on an unknown run and labels each result with its campaign;
@@ -186,6 +190,35 @@ data. Replay and expiration are tested.
   lock. That fix is committed and locally tested. No new UI deployment or
   Production publication is claimed. Production is still held for Story proof
   as explicitly requested by the user.
+
+## Prepared documented session reset
+
+The user supplied <https://zawa.azickri.com/guide/errors.html>. Both its HTML and
+Markdown were retrieved again; it documents reset/re-pairing or a selected Status
+audience for `contacts not synced`. That message has not been observed: our two
+requests returned HTTP 504. Narrowing the audience did not resolve it. Reset is
+a proposed diagnostic/remediation step, not an established fix for HTTP 504.
+
+<https://zawa.azickri.com/api/session/reset-session.md> documents `PUT /session`,
+headers `id` and `session-id`, with no body. It disconnects the linked device,
+clears stored keys/contacts, and creates a new QR. Provider credentials stay the
+same. Therefore a private `session_epoch` column and fingerprint generation are
+implemented so old link tests cannot unlock a reset/re-paired link. Existing null
+epochs preserve current fingerprints; prior evidence is never deleted.
+
+The migration and Edge change are installed without rotating the epoch or
+resetting the provider. The new fingerprint test passes. The operator procedure
+in `supabase/operations/reset-zawa-session.mjs` was exercised with
+`--verify-guards`: its actual database preparation transaction rolled back and
+no provider reset occurred. Default `--check` is read-only. Reset requires the
+explicit `--reset-approved` mode and an exclusive private attempt-state file
+to prevent repeating an ambiguous reset. It rejects queued/in-flight messages,
+freezes all sending gates, rotates the epoch, calls the documented PUT once,
+and leaves gates disabled until pairing and new real delivery tests. Credential
+values remain in trusted operator memory and are not printed or saved.
+
+The user must approve the temporary WhatsApp disconnection and be ready to scan
+the QR in Admin; reset has not yet been performed. QRIS/member code is unchanged.
 
 ## Remaining acceptance work
 

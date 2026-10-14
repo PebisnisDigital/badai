@@ -51,9 +51,9 @@ export function createHandler(env: Environment, fetcher: typeof fetch = fetch) {
   }
 
   async function credentials(): Promise<Credentials> {
-    const rows = await read('wa_marketing_connection_secure?select=provider_id,session_secret&limit=2');
+    const rows = await read('wa_marketing_connection_secure?select=provider_id,session_secret,session_epoch&limit=2');
     if (!Array.isArray(rows) || rows.length !== 1 || !rows[0].provider_id || !rows[0].session_secret) throw new ServiceError('connection_not_configured', 503);
-    return { provider_id: rows[0].provider_id, session_secret: rows[0].session_secret };
+    return { provider_id: rows[0].provider_id, session_secret: rows[0].session_secret, session_epoch: rows[0].session_epoch };
   }
 
   async function mediaFor(job: Job): Promise<Media | undefined> {
