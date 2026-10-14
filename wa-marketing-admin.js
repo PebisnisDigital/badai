@@ -22,7 +22,9 @@ async function liveCall(action,payload){
     body:action==='history'?undefined:JSON.stringify(Object.assign({action},payload))
   });
   const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw Error(data.error||'Layanan pengiriman tidak dapat diperiksa.');
+  if(!response.ok)throw Error(data.error==='wa_uncertain_delivery_requires_review'
+    ?'Antrean ini masih memiliki hasil BELUM DIKETAHUI. Periksa tujuan dan catat bukti hanya bila pesannya terlihat. Pengiriman ulang tetap ditahan.'
+    :data.error||'Layanan pengiriman tidak dapat diperiksa.');
   return data;
 }
 function storedMessageType(c){
@@ -386,9 +388,14 @@ function renderReports(){
     '<div><small>Dibatalkan</small><strong>'+cancelled+'</strong></div></div>'+
     '<button type="button" id="waRefreshHistory" class="wa-secondary-link">PERBARUI RIWAYAT</button>'+
     (historyError?'<p role="status">'+escapeHtml(historyError)+'</p>':'')+
-    '<h4>Antrean server</h4>'+liveRuns.map(run=>'<div class="wa-plan-item"><div><b>'+escapeHtml(campaigns.find(c=>c.id===run.campaign_id)?.name||'Kampanye tersimpan')+'</b><small>'+escapeHtml(run.status)+' · '+escapeHtml(run.mode)+'</small></div>'+
-      (['active','paused'].includes(run.status)?'<div><button type="button" data-wa-run="'+escapeHtml(run.id)+'" data-wa-action="'+(run.status==='active'?'pause':'resume')+'">'+(run.status==='active'?'PAUSE':'LANJUTKAN')+'</button> <button type="button" data-wa-run="'+escapeHtml(run.id)+'" data-wa-action="cancel">BATALKAN ANTREAN</button></div>':'')+'</div>').join('')+
+    '<h4>Antrean server</h4>'+liveRuns.map(run=>{
+      const uncertain=liveJobs.some(job=>job.run_id===run.id&&job.status==='unknown');
+      return '<div class="wa-plan-item"><div><b>'+escapeHtml(campaigns.find(c=>c.id===run.campaign_id)?.name||'Kampanye tersimpan')+'</b><small>'+escapeHtml(run.status)+' · '+escapeHtml(run.mode)+'</small>'+
+        (uncertain?'<small>Hasil belum diketahui — periksa tujuan sebelum melanjutkan.</small>':'')+'</div>'+
+        (['active','paused'].includes(run.status)?'<div><button type="button" data-wa-run="'+escapeHtml(run.id)+'" data-wa-action="'+(run.status==='active'?'pause':'resume')+'" '+(run.status==='paused'&&uncertain?'disabled title="Hasil belum diketahui harus diperiksa terlebih dahulu"':'')+'>'+(run.status==='active'?'PAUSE':uncertain?'LANJUTKAN — PERLU VERIFIKASI':'LANJUTKAN')+'</button> <button type="button" data-wa-run="'+escapeHtml(run.id)+'" data-wa-action="cancel">BATALKAN ANTREAN</button></div>':'')+'</div>';
+    }).join('')+
     '<h4>Hasil per tujuan</h4>'+liveJobs.map(job=>'<div class="wa-plan-item"><div><b>'+escapeHtml(job.target_name)+'</b><small>'+escapeHtml(deliveryLabels[job.status]||job.status)+'</small>'+
+      '<small>Kampanye: '+escapeHtml(campaigns.find(c=>c.id===job.campaign_id)?.name||'Kampanye tersimpan')+'</small>'+
       '<small>ID catatan: '+escapeHtml(job.id)+'</small>'+ (job.provider_message_id?'<small>ID provider: '+escapeHtml(job.provider_message_id)+'</small>':'')+
       (job.error_code?'<small>'+escapeHtml(job.error_code)+'</small>':'')+
       (job.evidence?'<small>Bukti penerimaan: '+escapeHtml(job.evidence)+'</small>':'')+

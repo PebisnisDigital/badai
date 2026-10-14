@@ -108,3 +108,11 @@ test('a failed pause request leaves its control available for a manual retry',as
   await wait(()=>h.requests.some(c=>c.options.method==='POST')&&!button.disabled);
   assert.equal(h.requests.filter(c=>c.options.method==='POST').length,1);h.dom.window.close();
 });
+test('an unknown delivery locks only its own resume control',async()=>{
+  const uncertainRun='00000000-0000-4000-8000-000000000004',queuedRun='00000000-0000-4000-8000-000000000005';
+  const h=await boot({runs:[{id:uncertainRun,campaign_id:campaignId,status:'paused',mode:'test'},{id:queuedRun,campaign_id:campaignId,status:'paused',mode:'scheduled'}],jobs:[{id:'fixture-unknown',run_id:uncertainRun,campaign_id:campaignId,target_name:'Status',status:'unknown',snapshot:{content_text:'Fixture text'}}]});
+  const locked=h.w.document.querySelector('[data-wa-run="'+uncertainRun+'"][data-wa-action="resume"]');
+  assert.equal(locked.disabled,true);assert.ok(locked.textContent.includes('PERLU VERIFIKASI'));locked.click();
+  assert.equal(h.w.document.querySelector('[data-wa-run="'+queuedRun+'"][data-wa-action="resume"]').disabled,false);
+  assert.equal(h.requests.some(c=>c.options.method==='POST'),false);h.dom.window.close();
+});
