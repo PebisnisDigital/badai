@@ -49,6 +49,10 @@
       "dest": "/wa-marketing-admin.js"
     },
     {
+      "src": "^/wa-zawa-ui\\.js$",
+      "dest": "/wa-zawa-ui.js"
+    },
+    {
       "src": "^/[^/]+/?$",
       "dest": "/api/landing-v6"
     },
