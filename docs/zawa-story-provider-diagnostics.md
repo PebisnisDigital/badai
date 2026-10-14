@@ -21,13 +21,15 @@ Zawa; tidak ada kredensial yang perlu disertakan.
 | `BADAI-STORY-6A7407A1` | 06:50:21 (13:50:21) | HTTP 504 setelah sekitar 60,3 detik, tanpa `statusId` | Kontak saya |
 | `BADAI-STORY-EBD7E8CF` | 07:04:54 (14:04:54) | HTTP 504 setelah sekitar 60,1 detik, tanpa `statusId` | Hanya bagikan dengan satu kontak percobaan |
 | `BADAI-PAIR-STORY-C949BA77` | 08:50:51 (15:50:51) | HTTP 504 setelah 60,049 detik, tanpa `statusId` | Setelah reset dan scan QR ulang; pengaturan terakhir yang dikonfirmasi adalah Hanya bagikan dengan satu kontak percobaan |
+| `BADAI-STATUS-DOC-98B6557B` | 09:28:57 (16:28:57) | HTTP 504 setelah 60,050 detik, tanpa `statusId` | Koneksi baru, teks contoh panduan; audiens mengikuti privasi Status HP |
 
-Ketiganya pada 14 Oktober 2026, masing-masing **satu** permintaan. Percobaan kedua
+Keempatnya pada 14 Oktober 2026, masing-masing **satu** permintaan. Percobaan kedua
 adalah uji baru dengan penanda berbeda dan izin pengguna setelah perubahan
 privasi. Percobaan ketiga dikonfirmasi dan dikirim pengguna dari Admin setelah
 reset yang disetujui, scan QR ulang, dan penerimaan nyata uji grup pada koneksi
-baru. Permintaan lama tidak diulang. Hasil ketiganya tetap `unknown`; antrean uji
-ketiga otomatis `paused`. Tidak ada retry otomatis.
+baru. Percobaan keempat dikonfirmasi pengguna dari Admin menggunakan teks contoh
+panduan dan penanda baru. Permintaan lama tidak diulang. Hasil keempatnya tetap
+`unknown`; antrean uji ketiga dan keempat otomatis `paused`. Tidak ada retry otomatis.
 
 Sesudah pengguna mengonfirmasi Story tetap tidak terlihat, dua antrean uji
 ditutup sebagai `cancelled`. **Hasil job tetap `unknown`**, masing-masing satu
@@ -41,7 +43,7 @@ dengan ID provider dan bukti penerimaan pengguna. Pemeriksaan sesi dari Edge
 setelah uji kedua juga memperoleh HTTP 200 dan `isConnected: true` dalam sekitar
 2,5 detik. Hal ini tidak membuktikan kemampuan pengiriman Story.
 
-BADAI menunggu respons pengiriman sampai 65 detik. Di ketiga uji Story, panggilan
+BADAI menunggu respons pengiriman sampai 65 detik. Di keempat uji Story, panggilan
 HTTP ke Zawa telah mengembalikan 504 sekitar detik ke-60. Dokumen Zawa menyebut
 waktu pemrosesan kirim maksimum empat menit. Komponen yang menghasilkan timeout
 60 detik dan penyebab internalnya belum diketahui.
@@ -59,7 +61,7 @@ Tidak ada respons mentah atau kredensial yang ditampilkan.
 Mohon dukungan Zawa memeriksa sesi melalui panel/kanal autentikasi milik pengguna,
 tanpa meminta pengguna memposting token di chat atau repository:
 
-1. Apakah tiga `POST /status` dengan penanda dan waktu di atas diterima engine?
+1. Apakah empat `POST /status` dengan penanda dan waktu di atas diterima engine?
 2. Apakah engine menyelesaikan publikasi? Bila ya, apa `statusId` dan waktu
    penyelesaiannya? Bila tidak, apa pesan error internal yang sudah disanitasi?
 3. Gateway/komponen mana yang memberi HTTP 504 sekitar 60 detik, sementara engine
@@ -149,17 +151,43 @@ CORS origin baru dan preview sebelumnya sama-sama terverifikasi HTTP 204.
 Anonymous Admin tetap memerlukan login Vercel, bukan bukti akses Owner.
 Production masih ditahan dan tidak ada bukti Story baru yang diklaim.
 
+Pengguna kemudian menjalankan uji contoh panduan dan melaporkan Status masih
+gagal. Job `e9e70f9a-4c41-44c9-b900-da67869dd166` mulai `16:28:57.343 WIB`,
+hasil dicatat `16:29:57.393 WIB`: HTTP 504 setelah 60,050 detik, satu percobaan,
+tanpa statusId. Run `a306ec66-7f4f-4128-b817-be2a2c98124f` otomatis dipause dan
+hasil job tetap `unknown`. Pairing generation cocok dengan uji grup yang
+benar-benar diterima. Pemeriksaan sesi berikutnya kembali HTTP 200, connected=true.
+Tidak ada uji teks valid kelima; log engine/gateway provider tetap diperlukan.
+
+Laporan pengguna tentang pratinjau `0–0 detik dari awal` diperbaiki pada UI:
+jeda minimum–maksimum berlaku antar tujuan, sedangkan tujuan pertama mulai
+setelah konfirmasi atau pada jadwal. Tampilan sekarang menjelaskan perbedaan itu
+dan menampilkan rentang kampanye, tanpa mengubah jadwal server. Nilai `0–0`
+bukan respons Zawa atau durasi pemrosesan Story. Kampanye dengan run aktif/paused
+kini mengunci tombol kirim tambahan dan memberi alasan bila hasilnya unknown.
+Enam belas tes UI dan build lolos, termasuk rentang kumulatif/override tujuan
+dan penguncian unknown sesudah pemeriksaan kesiapan ulang.
+
+Alamat preview cabang yang tetap:
+<https://badai-git-codex-wa-marketing-live-cuanify25-2175s-projects.vercel.app/admin>.
+Vercel memastikan alias ini menunjuk deployment READY commit `f19033c` saat
+verifikasi. CORS terverifikasi HTTP 204; login Vercel/Owner masih diperlukan.
+Pengguna diminta memakai alamat cabang ini untuk pembaruan berikutnya, agar
+tidak tertinggal pada deployment lama yang URL-nya tetap.
+
 ## Pesan yang bisa dikirim pengguna ke dukungan Zawa
 
 > Sesi Zawa saya terhubung dan berhasil mengirim teks/gambar grup serta teks
-> Channel, tetapi tiga POST /status teks menghasilkan HTTP 504 sekitar 60 detik.
+> Channel, tetapi empat POST /status teks menghasilkan HTTP 504 sekitar 60 detik.
 > Pada 14 Oktober 2026: BADAI-STORY-6A7407A1 mulai 13:50:21 WIB dengan privasi
 > Kontak saya; BADAI-STORY-EBD7E8CF mulai 14:04:54 WIB dengan Hanya bagikan dengan
 > satu kontak percobaan. Satu reset yang disarankan panduan sudah dilakukan pada
 > sekitar 14:43 WIB dan QR sudah discan ulang. Uji teks grup pada koneksi baru
 > benar-benar diterima. Namun BADAI-PAIR-STORY-C949BA77 mulai 15:50:51 WIB tetap
-> mendapat 504 setelah 60,049 detik. Payload mengikuti dokumentasi resmi, dan
-> ketiganya tidak menghasilkan statusId. Mohon periksa penerimaan request,
+> mendapat 504 setelah 60,049 detik. Uji teks contoh panduan dengan penanda
+> BADAI-STATUS-DOC-98B6557B mulai 16:28:57 WIB juga mendapat 504 setelah 60,050
+> detik. Payload mengikuti dokumentasi resmi, dan keempatnya tidak menghasilkan
+> statusId. Mohon periksa penerimaan request,
 > hasil publikasi/error engine, dan gateway timeout 60 detik. Tidak ada kiriman
 > yang diulang otomatis. Kredensial sesi akan diidentifikasi hanya melalui kanal
 > aman; mohon tidak meminta token diposting di chat atau repository.

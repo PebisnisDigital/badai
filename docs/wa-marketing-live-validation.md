@@ -254,6 +254,26 @@ data. Replay and expiration are tested.
   the guide's example text plus a unique marker. It had no dispatch jobs at
   preparation, changes no sending gates, and awaits one explicit Owner UI test
   and actual WhatsApp receipt. Prior unknown jobs were not reactivated.
+  The Owner then ran this guide-example test. Job
+  `e9e70f9a-4c41-44c9-b900-da67869dd166` dispatched at `09:28:57 UTC`
+  (`16:28:57 WIB`) and returned HTTP 504 after 60.050 seconds, one attempt,
+  no statusId, status unknown. Its run `a306ec66-7f4f-4128-b817-be2a2c98124f`
+  is paused. The user reported Status still fails. A further session read
+  returned HTTP 200, connected=true. No fifth valid-text Story trial was sent;
+  sanitized provider engine/gateway logs were requested.
+  The screenshot's first-target `0–0` preview was a cumulative start offset,
+  separate from configured inter-recipient gaps. UI now labels gaps accordingly,
+  shows the configured range, and describes the first start after confirmation
+  or at the selected schedule. Later offsets still accumulate incoming overrides
+  or campaign ranges, matching the SQL queue. Send buttons additionally lock
+  active/paused runs, explaining unknown results rather than encouraging retry.
+  Sixteen UI tests (zero skipped) and build passed. Commit `f19033c` is READY
+  and assigned to the stable branch alias
+  `https://badai-git-codex-wa-marketing-live-cuanify25-2175s-projects.vercel.app/admin`.
+  That origin's CORS preflight returned 204 and the exact allowed origin.
+  Anonymous Admin redirects to Vercel SSO; an authenticated browser verification
+  is still required. Existing approved preview origins remain allowed. No server
+  timing semantics or non-WA application code changed, and Production remains held.
 
 ## Prepared documented session reset
 
