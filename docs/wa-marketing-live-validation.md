@@ -212,9 +212,18 @@ data. Replay and expiration are tested.
   HTTP 200, message ID `3EB05E0765ECA5DDB68582`, accepted at
   `2026-10-14 08:23:30 UTC` (`15:23:30 WIB`). The user reported that the Group
   test succeeded; clarification was requested that marker
-  `BADAI-PAIR-GROUP-C949BA77` is actually visible in WhatsApp. Until that
-  destination evidence is confirmed, this job remains `api_accepted` and
-  does not unlock Story on the new pairing generation. No Story was retried.
+  `BADAI-PAIR-GROUP-C949BA77` is actually visible in WhatsApp. The user then
+  explicitly confirmed: "Ya, terlihat di WhatsApp #22 IMAGO". The guarded
+  receipt transaction matched the job to the current pairing generation and
+  recorded `delivered` at `2026-10-14 08:43:28 UTC` (`15:43:28 WIB`), the time
+  of recording the confirmation; exact arrival time was not supplied. The
+  current-generation Group/text prerequisite is now verified. Ordinary sending
+  and scheduler remain disabled; testing stays enabled. A read-only provider
+  session check returned connected=true, HTTP 200. Read-only Story draft checks
+  found one enabled/approved Status target, Group/text verified on this generation,
+  and zero prior jobs for this draft. The Owner was asked to refresh readiness
+  and submit one confirmed Story test from the existing approved preview.
+  No operator Story request or automatic retry was made.
 
 ## Prepared documented session reset
 
@@ -258,8 +267,11 @@ Reset does not establish that Story was fixed. QRIS/member code is unchanged.
 ## Remaining acceptance work
 
 Real group/text, group/image, and Channel/text reception are confirmed, with the
-provider IDs and user evidence recorded above. Video/PDF and Channel media remain
-locked because they have not been tested with actual reception evidence.
+provider IDs and user evidence recorded above. After reset, only the new Group/text
+receipt is verified for the current pairing generation; Group/image and Channel/text
+require fresh trials before ordinary sending can be enabled again. Video/PDF and
+Channel media remain locked because they have not been tested with actual reception
+evidence.
 
 Story's current privacy audience is explicitly authorized, but its trial is
 blocked by the provider's HTTP 504 and missing receipt evidence. A real scheduled delivery is still
