@@ -162,7 +162,7 @@ function renderCampaigns(){
        '</fieldset>'+
        '<div id="waCampaignDateWrap"><label>Rencana tanggal & jam (WIB)<input id="waCampaignDate" type="datetime-local"></label></div>'+
        '<p class="wa-mode-help" id="waModeHint">Pilih tanggal dan jam untuk membuat rencana antrean.</p>'+
-      '<div class="wa-two-cols"><label>Delay antar tujuan (detik)<input id="waCampaignDelay" type="number" min="30" max="3600" value="90" required></label>'+
+      '<div class="wa-two-cols" id="waCampaignTimingFields"><label>Delay antar tujuan (detik)<input id="waCampaignDelay" type="number" min="30" max="3600" value="90" required></label>'+
       '<label>Variasi jeda maksimum (detik)<input id="waCampaignJitter" type="number" min="0" max="120" value="0" required></label></div>'+
       '<label>Status<select id="waCampaignStatus"><option value="draft">DRAFT</option><option value="paused">PAUSE</option></select></label>'+
       '<div class="wa-campaign-pick"><b>Pilih grup / Channel</b><p>Jeda khusus per tujuan bersifat opsional. Kosongkan untuk mengikuti delay kampanye.</p><div id="waCampaignTargets">'+targetsMarkup()+'</div></div>'+
@@ -285,8 +285,9 @@ function deliveryMode(){
 }
 function updateDeliveryMode(){
   const now=deliveryMode()==='now_test';
-  const wrap=$('waCampaignDateWrap'),date=$('waCampaignDate'),hint=$('waModeHint');
+  const wrap=$('waCampaignDateWrap'),date=$('waCampaignDate'),hint=$('waModeHint'),timing=$('waCampaignTimingFields');
   if(wrap)wrap.hidden=now;
+  if(timing)timing.hidden=now;
   if(date){date.required=!now;date.disabled=now;}
   if(hint)hint.textContent=now
     ?'Mode tes: tidak perlu isi tanggal. Pilih tepat SATU grup, Channel, atau Story aktif. Tombol simpan hanya membuat antrean tes, bukan mengirim WhatsApp.'
@@ -341,8 +342,8 @@ async function saveCampaign(event){
       content_text:$('waCampaignText').value,
       delivery_mode:mode,
       scheduled_at:mode==='now_test'?null:parseWib($('waCampaignDate').value),
-      delay_seconds:Number($('waCampaignDelay').value),
-      jitter_seconds:Number($('waCampaignJitter').value),
+      delay_seconds:mode==='now_test'?90:Number($('waCampaignDelay').value),
+      jitter_seconds:mode==='now_test'?0:Number($('waCampaignJitter').value),
       status:$('waCampaignStatus').value
     };
     if(!Number.isInteger(payload.delay_seconds)||payload.delay_seconds<30||payload.delay_seconds>3600)throw new Error('Delay kampanye minimal 30 dan maksimal 3600 detik.');
@@ -414,7 +415,7 @@ function attachStyle(){
     '#pageWamarketing .wa-send-mode legend{color:#ddd;font-size:11px;font-weight:900;padding:0 5px}',
     '#pageWamarketing .wa-send-mode label{display:flex;flex-direction:row;align-items:center;gap:7px;font-size:12px;color:#eee;cursor:pointer}',
     '#pageWamarketing .wa-send-mode input{width:auto;min-width:unset;accent-color:#ff4fa3}',
-    '#pageWamarketing #waCampaignDateWrap[hidden]{display:none}',
+    '#pageWamarketing #waCampaignDateWrap[hidden],#pageWamarketing #waCampaignTimingFields[hidden]{display:none}',
     '#pageWamarketing .wa-mode-help{font-size:11px;color:#aaa;line-height:1.5;margin:0}',
     '#pageWamarketing .wa-campaign-pick{padding:12px;border:1px solid #333;border-radius:12px}',
     '#pageWamarketing .wa-campaign-pick>b{font-size:12px}',
