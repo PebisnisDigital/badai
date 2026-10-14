@@ -90,3 +90,17 @@ Added:
 - Header button checks provider status; QR shown only if provider returns valid image data or raw pairing string successfully encoded locally. QR is short-lived and is intended only for WhatsApp **Linked Devices** scan.
 - Live WA sending/scheduler remain disabled. Real pairing/connected status still **unverified** until the user scans a device and observes the provider response.
 - First test: open https://badai.vercel.app/admin, log in as Owner, WA Marketing → Koneksi WA → Buat QR Koneksi. If QR does not appear, report the exact non-secret error shown. Do not send ID/sessionId/token/QR as screenshot to third parties.
+
+
+## Tahap 5 — One-click Zawa group/channel catalog sync
+
+- New authorized Supabase Edge Function `badai-zawa-sync` (verify_jwt enabled): `POST {kind:"group"|"channel"}`.
+- Owner/Super Admin role checked server-side. Zawa session ID and session secret read from `wa_marketing_connection_secure` using a server-side service key. Browser never gets these secrets.
+- Read-only Zawa API probes (GET only), currently using provider endpoint candidates as the documentation pages supplied were not machine-readable from available fetch: `/group`, `/groups`, `/group/list`, `/group/get`, `/channel`, `/channels`, `/channel/list`, `/channel/get`. **The exact correct Zawa list URL and response shape must be verified with a connected session.** The UI displays safe HTTP status diagnostics if none match. Do not say syncing is confirmed to work until counts return successfully.
+- Only group/channel ID and display name are retained. No members, numbers, or messages fetched/stored. No live message publishing.
+- `wa_marketing_targets` catalog is upserted by `(kind,external_id)`. New entries `enabled=false` by default; existing entries preserve `enabled` and `origin`, and manually named rows keep their names. Missing entries are **never deleted**. Current campaign selections are untouched.
+- Admin tab Grup/Channel includes **SINKRONKAN DARI ZAWA**, results and diagnostics.
+- After first test, if Zawa returns unexpected IDs or nested JSON, inspect sanitized response *shape* through server debugging without exposing session, member records or private messages; then update parser.
+- The user supplied detail/member/message API pages, but these are not necessary for catalog sync; only list group/list channel is used at this stage.
+
+UI deployed at https://badai.vercel.app/admin. Edge Function deploy READY; real-group sync still awaiting verified user-side test.
