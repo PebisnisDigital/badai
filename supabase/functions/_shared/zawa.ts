@@ -114,6 +114,19 @@ export async function connected(credentials: Credentials, fetcher: typeof fetch 
   return true;
 }
 
+export async function probeStatusValidation(credentials: Credentials, fetcher: typeof fetch = fetch) {
+  // The official contract requires non-empty text and documents this exact 400.
+  // No caller-controlled content is accepted by this diagnostic. It tests the
+  // validation layer only and cannot establish successful Story publication.
+  const response = await fetcher(ZAWA_BASE + '/status', {
+    method: 'POST', headers: providerHeaders(credentials), redirect: 'error',
+    body: JSON.stringify({ type: 'text', text: '' }), signal: AbortSignal.timeout(15000),
+  });
+  const data = await response.json().catch(() => null);
+  return { status_validation_http: response.status,
+    status_validation_rejected: response.status === 400 && data?.statusCode === 400 && data?.message === 'text should not be empty' };
+}
+
 export async function ownsChannel(id: string, credentials: Credentials, fetcher: typeof fetch = fetch) {
   const response = await fetcher(ZAWA_BASE + '/channel', {
     headers: providerHeaders(credentials), redirect: 'error', signal: AbortSignal.timeout(25000),

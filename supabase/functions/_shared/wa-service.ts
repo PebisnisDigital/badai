@@ -1,4 +1,4 @@
-import { connected, fingerprint, messageType, ownsChannel, requestBody, submit, type Credentials, type Media, type Snapshot } from './zawa.ts';
+import { connected, fingerprint, messageType, ownsChannel, probeStatusValidation, requestBody, submit, type Credentials, type Media, type Snapshot } from './zawa.ts';
 import { verifyWorkerProof } from './worker-auth.ts';
 
 type Environment = { SUPABASE_URL: string; SUPABASE_SERVICE_ROLE_KEY: string; WA_MARKETING_WORKER_SECRET?: string; WA_MARKETING_ALLOWED_ORIGINS?: string };
@@ -135,6 +135,10 @@ export function createHandler(env: Environment, fetcher: typeof fetch = fetch) {
         if (!await verifyWorkerProof(req.headers, env.WA_MARKETING_WORKER_SECRET || '')) throw new ServiceError('wa_worker_unauthorized', 403);
         const consumed = await rpc('wa_live_consume_worker_token', { p_nonce: req.headers.get('x-wa-worker-nonce'), p_timestamp: Number(req.headers.get('x-wa-worker-time')) });
         if (!consumed) throw new ServiceError('wa_worker_unauthorized', 403);
+        if (body.check_status_validation === true) {
+          const check = await probeStatusValidation(await credentials(), fetcher);
+          return json({ processed: false, ...check });
+        }
         if (body.check_connection === true) {
           // Authenticated operator health check: read-only and no account data.
           await connected(await credentials(), fetcher);

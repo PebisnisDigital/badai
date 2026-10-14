@@ -77,7 +77,7 @@ data. Replay and expiration are tested.
 
 ## Validation completed
 
-- 55 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
+- 56 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
   provider contracts, ambiguous outcomes, frontend gating, sync/QR contracts, and
   worker proof verification/replay. These are not real WhatsApp delivery tests.
 - Deno type checks pass for all three Edge Functions. Netlify asset build passes.
@@ -149,7 +149,18 @@ data. Replay and expiration are tested.
   the gateway or engine cause. See [provider diagnostic record](zawa-story-provider-diagnostics.md).
   A read-only Edge session check after this trial returned HTTP 200, connected
   true, in about 2.5 seconds. No additional Story or session reset is authorized
-  automatically. Actual observation of the second Story is still pending.
+  automatically. The user subsequently confirmed Story is still not visible.
+  A one-use authenticated operator probe sent the documented invalid empty-text
+  payload to `/status`: HTTP 400 with the expected validation message, in about
+  three seconds. It uses no caller-controlled text, exposes no provider data,
+  and cannot record delivery proof or dispatch queue jobs. This verifies the
+  validation response, not Story publication. Provider engine/gateway logs are
+  required to diagnose the timeout; no further publishing request was made.
+  Both stopped Story test runs were then explicitly cancelled by the operator
+  after the user confirmed Story remains unseen. The jobs remain unknown, with
+  one attempt and HTTP 504; they are not relabelled failed or delivered. This
+  removes resume controls on the existing preview while preserving all evidence
+  and allowing a later genuine recipient confirmation.
 - Scheduler activation is available only for verified destination/message types.
   A new group/text schedule trial is prepared; no legacy campaign was activated.
   Local UI checks cover pause/resume confirmation and recovery of the control
@@ -168,6 +179,13 @@ data. Replay and expiration are tested.
   finished, while the original Story run still had an unknown outcome. UI now
   disables resume on an unknown run and labels each result with its campaign;
   the server's review guard remains in place.
+- Publishing the latest preview UI was rejected by Vercel with HTTP 402,
+  `payment_required`, quota `api-deployments-free-per-day` (more than 100; retry
+  after 24 hours). Existing deployments remain available. The last READY Git
+  preview uses commit `ea25573`; it does not contain the latest unknown-run UI
+  lock. That fix is committed and locally tested. No new UI deployment or
+  Production publication is claimed. Production is still held for Story proof
+  as explicitly requested by the user.
 
 ## Remaining acceptance work
 

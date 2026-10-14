@@ -85,6 +85,19 @@ test('one-use worker health check only reads session readiness',async()=>{
   assert.deepEqual(await r.json(),{processed:false,connected:true});
   assert.equal(h.trace.some(c=>c.url.endsWith('/wa_live_claim')||c.url.endsWith('/message')||c.url.endsWith('/wa_live_enqueue')),false);
 });
+test('authenticated Status validation uses only hardcoded invalid text and exposes no provider data',async()=>{
+  const h=await harness({'/status':(body)=>{
+    assert.deepEqual(body,{type:'text',text:''});
+    return Response.json({statusCode:400,message:'text should not be empty',extra:'PRIVATE_PROVIDER_DETAIL'},{status:400});
+  }});
+  const timestamp=Math.floor(Date.now()/1000),nonce='00000000-0000-4000-8000-000000000009';
+  const signature=await signWorkerProof(env.WA_MARKETING_WORKER_SECRET,nonce,timestamp);
+  const r=await h.handler(req({action:'worker',check_status_validation:true,text:'Must never be submitted'},{'x-wa-worker-time':String(timestamp),'x-wa-worker-nonce':nonce,'x-wa-worker-signature':signature}));
+  assert.deepEqual(await r.json(),{processed:false,status_validation_http:400,status_validation_rejected:true});
+  assert.equal(h.trace.filter(c=>c.url.endsWith('/status')).length,1);
+  assert.equal(h.trace.some(c=>/\/(wa_live_claim|wa_live_enqueue|wa_live_confirm|wa_live_settle)$/.test(c.url)),false);
+  assert.equal((await h.handler(req({action:'worker',check_status_validation:true}))).status,403);
+});
 test('failed outcome persistence cannot falsely claim API acceptance',async()=>{
   const h=await harness({'/rest/v1/rpc/wa_live_settle':()=>{throw Error('database unavailable')}});
   const r=await h.handler(req(sendBody));assert.equal(r.status,503);assert.equal(h.trace.filter(c=>c.url.endsWith('/message')).length,1);assert.ok(!(await r.text()).includes('PRIVATE_'));

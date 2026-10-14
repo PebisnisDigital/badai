@@ -26,6 +26,13 @@ adalah uji baru dengan penanda berbeda dan izin pengguna setelah perubahan
 privasi. Permintaan lama tidak diulang. Keduanya tercatat `unknown`, dengan
 antrean masing-masing `paused`; tidak ada percobaan ketiga otomatis.
 
+Sesudah pengguna mengonfirmasi Story tetap tidak terlihat, dua antrean uji
+ditutup sebagai `cancelled`. **Hasil job tetap `unknown`**, masing-masing satu
+percobaan dan HTTP 504. Tidak ada bukti penerimaan yang dibuat. Penutupan ini
+menghilangkan tombol LANJUTKAN pada preview lama, tanpa mengirim ulang atau
+menghapus hasil pengujian. Bila Story kemudian benar-benar terlihat, bukti
+penerimaan masih dapat dicatat.
+
 Sesi yang sama berhasil mengirim teks dan gambar ke grup serta teks ke Channel,
 dengan ID provider dan bukti penerimaan pengguna. Pemeriksaan sesi dari Edge
 setelah uji kedua juga memperoleh HTTP 200 dan `isConnected: true` dalam sekitar
@@ -35,6 +42,14 @@ BADAI menunggu respons pengiriman sampai 65 detik. Di kedua uji Story, panggilan
 HTTP ke Zawa telah mengembalikan 504 sekitar detik ke-60. Dokumen Zawa menyebut
 waktu pemrosesan kirim maksimum empat menit. Komponen yang menghasilkan timeout
 60 detik dan penyebab internalnya belum diketahui.
+
+Uji diagnostik tambahan dari Edge menggunakan payload teks kosong yang secara
+eksplisit didokumentasikan tidak valid: `{ "type": "text", "text": "" }`.
+Zawa memberi HTTP 400 dengan `text should not be empty` dalam sekitar 3 detik.
+Endpoint menjawab lapisan validasi dengan kontrak yang benar; proses publikasi
+dengan teks valid tetap mengalami timeout. Uji diagnostik ini tidak memiliki
+konten Story, tidak mencatat bukti penerimaan, dan tidak membuka fitur Story.
+Tidak ada respons mentah atau kredensial yang ditampilkan.
 
 ## Data yang diperlukan dari Zawa
 
@@ -64,6 +79,8 @@ gagal pasti, mereset sesi, ataupun mengubah konfigurasi akun secara otomatis.
 > menghasilkan statusId. Mohon periksa penerimaan request, hasil publikasi/error
 > engine, dan gateway timeout 60 detik. Saya tidak ingin reset sesi sebelum
 > penyebabnya jelas. Kredensial sesi akan diidentifikasi hanya melalui kanal aman.
+> Payload teks kosong pada endpoint yang sama mendapat HTTP 400 sesuai dokumentasi
+> dalam sekitar tiga detik; teks valid tetap mengalami timeout.
 
 Pesan ini masih berupa draft. Codex belum menghubungi atau mengirim pesan ke
 dukungan Zawa.
