@@ -31,3 +31,33 @@ Deployment may be blocked by a separate daily deployment quota, `api-deployments
 
 ## Important
 Zawa is a third-party unofficial WhatsApp integration. Session breaks, message failures, privacy concerns, and WhatsApp account restrictions are possible. Do not describe `configured` as `connected`.
+
+
+## Tahap 2 — Pengelolaan draft per kampanye (14 Oktober 2026)
+
+Added:
+- `wa-marketing-admin.js` (static asset; **not a Vercel Function**)
+- `lib/admin-v6.js` now embeds the editor script in the existing `/admin` page
+- `vercel.json` explicitly serves that asset before the single-segment landing catch-all.
+- Three Supabase tables with RLS for active owner/super_admin/admin/marketing roles:
+  `wa_marketing_targets`, `wa_marketing_campaigns`, `wa_marketing_campaign_targets`.
+
+Current draft controls:
+- Manually register managed WhatsApp group/channel **name + external ID**; enable/disable or remove it.
+- Create/edit/delete draft campaigns; store text and tentative schedule in **WIB**.
+- Select campaign-specific target subset.
+- Set default delay (30–3600 seconds) and optional target-specific override (30–3600 seconds).
+- Set planned jitter (0–120 seconds); preview earliest–latest intervals without sending.
+- Store state only as `draft` or `paused` at the DB layer.
+- No automatic target discovery; the public Zawa docs reviewed did not document a list groups / list channels endpoint. Do not claim automatic detection until an endpoint is verified.
+- No message delivery, no scheduler, no direct WhatsApp connection sync. No new serverless functions.
+
+The Supabase migration `wa_marketing_campaign_targets_and_delays` was applied successfully. All three tables have RLS and four per-operation policies each; anonymous grants are absent.
+
+**Deployment caveat:** The last production deployment check was blocked by Vercel daily deployment quota; GitHub commits are not proof that the live admin contains the new UI. Once Vercel allows a new deployment, confirm it is READY and smoke-test admin after login.
+
+Before enabling delivery:
+1. Verify session connection and reachable destination IDs using Zawa's actual supported endpoints.
+2. Authorize only BADAI-controlled Channel/groups, with permission to publish.
+3. Add bounded rate limits, idempotent queue jobs, retry policy, pause, logs, and failure alerts.
+4. Enable only after one private test group + one test Channel + Story have succeeded.
