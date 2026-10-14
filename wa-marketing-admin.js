@@ -108,37 +108,17 @@ function renderTarget(kind){
   }));
 }
 
-function renderStory(){
-  const root=document.querySelector('[data-wa-content="story"]');
-  if(!root)return;
-  const target=catalog.find(t=>t.kind==='status');
-  root.innerHTML='<article class="wa-feature-card"><h3>Story / Status WhatsApp BADAI</h3>'+
-    '<p>Status bisa dijadikan tujuan tersendiri pada setiap kampanye. Nantinya Status menggunakan metode posting khusus Zawa, bukan ID grup/Channel. Pengiriman belum diaktifkan.</p>'+
-    '<label class="wa-story-switch"><input type="checkbox" id="waStoryEnabled" '+(target?.enabled?'checked':'')+' '+(target?'':'disabled')+'>'+
-      'Sertakan Story sebagai pilihan target kampanye</label>'+
-    '<div class="wa-alert">Setelah dicentang, Status WA muncul di pilihan tujuan kampanye. Ini hanya menyimpan rencana. Tidak ada Story dipublikasikan.</div></article>';
-  $('waStoryEnabled')?.addEventListener('change',async(event)=>{
-    const enabled=event.target.checked;
-    event.target.disabled=true;
-    try{
-      await db('wa_marketing_targets?id=eq.'+encodeURIComponent(target.id),'PATCH',{enabled});
-      await db('wa_marketing_delivery_plan?target_id=eq.'+encodeURIComponent(target.id),'DELETE');
-      await refresh();
-    }catch(error){alert(error.message);await refresh().catch(()=>{})}
-  });
-}
-
 function selectedLinks(){
   return links.filter(link=>link.campaign_id===selected);
 }
 function targetsMarkup(){
-  const enabled=catalog.filter(t=>t.enabled);
+  const enabled=catalog.filter(t=>t.enabled&&(t.kind==='group'||t.kind==='channel'));
   const chosen=selectedLinks();
   if(!enabled.length)return '<p>Belum ada tujuan aktif. Tambahkan Grup atau Channel terlebih dahulu.</p>';
   return enabled.map(target=>{
     const match=chosen.find(x=>x.target_id===target.id);
     return '<div class="wa-campaign-target"><label><input type="checkbox" data-wa-select="'+escapeHtml(target.id)+'" '+(match?'checked':'')+'>'+
-      '<b>'+escapeHtml(target.name)+'</b> <small>'+(target.kind==='group'?'GRUP':target.kind==='status'?'STORY':'CHANNEL')+'</small></label>'+
+      '<b>'+escapeHtml(target.name)+'</b> <small>'+(target.kind==='group'?'GRUP':'CHANNEL')+'</small></label>'+
       '<input aria-label="Jeda khusus '+escapeHtml(target.name)+'" type="number" min="30" max="3600" step="1" data-wa-override="'+escapeHtml(target.id)+'" placeholder="Ikuti jeda kampanye" value="'+(match?.delay_seconds??'')+'">'+
       '</div>';
   }).join('');
@@ -163,7 +143,7 @@ function updateRealSendButton(){
   try{chosen=draftSelections()}catch(_){}
   const target=catalog.find(t=>t.id===chosen[0]?.target_id);
   const canSend=sendCapabilities.ready&&Boolean(selected)&&chosen.length===1&&
-     sendCapabilities.supported_destinations.includes(target?.kind)&&
+     (target?.kind==='group'||target?.kind==='channel')&&sendCapabilities.supported_destinations.includes(target.kind)&&
      $('waCampaignStatus')?.value!=='paused';
   button.disabled=!canSend;
   button.textContent=sendCapabilities.ready?'KIRIM PESAN — 1 TUJUAN':'KIRIM PESAN — MENUNGGU API ZAWA';
@@ -177,7 +157,7 @@ async function sendRealMessage(){
   try{selectedTargets=draftSelections()}catch(error){note(error.message,true);return;}
   if(selectedTargets.length!==1){note('Tes nyata hanya diizinkan ke satu tujuan terpilih.',true);return;}
   const target=catalog.find(t=>t.id===selectedTargets[0].target_id);
-  if(!target?.enabled||!sendCapabilities.supported_destinations.includes(target.kind)){
+  if(!target?.enabled||!['group','channel'].includes(target.kind)||!sendCapabilities.supported_destinations.includes(target.kind)){
     note('Tujuan ini belum didukung API kirim yang telah diuji.',true);return;
   }
   const current=campaigns.find(c=>c.id===selected);
@@ -214,7 +194,7 @@ function renderCampaigns(){
     '<form id="waCampaignForm" class="wa-campaign-form">'+
       '<label>Nama kampanye (opsional)<input id="waCampaignName" maxlength="140" placeholder="Promosi BADAI Hari Jumat"></label>'+
       '<label>Pengirim / perangkat WhatsApp<input id="waSenderDevice" readonly value="WhatsApp BADAI — sesi Zawa" aria-label="Nomor pengirim dari sesi Zawa"></label>'+
-      '<label>Jenis tujuan<select id="waRecipientType"><option value="all">Semua tujuan terdaftar</option><option value="group">Grup WhatsApp</option><option value="channel">Channel WhatsApp</option><option value="status">Story / Status WA</option></select></label>'+
+      '<label>Jenis tujuan<select id="waRecipientType"><option value="all">Semua tujuan terdaftar</option><option value="group">Grup WhatsApp</option><option value="channel">Channel WhatsApp</option></select></label>'+
       '<div class="wa-campaign-pick"><b>Pilih penerima / tujuan</b><p>Centang tujuan yang dikelola BADAI. Pilihan yang disembunyikan oleh filter tetap tersimpan.</p><div id="waCampaignTargets">'+targetsMarkup()+'</div></div>'+
       '<label>Jenis pesan<select id="waMessageType"><option value="text">Teks</option><option value="media">Teks + Gambar/Video/Dokumen</option></select></label>'+
       '<label>Isi pesan / Caption<textarea id="waCampaignText" rows="7" maxlength="12000" placeholder="Tulis konten promosi dan ajakan bergabung ke BADAI..."></textarea></label>'+
@@ -230,7 +210,7 @@ function renderCampaigns(){
       '<label>Delay maksimum (detik)<input id="waCampaignDelayMax" type="number" min="30" max="3600" value="60" required></label></div>'+
       '<label>Status<select id="waCampaignStatus"><option value="draft">DRAFT</option><option value="paused">PAUSE</option></select></label>'+
       '<div class="wa-alert" id="waCampaignPreview">Pratinjau urutan pengiriman akan muncul di sini. Tidak ada posting yang dijalankan.</div>'+
-      '<div class="wa-alert"><b>Pengiriman langsung:</b> sistem hanya membuka tombol sesudah API Zawa terverifikasi. Tes nyata dibatasi ke <b>satu</b> Grup/Channel/Story dan butuh konfirmasi. Simpan perubahan kampanye sebelum melakukan tes.</div>'+
+      '<div class="wa-alert"><b>Pengiriman langsung:</b> sistem hanya membuka tombol sesudah API Zawa terverifikasi. Tes nyata dibatasi ke <b>satu</b> Grup/Channel dan butuh konfirmasi. Simpan perubahan kampanye sebelum melakukan tes.</div>'+
       '<div class="wa-actions"><button type="submit" class="wa-secondary-link" id="waSaveCampaign">SIMPAN KAMPANYE</button>'+
         '<button type="button" id="waSendReal" disabled title="Menunggu verifikasi API kirim Zawa" class="wa-primary-link">KIRIM PESAN — BELUM AKTIF</button>'+
         '<button type="button" class="wa-secondary-link" id="waResetCampaign">BARU</button>'+
@@ -239,6 +219,12 @@ function renderCampaigns(){
     '</form></article></div>';
   const c=campaigns.find(x=>x.id===selected);
   if(c){
+    const legacyStoryCount=selectedLinks().filter(link=>catalog.some(t=>t.id===link.target_id&&t.kind==='status')).length;
+    if(legacyStoryCount){
+      const message=$('waCampaignMessage');
+      message.textContent='Kampanye lama ini menyimpan '+legacyStoryCount+' target Story yang sekarang nonaktif dan tidak ditampilkan. Jika kampanye disimpan ulang, tujuannya diperbarui hanya ke Grup/Channel.';
+      message.style.color='#ffca82';
+    }
     $('waCampaignName').value=c.name;
     $('waCampaignText').value=c.content_text||'';
     $('waCampaignDate').value=c.scheduled_at?toWibLocal(c.scheduled_at):'';
@@ -350,6 +336,8 @@ function draftSelections(){
     const override=document.querySelector('[data-wa-override="'+input.dataset.waSelect+'"]')?.value.trim()||'';
     const delay=override===''?null:Number(override);
     if(delay!==null&&(!Number.isInteger(delay)||delay<30||delay>3600))throw new Error('Delay tujuan harus 30–3600 detik.');
+    const target=catalog.find(t=>t.id===input.dataset.waSelect);
+    if(!target||!target.enabled||!['group','channel'].includes(target.kind))throw new Error('Hanya tujuan Grup atau Channel aktif yang diizinkan.');
     return {target_id:input.dataset.waSelect,position:index,delay_seconds:delay};
   });
 }
@@ -409,7 +397,7 @@ function renderPreview(){
   const isNowTest=deliveryMode()==='now_test';
   let choices=[];
   try{choices=draftSelections()}catch(error){root.textContent=error.message;return}
-  if(!choices.length){root.textContent='Pilih grup, Channel, atau Story. Belum ada pesan yang dikirim.';return}
+  if(!choices.length){root.textContent='Pilih Grup atau Channel. Belum ada pesan yang dikirim.';return}
   let seconds=0;
   root.innerHTML='<b>'+(isNowTest?'Penerima terpilih — belum dikirim:':'Pratinjau urutan rencana:')+'</b><div class="wa-preview-list">'+choices.map((link,index)=>{
     if(index>0) seconds+=(link.delay_seconds??delay);
@@ -432,7 +420,7 @@ async function refresh(){
   links=Array.isArray(linkRows)?linkRows:[];
   planRows=Array.isArray(plannedRows)?plannedRows:[];
   if(selected&&!campaigns.some(c=>c.id===selected))selected=null;
-  renderTarget('group');renderTarget('channel');renderStory();renderCampaigns();renderCalendar();renderReports();
+  renderTarget('group');renderTarget('channel');renderCampaigns();renderCalendar();renderReports();
   loaded=true;
 }
 async function saveCampaign(event){
@@ -542,7 +530,6 @@ function attachStyle(){
     '#pageWamarketing .wa-campaign-target label input{width:auto}',
     '#pageWamarketing .wa-campaign-target small{font-size:9px;color:#ff9aca}',
     '#pageWamarketing .wa-preview-list{margin:8px 0;font-size:11px;line-height:1.8}',
-    '#pageWamarketing .wa-story-switch{display:flex;align-items:center;gap:9px;font-size:12px;color:#fff;font-weight:900}',
     '#pageWamarketing .wa-plan-toolbar{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}',
     '#pageWamarketing .wa-plan-toolbar label{display:grid;gap:5px;font-size:11px;color:#aaa}',
     '#pageWamarketing .wa-plan-toolbar select{background:#0a0a0a;color:#fff;padding:10px;border:1px solid #333;border-radius:10px;max-width:100%}',
