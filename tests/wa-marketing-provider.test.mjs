@@ -38,6 +38,19 @@ test('provider acceptance never becomes delivery automatically',()=>{
   assert.equal(classifyResponse(500,{message:'send timeout after 240s'},'group').status,'unknown');
   assert.equal(classifyResponse(404,{statusCode:404,message:'session not found'},'group').status,'failed');
 });
+test('documented Status diagnostics are safe and never permit a 5xx retry',()=>{
+  for(const [message,code] of [
+    ['contacts not synced, reconnect the session or set status privacy to "only share with"','provider_contacts_not_synced'],
+    ['status privacy "only share with" has no contacts','provider_status_audience_empty'],
+    ['send timeout after 240s','provider_processing_timeout'],
+    ['PRIVATE arbitrary provider response','provider_ambiguous_response'],
+  ]) {
+    const result=classifyResponse(500,{statusCode:500,message},'status');
+    assert.equal(result.status,'unknown');assert.equal(result.error_code,code);assert.equal(result.provider_id,null);
+    assert.equal(JSON.stringify(result).includes('PRIVATE'),false);
+  }
+  assert.equal(classifyResponse(504,null,'status').error_code,'provider_gateway_timeout');
+});
 test('submission sends documented headers once, and never follows redirects',async()=>{
   let calls=0;
   const outcome=await submit(group,credentials,undefined,async(url,init)=>{

@@ -70,7 +70,18 @@ export function classifyResponse(status: number, data: unknown, kind: Destinatio
   if ((status === 400 || status === 404) && data && typeof data === 'object' && (data as Record<string, unknown>).statusCode === status && typeof (data as Record<string, unknown>).message === 'string') {
     return { status: 'failed', provider_id: null, http_status: status, error_code: 'provider_rejected_' + status };
   }
-  return { status: 'unknown', provider_id: null, http_status: status, error_code: 'provider_ambiguous_response' };
+  // Preserve useful documented diagnostics without retaining arbitrary provider
+  // messages. Even known 5xx errors remain unknown: they do not prove delivery
+  // did not occur and must never authorize an automatic retry.
+  const message = data && typeof data === 'object' ? (data as Record<string, unknown>).message : null;
+  const diagnostic = status === 500 && message === 'contacts not synced, reconnect the session or set status privacy to "only share with"'
+    ? 'provider_contacts_not_synced'
+    : status === 500 && message === 'status privacy "only share with" has no contacts'
+      ? 'provider_status_audience_empty'
+      : status === 500 && message === 'send timeout after 240s'
+        ? 'provider_processing_timeout'
+        : status === 504 ? 'provider_gateway_timeout' : 'provider_ambiguous_response';
+  return { status: 'unknown', provider_id: null, http_status: status, error_code: diagnostic };
 }
 
 export async function submit(snapshot: Snapshot, credentials: Credentials, media?: Media, fetcher: typeof fetch = fetch): Promise<Outcome> {

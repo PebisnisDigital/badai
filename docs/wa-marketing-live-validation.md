@@ -77,7 +77,7 @@ data. Replay and expiration are tested.
 
 ## Validation completed
 
-- 53 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
+- 54 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
   provider contracts, ambiguous outcomes, frontend gating, sync/QR contracts, and
   worker proof verification/replay. These are not real WhatsApp delivery tests.
 - Deno type checks pass for all three Edge Functions. Netlify asset build passes.
@@ -131,10 +131,26 @@ data. Replay and expiration are tested.
   The documented payload/header contract was followed. A 504 does not establish
   the cause or prove non-delivery; no guessed route, session reset, or privacy
   change was attempted.
+  The user confirms the sender uses "Kontak saya" and requires Story proof before
+  Production. The official Status documentation says this audience depends on
+  synchronized contacts. There is no documented contact-sync/delivery diagnostic
+  API. A test with "Hanya bagikan dengan..." and one selected mutual contact was
+  proposed; it requires the user to change phone privacy and explicitly authorize
+  a new test. This is a diagnostic step, not a proven explanation of HTTP 504.
+  The handler now preserves only allowlisted error codes for the documented
+  contacts/audience/240-second errors and gateway timeouts. All 5xx outcomes remain
+  unknown, with no automatic retry. The historical 504 record is not rewritten.
 - Scheduler activation is available only for verified destination/message types.
   A new group/text schedule trial is prepared; no legacy campaign was activated.
   Local UI checks cover pause/resume confirmation and recovery of the control
   after an HTTP failure. Actual scheduled dispatch remains under validation.
+  The user's first "sudah pause" reply was checked against live data: there was
+  no run for the schedule trial, so it was not counted as a successful pause test.
+  The operator then atomically created its new scheduled run and paused it before
+  any claim could occur. Job `e3a2cf76-f098-4e8b-bc7b-0b763b35cc7f` remained queued
+  with zero attempts at `06:58:11 UTC`, more than 30 seconds after its `06:57:32 UTC`
+  due time. Its sampled gap is 50 seconds. Actual Admin resume and reception are
+  still pending; no old campaign was activated by this test.
 
 ## Remaining acceptance work
 
