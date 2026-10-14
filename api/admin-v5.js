@@ -1,6 +1,6 @@
 const adminHandler = require('./admin-v4.js');
 
-module.exports = async function handler(req, res) {
+async function originalAdminHandler(req, res) {
   try {
     let statusCode = 200;
     const headers = {};
@@ -1086,4 +1086,13 @@ module.exports = async function handler(req, res) {
     res.status(500).setHeader('Content-Type','text/plain; charset=utf-8');
     res.send('BADAI admin v5 gagal dimuat: ' + String(error?.message || error));
   }
+};
+
+
+// BADAI WA Marketing reuses this endpoint to remain within Vercel Hobby's 12-function limit.
+const waStatusHandler = require('../lib/wa-marketing.js');
+const waAdminRenderer = require('../lib/admin-v6.js')(originalAdminHandler);
+module.exports = async function handler(req, res) {
+  if(req.query?.__wa_marketing === 'status') return waStatusHandler(req, res);
+  return waAdminRenderer(req, res);
 };
