@@ -45,6 +45,10 @@
       "dest": "/api/landing-v6"
     },
     {
+      "src": "^/wa-marketing-admin\\.js$",
+      "dest": "/wa-marketing-admin.js"
+    },
+    {
       "src": "^/[^/]+/?$",
       "dest": "/api/landing-v6"
     },
