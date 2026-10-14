@@ -19,7 +19,7 @@ async function boot(overrides={}){
     const u=new URL(url),path=u.pathname;
     if(path.includes('/functions/v1/')){
       if(u.searchParams.get('action')==='history')return Response.json({jobs:overrides.jobs||[],runs:overrides.runs||[]});
-      if((options.method||'GET')==='GET')return Response.json(caps);
+      if((options.method||'GET')==='GET')return overrides.capResponse?overrides.capResponse(caps):Response.json(caps);
       return overrides.post?overrides.post(JSON.parse(options.body)):Response.json({status:'queued'});
     }
     if(path.endsWith('/wa_marketing_targets'))return Response.json(targets);
@@ -56,6 +56,15 @@ test('bootstrap test is available only on the approved target; ordinary send sta
   assert.equal(h.$('waSendReal').disabled,true);assert.equal(h.$('waSendTest').disabled,false);h.dom.window.close();
   const denied=await boot({caps:{ready:false,sending_enabled:false,approved_test_targets:[],verified_types:[]}});
   assert.equal(denied.$('waSendTest').disabled,true);denied.dom.window.close();
+});
+test('capability failures explain the lock and a fresh read enables only the approved bootstrap test',async()=>{
+  let checks=0;
+  const h=await boot({caps:{ready:false,sending_enabled:false,verified_types:[]},capResponse:caps=>++checks===1?Response.json({error:'wa_owner_required'},{status:403}):Response.json(caps)});
+  await wait(()=>h.$('waTestReadiness').textContent.includes('Sesi Admin'));
+  assert.equal(h.$('waSendTest').disabled,true);
+  h.$('waCheckSend').click();await wait(()=>h.$('waSendTest').disabled===false);
+  assert.equal(h.$('waSendReal').disabled,true);assert.ok(h.$('waTestReadiness').textContent.includes('Siap'));
+  assert.equal(h.requests.some(c=>c.options.method==='POST'),false);h.dom.window.close();
 });
 test('a queued acknowledgement is not displayed as provider acceptance or delivery',async()=>{
   const h=await boot();h.$('waSendReal').click();await wait(()=>h.$('waCampaignMessage').textContent.includes('ANTREAN'));

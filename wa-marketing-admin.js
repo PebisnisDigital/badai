@@ -11,6 +11,7 @@ let catalog = [], campaigns = [], links = [], planRows = [], selected = null, ca
 const syncFeedback={group:'',channel:''};
 const SEND_URL=BASE+'/functions/v1/badai-wa-send';
 let sendCapabilities={ready:false,supported_destinations:[]};
+let capabilityPending=false,capabilityError='',capabilityCheck=0;
 let liveJobs=[],liveRuns=[],historyError='',formDirty=false;
 const requestKeys=new Map();
 const deliveryLabels={queued:'DALAM ANTREAN',preparing:'PERSIAPAN',dispatching:'PERMINTAAN BERLANGSUNG',api_accepted:'DITERIMA API — PENERIMA BELUM DIKONFIRMASI',delivered:'DITERIMA TUJUAN — DIKONFIRMASI',failed:'GAGAL',unknown:'BELUM DIKETAHUI — TIDAK DICOBA ULANG',cancelled:'DIBATALKAN'};
@@ -178,17 +179,22 @@ function targetsMarkup(){
 }
 
 async function checkSendingCapabilities(){
+  const check=++capabilityCheck;capabilityPending=true;capabilityError='';updateRealSendButton();
   try {
     const res=await fetch(SEND_URL,{method:'GET',cache:'no-store',
       headers:{apikey:KEY,Authorization:'Bearer '+token()}});
     const data=await res.json().catch(()=>({}));
     if(!res.ok)throw Error(data.error||'Koneksi pengiriman belum siap');
+    if(check!==capabilityCheck)return;
     sendCapabilities={...data,
       ready:data.ready===true&&data.sending_enabled===true,
       supported_destinations:Array.isArray(data.supported_destinations)?data.supported_destinations:[]
     };
-  }catch(_){sendCapabilities={ready:false,supported_destinations:[]};}
-  updateRealSendButton();
+  }catch(error){
+    if(check!==capabilityCheck)return;
+    sendCapabilities={ready:false,supported_destinations:[]};
+    capabilityError=error.message==='wa_owner_required'?'Sesi Admin perlu diperiksa. Login kembali sebagai Owner atau Super Admin.':error.message;
+  }finally{if(check===capabilityCheck){capabilityPending=false;updateRealSendButton();}}
 }
 function updateRealSendButton(){
   const button=$('waSendReal');if(!button)return;
@@ -197,15 +203,28 @@ function updateRealSendButton(){
   const target=catalog.find(t=>t.id===chosen[0]?.target_id);
   const c=campaigns.find(row=>row.id===selected);
   const saved=Boolean(c&&c.status!=='paused'&&!formDirty&&!busy);
-  const canSend=sendCapabilities.ready&&saved&&chosen.length===1&&verifiedTarget(target,c);
+  const canSend=!capabilityPending&&sendCapabilities.ready&&saved&&chosen.length===1&&verifiedTarget(target,c);
   button.disabled=!canSend;
   button.textContent='KIRIM PESAN — 1 TUJUAN';
   button.title=canSend?'Konfirmasi pengiriman nyata ke satu tujuan'
     : formDirty?'Simpan perubahan sebelum mengirim.':'Jenis tujuan dan pesan harus lolos uji penerimaan, dengan kampanye tersimpan dan aktif.';
   const test=$('waSendTest');
-  if(test){test.disabled=!(saved&&chosen.length===1&&sendCapabilities.testing_ready&&approvedTest(target,c));test.title='Uji nyata hanya ke tujuan yang telah diizinkan di backend.';}
+  let reason='';
+  if(capabilityPending)reason='Sedang memeriksa kesiapan uji…';
+  else if(busy)reason='Tunggu operasi yang sedang berlangsung selesai.';
+  else if(!c)reason='Pilih kampanye tersimpan dari Daftar Kampanye.';
+  else if(c.status==='paused')reason='Kampanye berstatus PAUSE. Ubah ke DRAFT lalu simpan.';
+  else if(formDirty)reason='Ada perubahan belum disimpan. Klik SIMPAN KAMPANYE sebelum mengirim.';
+  else if(chosen.length!==1)reason='Pilih tepat satu tujuan lalu simpan kampanye.';
+  else if(capabilityError)reason=capabilityError;
+  else if(!sendCapabilities.testing_ready)reason=sendCapabilities.connected===false?'WhatsApp belum terhubung. Periksa Koneksi lalu periksa kesiapan uji.':'Mode uji belum siap. Klik PERIKSA KESIAPAN UJI.';
+  else if(!target?.enabled||!sendCapabilities.approved_test_targets?.includes(target.id))reason='Tujuan ini belum diizinkan untuk pengujian.';
+  else if(!approvedTest(target,c))reason='Jenis pesan ini memerlukan bukti uji teks terlebih dahulu. Setelah pairing ulang, mulai dengan teks ke grup yang diizinkan.';
+  if(test){test.disabled=Boolean(reason);test.title=reason||'Siap mengirim satu uji ke tujuan yang diizinkan, dengan konfirmasi.';}
+  if($('waTestReadiness'))$('waTestReadiness').textContent=reason||'Siap mengirim satu uji dengan konfirmasi.';
+  if($('waCheckSend'))$('waCheckSend').disabled=capabilityPending||busy;
   const schedule=$('waScheduleReal');
-  if(schedule)schedule.disabled=!(saved&&sendCapabilities.ready&&sendCapabilities.scheduler_enabled&&c.delivery_mode==='scheduled'&&chosen.length>0&&chosen.every(s=>verifiedTarget(catalog.find(t=>t.id===s.target_id),c)));
+  if(schedule)schedule.disabled=!(!capabilityPending&&saved&&sendCapabilities.ready&&sendCapabilities.scheduler_enabled&&c.delivery_mode==='scheduled'&&chosen.length>0&&chosen.every(s=>verifiedTarget(catalog.find(t=>t.id===s.target_id),c)));
 }
 async function sendRealMessage(action='send_one'){
   if(busy||formDirty)return;
@@ -277,10 +296,11 @@ function renderCampaigns(){
       '<div class="wa-actions"><button type="submit" class="wa-secondary-link" id="waSaveCampaign">SIMPAN KAMPANYE</button>'+
         '<button type="button" id="waSendReal" disabled title="Menunggu verifikasi API kirim Zawa" class="wa-primary-link">KIRIM PESAN — BELUM AKTIF</button>'+
         '<button type="button" id="waSendTest" disabled class="wa-secondary-link">KIRIM UJI — 1 TUJUAN DIIZINKAN</button>'+
+        '<button type="button" id="waCheckSend" class="wa-secondary-link">PERIKSA KESIAPAN UJI</button>'+
         '<button type="button" id="waScheduleReal" disabled class="wa-primary-link">AKTIFKAN JADWAL PENGIRIMAN</button>'+
         '<button type="button" class="wa-secondary-link" id="waResetCampaign">BARU</button>'+
         '<button type="button" class="wa-danger-button" id="waDeleteCampaign" '+(selected?'':'disabled')+'>HAPUS</button></div>'+
-      '<p id="waCampaignMessage" aria-live="polite"></p>'+
+      '<p id="waTestReadiness" role="status"></p><p id="waCampaignMessage" aria-live="polite"></p>'+
     '</form></article></div>';
   const c=campaigns.find(x=>x.id===selected);
   if(c){
@@ -306,6 +326,7 @@ function renderCampaigns(){
   $('waCampaignForm').addEventListener('submit',saveCampaign);
   $('waSendReal').addEventListener('click',()=>sendRealMessage('send_one'));
   $('waSendTest').addEventListener('click',()=>sendRealMessage('send_test'));
+  $('waCheckSend').addEventListener('click',checkSendingCapabilities);
   $('waScheduleReal').addEventListener('click',()=>sendRealMessage('schedule'));
   for(const event of ['input','change'])$('waCampaignForm').addEventListener(event,e=>{
     if(e.target.id==='waRecipientType')return;
