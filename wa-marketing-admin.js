@@ -9,6 +9,8 @@ const $ = id => document.getElementById(id);
 const escapeHtml = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let catalog = [], campaigns = [], links = [], planRows = [], selected = null, calendarCampaign = null, busy = false, loaded = false;
 const syncFeedback={group:'',channel:''};
+const SEND_URL=BASE+'/functions/v1/badai-wa-send';
+let sendCapabilities={ready:false,supported_destinations:[]};
 
 function token(){
   let session = null;
@@ -141,6 +143,62 @@ function targetsMarkup(){
       '</div>';
   }).join('');
 }
+
+async function checkSendingCapabilities(){
+  try {
+    const res=await fetch(SEND_URL,{method:'GET',cache:'no-store',
+      headers:{apikey:KEY,Authorization:'Bearer '+token()}});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw Error(data.error||'Koneksi pengiriman belum siap');
+    sendCapabilities={
+      ready:data.ready===true&&data.sending_enabled===true,
+      supported_destinations:Array.isArray(data.supported_destinations)?data.supported_destinations:[]
+    };
+  }catch(_){sendCapabilities={ready:false,supported_destinations:[]};}
+  updateRealSendButton();
+}
+function updateRealSendButton(){
+  const button=$('waSendReal');if(!button)return;
+  let chosen=[];
+  try{chosen=draftSelections()}catch(_){}
+  const target=catalog.find(t=>t.id===chosen[0]?.target_id);
+  const canSend=sendCapabilities.ready&&Boolean(selected)&&chosen.length===1&&
+     sendCapabilities.supported_destinations.includes(target?.kind)&&
+     $('waCampaignStatus')?.value!=='paused';
+  button.disabled=!canSend;
+  button.textContent=sendCapabilities.ready?'KIRIM PESAN — 1 TUJUAN':'KIRIM PESAN — MENUNGGU API ZAWA';
+  button.title=canSend?'Konfirmasi pengiriman nyata ke satu tujuan'
+    : 'API pengiriman Zawa belum selesai diverifikasi, atau belum ada kampanye dan satu tujuan yang valid.';
+}
+async function sendRealMessage(){
+  if(busy||!sendCapabilities.ready)return;
+  if(!selected){note('Simpan kampanye terlebih dahulu.',true);return;}
+  let selectedTargets=[];
+  try{selectedTargets=draftSelections()}catch(error){note(error.message,true);return;}
+  if(selectedTargets.length!==1){note('Tes nyata hanya diizinkan ke satu tujuan terpilih.',true);return;}
+  const target=catalog.find(t=>t.id===selectedTargets[0].target_id);
+  if(!target?.enabled||!sendCapabilities.supported_destinations.includes(target.kind)){
+    note('Tujuan ini belum didukung API kirim yang telah diuji.',true);return;
+  }
+  const current=campaigns.find(c=>c.id===selected);
+  if(!current||current.status==='paused'){
+    note('Kampanye tidak ditemukan atau sedang PAUSE.',true);return;
+  }
+  if(!confirm('Kirim pesan WhatsApp SUNGGUHAN dari kampanye "'+
+      current.name+'" ke "'+target.name+'"? Pastikan isi kampanye yang tersimpan sudah benar.'))return;
+  busy=true;updateRealSendButton();
+  try{
+    const response=await fetch(SEND_URL,{method:'POST',cache:'no-store',
+      headers:{apikey:KEY,Authorization:'Bearer '+token(),'Content-Type':'application/json'},
+      body:JSON.stringify({campaign_id:selected,target_id:target.id,confirm:true,action:'send_one'})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw Error(data.error||'Pengiriman belum berhasil dikonfirmasi.');
+    note('Permintaan diterima provider. Cek riwayat pengiriman untuk status akhir.');
+  }catch(error){note(error.message,true)}
+  finally{busy=false;updateRealSendButton()}
+}
+
 function renderCampaigns(){
   const root=document.querySelector('[data-wa-content="campaigns"]');if(!root)return;
   root.innerHTML=
@@ -172,7 +230,7 @@ function renderCampaigns(){
       '<label>Delay maksimum (detik)<input id="waCampaignDelayMax" type="number" min="30" max="3600" value="60" required></label></div>'+
       '<label>Status<select id="waCampaignStatus"><option value="draft">DRAFT</option><option value="paused">PAUSE</option></select></label>'+
       '<div class="wa-alert" id="waCampaignPreview">Pratinjau urutan pengiriman akan muncul di sini. Tidak ada posting yang dijalankan.</div>'+
-      '<div class="wa-alert"><b>Pengiriman langsung belum aktif:</b> format API Zawa harus diverifikasi sebelum tombol kirim diaktifkan. Simpan dahulu konten, media dan tujuan sebagai DRAFT. Tombol Kirim Sekarang tidak akan mensimulasikan pengiriman.</div>'+
+      '<div class="wa-alert"><b>Pengiriman langsung:</b> sistem hanya membuka tombol sesudah API Zawa terverifikasi. Tes nyata dibatasi ke <b>satu</b> Grup/Channel/Story dan butuh konfirmasi. Simpan perubahan kampanye sebelum melakukan tes.</div>'+
       '<div class="wa-actions"><button type="submit" class="wa-secondary-link" id="waSaveCampaign">SIMPAN KAMPANYE</button>'+
         '<button type="button" id="waSendReal" disabled title="Menunggu verifikasi API kirim Zawa" class="wa-primary-link">KIRIM PESAN — BELUM AKTIF</button>'+
         '<button type="button" class="wa-secondary-link" id="waResetCampaign">BARU</button>'+
@@ -201,13 +259,16 @@ function renderCampaigns(){
   updateMessageType();
   updateDeliveryMode();
   $('waCampaignForm').addEventListener('submit',saveCampaign);
+  $('waSendReal').addEventListener('click',sendRealMessage);
+  $('waCampaignStatus').addEventListener('change',updateRealSendButton);
+  updateRealSendButton();
   $('waResetCampaign').addEventListener('click',()=>{selected=null;renderCampaigns()});
   $('waNewCampaign').addEventListener('click',()=>{selected=null;renderCampaigns()});
   $('waDeleteCampaign').addEventListener('click',deleteCampaign);
   root.querySelectorAll('[data-wa-campaign]').forEach(button=>button.addEventListener('click',()=>{
     selected=button.dataset.waCampaign;renderCampaigns();
   }));
-  root.querySelectorAll('[data-wa-select], [data-wa-override]').forEach(input=>input.addEventListener('input',renderPreview));
+  root.querySelectorAll('[data-wa-select], [data-wa-override]').forEach(input=>input.addEventListener('input',()=>{renderPreview();updateRealSendButton();}));
   ['waCampaignDate','waCampaignDelayMin','waCampaignDelayMax'].forEach(id=>$(id).addEventListener('input',renderPreview));
   renderPreview();
 }
@@ -506,7 +567,7 @@ function bootstrap(){
   attachStyle();
   const tab=$('tabWaMarketing');
   const load=()=>{if(!loaded)refresh().catch(error=>alert(error.message))};
-  tab.addEventListener('click',load);
+  tab.addEventListener('click',()=>{load();checkSendingCapabilities();});
   document.querySelectorAll('[data-wa-section]').forEach(btn=>btn.addEventListener('click',load));
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootstrap);else bootstrap();
