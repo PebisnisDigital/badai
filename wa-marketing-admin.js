@@ -156,12 +156,18 @@ function renderCampaigns(){
     '<form id="waCampaignForm" class="wa-campaign-form">'+
       '<label>Nama kampanye<input id="waCampaignName" maxlength="140" required placeholder="Edukasi BADAI Pagi"></label>'+
       '<label>Konten promosi<textarea id="waCampaignText" rows="6" maxlength="12000" placeholder="Tulis caption promosi BADAI..."></textarea></label>'+
-      '<label>Rencana tanggal & jam (WIB)<input id="waCampaignDate" type="datetime-local"></label>'+
+      '<fieldset class="wa-send-mode"><legend>Waktu pengiriman</legend>'+
+         '<label><input type="radio" name="waDeliveryMode" value="scheduled" checked> Jadwalkan</label>'+
+         '<label><input type="radio" name="waDeliveryMode" value="now_test"> Kirim Sekarang (Tes)</label>'+
+       '</fieldset>'+
+       '<div id="waCampaignDateWrap"><label>Rencana tanggal & jam (WIB)<input id="waCampaignDate" type="datetime-local"></label></div>'+
+       '<p class="wa-mode-help" id="waModeHint">Pilih tanggal dan jam untuk membuat rencana antrean.</p>'+
       '<div class="wa-two-cols"><label>Delay antar tujuan (detik)<input id="waCampaignDelay" type="number" min="30" max="3600" value="90" required></label>'+
       '<label>Variasi jeda maksimum (detik)<input id="waCampaignJitter" type="number" min="0" max="120" value="0" required></label></div>'+
       '<label>Status<select id="waCampaignStatus"><option value="draft">DRAFT</option><option value="paused">PAUSE</option></select></label>'+
       '<div class="wa-campaign-pick"><b>Pilih grup / Channel</b><p>Jeda khusus per tujuan bersifat opsional. Kosongkan untuk mengikuti delay kampanye.</p><div id="waCampaignTargets">'+targetsMarkup()+'</div></div>'+
       '<div class="wa-alert" id="waCampaignPreview">Pratinjau urutan pengiriman akan muncul di sini. Tidak ada posting yang dijalankan.</div>'+
+      '<div class="wa-alert">PENTING: Mode Kirim Sekarang saat ini <b>hanya membuat rencana tes ke satu tujuan</b>. Belum mengirim pesan ke WhatsApp karena API pengiriman Zawa belum diverifikasi.</div>'+
       '<div class="wa-actions"><button type="submit" class="wa-primary-link" id="waSaveCampaign">SIMPAN DRAFT</button>'+
         '<button type="button" class="wa-secondary-link" id="waResetCampaign">BARU</button>'+
         '<button type="button" class="wa-danger-button" id="waDeleteCampaign" '+(selected?'':'disabled')+'>HAPUS</button></div>'+
@@ -175,7 +181,12 @@ function renderCampaigns(){
     $('waCampaignDelay').value=String(c.delay_seconds);
     $('waCampaignJitter').value=String(c.jitter_seconds);
     $('waCampaignStatus').value=c.status;
+    const mode=c.delivery_mode==='now_test'?'now_test':'scheduled';
+    const input=root.querySelector('input[name="waDeliveryMode"][value="'+mode+'"]');
+    if(input)input.checked=true;
   }
+  root.querySelectorAll('input[name="waDeliveryMode"]').forEach(input=>input.addEventListener('change',updateDeliveryMode));
+  updateDeliveryMode();
   $('waCampaignForm').addEventListener('submit',saveCampaign);
   $('waResetCampaign').addEventListener('click',()=>{selected=null;renderCampaigns()});
   $('waNewCampaign').addEventListener('click',()=>{selected=null;renderCampaigns()});
@@ -268,14 +279,32 @@ function draftSelections(){
     return {target_id:input.dataset.waSelect,position:index,delay_seconds:delay};
   });
 }
+
+function deliveryMode(){
+  return document.querySelector('input[name="waDeliveryMode"]:checked')?.value==='now_test'?'now_test':'scheduled';
+}
+function updateDeliveryMode(){
+  const now=deliveryMode()==='now_test';
+  const wrap=$('waCampaignDateWrap'),date=$('waCampaignDate'),hint=$('waModeHint');
+  if(wrap)wrap.hidden=now;
+  if(date){date.required=!now;date.disabled=now;}
+  if(hint)hint.textContent=now
+    ?'Mode tes: tidak perlu isi tanggal. Pilih tepat SATU grup, Channel, atau Story aktif. Tombol simpan hanya membuat antrean tes, bukan mengirim WhatsApp.'
+    :'Pilih tanggal dan jam (WIB). Jadwal disimpan sebagai draft sampai pengiriman Zawa diaktifkan.';
+  const save=$('waSaveCampaign');
+  if(save)save.textContent=now?'BUAT RENCANA TES SEKARANG':'SIMPAN DRAFT';
+  renderPreview();
+}
+
 function renderPreview(){
   const root=$('waCampaignPreview');if(!root)return;
   const delay=Number($('waCampaignDelay')?.value||90),jitter=Number($('waCampaignJitter')?.value||0);
+  const isNowTest=deliveryMode()==='now_test';
   let choices=[];
   try{choices=draftSelections()}catch(error){root.textContent=error.message;return}
   if(!choices.length){root.textContent='Belum ada tujuan dipilih. Tidak ada pengiriman yang berjalan.';return}
   let seconds=0;
-  root.innerHTML='<b>Simulasi jadwal (bukan pengiriman):</b><div class="wa-preview-list">'+choices.map((link,index)=>{
+  root.innerHTML='<b>'+(isNowTest?'TES SEKARANG — hanya simulasi, belum kirim WA:':'Simulasi jadwal (bukan pengiriman):')+'</b><div class="wa-preview-list">'+choices.map((link,index)=>{
     if(index>0) seconds+=(link.delay_seconds??delay);
     const target=catalog.find(t=>t.id===link.target_id);
     const earliest=Math.max(0,seconds);
@@ -287,7 +316,7 @@ function renderPreview(){
 async function refresh(){
   const [targetRows,campaignRows,linkRows,plannedRows]=await Promise.all([
     db('wa_marketing_targets?select=id,kind,external_id,name,origin,enabled&order=name.asc','GET'),
-    db('wa_marketing_campaigns?select=id,name,content_text,scheduled_at,status,delay_seconds,jitter_seconds&order=created_at.desc','GET'),
+    db('wa_marketing_campaigns?select=id,name,content_text,scheduled_at,delivery_mode,status,delay_seconds,jitter_seconds&order=created_at.desc','GET'),
     db('wa_marketing_campaign_targets?select=campaign_id,target_id,position,delay_seconds&order=position.asc','GET'),
     db('wa_marketing_delivery_plan?select=campaign_id,target_id,target_name,target_kind,send_after,position,interval_seconds,status&order=send_after.asc','GET')
   ]);
@@ -306,10 +335,12 @@ async function saveCampaign(event){
   try{
     const name=$('waCampaignName').value.trim();
     if(!name)throw new Error('Nama kampanye wajib diisi.');
+    const mode=deliveryMode();
     payload={
       name,
       content_text:$('waCampaignText').value,
-      scheduled_at:parseWib($('waCampaignDate').value),
+      delivery_mode:mode,
+      scheduled_at:mode==='now_test'?null:parseWib($('waCampaignDate').value),
       delay_seconds:Number($('waCampaignDelay').value),
       jitter_seconds:Number($('waCampaignJitter').value),
       status:$('waCampaignStatus').value
@@ -317,6 +348,9 @@ async function saveCampaign(event){
     if(!Number.isInteger(payload.delay_seconds)||payload.delay_seconds<30||payload.delay_seconds>3600)throw new Error('Delay kampanye minimal 30 dan maksimal 3600 detik.');
     if(!Number.isInteger(payload.jitter_seconds)||payload.jitter_seconds<0||payload.jitter_seconds>120)throw new Error('Variasi jeda 0–120 detik.');
     chosen=draftSelections();
+    if(payload.delivery_mode==='scheduled'&&!payload.scheduled_at)throw new Error('Isi tanggal dan jam WIB, atau pilih Kirim Sekarang (Tes).');
+    if(payload.delivery_mode==='now_test'&&chosen.length!==1)throw new Error('Untuk tes sekarang, pilih tepat SATU tujuan aktif dulu.');
+    if(payload.delivery_mode==='now_test'&&!String(payload.content_text||'').trim())throw new Error('Tulis konten tes terlebih dahulu.');
   }catch(error){note(error.message,true);return}
   busy=true;$('waSaveCampaign').disabled=true;
   try{
@@ -329,7 +363,19 @@ async function saveCampaign(event){
     // Content, date and target changes invalidate a prior dry-run queue snapshot.
     await db('wa_marketing_delivery_plan?campaign_id=eq.'+encodeURIComponent(id),'DELETE');
     selected=id;
-    await refresh();note('Draft dan delay kampanye tersimpan. Pengiriman belum aktif.');
+    calendarCampaign=id;
+    if(payload.delivery_mode==='now_test'){
+      // A dry-run only. Absolutely no WhatsApp API call is made.
+      const planned=await db('rpc/wa_marketing_build_plan','POST',{p_campaign_id:id});
+      await refresh();
+      note('Rencana tes sekarang dibuat untuk '+(Array.isArray(planned)?planned.length:0)+' tujuan. BELUM mengirim WhatsApp.');
+      const tab=document.querySelector('[data-wa-section="calendar"]');
+      if(tab)tab.click();
+      const info=$('waCalendarMessage');
+      if(info)info.textContent='Simulasi tes sekarang dibuat. Belum ada pesan WhatsApp yang dikirim.';
+    }else{
+      await refresh();note('Draft dan delay kampanye tersimpan. Pengiriman belum aktif.');
+    }
   }catch(error){note(error.message,true);await refresh().catch(()=>{})}
   finally{busy=false;if($('waSaveCampaign'))$('waSaveCampaign').disabled=false}
 }
@@ -364,6 +410,12 @@ function attachStyle(){
     '#pageWamarketing .wa-campaign-list-button b{font-size:12px}',
     '#pageWamarketing .wa-campaign-list-button small{font-size:10px;color:#aaa}',
     '#pageWamarketing .wa-two-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}',
+    '#pageWamarketing .wa-send-mode{border:1px solid #393039;border-radius:12px;padding:12px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}',
+    '#pageWamarketing .wa-send-mode legend{color:#ddd;font-size:11px;font-weight:900;padding:0 5px}',
+    '#pageWamarketing .wa-send-mode label{display:flex;flex-direction:row;align-items:center;gap:7px;font-size:12px;color:#eee;cursor:pointer}',
+    '#pageWamarketing .wa-send-mode input{width:auto;min-width:unset;accent-color:#ff4fa3}',
+    '#pageWamarketing #waCampaignDateWrap[hidden]{display:none}',
+    '#pageWamarketing .wa-mode-help{font-size:11px;color:#aaa;line-height:1.5;margin:0}',
     '#pageWamarketing .wa-campaign-pick{padding:12px;border:1px solid #333;border-radius:12px}',
     '#pageWamarketing .wa-campaign-pick>b{font-size:12px}',
     '#pageWamarketing .wa-campaign-pick p{font-size:10px;margin:3px 0 12px}',
