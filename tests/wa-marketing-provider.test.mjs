@@ -54,9 +54,14 @@ test('lost response is unknown and never automatically retried',async()=>{
   assert.equal(calls,1);assert.equal(outcome.status,'unknown');
 });
 test('only explicit isConnected=true and channel ownership permit sending',async()=>{
-  await assert.rejects(()=>connected(credentials,async()=>Response.json({isConnected:'true'})),/disconnected/);
+  await assert.rejects(()=>connected(credentials,async()=>Response.json({isConnected:'true'})),/invalid_response/);
   await assert.rejects(()=>ownsChannel('123@newsletter',credentials,async()=>Response.json({docs:[{id:'123@newsletter',isOwner:false}]})),/not_owned/);
   await ownsChannel('123@newsletter',credentials,async()=>Response.json({docs:[{id:'123@newsletter',isOwner:true}]}));
+});
+test('session transport and invalid JSON failures have safe specific codes',async()=>{
+  await assert.rejects(()=>connected(credentials,async()=>{throw Error('PRIVATE transport detail')}),/^Error: provider_session_transport_failed$/);
+  await assert.rejects(()=>connected(credentials,async()=>new Response('not JSON')),/^Error: provider_session_invalid_response$/);
+  await assert.rejects(()=>connected(credentials,async()=>Response.json({isConnected:false})),/^Error: provider_session_disconnected$/);
 });
 test('verification fingerprints change with session rotation',async()=>{
   const a=await fingerprint(credentials),b=await fingerprint({...credentials,session_secret:'different-fixture'});

@@ -89,12 +89,16 @@ export async function submit(snapshot: Snapshot, credentials: Credentials, media
 }
 
 export async function connected(credentials: Credentials, fetcher: typeof fetch = fetch) {
-  const response = await fetcher(ZAWA_BASE + '/session', {
-    headers: providerHeaders(credentials), redirect: 'error', signal: AbortSignal.timeout(10000),
-  });
+  let response: Response;
+  try {
+    response = await fetcher(ZAWA_BASE + '/session', {
+      headers: providerHeaders(credentials), redirect: 'error', signal: AbortSignal.timeout(30000),
+    });
+  } catch (_) { throw new Error('provider_session_transport_failed'); }
   if (!response.ok) throw new Error('provider_session_unavailable');
-  const data = await response.json();
+  const data = await response.json().catch(() => null);
   // Do not expose the response: it contains session credentials and account data.
+  if (!data || typeof data.isConnected !== 'boolean') throw new Error('provider_session_invalid_response');
   if (data.isConnected !== true) throw new Error('provider_session_disconnected');
   return true;
 }

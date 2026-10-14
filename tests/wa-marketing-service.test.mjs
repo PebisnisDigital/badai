@@ -71,6 +71,20 @@ test('lost provider response persists unknown without retry',async()=>{
   const r=await h.handler(req(sendBody));assert.equal((await r.json()).status,'unknown');
   assert.equal(h.trace.filter(c=>c.url.endsWith('/message')).length,1);assert.equal(h.trace.find(c=>c.url.endsWith('/wa_live_settle')).body.p_status,'unknown');
 });
+test('session failure before enqueue is specific and cannot submit a message',async()=>{
+  const h=await harness({'/session':()=>{throw Error('PRIVATE transport detail')}});
+  const r=await h.handler(req(sendBody));assert.equal(r.status,503);
+  assert.equal((await r.json()).error,'provider_session_transport_failed');
+  assert.equal(h.trace.some(c=>c.url.endsWith('/wa_live_enqueue')||c.url.endsWith('/message')),false);
+});
+test('one-use worker health check only reads session readiness',async()=>{
+  const h=await harness();
+  const timestamp=Math.floor(Date.now()/1000),nonce='00000000-0000-4000-8000-000000000009';
+  const signature=await signWorkerProof(env.WA_MARKETING_WORKER_SECRET,nonce,timestamp);
+  const r=await h.handler(req({action:'worker',check_connection:true},{'x-wa-worker-time':String(timestamp),'x-wa-worker-nonce':nonce,'x-wa-worker-signature':signature}));
+  assert.deepEqual(await r.json(),{processed:false,connected:true});
+  assert.equal(h.trace.some(c=>c.url.endsWith('/wa_live_claim')||c.url.endsWith('/message')||c.url.endsWith('/wa_live_enqueue')),false);
+});
 test('failed outcome persistence cannot falsely claim API acceptance',async()=>{
   const h=await harness({'/rest/v1/rpc/wa_live_settle':()=>{throw Error('database unavailable')}});
   const r=await h.handler(req(sendBody));assert.equal(r.status,503);assert.equal(h.trace.filter(c=>c.url.endsWith('/message')).length,1);assert.ok(!(await r.text()).includes('PRIVATE_'));

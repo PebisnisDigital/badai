@@ -77,7 +77,7 @@ data. Replay and expiration are tested.
 
 ## Validation completed
 
-- 48 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
+- 51 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
   provider contracts, ambiguous outcomes, frontend gating, sync/QR contracts, and
   worker proof verification/replay. These are not real WhatsApp delivery tests.
 - Deno type checks pass for all three Edge Functions. Netlify asset build passes.
@@ -93,6 +93,17 @@ data. Replay and expiration are tested.
   the same operation proof: one returned 200 (`processed:false`, empty queue),
   the replay returned 403. No provider message was sent by this check. The public
   REST API also rejects the `net` schema with HTTP 406 (`PGRST106`).
+- The first Admin trial returned `wa_operation_failed` (HTTP 503) after about
+  ten seconds. Live jobs and runs were both empty: no provider send was attempted.
+  Enqueue was separately exercised inside a rolled-back live transaction. The
+  timing points to the former ten-second session preflight limit, rather than a
+  successful or ambiguous message submission. Preflight now allows thirty seconds
+  and distinguishes transport, invalid-response, and database failures safely.
+- A one-use authenticated worker health check exercised the Edge-to-Zawa session
+  read after this update: HTTP 200, connected true, about 2.7 seconds. It cannot
+  claim/enqueue jobs or submit a message. Actual Admin retry and receipt remain
+  required. Database diagnostic logs include only fixed routes/status/SQLSTATE,
+  never raw messages, payloads, queries, credentials, or signed URLs.
 
 ## Remaining acceptance work
 

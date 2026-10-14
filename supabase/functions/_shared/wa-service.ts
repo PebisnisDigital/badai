@@ -18,9 +18,22 @@ export function createHandler(env: Environment, fetcher: typeof fetch = fetch) {
 
   async function internal(path: string, options: RequestInit = {}) {
     if (!base || !env.SUPABASE_SERVICE_ROLE_KEY) throw new ServiceError('wa_backend_not_configured', 503);
-    const response = await fetcher(base + path, { ...options, headers: { ...apiHeaders, ...options.headers }, redirect: 'error', signal: AbortSignal.timeout(15000) });
+    let response: Response;
+    try {
+      response = await fetcher(base + path, { ...options, headers: { ...apiHeaders, ...options.headers }, redirect: 'error', signal: AbortSignal.timeout(15000) });
+    } catch (_) { throw new ServiceError('wa_backend_transport_failed', 503); }
     const data = await response.json().catch(() => null);
-    if (!response.ok) throw new ServiceError(safeCode(data?.message), response.status === 403 ? 403 : 400);
+    if (!response.ok) {
+      const code = safeCode(data?.message);
+      if (code === 'wa_operation_failed') {
+        // Fixed route and SQLSTATE only: never log messages, details, queries,
+        // request bodies, credential headers, or signed storage URLs.
+        const route = /^\/rest\/v1\/(?:rpc\/)?([a-z_]+)(?:\?|$)/.exec(path)?.[1] || 'storage';
+        const databaseCode = typeof data?.code === 'string' && /^(?:[A-Z0-9]{5}|PGRST\d{3})$/.test(data.code) ? data.code : null;
+        console.error(JSON.stringify({ event: 'wa_backend_rejected', route, http_status: response.status, database_code: databaseCode }));
+      }
+      throw new ServiceError(code === 'wa_operation_failed' ? 'wa_backend_request_failed' : code, response.status === 403 ? 403 : 400);
+    }
     return data;
   }
   const read = (path: string) => internal('/rest/v1/' + path);
@@ -122,6 +135,11 @@ export function createHandler(env: Environment, fetcher: typeof fetch = fetch) {
         if (!await verifyWorkerProof(req.headers, env.WA_MARKETING_WORKER_SECRET || '')) throw new ServiceError('wa_worker_unauthorized', 403);
         const consumed = await rpc('wa_live_consume_worker_token', { p_nonce: req.headers.get('x-wa-worker-nonce'), p_timestamp: Number(req.headers.get('x-wa-worker-time')) });
         if (!consumed) throw new ServiceError('wa_worker_unauthorized', 403);
+        if (body.check_connection === true) {
+          // Authenticated operator health check: read-only and no account data.
+          await connected(await credentials(), fetcher);
+          return json({ processed: false, connected: true });
+        }
         const outcome = await processOne(null);
         // pg_net responses can be readable by application roles. No job IDs,
         // recipient data, provider IDs or secrets belong in a cron response.
