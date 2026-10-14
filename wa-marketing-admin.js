@@ -7,7 +7,7 @@ const KEY = 'sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
 const STORAGE = 'badai_admin_session';
 const $ = id => document.getElementById(id);
 const escapeHtml = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let catalog = [], campaigns = [], links = [], selected = null, busy = false, loaded = false;
+let catalog = [], campaigns = [], links = [], planRows = [], selected = null, calendarCampaign = null, busy = false, loaded = false;
 
 function token(){
   let session = null;
@@ -64,7 +64,7 @@ function renderTarget(kind){
   });
   root.querySelectorAll('[data-wa-enable]').forEach(input=>input.addEventListener('change',async()=>{
     input.disabled=true;
-    try{await db('wa_marketing_targets?id=eq.'+encodeURIComponent(input.dataset.waEnable),'PATCH',{enabled:input.checked});await refresh()}
+    try{await db('wa_marketing_targets?id=eq.'+encodeURIComponent(input.dataset.waEnable),'PATCH',{enabled:input.checked});await db('wa_marketing_delivery_plan?target_id=eq.'+encodeURIComponent(input.dataset.waEnable),'DELETE');await refresh()}
     catch(error){alert(error.message);input.checked=!input.checked}finally{input.disabled=false}
   }));
   root.querySelectorAll('[data-wa-remove]').forEach(button=>button.addEventListener('click',async()=>{
@@ -135,6 +135,67 @@ function renderCampaigns(){
   ['waCampaignDate','waCampaignDelay','waCampaignJitter'].forEach(id=>$(id).addEventListener('input',renderPreview));
   renderPreview();
 }
+
+function renderCalendar(){
+  const root=document.querySelector('[data-wa-content="calendar"]');
+  if(!root)return;
+  if(!calendarCampaign||!campaigns.some(c=>c.id===calendarCampaign)) calendarCampaign=selected||campaigns[0]?.id||null;
+  const rows=planRows.filter(r=>r.campaign_id===calendarCampaign);
+  const campaign=campaigns.find(c=>c.id===calendarCampaign);
+  const active=rows.filter(r=>r.status==='planned');
+  const items=rows.length?rows.map((r,i)=>
+    '<div class="wa-plan-item '+(r.status==='cancelled'?'cancelled':'')+'">'+
+      '<span class="wa-plan-position">'+(i+1)+'</span><div><b>'+escapeHtml(r.target_name)+'</b>'+
+      '<small>'+(r.target_kind==='group'?'GRUP':'CHANNEL')+' • '+new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'short'}).format(new Date(r.send_after))+' WIB</small>'+
+      '<small>Jeda: '+r.interval_seconds+' detik • '+(r.status==='planned'?'RENCANA':'DIBATALKAN')+'</small>'+
+      '</div></div>'
+  ).join(''):'<p>Belum ada rencana antrean untuk kampanye ini.</p>';
+  root.innerHTML=
+    '<article class="wa-feature-card"><h3>Antrean Pengiriman per Kampanye</h3>'+
+    '<p>Susun rencana antrean lengkap dengan jeda dan waktu WIB. Tombol <b>BUAT RENCANA</b> hanya menyimpan rencana, <b>bukan</b> mengirim pesan WhatsApp.</p>'+
+    '<div class="wa-plan-toolbar"><label>Pilih kampanye <select id="waCalendarCampaign">'+campaigns.map(c=>'<option value="'+escapeHtml(c.id)+'" '+(c.id===calendarCampaign?'selected':'')+'>'+escapeHtml(c.name)+'</option>').join('')+'</select></label>'+
+    '<div class="wa-actions"><button type="button" id="waBuildPlan" class="wa-primary-link" '+(campaign?'':'disabled')+'>BUAT RENCANA</button>'+
+    '<button type="button" id="waCancelPlan" class="wa-danger-button" '+(active.length?'':'disabled')+'>BATALKAN RENCANA</button></div></div>'+
+    '<div class="wa-alert"><b>Pengiriman: NONAKTIF.</b> Ini adalah rencana antrean dengan isi pesan tersimpan sebagai snapshot. Mesin pengirim dan penghubung Zawa belum diaktifkan.</div>'+
+    '<div id="waCalendarMessage" role="status"></div><div class="wa-plan-list">'+items+'</div></article>';
+  $('waCalendarCampaign')?.addEventListener('change',event=>{calendarCampaign=event.target.value;renderCalendar()});
+  $('waBuildPlan')?.addEventListener('click',async()=>{
+    if(busy||!calendarCampaign)return;
+    busy=true;
+    const button=$('waBuildPlan');button.disabled=true;
+    try{
+      const result=await db('rpc/wa_marketing_build_plan','POST',{p_campaign_id:calendarCampaign});
+      await refresh();
+      const state=$('waCalendarMessage');
+      if(state)state.textContent=(Array.isArray(result)?result.length:0)+' tujuan berhasil dimasukkan ke RENCANA. Belum ada pesan dikirim.';
+    }catch(error){
+      if($('waCalendarMessage')){$('waCalendarMessage').textContent=error.message;$('waCalendarMessage').style.color='#ff8d8d'}
+    }finally{busy=false;if(button.isConnected)button.disabled=false}
+  });
+  $('waCancelPlan')?.addEventListener('click',async()=>{
+    if(busy||!calendarCampaign)return;
+    if(!confirm('Batalkan seluruh rencana antrean kampanye ini?'))return;
+    busy=true;
+    try{await db('rpc/wa_marketing_cancel_plan','POST',{p_campaign_id:calendarCampaign});await refresh();
+      if($('waCalendarMessage'))$('waCalendarMessage').textContent='Rencana antrean telah dibatalkan.';}
+    catch(error){if($('waCalendarMessage')){$('waCalendarMessage').textContent=error.message;$('waCalendarMessage').style.color='#ff8d8d'}}
+    finally{busy=false}
+  });
+}
+function renderReports(){
+  const root=document.querySelector('[data-wa-content="reports"]');if(!root)return;
+  const pending=planRows.filter(x=>x.status==='planned').length;
+  const cancelled=planRows.filter(x=>x.status==='cancelled').length;
+  root.innerHTML='<article class="wa-feature-card"><h3>Laporan WhatsApp Marketing</h3>'+
+    '<p>Ringkasan data perencanaan, bukan hasil pengiriman WhatsApp.</p>'+
+    '<div class="wa-report-grid">'+
+    '<div><small>Target terdaftar</small><strong>'+catalog.length+'</strong></div>'+
+    '<div><small>Kampanye draft</small><strong>'+campaigns.length+'</strong></div>'+
+    '<div><small>Rencana tujuan</small><strong>'+pending+'</strong></div>'+
+    '<div><small>Dibatalkan</small><strong>'+cancelled+'</strong></div></div>'+
+    '<div class="wa-alert">Laporan pengiriman, status sukses/gagal, dan konversi BADAI akan tersedia setelah integrasi Zawa dan tracking pembelian diuji. Tidak ada klaim pesan terkirim dari rencana ini.</div></article>';
+}
+
 function toWibLocal(iso){
   const date=new Date(iso);
   if(!Number.isFinite(date.getTime()))return '';
@@ -172,16 +233,18 @@ function renderPreview(){
   }).join('')+'</div><small>Variasi jeda adalah rentang perencanaan; tidak menjamin keamanan dari pembatasan WhatsApp.</small>';
 }
 async function refresh(){
-  const [targetRows,campaignRows,linkRows]=await Promise.all([
+  const [targetRows,campaignRows,linkRows,plannedRows]=await Promise.all([
     db('wa_marketing_targets?select=id,kind,external_id,name,origin,enabled&order=name.asc','GET'),
     db('wa_marketing_campaigns?select=id,name,content_text,scheduled_at,status,delay_seconds,jitter_seconds&order=created_at.desc','GET'),
-    db('wa_marketing_campaign_targets?select=campaign_id,target_id,position,delay_seconds&order=position.asc','GET')
+    db('wa_marketing_campaign_targets?select=campaign_id,target_id,position,delay_seconds&order=position.asc','GET'),
+    db('wa_marketing_delivery_plan?select=campaign_id,target_id,target_name,target_kind,send_after,position,interval_seconds,status&order=send_after.asc','GET')
   ]);
   catalog=Array.isArray(targetRows)?targetRows:[];
   campaigns=Array.isArray(campaignRows)?campaignRows:[];
   links=Array.isArray(linkRows)?linkRows:[];
+  planRows=Array.isArray(plannedRows)?plannedRows:[];
   if(selected&&!campaigns.some(c=>c.id===selected))selected=null;
-  renderTarget('group');renderTarget('channel');renderCampaigns();
+  renderTarget('group');renderTarget('channel');renderCampaigns();renderCalendar();renderReports();
   loaded=true;
 }
 async function saveCampaign(event){
@@ -211,6 +274,8 @@ async function saveCampaign(event){
     if(!id)throw new Error('Kampanye tersimpan, tetapi ID tidak dikembalikan server.');
     await db('wa_marketing_campaign_targets?campaign_id=eq.'+encodeURIComponent(id),'DELETE');
     if(chosen.length)await db('wa_marketing_campaign_targets','POST',chosen.map(row=>Object.assign({campaign_id:id},row)));
+    // Content, date and target changes invalidate a prior dry-run queue snapshot.
+    await db('wa_marketing_delivery_plan?campaign_id=eq.'+encodeURIComponent(id),'DELETE');
     selected=id;
     await refresh();note('Draft dan delay kampanye tersimpan. Pengiriman belum aktif.');
   }catch(error){note(error.message,true);await refresh().catch(()=>{})}
@@ -253,6 +318,21 @@ function attachStyle(){
     '#pageWamarketing .wa-campaign-target label input{width:auto}',
     '#pageWamarketing .wa-campaign-target small{font-size:9px;color:#ff9aca}',
     '#pageWamarketing .wa-preview-list{margin:8px 0;font-size:11px;line-height:1.8}',
+    '#pageWamarketing .wa-plan-toolbar{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}',
+    '#pageWamarketing .wa-plan-toolbar label{display:grid;gap:5px;font-size:11px;color:#aaa}',
+    '#pageWamarketing .wa-plan-toolbar select{background:#0a0a0a;color:#fff;padding:10px;border:1px solid #333;border-radius:10px;max-width:100%}',
+    '#pageWamarketing .wa-plan-list{display:grid;gap:8px;margin-top:14px}',
+    '#pageWamarketing .wa-plan-item{display:flex;gap:12px;align-items:center;padding:11px;border:1px solid #303030;border-radius:11px}',
+    '#pageWamarketing .wa-plan-item.cancelled{opacity:.55}',
+    '#pageWamarketing .wa-plan-position{width:27px;height:27px;background:#352037;color:#ff9ccb;border-radius:9px;display:grid;place-items:center;font-weight:900}',
+    '#pageWamarketing .wa-plan-item b,#pageWamarketing .wa-plan-item small{display:block}',
+    '#pageWamarketing .wa-plan-item b{font-size:12px}',
+    '#pageWamarketing .wa-plan-item small{font-size:10px;color:#999}',
+    '#pageWamarketing .wa-report-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}',
+    '#pageWamarketing .wa-report-grid>div{padding:13px;border:1px solid #353535;border-radius:11px;display:grid;gap:5px}',
+    '#pageWamarketing .wa-report-grid small{color:#999;font-size:10px}',
+    '#pageWamarketing .wa-report-grid strong{font-size:23px}',
+    '@media(max-width:600px){#pageWamarketing .wa-report-grid{grid-template-columns:repeat(2,1fr)}}',
     '@media(max-width:750px){#pageWamarketing .wa-target-form{grid-template-columns:1fr}#pageWamarketing .wa-campaign-target{grid-template-columns:1fr}#pageWamarketing .wa-target-item{flex-direction:column;align-items:stretch}}'
   ].join('\n');
   document.head.appendChild(style);
