@@ -1,0 +1,10 @@
+project_id = "tlvxlekqrllkvcpgwmic"
+
+[functions.badai-wa-send]
+verify_jwt = false
+
+[functions.badai-zawa-connect]
+verify_jwt = true
+
+[functions.badai-zawa-sync]
+verify_jwt = true

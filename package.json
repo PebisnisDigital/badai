@@ -4,13 +4,15 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node railway-server.js",
-    "netlify:build": "node netlify/build-public.mjs"
+    "netlify:build": "node netlify/build-public.mjs",
+    "test:wa": "node --test tests/wa-marketing-*.test.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
-    "@netlify/functions": "latest"
+    "@netlify/functions": "latest",
+    "jsdom": "26.1.0"
   },
   "dependencies": {
     "busboy": "^1.6.0",
