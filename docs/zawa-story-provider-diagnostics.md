@@ -104,6 +104,51 @@ berikutnya memperoleh HTTP 200, connected=true, dalam sekitar 2,5 detik.
 Reset/pairing belum menyelesaikan timeout Story; sumber gateway dan penyebab
 engine tidak bisa dipastikan tanpa log Zawa.
 
+## Pemeriksaan ulang panduan Kirim Status
+
+Pengguna kemudian meminta pemeriksaan ulang melalui
+<https://zawa.azickri.com/api/send/send-status.html>. HTML halaman tersebut dan
+versi Markdown sama-sama diambil langsung, HTTP 200. Kontraknya tetap
+`POST /status`, header `id`, `session-id`, `Content-Type: application/json`,
+body `{ "type": "text", "text": "..." }`, respons HTTP 200 dengan `statusId`.
+Tidak ada kolom nomor, group, newsletter, audience, warna, atau endpoint
+tambahan yang diwajibkan untuk teks. Privasi audiens tetap diatur melalui HP.
+
+Fungsi Supabase yang aktif saat audit adalah `badai-wa-send` versi 13. Source map
+bundle yang diambil melalui Management API menunjukkan empat modul yang sama
+persis dengan repository: entrypoint, service, Zawa adapter, dan worker auth.
+Jadi tidak ditemukan perbedaan format request ataupun adapter lama pada fungsi
+yang terpasang. Ini tidak membuktikan keberhasilan publikasi oleh engine Zawa.
+
+Perbaikan laporan dipasang sebagai versi 14: respons Owner kini menyertakan
+kode HTTP provider dan kode diagnostik yang disanitasi. Admin menampilkan
+misalnya HTTP 504 dan langkah memeriksa WhatsApp tanpa mengirim ulang. Respons
+worker tetap hanya boolean; tidak ada data akun atau kredensial baru yang
+ditampilkan. Endpoint, payload Status, timeout, dan aturan tanpa retry tetap
+sama. Empat puluh tes adapter/service/UI lolos, termasuk jalur Status sesuai
+contoh panduan, pencatatan statusId sebagai penerimaan API, serta 504 tanpa retry.
+Pemeriksaan tipe dan build juga lolos. Tes lokal ini bukan bukti Story diterima.
+
+Sesudah deployment, diagnostik teks kosong yang tidak mempublikasikan konten
+masih mendapat HTTP 400 sesuai dokumentasi dalam sekitar 2,6 detik. Satu draft
+baru `UJI STATUS PANDUAN ZAWA - BADAI-STATUS-DOC-98B6557B` disiapkan dengan isi:
+
+```json
+{
+  "type": "text",
+  "text": "Deploy hari ini lancar jaya 🚀\nBADAI-STATUS-DOC-98B6557B"
+}
+```
+
+Draft `b9cf7868-93e1-4901-b4ec-cd44348262c5` memiliki nol job saat disiapkan.
+Pengguna diminta mengonfirmasi satu uji melalui Admin dan melaporkan penerimaan
+nyata; tidak ada operator POST Status dengan teks valid atau retry otomatis.
+Preview commit `a74e40c` READY di
+<https://badai-62iz618e0-cuanify25-2175s-projects.vercel.app/admin>.
+CORS origin baru dan preview sebelumnya sama-sama terverifikasi HTTP 204.
+Anonymous Admin tetap memerlukan login Vercel, bukan bukti akses Owner.
+Production masih ditahan dan tidak ada bukti Story baru yang diklaim.
+
 ## Pesan yang bisa dikirim pengguna ke dukungan Zawa
 
 > Sesi Zawa saya terhubung dan berhasil mengirim teks/gambar grup serta teks

@@ -237,6 +237,23 @@ data. Replay and expiration are tested.
   The provider diagnostic report now includes all three authorized Story tests;
   Zawa engine/gateway logs are needed to determine the cause. No support message
   was sent by Codex, and Production remains held pending Story reception proof.
+  A further user-requested review fetched the actual HTML Status guide and its
+  Markdown source, confirming the same request contract. Source maps downloaded
+  from active Edge version 13 matched all four checked-in modules exactly.
+  The subsequent reporting fix exposes only sanitized provider HTTP/code fields
+  to Owner responses and explains known Status errors in Admin; worker responses
+  remain boolean-only. Forty provider/service/UI tests passed (zero skipped),
+  plus the send-function type check and frontend build. Edge version 14 was
+  deployed. Its invalid-empty-text diagnostic returned the documented HTTP 400
+  without posting Story content. This is not a fix or delivery proof for the
+  provider's valid-text timeout.
+  Preview commit `a74e40c` is READY at
+  `https://badai-62iz618e0-cuanify25-2175s-projects.vercel.app/admin`; CORS preflight
+  is verified for it and the prior approved preview. Draft
+  `b9cf7868-93e1-4901-b4ec-cd44348262c5`, marker `BADAI-STATUS-DOC-98B6557B`, uses
+  the guide's example text plus a unique marker. It had no dispatch jobs at
+  preparation, changes no sending gates, and awaits one explicit Owner UI test
+  and actual WhatsApp receipt. Prior unknown jobs were not reactivated.
 
 ## Prepared documented session reset
 
