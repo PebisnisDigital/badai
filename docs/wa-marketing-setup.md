@@ -1,6 +1,6 @@
 # BADAI — WA Marketing Automation (internal)
 
-Status: **UI + authenticated setup-status endpoint in GitHub; not live until Vercel deployment succeeds.**
+Status (2026-10-14): **Admin panel, draft editor, Story target toggle, and dry-run delivery plan deployed to Vercel production (READY)**. WhatsApp device sync and actual sending are NOT active.
 
 ## Scope
 Internal marketing only; **NOT SaaS**. Planned destinations:
@@ -61,3 +61,20 @@ Before enabling delivery:
 2. Authorize only BADAI-controlled Channel/groups, with permission to publish.
 3. Add bounded rate limits, idempotent queue jobs, retry policy, pause, logs, and failure alerts.
 4. Enable only after one private test group + one test Channel + Story have succeeded.
+
+
+## Tahap 3 — Antrean simulasi dan dukungan Story (14 Oktober 2026)
+
+Deployed production commit: `a63d88503e4d2c172cfef233b5195c68fefb0781`. Vercel confirmed production deployment `dpl_6Az7vBopZKNk4LJxdibMzrj8HrAX` READY. Visit `https://badai.vercel.app/admin`, log in, select WA Marketing.
+
+- Separate **Status WA** target seeded once, disabled by default; enable only if needed for a draft campaign.
+- A new RLS-protected `wa_marketing_delivery_plan` table stores simulated queue plans. It cannot send messages.
+- `wa_marketing_build_plan(uuid)` checks the marketing role, campaign text, future scheduled time, enabled targets, then calculates planned times with per-campaign delay, optional destination override, and bounded jitter.
+- `wa_marketing_cancel_plan(uuid)` marks planned rows cancelled.
+- Updating drafts, selected destinations, or enabled flags invalidates stale planned snapshots.
+- Calendar tab shows planned times in WIB and allows build/cancel (dry run). Reports tab shows planning counts only, **not sent/delivered metrics**.
+- Both RPCs use `SECURITY INVOKER`; data tables have RLS and no anonymous table grants.
+
+**Important unresolved dependency:** The accessible Zawa docs document session creation, message/status sending headings, but do not clearly expose an endpoint to list all WhatsApp groups/Channels, nor a complete verified QR status flow. Do not build or claim auto detection without provider verification. In the meantime the admin supports manual group/channel ID entry and a separate Story planning target.
+
+**Do not enable live publishing** until a dedicated number is connected, the actual provider endpoint/body is confirmed using a single test destination, and an idempotent worker with a global rate limiter, audit logs, pause, and fail-safe uncertain delivery handling is built and tested. No background worker exists yet. Sessions not linked after four hours may be deleted by Zawa per their session documentation.
