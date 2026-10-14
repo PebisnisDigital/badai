@@ -154,7 +154,7 @@ function renderCampaigns(){
     '<div class="wa-alert">Konten bisa disiapkan sekarang. Pengiriman nyata belum diaktifkan; tidak ada pesan keluar hanya karena draft disimpan.</div>'+
   '</article><article class="wa-feature-card wa-compose-card"><h3>Pengaturan Pengiriman Kampanye</h3>'+
     '<form id="waCampaignForm" class="wa-campaign-form">'+
-      '<label>Nama kampanye (opsional sebagai label internal)<input id="waCampaignName" maxlength="140" required placeholder="Promosi BADAI Hari Jumat"></label>'+
+      '<label>Nama kampanye (opsional)<input id="waCampaignName" maxlength="140" placeholder="Promosi BADAI Hari Jumat"></label>'+
       '<label>Pengirim / perangkat WhatsApp<input id="waSenderDevice" readonly value="WhatsApp BADAI — sesi Zawa" aria-label="Nomor pengirim dari sesi Zawa"></label>'+
       '<label>Jenis tujuan<select id="waRecipientType"><option value="all">Semua tujuan terdaftar</option><option value="group">Grup WhatsApp</option><option value="channel">Channel WhatsApp</option><option value="status">Story / Status WA</option></select></label>'+
       '<div class="wa-campaign-pick"><b>Pilih penerima / tujuan</b><p>Centang tujuan yang dikelola BADAI. Pilihan yang disembunyikan oleh filter tetap tersimpan.</p><div id="waCampaignTargets">'+targetsMarkup()+'</div></div>'+
@@ -163,8 +163,8 @@ function renderCampaigns(){
       '<div id="waMediaUploadWrap" class="wa-media-box" hidden><label>File media (JPG, PNG, WEBP, MP4, PDF — maks. 20 MB)<input id="waCampaignFile" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,application/pdf"></label><small id="waMediaUploadInfo">Media disimpan privat di Supabase ketika draft disimpan.</small></div>'+
       '<label>Link ajakan daftar BADAI (opsional)<input id="waCampaignCta" type="url" placeholder="https://badai.vercel.app"></label>'+
       '<fieldset class="wa-send-mode"><legend>Waktu pengiriman</legend>'+
-         '<label><input type="radio" name="waDeliveryMode" value="scheduled" checked> Jadwalkan</label>'+
-         '<label><input type="radio" name="waDeliveryMode" value="now_test"> Kirim sekarang</label>'+
+         '<label><input type="radio" name="waDeliveryMode" value="scheduled"> Jadwalkan</label>'+
+         '<label><input type="radio" name="waDeliveryMode" value="now_test" checked> Kirim sekarang</label>'+
        '</fieldset>'+
        '<div id="waCampaignDateWrap"><label>Rencana tanggal & jam (WIB)<input id="waCampaignDate" type="datetime-local"></label></div>'+
        '<p class="wa-mode-help" id="waModeHint">Pilih tanggal dan jam untuk membuat rencana antrean.</p>'+
@@ -348,7 +348,7 @@ function renderPreview(){
   const isNowTest=deliveryMode()==='now_test';
   let choices=[];
   try{choices=draftSelections()}catch(error){root.textContent=error.message;return}
-  if(!choices.length){root.textContent='Belum ada tujuan dipilih. Tidak ada pengiriman yang berjalan.';return}
+  if(!choices.length){root.textContent='Pilih grup, Channel, atau Story. Belum ada pesan yang dikirim.';return}
   let seconds=0;
   root.innerHTML='<b>'+(isNowTest?'Penerima terpilih — belum dikirim:':'Pratinjau urutan rencana:')+'</b><div class="wa-preview-list">'+choices.map((link,index)=>{
     if(index>0) seconds+=(link.delay_seconds??delay);
@@ -379,8 +379,7 @@ async function saveCampaign(event){
   if(busy)return;
   let payload,chosen;
   try{
-    const name=$('waCampaignName').value.trim();
-    if(!name)throw new Error('Nama kampanye wajib diisi.');
+    const name=$('waCampaignName').value.trim()||('Promosi BADAI '+new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'short'}).format(new Date()));
     const mode=deliveryMode();
     payload={
       name,
@@ -403,9 +402,9 @@ async function saveCampaign(event){
       throw new Error('Pilih file media sebelum menyimpan kampanye media.');
     if(payload.cta_url&&!/^https:\/\//i.test(payload.cta_url))throw new Error('Link CTA harus menggunakan HTTPS.');
     chosen=draftSelections();
-    if(payload.delivery_mode==='scheduled'&&!payload.scheduled_at)throw new Error('Isi tanggal dan jam WIB, atau pilih Kirim Sekarang (Tes).');
-    if(payload.delivery_mode==='now_test'&&chosen.length!==1)throw new Error('Untuk kirim sekarang, pilih tepat SATU tujuan.');
-    if(payload.delivery_mode==='now_test'&&!String(payload.content_text||'').trim())throw new Error('Tulis konten sebelum menyimpan.');
+    if(payload.delivery_mode==='scheduled'&&!payload.scheduled_at)throw new Error('Isi tanggal dan jam WIB atau pilih Kirim sekarang.');
+    if(chosen.length===0)throw new Error('Pilih minimal satu tujuan yang aktif sebelum menyimpan.');
+    if(!String(payload.content_text||'').trim()&&payload.message_type==='text')throw new Error('Tulis isi pesan sebelum menyimpan.');
   }catch(error){note(error.message,true);return}
   busy=true;$('waSaveCampaign').disabled=true;
   try{
