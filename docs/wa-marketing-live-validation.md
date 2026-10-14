@@ -77,7 +77,7 @@ data. Replay and expiration are tested.
 
 ## Validation completed
 
-- 54 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
+- 55 local tests pass: PostgreSQL transactions/concurrent workers, backend auth,
   provider contracts, ambiguous outcomes, frontend gating, sync/QR contracts, and
   worker proof verification/replay. These are not real WhatsApp delivery tests.
 - Deno type checks pass for all three Edge Functions. Netlify asset build passes.
@@ -140,6 +140,16 @@ data. Replay and expiration are tested.
   The handler now preserves only allowlisted error codes for the documented
   contacts/audience/240-second errors and gateway timeouts. All 5xx outcomes remain
   unknown, with no automatic retry. The historical 504 record is not rewritten.
+  The user then confirmed the one-contact privacy change and authorized one new
+  Story. Trial `BADAI-STORY-EBD7E8CF`, job `8c768580-6cd5-4055-b437-9455b620a231`,
+  also returned HTTP 504 after about 60.1 seconds, with one attempt, no status ID,
+  and a paused run. The original trial took about 60.3 seconds. The current
+  65-second BADAI timeout did not expire before these HTTP responses arrived.
+  This locates the observed timeout on the HTTP path to Zawa but does not identify
+  the gateway or engine cause. See [provider diagnostic record](zawa-story-provider-diagnostics.md).
+  A read-only Edge session check after this trial returned HTTP 200, connected
+  true, in about 2.5 seconds. No additional Story or session reset is authorized
+  automatically. Actual observation of the second Story is still pending.
 - Scheduler activation is available only for verified destination/message types.
   A new group/text schedule trial is prepared; no legacy campaign was activated.
   Local UI checks cover pause/resume confirmation and recovery of the control
@@ -150,7 +160,14 @@ data. Replay and expiration are tested.
   any claim could occur. Job `e3a2cf76-f098-4e8b-bc7b-0b763b35cc7f` remained queued
   with zero attempts at `06:58:11 UTC`, more than 30 seconds after its `06:57:32 UTC`
   due time. Its sampled gap is 50 seconds. Actual Admin resume and reception are
-  still pending; no old campaign was activated by this test.
+  checked separately; no old campaign was activated by this test.
+  The job was then resumed from Admin and dispatched by the cron worker at
+  `07:01:44 UTC`, returning HTTP 200 and ID `3EB0009CC6D22BD887BC19` at `07:01:51 UTC`.
+  It has one attempt and a finished run; recipient observation remains pending.
+  A subsequent resume error was investigated: this schedule run was already
+  finished, while the original Story run still had an unknown outcome. UI now
+  disables resume on an unknown run and labels each result with its campaign;
+  the server's review guard remains in place.
 
 ## Remaining acceptance work
 
