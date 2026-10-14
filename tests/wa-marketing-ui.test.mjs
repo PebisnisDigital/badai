@@ -87,6 +87,17 @@ test('delivery evidence is never recorded just by loading history',async()=>{
   assert.ok(h.w.document.querySelector('[data-wa-content="reports"]').textContent.includes('PENERIMA BELUM DIKONFIRMASI'));
   assert.equal(h.requests.filter(c=>c.options.method==='POST'&&c.url.includes('/functions/v1/')).length,0);h.dom.window.close();
 });
+test('gateway timeout is explained in the send result and history without claiming delivery or retrying',async()=>{
+  const job={id:'fixture-unknown',target_name:'Status',status:'unknown',provider_http_status:504,error_code:'provider_gateway_timeout'};
+  const h=await boot({jobs:[job],post:()=>Response.json(job)});
+  h.$('waSendReal').click();await wait(()=>h.$('waCampaignMessage').textContent.includes('HTTP 504'));
+  assert.ok(h.$('waCampaignMessage').textContent.includes('BELUM DIKETAHUI'));
+  assert.ok(h.$('waCampaignMessage').textContent.includes('jangan kirim ulang'));
+  assert.ok(h.w.document.querySelector('[data-wa-content="reports"]').textContent.includes('HTTP 504'));
+  assert.equal(h.requests.filter(c=>c.options.method==='POST'&&c.url.includes('/functions/v1/')).length,1);
+  assert.equal(h.requests.some(c=>c.options.method==='POST'&&JSON.parse(c.options.body).action==='confirm_received'),false);
+  h.dom.window.close();
+});
 test('saving drafts never schedules a campaign, and scheduler is locked by default',async()=>{
   const h=await boot({campaign:{delivery_mode:'scheduled',scheduled_at:new Date(Date.now()+3600000).toISOString()}});
   assert.equal(h.$('waScheduleReal').disabled,true);h.$('waCampaignForm').dispatchEvent(new h.w.Event('submit',{bubbles:true,cancelable:true}));

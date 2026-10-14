@@ -15,6 +15,21 @@ let capabilityPending=false,capabilityError='',capabilityCheck=0;
 let liveJobs=[],liveRuns=[],historyError='',formDirty=false;
 const requestKeys=new Map();
 const deliveryLabels={queued:'DALAM ANTREAN',preparing:'PERSIAPAN',dispatching:'PERMINTAAN BERLANGSUNG',api_accepted:'DITERIMA API — PENERIMA BELUM DIKONFIRMASI',delivered:'DITERIMA TUJUAN — DIKONFIRMASI',failed:'GAGAL',unknown:'BELUM DIKETAHUI — TIDAK DICOBA ULANG',cancelled:'DIBATALKAN'};
+function providerFeedback(result){
+  const messages={
+    provider_gateway_timeout:'Zawa mengembalikan timeout gateway. Periksa WhatsApp; hasil belum pasti dan jangan kirim ulang.',
+    provider_transport_uncertain:'Respons Zawa tidak dapat diperoleh. Periksa WhatsApp; hasil belum pasti dan jangan kirim ulang.',
+    provider_contacts_not_synced:'Zawa melaporkan kontak belum tersinkron. Periksa privasi Status di HP sesuai panduan Zawa.',
+    provider_status_audience_empty:'Menurut Zawa, daftar Hanya bagikan dengan kosong. Pilih minimal satu kontak percobaan di privasi Status HP.',
+    provider_processing_timeout:'Pemrosesan Zawa melewati batas empat menit. Periksa WhatsApp; jangan kirim ulang.',
+    provider_rejected_400:'Zawa menolak request. Periksa format pesan sesuai panduan provider.',
+    provider_rejected_404:'Zawa tidak menemukan sesi. Periksa koneksi WhatsApp.',
+  };
+  const http=Number.isInteger(result.provider_http_status)&&result.provider_http_status>=100&&result.provider_http_status<=599
+    ?'Zawa: HTTP '+result.provider_http_status:'';
+  const detail=messages[result.error_code]||'';
+  return [http,detail].filter(Boolean).join(' — ');
+}
 
 async function liveCall(action,payload){
   const response=await fetch(SEND_URL+(action==='history'?'?action=history':''),{
@@ -253,8 +268,10 @@ async function sendRealMessage(action='send_one'){
     if(!requestKeys.has(key))requestKeys.set(key,crypto.randomUUID());
     const data=await liveCall(action,{campaign_id:selected,target_id:target?.id,target_ids:selectedTargets.map(s=>s.target_id),
       confirm:true,request_key:requestKeys.get(key)});
+    const feedback=providerFeedback(data);
     note(data.duplicate?'Permintaan ini sudah tercatat. Tidak ada pengiriman ulang.':
-      (deliveryLabels[data.status]||'Permintaan masuk antrean server. Belum ada bukti penerimaan tujuan.'),['failed','unknown'].includes(data.status));
+      (deliveryLabels[data.status]||'Permintaan masuk antrean server. Belum ada bukti penerimaan tujuan.')+
+        (feedback?' '+feedback:''),['failed','unknown'].includes(data.status));
     await refreshHistory();
   }catch(error){note(error.message,true)}
   finally{busy=false;updateRealSendButton()}
@@ -418,6 +435,7 @@ function renderReports(){
     '<h4>Hasil per tujuan</h4>'+liveJobs.map(job=>'<div class="wa-plan-item"><div><b>'+escapeHtml(job.target_name)+'</b><small>'+escapeHtml(deliveryLabels[job.status]||job.status)+'</small>'+
       '<small>Kampanye: '+escapeHtml(campaigns.find(c=>c.id===job.campaign_id)?.name||'Kampanye tersimpan')+'</small>'+
       '<small>ID catatan: '+escapeHtml(job.id)+'</small>'+ (job.provider_message_id?'<small>ID provider: '+escapeHtml(job.provider_message_id)+'</small>':'')+
+      (providerFeedback(job)?'<small>'+escapeHtml(providerFeedback(job))+'</small>':'')+
       (job.error_code?'<small>'+escapeHtml(job.error_code)+'</small>':'')+
       (job.evidence?'<small>Bukti penerimaan: '+escapeHtml(job.evidence)+'</small>':'')+
       (['api_accepted','unknown'].includes(job.status)?'<button type="button" data-wa-received="'+escapeHtml(job.id)+'">CATAT BUKTI PESAN DITERIMA</button>':'')+'</div></div>').join('')+

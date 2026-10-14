@@ -71,6 +71,37 @@ test('lost provider response persists unknown without retry',async()=>{
   const r=await h.handler(req(sendBody));assert.equal((await r.json()).status,'unknown');
   assert.equal(h.trace.filter(c=>c.url.endsWith('/message')).length,1);assert.equal(h.trace.find(c=>c.url.endsWith('/wa_live_settle')).body.p_status,'unknown');
 });
+test('Status uses the documented endpoint, headers and body through the authenticated send flow',async()=>{
+  const text='Deploy hari ini lancar jaya 🚀';
+  const h=await harness({'/status':(body,init)=>{
+    assert.equal(init.method,'POST');assert.equal(init.headers.id,credentials.provider_id);
+    assert.equal(init.headers['session-id'],credentials.session_secret);
+    assert.equal(init.headers['Content-Type'],'application/json');
+    assert.deepEqual(body,{type:'text',text});
+    return Response.json({statusId:'FIXTURE_STATUS_ID'});
+  }});
+  h.job.snapshot={kind:'status',external_id:'status',message_type:'text',content_text:text};
+  const response=await h.handler(req(sendBody)),result=await response.json();
+  assert.equal(response.status,202);assert.equal(result.status,'api_accepted');
+  assert.equal(result.provider_message_id,'FIXTURE_STATUS_ID');assert.equal(result.provider_http_status,200);
+  assert.equal(h.trace.filter(c=>c.url.endsWith('/status')).length,1);
+  assert.equal(h.trace.some(c=>c.url.endsWith('/message')||c.url.endsWith('/wa_live_confirm')),false);
+  const dispatch=h.trace.findIndex(c=>c.url.endsWith('/wa_live_dispatch'));
+  const post=h.trace.findIndex(c=>c.url.endsWith('/status'));
+  assert.ok(dispatch<post);
+});
+test('Status gateway timeout exposes safe diagnostics, persists unknown and never retries',async()=>{
+  const h=await harness({'/status':()=>new Response('PRIVATE_GATEWAY_DETAIL',{status:504})});
+  h.job.snapshot={kind:'status',external_id:'status',message_type:'text',content_text:'Status fixture'};
+  const result=await (await h.handler(req(sendBody))).json();
+  assert.equal(result.status,'unknown');assert.equal(result.provider_http_status,504);
+  assert.equal(result.error_code,'provider_gateway_timeout');assert.equal(result.provider_message_id,null);
+  assert.equal(h.trace.filter(c=>c.url.endsWith('/status')).length,1);
+  const settled=h.trace.find(c=>c.url.endsWith('/wa_live_settle')).body;
+  assert.equal(settled.p_status,'unknown');assert.equal(settled.p_http_status,504);
+  for(const secret of ['PRIVATE_GATEWAY_DETAIL',credentials.session_secret,env.SUPABASE_SERVICE_ROLE_KEY])
+    assert.equal(JSON.stringify(result).includes(secret),false);
+});
 test('session failure before enqueue is specific and cannot submit a message',async()=>{
   const h=await harness({'/session':()=>{throw Error('PRIVATE transport detail')}});
   const r=await h.handler(req(sendBody));assert.equal(r.status,503);

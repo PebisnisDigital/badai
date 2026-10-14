@@ -110,7 +110,8 @@ export function createHandler(env: Environment, fetcher: typeof fetch = fetch) {
     // it must not result in another POST, even when the caller retries.
     await rpc('wa_live_settle', { p_job_id: job.id, p_claim_token: job.claim_token, p_status: result.status,
       p_provider_id: result.provider_id, p_http_status: result.http_status, p_error_code: result.error_code });
-    return { processed: true, job_id: job.id, status: result.status, provider_message_id: result.provider_id };
+    return { processed: true, job_id: job.id, status: result.status, provider_message_id: result.provider_id,
+      provider_http_status: result.http_status, error_code: result.error_code };
   }
 
   return async function handler(req: Request): Promise<Response> {
