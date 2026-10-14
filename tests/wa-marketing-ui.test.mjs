@@ -35,7 +35,8 @@ async function boot(overrides={}){
   await wait(()=>w.document.querySelector('[data-wa-campaign]'));
   w.document.querySelector('[data-wa-campaign]').click();
   const $=id=>w.document.getElementById(id);
-  await wait(()=>$('waSendReal').disabled===!(caps.ready&&targets.length===1&&c.message_type==='text'));
+  const activeRun=(overrides.runs||[]).some(r=>r.campaign_id===campaignId&&['active','paused'].includes(r.status));
+  await wait(()=>$('waSendReal').disabled===!(caps.ready&&targets.length===1&&c.message_type==='text'&&!activeRun));
   return {dom,w,$,requests};
 }
 
@@ -46,6 +47,27 @@ test('editing saved content locks send until save completes',async()=>{
   h.$('waCampaignForm').dispatchEvent(new h.w.Event('submit',{bubbles:true,cancelable:true}));
   await wait(()=>h.$('waCampaignMessage').textContent.includes('berhasil disimpan'));
   assert.equal(h.$('waSendReal').disabled,false);h.dom.window.close();
+});
+test('single-target preview explains the first start and shows the configured gap instead of 0–0',async()=>{
+  const h=await boot();let text=h.$('waCampaignPreview').textContent;
+  assert.ok(text.includes('30–60 detik antar tujuan'));assert.ok(text.includes('mulai setelah konfirmasi'));
+  assert.equal(text.includes('0–0'),false);
+  h.$('waCampaignDelayMin').value='70';h.$('waCampaignDelayMax').value='100';
+  h.$('waCampaignDelayMax').dispatchEvent(new h.w.Event('input',{bubbles:true}));
+  text=h.$('waCampaignPreview').textContent;assert.ok(text.includes('70–100 detik antar tujuan'));
+  assert.equal(h.requests.some(c=>c.options.method==='POST'&&c.url.includes('/functions/v1/')),false);
+  h.dom.window.close();
+});
+test('scheduled preview applies recipient overrides and campaign gaps cumulatively',async()=>{
+  const targets=[0,1,2].map(i=>({id:'00000000-0000-4000-8000-00000000000'+(i+3),name:'Target '+i,kind:'group',enabled:true}));
+  const h=await boot({targets,campaign:{delivery_mode:'scheduled',scheduled_at:new Date(Date.now()+3600000).toISOString()}});
+  const override=h.w.document.querySelector('[data-wa-override="'+targets[1].id+'"]');
+  override.value='45';override.dispatchEvent(new h.w.Event('input',{bubbles:true}));
+  const text=h.$('waCampaignPreview').textContent;
+  assert.ok(text.includes('mulai pada jadwal yang dipilih'));assert.ok(text.includes('45–45 detik'));
+  assert.ok(text.includes('75–105 detik'));assert.equal(text.includes('0–0'),false);
+  assert.equal(h.requests.some(c=>c.options.method==='POST'&&c.url.includes('/functions/v1/')),false);
+  h.dom.window.close();
 });
 test('text verification does not unlock media or untested destinations',async()=>{
   const h=await boot({campaign:{message_type:'media',media_path:'campaigns/'+campaignId+'/test.jpg'}});
@@ -134,5 +156,13 @@ test('an unknown delivery locks only its own resume control',async()=>{
   const locked=h.w.document.querySelector('[data-wa-run="'+uncertainRun+'"][data-wa-action="resume"]');
   assert.equal(locked.disabled,true);assert.ok(locked.textContent.includes('PERLU VERIFIKASI'));locked.click();
   assert.equal(h.w.document.querySelector('[data-wa-run="'+queuedRun+'"][data-wa-action="resume"]').disabled,false);
+  assert.equal(h.requests.some(c=>c.options.method==='POST'),false);h.dom.window.close();
+});
+test('a paused unknown run locks another send of its campaign even after readiness is refreshed',async()=>{
+  const run='00000000-0000-4000-8000-000000000004';
+  const h=await boot({runs:[{id:run,campaign_id:campaignId,status:'paused',mode:'test'}],jobs:[{id:'fixture-unknown',run_id:run,campaign_id:campaignId,status:'unknown'}]});
+  assert.equal(h.$('waSendTest').disabled,true);assert.ok(h.$('waTestReadiness').textContent.includes('jangan kirim ulang'));
+  h.$('waCheckSend').click();await wait(()=>!h.$('waCheckSend').disabled);
+  assert.equal(h.$('waSendTest').disabled,true);h.$('waSendTest').click();
   assert.equal(h.requests.some(c=>c.options.method==='POST'),false);h.dom.window.close();
 });

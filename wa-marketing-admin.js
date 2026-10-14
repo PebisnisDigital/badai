@@ -217,7 +217,8 @@ function updateRealSendButton(){
   try{chosen=draftSelections()}catch(_){}
   const target=catalog.find(t=>t.id===chosen[0]?.target_id);
   const c=campaigns.find(row=>row.id===selected);
-  const saved=Boolean(c&&c.status!=='paused'&&!formDirty&&!busy);
+  const activeRun=liveRuns.find(run=>run.campaign_id===selected&&['active','paused'].includes(run.status));
+  const saved=Boolean(c&&c.status!=='paused'&&!formDirty&&!busy&&!activeRun);
   const canSend=!capabilityPending&&sendCapabilities.ready&&saved&&chosen.length===1&&verifiedTarget(target,c);
   button.disabled=!canSend;
   button.textContent='KIRIM PESAN — 1 TUJUAN';
@@ -230,6 +231,9 @@ function updateRealSendButton(){
   else if(!c)reason='Pilih kampanye tersimpan dari Daftar Kampanye.';
   else if(c.status==='paused')reason='Kampanye berstatus PAUSE. Ubah ke DRAFT lalu simpan.';
   else if(formDirty)reason='Ada perubahan belum disimpan. Klik SIMPAN KAMPANYE sebelum mengirim.';
+  else if(activeRun)reason=liveJobs.some(job=>job.run_id===activeRun.id&&job.status==='unknown')
+    ?'Uji kampanye ini sudah memiliki hasil BELUM DIKETAHUI. Periksa Laporan dan WhatsApp; jangan kirim ulang.'
+    :'Kampanye ini sudah memiliki antrean aktif atau PAUSE. Kelola antreannya melalui Laporan.';
   else if(chosen.length!==1)reason='Pilih tepat satu tujuan lalu simpan kampanye.';
   else if(capabilityError)reason=capabilityError;
   else if(!sendCapabilities.testing_ready)reason=sendCapabilities.connected===false?'WhatsApp belum terhubung. Periksa Koneksi lalu periksa kesiapan uji.':'Mode uji belum siap. Klik PERIKSA KESIAPAN UJI.';
@@ -305,8 +309,8 @@ function renderCampaigns(){
        '</fieldset>'+
        '<div id="waCampaignDateWrap"><label>Rencana tanggal & jam (WIB)<input id="waCampaignDate" type="datetime-local"></label></div>'+
        '<p class="wa-mode-help" id="waModeHint">Pilih tanggal dan jam untuk membuat rencana antrean.</p>'+
-      '<div class="wa-two-cols" id="waCampaignTimingFields"><label>Delay minimum (detik)<input id="waCampaignDelayMin" type="number" min="30" max="3600" value="30" required></label>'+
-      '<label>Delay maksimum (detik)<input id="waCampaignDelayMax" type="number" min="30" max="3600" value="60" required></label></div>'+
+      '<div class="wa-two-cols" id="waCampaignTimingFields"><label>Jeda antar tujuan minimum (detik)<input id="waCampaignDelayMin" type="number" min="30" max="3600" value="30" required></label>'+
+      '<label>Jeda antar tujuan maksimum (detik)<input id="waCampaignDelayMax" type="number" min="30" max="3600" value="60" required></label></div>'+
       '<label>Status<select id="waCampaignStatus"><option value="draft">DRAFT</option><option value="paused">PAUSE</option></select></label>'+
       '<div class="wa-alert" id="waCampaignPreview">Pratinjau urutan pengiriman akan muncul di sini. Tidak ada posting yang dijalankan.</div>'+
       '<div class="wa-alert"><b>Pengiriman langsung:</b> sistem hanya membuka tombol sesudah API Zawa terverifikasi. Tes nyata dibatasi ke <b>satu</b> Grup/Channel/Story dan butuh konfirmasi. Simpan perubahan kampanye sebelum melakukan tes.</div>'+
@@ -412,6 +416,7 @@ async function refreshHistory(){
   try{const data=await liveCall('history');liveJobs=Array.isArray(data.jobs)?data.jobs:[];liveRuns=Array.isArray(data.runs)?data.runs:[];historyError='';}
   catch(error){historyError=error.message||'Riwayat pengiriman tidak tersedia.';}
   renderReports();
+  updateRealSendButton();
 }
 function renderReports(){
   const root=document.querySelector('[data-wa-content="reports"]');if(!root)return;
@@ -546,18 +551,25 @@ function updateDeliveryMode(){
 
 function renderPreview(){
   const root=$('waCampaignPreview');if(!root)return;
-  const delay=Number($('waCampaignDelayMin')?.value||30),max=Number($('waCampaignDelayMax')?.value||60),jitter=Math.max(0,max-delay);
+  const delay=Number($('waCampaignDelayMin')?.value),max=Number($('waCampaignDelayMax')?.value);
+  if(!Number.isInteger(delay)||!Number.isInteger(max)||delay<30||max<delay||max>3600){
+    root.textContent='Isi jeda antar tujuan 30–3600 detik. Maksimum harus sama dengan atau lebih besar dari minimum.';return;
+  }
   const isNowTest=deliveryMode()==='now_test';
   let choices=[];
   try{choices=draftSelections()}catch(error){root.textContent=error.message;return}
   if(!choices.length){root.textContent='Pilih grup, Channel, atau Story. Belum ada pesan yang dikirim.';return}
   let earliest=0,latest=0;
-  root.innerHTML='<b>'+(isNowTest?'Penerima terpilih — belum dikirim:':'Pratinjau urutan rencana:')+'</b><div class="wa-preview-list">'+choices.map((link,index)=>{
+  root.innerHTML='<b>'+(isNowTest?'Penerima terpilih — belum dikirim:':'Pratinjau urutan rencana:')+'</b>'+
+    '<div>Jeda kampanye: '+delay+'–'+max+' detik antar tujuan.</div>'+
+    (choices.length===1?'<div>Satu tujuan dipilih; jeda antar tujuan tidak menunda pengiriman pertama.</div>':'')+
+    '<div class="wa-preview-list">'+choices.map((link,index)=>{
     if(index>0){earliest+=(link.delay_seconds??delay);latest+=(link.delay_seconds??max);}
     const target=catalog.find(t=>t.id===link.target_id);
-    return '<div>'+(index+1)+'. '+escapeHtml(target?.name||'Tujuan')+
-      ' — setelah '+earliest+'–'+latest+' detik dari awal</div>';
-  }).join('')+'</div><small>Variasi jeda adalah rentang perencanaan; tidak menjamin keamanan dari pembatasan WhatsApp.</small>';
+    const timing=index===0?(isNowTest?'mulai setelah konfirmasi':'mulai pada jadwal yang dipilih')
+      :'perkiraan setelah '+earliest+'–'+latest+' detik dari awal';
+    return '<div>'+(index+1)+'. '+escapeHtml(target?.name||'Tujuan')+' — '+timing+'</div>';
+  }).join('')+'</div><small>Waktu aktual mengikuti antrean server. Jeda antar tujuan tidak menjamin keamanan dari pembatasan WhatsApp.</small>';
 }
 async function refresh(){
   const [targetRows,campaignRows,linkRows,plannedRows]=await Promise.all([
