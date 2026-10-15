@@ -21,6 +21,7 @@ function create(api,options={}){
   let host,root,targetManager,targets=[],contents=[],settings=[],logs=[],draft,slots=[],page=0,dirty=false,loaded=false,loading=false,working=false,selectedSlot=null,clipboard=null,bankPage=0,loadError='';
   let editor={id:null,title:'',caption:'',image_path:null},file=null,previewUrl='',imageGeneration=0;
   let capabilities={ready:false,scheduler_enabled:false,verified_types:[]};
+  let capabilityFlight=null,capabilityGeneration=0;
   const historyKeys=new Set();
   const q=id=>root?.querySelector('#'+domId(id));
   const rpc=(name,args)=>api.db('rpc/'+name,'POST',args);
@@ -62,18 +63,28 @@ function create(api,options={}){
       ]);
       contents=cs;settings=ss.map(s=>({...s,calendar_slots:allSlots.filter(x=>x.settings_id===s.id)}));logs=ls;loaded=true;
       if(!draft)chooseTarget(availableTargets()[0]?.id||'');
-      else render();
-      refreshCapabilities();
+      else {render();refreshCapabilities();}
     }catch(error){loadError=error.message;render();message('Data Channel belum dapat dimuat. '+error.message,true);}
     finally{loading=false;}
   }
-  async function refreshCapabilities(){
-    try{
-      const r=await fetch(api.base+'/functions/v1/badai-wa-'+kind+'?target_id='+encodeURIComponent(draft?.target_id||''),{headers:{apikey:api.key,Authorization:'Bearer '+api.token()},cache:'no-store'});
-      const data=await r.json();if(!r.ok)throw Error(data.error);
-      capabilities={...data,ready:data.ready===true&&(data.verified_types||[]).some(p=>p.target_kind===kind)};
-    }catch(_){capabilities={ready:false,scheduler_enabled:false,verified_types:[]};}
-    updateSummary();
+  function refreshCapabilities(){
+    const target=draft?.target_id;
+    if(!target){capabilityGeneration++;capabilities={ready:false,scheduler_enabled:false,verified_types:[]};updateSummary();return Promise.resolve();}
+    if(capabilityFlight?.target===target && capabilityFlight.generation===capabilityGeneration)return capabilityFlight.promise;
+    const generation=++capabilityGeneration;
+    capabilities={ready:false,scheduler_enabled:false,verified_types:[]};updateSummary();
+    const promise=(async()=>{
+      let result={ready:false,scheduler_enabled:false,verified_types:[]};
+      try{
+        const r=await fetch(api.base+'/functions/v1/badai-wa-'+kind+'?target_id='+encodeURIComponent(target),{headers:{apikey:api.key,Authorization:'Bearer '+api.token()},cache:'no-store',signal:AbortSignal.timeout(20000)});
+        const data=await r.json();if(!r.ok)throw Error(data.error);
+        result={...data,ready:data.ready===true&&(data.verified_types||[]).some(p=>p.target_kind===kind)};
+      }catch(_){}
+      if(generation===capabilityGeneration && draft?.target_id===target){capabilities=result;updateSummary();}
+    })();
+    capabilityFlight={target,promise,generation};
+    promise.finally(()=>{if(capabilityFlight?.promise===promise)capabilityFlight=null;});
+    return promise;
   }
   function currentDay(){
     const elapsed=dayDiff(dateIn(draft.timezone),draft.start_date);

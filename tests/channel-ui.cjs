@@ -19,12 +19,12 @@ for(const kind of ['channel','group'])test(kind+' UI: draft editor, image upload
   try{
     await page.goto('http://127.0.0.1:'+server.address().port);
     await page.evaluate(kind=>{
-      window.fixture={contents:[{id:'30000000-0000-4000-8000-000000000001',title:'Edukasi AI untuk Pebisnis',caption:'Mulai dari satu langkah kecil. *Konsisten* setiap hari.',image_path:null,created_at:new Date().toISOString(),updated_at:new Date().toISOString()}],settings:[],slots:[],logs:[],saves:[],uploads:0};
+      window.fixture={contents:[{id:'30000000-0000-4000-8000-000000000001',title:'Edukasi AI untuk Pebisnis',caption:'Mulai dari satu langkah kecil. *Konsisten* setiap hari.',image_path:null,created_at:new Date().toISOString(),updated_at:new Date().toISOString()}],settings:[],slots:[],logs:[],saves:[],uploads:0,capabilityCalls:0};
       const f=window.fixture;
       window.fetch=async(url,options={})=>{
         if(url.includes('/object/wa-marketing-media/')){f.uploads++;return new Response('{}',{status:200});}
         if(url.includes('/object/sign/'))return new Response(JSON.stringify({signedURL:'/object/sign/wa-marketing-media/fixture.png?token=fixture'}),{status:200});
-        if(url.includes('badai-wa-send')||url.includes('badai-wa-channel')||url.includes('badai-wa-group'))return new Response(JSON.stringify({ready:!!f.verified,scheduler_enabled:true,verified_types:f.verified?[{target_kind:kind,message_type:'image'}]:[]}),{status:200});
+        if(url.includes('badai-wa-send')||url.includes('badai-wa-channel')||url.includes('badai-wa-group')){f.capabilityCalls++;return new Response(JSON.stringify({ready:!!f.verified,scheduler_enabled:true,verified_types:f.verified?[{target_kind:kind,message_type:'image'}]:[]}),{status:200});}
         return new Response('',{status:404});
       };
       const api={base:'https://fixture.supabase.co',key:'fixture',sendUrl:'https://fixture.supabase.co/functions/v1/badai-wa-send',token:()=> 'fixture',db:async(path,method,body)=>{
@@ -48,7 +48,7 @@ for(const kind of ['channel','group'])test(kind+' UI: draft editor, image upload
       }};
       window.editor=window.BadaiChannel.create(api,{kind});window.editor.mount(document.querySelector('#channel'),[{id:'20000000-0000-4000-8000-000000000001',kind,name:kind==='group'?'Grup BADAI':'Channel BADAI',enabled:true}]);
     },kind);
-    await locate('#wcTitle').waitFor({state:'attached'});await locate('#wcNew').click();
+    await locate('#wcTitle').waitFor({state:'attached'});assert.equal(await page.evaluate(()=>fixture.capabilityCalls),1,'initial load checks destination readiness once');await locate('#wcNew').click();
     assert.equal(await locate('.wc-day').count(),30);assert.equal(await locate('.wc-slot').count(),30);
     await locate('[data-duration="30"]').click();await locate('[data-time-index="0"]').fill('08:00');await locate('[data-time-index="0"]').dispatchEvent('change');await locate('#wcAddTime').click();await locate('[data-time-index="1"]').fill('16:00');await locate('[data-time-index="1"]').dispatchEvent('change');
     await locate('#wcTitle').fill('Draft baru');await locate('#wcCaption').fill('Belajar AI bersama BADAI');

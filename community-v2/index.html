@@ -2997,6 +2997,8 @@ body.register-modal-open{
   font-size:7px;
   line-height:1.4;
 }
+.qris-retry.hidden{display:none!important}
+.qris-retry:disabled{opacity:.55;cursor:wait}
 .qris-stage-link,
 .qris-retry{
   min-height:40px;
@@ -6964,6 +6966,7 @@ main section > .container > .badai-copy-kicker,
           BUKA HALAMAN PEMBAYARAN
         </a>
 
+        <button id="qrisCheckStatusBtn" class="qris-retry hidden" type="button">PERIKSA STATUS PEMBAYARAN</button>
         <button id="qrisRetryBtn" class="qris-retry hidden" type="button">BUAT QR BARU</button>
 
         <div class="qris-stage-note">
@@ -7318,6 +7321,15 @@ Mohon dibantu proses pendaftarannya ya.`
   let qrisCountdownTimer = null;
   let qrisExpiresAt = 0;
   let qrisPublicToken = '';
+  let qrisPollingStopped = true;
+  let qrisPollingPaused = false;
+  let qrisTerminal = false;
+  let qrisErrors = 0;
+  let qrisAutomaticChecks = 0;
+  let qrisGeneration = 0;
+  let qrisController = null;
+  let qrisLastCheckAt = 0;
+
 
   function escapePaymentHtml(value){
     return String(value ?? '').replace(/[&<>"']/g, ch => ({
@@ -7496,8 +7508,48 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function stopAllQrisTimers(){
+    qrisPollingStopped=true;cancelQrisRequest();
     stopQrisStatusPolling();
     stopQrisCountdown();
+  }
+
+  function cancelQrisRequest(){
+    qrisGeneration++;
+    const button=document.getElementById('qrisCheckStatusBtn');if(button)button.disabled=false;
+    if(qrisController){qrisController.abort();qrisController=null;}
+  }
+
+  function qrisViewVisible(){
+    return document.visibilityState === 'visible' &&
+      document.getElementById('registrationModal')?.classList.contains('open') &&
+      !document.getElementById('qrisPaymentStage')?.classList.contains('hidden');
+  }
+
+  function pauseQrisPolling(message){
+    stopQrisStatusPolling();
+    qrisPollingPaused = true;
+    const status = document.getElementById('qrisStageStatus');
+    if(status){status.className='qris-stage-status waiting';status.textContent=message;}
+    document.getElementById('qrisCheckStatusBtn')?.classList.remove('hidden');
+    if(qrisExpiresAt && Date.now() >= qrisExpiresAt)document.getElementById('qrisRetryBtn')?.classList.remove('hidden');
+  }
+
+  function resumeQrisPolling(){
+    if(!qrisPublicToken || qrisTerminal || !qrisViewVisible())return;
+    qrisPollingStopped = false;
+    updateQrisCountdown();
+    if(qrisExpiresAt && Date.now() >= qrisExpiresAt)return;
+    if(!qrisCountdownTimer)qrisCountdownTimer=setInterval(updateQrisCountdown,1000);
+    if(!qrisPollingPaused)scheduleQrisCheck(Math.max(1000,30000-(Date.now()-qrisLastCheckAt)));
+  }
+
+  function beginQrisPolling(token){
+    qrisPublicToken=token;
+    qrisPollingStopped=false;qrisPollingPaused=false;qrisTerminal=false;
+    qrisErrors=0;qrisAutomaticChecks=0;qrisLastCheckAt=0;
+    const button=document.getElementById('qrisCheckStatusBtn');
+    if(button){button.disabled=false;button.classList.toggle('hidden',!token);}
+    if(token)scheduleQrisCheck(3000);
   }
 
   function updateQrisCountdown(){
@@ -7525,6 +7577,7 @@ Mohon dibantu proses pendaftarannya ya.`
         qrisCountdownTimer = null;
       }
       el.textContent = '00:00:00';
+      if(qrisPublicToken && !qrisTerminal && !qrisPollingPaused)pauseQrisPolling('Waktu QR berakhir. Jika sudah membayar, periksa status sebelum membuat QR baru.');
     }
   }
 
@@ -7544,12 +7597,9 @@ Mohon dibantu proses pendaftarannya ya.`
       ? Math.min(apiExpiry, maxExpiry)
       : maxExpiry;
 
-    if(qrisExpiresAt <= now){
-      qrisExpiresAt = maxExpiry;
-    }
 
     updateQrisCountdown();
-    qrisCountdownTimer = setInterval(updateQrisCountdown,10);
+    qrisCountdownTimer = setInterval(updateQrisCountdown,1000);
   }
 
   function showRegistrationForm(){
@@ -7573,6 +7623,7 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function showQrisStage(data){
+    stopAllQrisTimers();
     const modalCard = document.querySelector('.registration-modal-card');
     modalCard?.classList.add('qris-mode');
 
@@ -7608,31 +7659,47 @@ Mohon dibantu proses pendaftarannya ya.`
 
     startQrisCountdown(data.expires_at || null);
 
-    qrisPublicToken = data.public_token || '';
-    if(qrisPublicToken) scheduleQrisCheck(3000);
+    beginQrisPolling(data.public_token || '');
   }
 
-  async function checkQrisPayment(){
-    if(!qrisPublicToken) return;
+  async function checkQrisPayment(manual=false){
+    if(!qrisPublicToken || qrisTerminal || qrisController || !qrisViewVisible())return;
+    if(manual && Date.now()-qrisLastCheckAt<5000)return;
+    if(!manual && (qrisPollingStopped || qrisPollingPaused))return;
+    if(!manual && qrisExpiresAt && Date.now()>=qrisExpiresAt){
+      pauseQrisPolling('Waktu QR berakhir. Jika sudah membayar, periksa status sebelum membuat QR baru.');return;
+    }
+    if(!manual && qrisAutomaticChecks>=32){pauseQrisPolling('Pemeriksaan otomatis dijeda. Tekan Periksa Status Pembayaran untuk melanjutkan.');return;}
+    stopQrisStatusPolling();
+    if(manual){qrisPollingStopped=false;qrisPollingPaused=false;qrisErrors=0;}
+    else qrisAutomaticChecks++;
+    const generation=qrisGeneration,publicToken=qrisPublicToken;
+    const controller=new AbortController();qrisController=controller;qrisLastCheckAt=Date.now();
+    const timeout=setTimeout(()=>controller.abort(),20000);
+    const checkButton=document.getElementById('qrisCheckStatusBtn');if(checkButton)checkButton.disabled=true;
 
     try{
       const res = await fetch(SUPABASE_URL + '/functions/v1/check-buatqris-payment',{
-        method:'POST',
+        method:'POST',signal:controller.signal,
         headers:{
           'apikey':SUPABASE_PUBLISHABLE_KEY,
           'Content-Type':'application/json'
         },
-        body:JSON.stringify({public_token:qrisPublicToken})
+        body:JSON.stringify({public_token:publicToken})
       });
 
-      const data = await res.json().catch(()=>({}));
+      const data = await res.json();
+      if(generation!==qrisGeneration || publicToken!==qrisPublicToken)return;
       if(!res.ok) throw new Error(data?.error || 'Gagal mengecek pembayaran');
 
-      const status = String(data.status || 'pending');
+      if(!data || !['pending','success','expired','failed'].includes(data.status))throw new Error('Respons status pembayaran tidak valid.');
+      qrisErrors=0;
+      const status = data.status;
       const statusEl = document.getElementById('qrisStageStatus');
       const retry = document.getElementById('qrisRetryBtn');
 
       if(status === 'success'){
+        qrisTerminal=true;document.getElementById('qrisCheckStatusBtn')?.classList.add('hidden');
         stopAllQrisTimers();
         if(statusEl){
           statusEl.className = 'qris-stage-status success';
@@ -7653,6 +7720,7 @@ Mohon dibantu proses pendaftarannya ya.`
       }
 
       if(status === 'expired' || status === 'failed'){
+        qrisTerminal=true;document.getElementById('qrisCheckStatusBtn')?.classList.add('hidden');
         stopAllQrisTimers();
         if(statusEl){
           statusEl.className = 'qris-stage-status failed';
@@ -7664,13 +7732,23 @@ Mohon dibantu proses pendaftarannya ya.`
 
       scheduleQrisCheck();
     }catch(_){
-      scheduleQrisCheck(22000);
+      if(generation!==qrisGeneration || publicToken!==qrisPublicToken)return;
+      qrisErrors++;
+      if(qrisErrors>=3){pauseQrisPolling('Status pembayaran belum bisa diperiksa. Tekan Periksa Status Pembayaran untuk mencoba lagi.');}
+      else scheduleQrisCheck(30000*Math.pow(2,qrisErrors-1));
+    }finally{
+      clearTimeout(timeout);
+      if(qrisController===controller)qrisController=null;
+      if(generation===qrisGeneration && checkButton)checkButton.disabled=false;
     }
   }
 
-  function scheduleQrisCheck(delay=22000){
+  function scheduleQrisCheck(delay=30000){
     stopQrisStatusPolling();
-    qrisPollTimer = setTimeout(checkQrisPayment,delay);
+    if(!qrisPublicToken || qrisTerminal || qrisPollingStopped || qrisPollingPaused || !qrisViewVisible())return;
+    if(qrisExpiresAt && Date.now()>=qrisExpiresAt){pauseQrisPolling('Waktu QR berakhir. Jika sudah membayar, periksa status sebelum membuat QR baru.');return;}
+    const remaining=qrisExpiresAt ? qrisExpiresAt-Date.now() : delay;
+    qrisPollTimer=setTimeout(()=>checkQrisPayment(),Math.min(delay,remaining));
   }
 
   async function createBuatQrisPayment({nama,email,wa}){
@@ -7792,9 +7870,10 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function openRegistrationModal(plan){
+    const resumePayment=Boolean(qrisPublicToken && !qrisTerminal && selectedPackage===plan);
     selectedPackage = ['free','newbie','pro'].includes(plan) ? plan : 'newbie';
     syncSelectedPackageUI();
-    showRegistrationForm();
+    if(!resumePayment)showRegistrationForm();
 
     const title = document.getElementById('registrationModalTitle');
     const desc = document.getElementById('registrationModalDesc');
@@ -7820,6 +7899,7 @@ Mohon dibantu proses pendaftarannya ya.`
 
     registrationModal?.classList.add('open');
     registrationModal?.setAttribute('aria-hidden','false');
+    if(resumePayment)resumeQrisPolling();
     document.body.classList.add('register-modal-open');
 
     setTimeout(() => document.getElementById('regNama')?.focus(), 80);
@@ -7840,6 +7920,16 @@ Mohon dibantu proses pendaftarannya ya.`
   });
 
   closeRegistrationModalBtn?.addEventListener('click', closeRegistrationModal);
+
+  document.getElementById('qrisCheckStatusBtn')?.addEventListener('click',()=>checkQrisPayment(true));
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState!=='visible'){
+      stopQrisStatusPolling();stopQrisCountdown();cancelQrisRequest();
+      const button=document.getElementById('qrisCheckStatusBtn');if(button)button.disabled=false;
+    }else resumeQrisPolling();
+  });
+  window.addEventListener('pagehide',()=>stopAllQrisTimers());
+  window.addEventListener('pageshow',()=>resumeQrisPolling());
 
   document.getElementById('qrisRetryBtn')?.addEventListener('click', () => {
     showRegistrationForm();

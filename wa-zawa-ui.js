@@ -7,6 +7,9 @@ const $=id=>document.getElementById(id);
 let busy=false;
 let active=false;
 let watch=null;
+let watchDeadline=0;
+let lastCheckAt=0;
+const WATCH_WINDOW=5*60*1000;
 
 function getToken(){
   let session=null;
@@ -22,7 +25,7 @@ function report(message,error){
 async function call(action){
   const method=action?'POST':'GET';
   const response=await fetch(ENDPOINT,{
-    method,cache:'no-store',
+    method,cache:'no-store',signal:AbortSignal.timeout(20000),
     headers:{
       Authorization:'Bearer '+getToken(),apikey:PUBLISHABLE,
       Accept:'application/json',...(action?{'Content-Type':'application/json'}:{})
@@ -34,13 +37,16 @@ async function call(action){
   return data;
 }
 function stopWatch(){
-  if(watch){clearInterval(watch);watch=null}
+  if(watch){clearTimeout(watch);watch=null}
 }
 function setWatch(enabled){
   stopWatch();
-  if(enabled)watch=setInterval(()=>{
-    if(!document.hidden && active && !$('pageWamarketing')?.classList.contains('hidden'))refresh(true);
-  },12000);
+  if(!enabled){watchDeadline=0;return;}
+  if(!watchDeadline)watchDeadline=Date.now()+WATCH_WINDOW;
+  const remaining=watchDeadline-Date.now();
+  if(remaining<=0){report('Pemeriksaan QR otomatis dijeda setelah 5 menit. Tekan PERIKSA KONEKSI untuk melanjutkan.');return;}
+  if(document.hidden || !active || $('pageWamarketing')?.classList.contains('hidden') || !document.querySelector('[data-wa-content="connection"]')?.classList.contains('active'))return;
+  watch=setTimeout(()=>refresh(true),Math.min(12000,remaining));
 }
 function updateStatus(data){
   const state=String(data?.connection_state||'not_created');
@@ -76,8 +82,12 @@ function updateStatus(data){
   if(state==='qr_ready'||state==='waiting_for_qr'||state==='created')setWatch(true);
   else setWatch(false);
 }
-async function refresh(silent){
+async function refresh(silent,force=false){
   if(busy)return;
+  if(silent && watchDeadline && Date.now()>=watchDeadline){setWatch(true);return;}
+  if(!silent && !force && lastCheckAt && Date.now()-lastCheckAt<15000){setWatch(Boolean(watchDeadline));return;}
+  if(!silent)watchDeadline=Date.now()+WATCH_WINDOW;
+  lastCheckAt=Date.now();
   busy=true;const button=$('waCheckConnection');
   if(button)button.disabled=true;
   if(!silent)report('Memeriksa status dan QR ke server Zawa...');
@@ -89,7 +99,7 @@ async function refresh(silent){
     setText('waStatusHeading','Status tidak tersedia');
     setText('waStatusDetail',error.message);
     report(error.message,true);
-    stopWatch();
+    setWatch(false);
   }finally{
     busy=false;
     if(button)button.disabled=false;
@@ -99,6 +109,7 @@ async function create(replace){
   if(busy)return;
   if(replace && !confirm('Buat sesi Zawa yang baru? Sesi lama tidak otomatis logout dari WhatsApp. Jika masih tertaut, putuskan terlebih dahulu dari WhatsApp → Perangkat tertaut.'))return;
   busy=true;
+  watchDeadline=Date.now()+WATCH_WINDOW;
   const start=$('waPairCreate'),other=$('waPairReplace');
   if(start)start.disabled=true;if(other)other.disabled=true;
   report('Membuat sesi WhatsApp di Zawa...');
@@ -132,7 +143,7 @@ function boot(){
     '<div class="wa-step"><b>1</b><span>Klik <strong>BUAT QR KONEKSI</strong> di sini.</span></div>'+
     '<div class="wa-step"><b>2</b><span>Buka WhatsApp di HP yang ingin digunakan untuk marketing.</span></div>'+
     '<div class="wa-step"><b>3</b><span>Pilih <strong>Perangkat tertaut → Tautkan perangkat</strong>, lalu arahkan kamera ke QR di dashboard.</span></div>'+
-    '<div class="wa-step"><b>4</b><span>Status akan diperiksa otomatis setiap 12 detik selama QR tersedia.</span></div>'+
+    '<div class="wa-step"><b>4</b><span>Status diperiksa setiap 12 detik, maksimal 5 menit. Tekan PERIKSA KONEKSI untuk memeriksa lagi.</span></div>'+
     '<div class="wa-alert">Integrasi ini menggunakan Zawa, layanan pihak ketiga tidak resmi Meta. Sesi dapat terputus dan pemakaian berisiko pembatasan akun WhatsApp. Fitur pengiriman pesan BADAI tetap belum aktif.</div>'+
     '<a href="https://azickri.gitbook.io/zawa/session-api/buat-session" rel="noopener noreferrer" target="_blank" class="wa-secondary-link">PANDUAN ZAWA ↗</a>'+
     '</article></div>';
@@ -151,12 +162,21 @@ function boot(){
   document.head.appendChild(style);
   $('waPairCreate').addEventListener('click',()=>create(false));
   $('waPairReplace').addEventListener('click',()=>create(true));
-  $('waCheckConnection')?.addEventListener('click',()=>refresh(false));
+  $('waCheckConnection')?.addEventListener('click',()=>refresh(false,true));
   window.__BADAI_WA_LOAD__=()=>{active=true;refresh(false)};
   $('tabWaMarketing')?.addEventListener('click',()=>{active=true;refresh(false)});
   document.querySelectorAll('[data-page]').forEach(btn=>{
     if(btn.dataset.page!=='wamarketing')btn.addEventListener('click',()=>{active=false;stopWatch()});
   });
+  document.querySelectorAll('[data-wa-section]').forEach(btn=>btn.addEventListener('click',()=>{
+    if(btn.dataset.waSection!=='connection')stopWatch();
+    else if(watchDeadline)setWatch(true);
+  }));
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden)stopWatch();else if(watchDeadline)setWatch(true);
+  });
+  window.addEventListener('pagehide',stopWatch);
+  window.addEventListener('pageshow',()=>{if(watchDeadline)setWatch(true)});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
 else boot();

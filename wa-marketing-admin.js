@@ -146,6 +146,7 @@ function targetsMarkup(){
 }
 
 async function checkSendingCapabilities(){
+  if(!$('waSendReal'))return;
   try {
     const res=await fetch(SEND_URL,{method:'GET',cache:'no-store',
       headers:{apikey:KEY,Authorization:'Bearer '+token()}});
