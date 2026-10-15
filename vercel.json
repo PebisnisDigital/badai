@@ -61,6 +61,10 @@
       "dest": "/wa-channel-admin.js"
     },
     {
+      "src": "^/admin-workspace\\.css$",
+      "dest": "/admin-workspace.css"
+    },
+    {
       "src": "^/[^/]+/?$",
       "dest": "/api/landing-v6"
     },

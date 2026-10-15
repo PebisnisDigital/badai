@@ -7,8 +7,8 @@ const crypto=require('node:crypto');
 test('Channel UI: draft editor, image upload, formatting, drag/drop, day editing, paging, duplicates, detach, save, responsive layout',async()=>{
   const root=require('node:path').join(__dirname,'..');
   const server=http.createServer((req,res)=>{
-    if(req.url==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');res.end('<!doctype html><html lang="id"><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/wa-channel-admin.css"><style>body{margin:0;padding:24px;background:#080808;font-family:Arial}button,input,select,textarea{font-family:inherit}#pageWamarketing{max-width:1500px;margin:auto}</style></head><body><main id="pageWamarketing"><div id="channel"></div></main><script src="/wa-channel-admin.js"></script></body></html>');}
-    else if(['/wa-channel-admin.js','/wa-channel-admin.css'].includes(req.url)){res.setHeader('Content-Type',req.url.endsWith('.css')?'text/css; charset=utf-8':'application/javascript; charset=utf-8');res.end(fs.readFileSync(root+req.url));}
+    if(req.url==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');res.end('<!doctype html><html lang="id"><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/wa-channel-admin.css"><link rel="stylesheet" href="/admin-workspace.css"><style>body{margin:0;padding:24px;background:#080808;font-family:Arial}button,input,select,textarea{font-family:inherit}#pageWamarketing{max-width:1500px;margin:auto}</style></head><body><main id="pageWamarketing"><div id="channel"></div></main><script src="/wa-channel-admin.js"></script></body></html>');}
+    else if(['/wa-channel-admin.js','/wa-channel-admin.css','/admin-workspace.css'].includes(req.url)){res.setHeader('Content-Type',req.url.endsWith('.css')?'text/css; charset=utf-8':'application/javascript; charset=utf-8');res.end(fs.readFileSync(root+req.url));}
     else{res.statusCode=404;res.end();}
   });
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
