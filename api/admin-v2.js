@@ -80,7 +80,7 @@ module.exports = async function handler(req, res) {
 `    if($sp('socialProofPreviewIcon')){
       const previewIcon = $sp('socialProofPreviewIcon');
       previewIcon.textContent = '';
-      if(/^https?:\/\//i.test(iconUrl)){
+      if(new RegExp('^https?://','i').test(iconUrl)){
         const img = document.createElement('img');
         img.alt = 'Icon notifikasi';
         img.src = iconUrl;
@@ -109,7 +109,7 @@ module.exports = async function handler(req, res) {
     body = body.replace(
 `      if(!body.message_template) throw new Error('Redaksi notifikasi wajib diisi.');`,
 `      if(!body.message_template) throw new Error('Redaksi notifikasi wajib diisi.');
-      if(body.icon_url && !/^https?:\/\//i.test(body.icon_url)) throw new Error('Link icon harus diawali http:// atau https://.');`
+      if(body.icon_url && !new RegExp('^https?://','i').test(body.icon_url)) throw new Error('Link icon harus diawali http:// atau https://.');`
     );
 
     body = body.replace(

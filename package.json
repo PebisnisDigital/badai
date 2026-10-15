@@ -4,12 +4,15 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node railway-server.js",
+    "test": "node --test tests/*.cjs tests/*.test.mjs",
     "netlify:build": "node netlify/build-public.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
+    "playwright": "1.62.1",
     "@netlify/functions": "latest"
   },
   "dependencies": {

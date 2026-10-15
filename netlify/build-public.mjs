@@ -17,6 +17,10 @@ async function exists(filePath) {
 await rm(out, { recursive: true, force: true });
 await mkdir(path.join(out, "akses"), { recursive: true });
 
+for (const asset of ['wa-marketing-admin.js', 'wa-zawa-ui.js', 'wa-channel-admin.js', 'wa-channel-admin.css']) {
+  await copyFile(path.join(root, asset), path.join(out, asset));
+}
+
 await copyFile(
   path.join(root, "akses", "auth.js"),
   path.join(out, "akses", "auth.js")

@@ -1,0 +1,75 @@
+#pageWamarketing .wc{--wc-line:#353038;--wc-muted:#aaa1ad;--wc-pink:#ff4fa3;color:#f7f3f6;display:grid;gap:16px;font-size:12px}
+#pageWamarketing .wc *{box-sizing:border-box}
+#pageWamarketing .wc button,#pageWamarketing .wc input,#pageWamarketing .wc select,#pageWamarketing .wc textarea{font:inherit}
+#pageWamarketing .wc button{cursor:pointer;border:1px solid var(--wc-line);border-radius:9px;background:#242026;color:#fff;padding:9px 12px;min-height:36px}
+#pageWamarketing .wc button:disabled{opacity:.4;cursor:not-allowed}
+#pageWamarketing .wc button:hover:enabled{border-color:var(--wc-pink)}
+#pageWamarketing .wc button:focus-visible,#pageWamarketing .wc input:focus-visible,#pageWamarketing .wc select:focus-visible,#pageWamarketing .wc textarea:focus-visible{outline:2px solid var(--wc-pink);outline-offset:2px}
+#pageWamarketing .wc .wc-primary{background:var(--wc-pink);border-color:var(--wc-pink);color:#140b10;font-weight:800}
+#pageWamarketing .wc .wc-danger{color:#ff9cae}
+#pageWamarketing .wc-card{background:#121113;border:1px solid var(--wc-line);border-radius:16px;padding:20px;min-width:0}
+#pageWamarketing .wc h3{margin:0;font-size:16px;letter-spacing:-.02em}
+#pageWamarketing .wc h4{margin:0;font-size:13px}
+#pageWamarketing .wc p{color:var(--wc-muted);margin:6px 0 14px;line-height:1.6}
+#pageWamarketing .wc small{color:var(--wc-muted);font-size:10px;line-height:1.5}
+#pageWamarketing .wc-head,#pageWamarketing .wc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#pageWamarketing .wc-eyebrow{font-size:10px;letter-spacing:.12em;color:var(--wc-pink);font-weight:800;margin-bottom:7px}
+#pageWamarketing .wc label{display:grid;gap:6px;color:#c9becb;font-size:11px}
+#pageWamarketing .wc input,#pageWamarketing .wc select,#pageWamarketing .wc textarea{width:100%;min-width:0;background:#09080a;color:#fff;border:1px solid var(--wc-line);border-radius:9px;padding:10px;min-height:39px}
+#pageWamarketing .wc textarea{resize:vertical;line-height:1.6}
+#pageWamarketing .wc-fields{display:grid;grid-template-columns:1.3fr 1fr 1.2fr 1fr;gap:12px;margin:18px 0}
+#pageWamarketing .wc-switch{display:flex!important;align-items:center;gap:8px;cursor:pointer}
+#pageWamarketing .wc-switch input{width:36px;height:20px;min-height:0;appearance:none;border-radius:20px;padding:2px;background:#3c3540;cursor:pointer;transition:background .15s}
+#pageWamarketing .wc-switch input:after{content:'';display:block;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s}
+#pageWamarketing .wc-switch input:checked{background:var(--wc-pink)}
+#pageWamarketing .wc-switch input:checked:after{transform:translateX(15px)}
+#pageWamarketing .wc-times{display:flex;align-items:end;gap:8px;flex-wrap:wrap;margin:12px 0}
+#pageWamarketing .wc-time{display:flex;gap:3px;align-items:center}
+#pageWamarketing .wc-time input{width:112px}
+#pageWamarketing .wc .wc-time button{padding:5px 8px}
+#pageWamarketing .wc-summary{border-top:1px solid var(--wc-line);padding-top:15px;margin-top:15px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+#pageWamarketing .wc progress{display:block;width:100%;height:6px;accent-color:var(--wc-pink);margin:8px 0}
+#pageWamarketing .wc-layout{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(290px,1fr);gap:16px;align-items:start}
+#pageWamarketing .wc-calendar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:16px 0}
+#pageWamarketing .wc-day{min-width:0;border:1px solid #302a33;border-radius:11px;background:#0c0b0d;padding:8px}
+#pageWamarketing .wc-day.today{border-color:var(--wc-pink)}
+#pageWamarketing .wc .wc-day-title{width:100%;text-align:left;padding:3px 0 8px;background:transparent;border:0;min-height:0;font-size:11px;font-weight:800}
+#pageWamarketing .wc-day-title small{display:block;font-weight:400;margin-top:3px}
+#pageWamarketing .wc-slot{border:1px dashed #45394a;border-radius:8px;padding:7px;margin-top:6px;min-height:80px;display:grid;align-content:start;gap:5px;overflow-wrap:anywhere}
+#pageWamarketing .wc-slot.filled{border-style:solid;background:#24131e;border-color:#61334f}
+#pageWamarketing .wc-slot.over{outline:2px solid var(--wc-pink);background:#3b1b2c}
+#pageWamarketing .wc-slot[draggable=true],#pageWamarketing .wc-content[draggable=true]{cursor:grab}
+#pageWamarketing .wc .wc-slot button{padding:2px 4px;min-height:23px;font-size:10px;background:transparent}
+#pageWamarketing .wc-slot-tools{display:flex;gap:3px;flex-wrap:wrap}
+#pageWamarketing .wc-badge{font-size:9px;border-radius:5px;padding:3px 5px;background:#28232c;color:#bcb0c2;display:inline-block;width:fit-content}
+#pageWamarketing .wc-badge.scheduled{background:#4b2039;color:#ff9ccb}
+#pageWamarketing .wc-badge.delivered{background:#183d2b;color:#91e4b4}
+#pageWamarketing .wc-badge.failed{background:#4a2029;color:#ffb1bc}
+#pageWamarketing .wc-badge.api_accepted,#pageWamarketing .wc-badge.unknown{background:#49381c;color:#efcc88}
+#pageWamarketing .wc-bank{display:grid;gap:14px}
+#pageWamarketing .wc-editor{display:grid;gap:11px}
+#pageWamarketing .wc-format{display:flex;gap:5px}
+#pageWamarketing .wc .wc-format button{padding:5px 10px;min-height:29px}
+#pageWamarketing .wc-preview{background:#14221a;border:1px solid #2c4d38;border-radius:11px;padding:12px;min-height:75px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;font-size:12px}
+#pageWamarketing .wc-preview img{display:block;width:100%;max-height:200px;object-fit:contain;border-radius:7px;margin-bottom:8px}
+#pageWamarketing .wc-search{display:grid;grid-template-columns:1fr 110px;gap:7px;margin:13px 0}
+#pageWamarketing .wc-list{display:grid;gap:8px;max-height:590px;overflow:auto;padding:2px}
+#pageWamarketing .wc-content{border:1px solid var(--wc-line);padding:11px;border-radius:10px;background:#19151b;display:grid;gap:7px}
+#pageWamarketing .wc-content p{font-size:11px;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#pageWamarketing .wc-content .wc-row{justify-content:start;gap:5px}
+#pageWamarketing .wc .wc-content button{font-size:10px;padding:5px 7px;min-height:27px}
+#pageWamarketing .wc-notice{padding:10px 12px;border:1px solid #533044;background:#28141f;color:#f3bbd5;border-radius:10px;line-height:1.5;overflow-wrap:anywhere}
+#pageWamarketing .wc-notice:empty{display:none}
+#pageWamarketing .wc-notice.error{border-color:#9a4356;color:#ffb1bf}
+#pageWamarketing .wc-legend{display:flex;gap:8px;flex-wrap:wrap}
+#pageWamarketing .wc-empty{padding:20px;text-align:center;color:var(--wc-muted);border:1px dashed var(--wc-line);border-radius:10px}
+#pageWamarketing .wc dialog{background:#161218;color:#fff;border:1px solid #664059;border-radius:16px;padding:22px;width:min(580px,calc(100% - 28px));max-height:85vh;overflow:auto}
+#pageWamarketing .wc dialog::backdrop{background:#000a}
+#pageWamarketing .wc-dialog-body{display:grid;gap:14px;margin:18px 0}
+#pageWamarketing .wc-dialog-body label{font-size:12px}
+#pageWamarketing .wc-targets{margin-top:16px}
+#pageWamarketing .wc-targets summary{cursor:pointer;padding:12px;color:#c8bacd}
+@media(min-width:1500px){#pageWamarketing .wc-calendar{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(max-width:1100px){#pageWamarketing .wc-calendar{grid-template-columns:repeat(3,minmax(0,1fr))}#pageWamarketing .wc-fields{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){#pageWamarketing .wc-layout{grid-template-columns:1fr}#pageWamarketing .wc-calendar{grid-template-columns:repeat(3,minmax(0,1fr))}#pageWamarketing .wc-card{padding:14px}}
+@media(max-width:480px){#pageWamarketing .wc-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}#pageWamarketing .wc-fields,#pageWamarketing .wc-summary{grid-template-columns:1fr}#pageWamarketing .wc-search{grid-template-columns:1fr}}

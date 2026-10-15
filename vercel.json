@@ -53,6 +53,14 @@
       "dest": "/wa-zawa-ui.js"
     },
     {
+      "src": "^/wa-channel-admin\\.css$",
+      "dest": "/wa-channel-admin.css"
+    },
+    {
+      "src": "^/wa-channel-admin\\.js$",
+      "dest": "/wa-channel-admin.js"
+    },
+    {
       "src": "^/[^/]+/?$",
       "dest": "/api/landing-v6"
     },

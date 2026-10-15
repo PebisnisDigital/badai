@@ -63,8 +63,12 @@ async function syncTargets(kind){
   }finally{busy=false}
 }
 function renderTarget(kind){
-  const root=document.querySelector('[data-wa-content="'+(kind==='group'?'groups':'channel')+'"]');
+  let root=document.querySelector('[data-wa-content="'+(kind==='group'?'groups':'channel')+'"]');
   if(!root)return;
+  if(kind==='channel'&&window.BadaiChannel){
+    window.__badaiChannelEditor ||= window.BadaiChannel.create({db,token,base:BASE,key:KEY,sendUrl:SEND_URL});
+    root=window.__badaiChannelEditor.mount(root,catalog);
+  }
   const targets=catalog.filter(t=>t.kind===kind);
   root.innerHTML=
     '<div class="wa-feature-card"><h3>'+ (kind==='group'?'Grup WhatsApp':'WhatsApp Channel')+'</h3>'+
