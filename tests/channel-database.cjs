@@ -8,7 +8,7 @@ try { ({ PGlite } = require('@electric-sql/pglite')); }
 catch (_) { ({ PGlite } = require(process.env.PGLITE_MODULE || '../work/test-tools/node_modules/@electric-sql/pglite')); }
 const actor='10000000-0000-4000-8000-000000000001', target='20000000-0000-4000-8000-000000000001';
 const cid='30000000-0000-4000-8000-000000000001', sid='40000000-0000-4000-8000-000000000001';
-const migration=fs.readFileSync(path.join(__dirname,'../supabase/migrations/20261015043013_channel_automation.sql'),'utf8').split("select cron.schedule(")[0];
+const migration=fs.readdirSync(path.join(__dirname,'../supabase/migrations')).filter(f=>f.endsWith('.sql')).sort().map(f=>fs.readFileSync(path.join(__dirname,'../supabase/migrations',f),'utf8').split("select cron.schedule(")[0]).join('\n');
 test('Channel database: authorization, atomic settings, looping, idempotency, dispatch gates and immutable history',async()=>{
   const db=new PGlite();
   const query=async(sql,args=[])=>{const r=await db.query(sql,args);return r.rows;};
@@ -21,7 +21,8 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
     create table public.admin_team_members(auth_user_id uuid,role text,status text);
     create table public.wa_marketing_targets(id uuid primary key,kind text,enabled boolean,external_id text,name text);
     create table public.wa_marketing_connection_secure(id integer,provider_id text,session_secret text,session_epoch uuid);
-    create table public.wa_marketing_live_settings(singleton boolean,enabled boolean,scheduler_enabled boolean,active_job_id uuid,next_send_at timestamptz,min_gap_seconds integer);
+    create table public.wa_marketing_live_settings(singleton boolean,enabled boolean,scheduler_enabled boolean,active_job_id uuid,next_send_at timestamptz,min_gap_seconds integer,updated_at timestamptz);
+    create table public.wa_marketing_live_jobs(status text);
     create table public.test_proofs(kind text,typ text,fp text);
     create function public.wa_live_owner() returns boolean language sql security definer as $$ select exists(select 1 from public.admin_team_members where auth_user_id=auth.uid() and status='active' and role in ('owner','super_admin')) $$;
     create function public.wa_live_assert_owner(uuid) returns void language plpgsql security definer as $$ begin if $1 is null or not exists(select 1 from public.admin_team_members where auth_user_id=$1 and status='active' and role in ('owner','super_admin')) then raise exception 'wa_owner_required'; end if; end $$;
@@ -29,7 +30,7 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
     insert into auth.users values('${actor}');
     insert into public.admin_team_members values('${actor}','owner','active');
     insert into public.wa_marketing_targets values('${target}','channel',true,'123456789@newsletter','BADAI test');
-    insert into public.wa_marketing_live_settings values(true,false,false,null,now()-interval '1 day',30);
+    insert into public.wa_marketing_live_settings values(true,false,false,null,now()-interval '1 day',30,now());
     insert into public.wa_marketing_connection_secure values(1,'fixture-provider','fixture-secret','50000000-0000-4000-8000-000000000001');
   `);
   await db.exec(migration);
@@ -47,11 +48,29 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
   assert.equal((await query('select count(*)::int as n from public.wa_channel_calendar_slots'))[0].n,1,'failed save rolls back slots');
   config.enabled=true;
   await assert.rejects(()=>save(1),/wa_confirmation_required/);
-  await assert.rejects(()=>save(1,true),/wa_sending_disabled/);
+  await assert.rejects(()=>save(1,true),/wa_destination_not_verified/);
   await assert.rejects(()=>query('update public.wa_channel_settings set enabled=true'),/permission denied/);
   await assert.rejects(()=>query('select public.wa_channel_tick()'),/permission denied/);
+  const testKey='70000000-0000-4000-8000-000000000001';
+  const testSend=async()=> (await query('select public.wa_channel_send_test($1,1,$2::time,$3,true) as j',[sid,'08:00',testKey]))[0].j;
+  const testJob=await testSend();assert.equal((await testSend()).id,testJob.id,'verification test is idempotent');
   await db.exec('reset role');
-  await db.exec('update public.wa_marketing_live_settings set enabled=true,scheduler_enabled=true');
+  const verifiedJob=(await query('select public.wa_channel_claim() as j'))[0].j;
+  assert.equal(verifiedJob.is_test,true,'only explicitly requested test bypasses publication flags');
+  const testFp=(await query('select badai_channel.fingerprint() as fp'))[0].fp;
+  assert.equal((await query('select public.wa_channel_dispatch($1,$2,$3) as ok',[verifiedJob.id,verifiedJob.claim_token,testFp]))[0].ok,true);
+  await query('select public.wa_channel_settle($1,$2,$3,$4::jsonb,$5)',[verifiedJob.id,verifiedJob.claim_token,'api_accepted',JSON.stringify({http_status:200,message_id:'test-message'}),null]);
+  assert.equal((await query('select badai_channel.verified($1,false) as ok',[target]))[0].ok,false,'API acceptance alone cannot verify publication');
+  await db.exec('set role authenticated');
+  await assert.rejects(()=>query('select public.wa_channel_confirm_received($1,$2)',[testJob.id,'']),/wa_delivery_evidence_required/);
+  await query('select public.wa_channel_confirm_received($1,$2)',[testJob.id,'Pesan terlihat di Channel BADAI uji.']);
+  await db.exec('reset role');
+  assert.equal((await query('select badai_channel.verified($1,false) as ok',[target]))[0].ok,true);
+  await db.exec("update public.wa_marketing_connection_secure set session_epoch=gen_random_uuid()");
+  assert.equal((await query('select badai_channel.verified($1,false) as ok',[target]))[0].ok,false,'receipt from an older pairing cannot unlock a new pairing');
+  await db.exec("update public.wa_marketing_connection_secure set session_epoch='50000000-0000-4000-8000-000000000001'");
+  await db.exec("update public.wa_marketing_live_settings set next_send_at=now()-interval '1 day'");
+
   await db.exec("insert into public.test_proofs select 'channel','text',badai_channel.fingerprint()");
   const fp=(await query('select badai_channel.fingerprint() as fp'))[0].fp;
   assert.equal(fp,require('node:crypto').createHash('sha256').update(JSON.stringify(['fixture-provider','fixture-secret','50000000-0000-4000-8000-000000000001'])).digest('hex'));
@@ -81,7 +100,7 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
   assert.equal((await query("select count(*)::int as n from public.wa_channel_delivery_logs where status='queued'"))[0].n,0,'OFF cancels pending work');
   await query('select public.wa_channel_delete_content($1)',[cid]);
   assert.equal((await query('select count(*)::int as n from public.wa_channel_calendar_slots'))[0].n,0);
-  assert.equal((await query('select count(*)::int as n from public.wa_channel_delivery_logs'))[0].n,3,'delete preserves history');
+  assert.equal((await query('select count(*)::int as n from public.wa_channel_delivery_logs'))[0].n,4,'delete preserves history');
   await db.exec('reset role');
   await query("select set_config('request.jwt.claim.sub',$1,false)",['90000000-0000-4000-8000-000000000001']);
   await db.exec('set role authenticated');

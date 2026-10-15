@@ -8,7 +8,7 @@ const dateIn=(zone,date=new Date())=>new Intl.DateTimeFormat('sv-SE',{timeZone:z
 const addDays=(date,days)=>new Date(Date.parse(date+'T12:00:00Z')+days*86400000).toISOString().slice(0,10);
 const dayDiff=(a,b)=>Math.round((Date.parse(a+'T12:00:00Z')-Date.parse(b+'T12:00:00Z'))/86400000);
 const formatText=text=>esc(text).replace(/```([\s\S]+?)```/g,'<code>$1</code>').replace(/\*([^*\n]+)\*/g,'<b>$1</b>').replace(/_([^_\n]+)_/g,'<i>$1</i>').replace(/~([^~\n]+)~/g,'<s>$1</s>');
-const defaultSettings=target=>({id:crypto.randomUUID(),target_id:target||'',enabled:false,duration_days:30,start_date:dateIn('Asia/Jakarta'),timezone:'Asia/Jakarta',send_times:['08:00','16:00'],loop:false,version:0});
+const defaultSettings=target=>({id:crypto.randomUUID(),target_id:target||'',enabled:false,duration_days:365,start_date:dateIn('Asia/Jakarta'),timezone:'Asia/Jakarta',send_times:['06:00'],loop:true,version:0});
 function create(api){
   let host,root,targets=[],contents=[],settings=[],logs=[],draft,slots=[],page=0,dirty=false,loaded=false,loading=false,working=false,selectedSlot=null,clipboard=null,bankPage=0,loadError='';
   let editor={id:null,title:'',caption:'',image_path:null},file=null,previewUrl='',imageGeneration=0;
@@ -32,7 +32,7 @@ function create(api){
     const row=settings.find(s=>s.target_id===id);
     draft=row?{...row,send_times:row.send_times.map(normalTime)}:defaultSettings(id);
     slots=(row?.calendar_slots||[]).map(s=>({...s,send_time:normalTime(s.send_time)}));
-    page=0;dirty=false;selectedSlot=null;render();
+    page=0;dirty=false;selectedSlot=null;render();if(loaded)refreshCapabilities();
   }
   async function readAll(table,select,order){
     let result=[],offset=0;
@@ -61,9 +61,9 @@ function create(api){
   }
   async function refreshCapabilities(){
     try{
-      const r=await fetch(api.sendUrl,{headers:{apikey:api.key,Authorization:'Bearer '+api.token()},cache:'no-store'});
+      const r=await fetch(api.base+'/functions/v1/badai-wa-channel?target_id='+encodeURIComponent(draft?.target_id||''),{headers:{apikey:api.key,Authorization:'Bearer '+api.token()},cache:'no-store'});
       const data=await r.json();if(!r.ok)throw Error(data.error);
-      capabilities={...data,ready:data.ready===true&&(data.verified_types||[]).some(p=>p.target_kind==='channel'&&p.message_type==='text')};
+      capabilities={...data,ready:data.ready===true&&(data.verified_types||[]).some(p=>p.target_kind==='channel')};
     }catch(_){capabilities={ready:false,scheduler_enabled:false,verified_types:[]};}
     updateSummary();
   }
@@ -89,31 +89,42 @@ function create(api){
   function render(){
     if(!root)return;
     if(!loaded&&!draft){root.innerHTML='<div class="wc-card"><h3>Channel Automation</h3><p>'+(loadError?'Gagal memuat data Channel.':'Memuat pengaturan dan bank konten…')+'</p><button id="wcRetry" type="button">Muat ulang</button><div id="wcMessage" role="status" class="wc-notice"></div></div>';q('wcRetry').onclick=load;return;}
-    root.innerHTML=`<article class="wc-card">
-      <div class="wc-head"><div><div class="wc-eyebrow">CHANNEL AUTOMATION</div><h3>Pengaturan Jadwal</h3><p>Susun sekali. Publikasikan konsisten setiap hari.</p></div><label class="wc-switch"><input id="wcEnabled" type="checkbox" ${draft.enabled?'checked':''}><span>Otomatis <b id="wcOnLabel">${draft.enabled?'ON':'OFF'}</b></span></label></div>
-      <div class="wc-fields"><label>Channel tujuan<select id="wcTarget"><option value="">Pilih Channel</option>${availableTargets().map(t=>`<option value="${esc(t.id)}" ${t.id===draft.target_id?'selected':''}>${esc(t.name)}</option>`).join('')}</select></label>
-      <label>Durasi<select id="wcDuration">${[10,30,365,1000].map(n=>`<option value="${n}" ${n===draft.duration_days?'selected':''}>${n} hari</option>`).join('')}<option value="custom" ${![10,30,365,1000].includes(draft.duration_days)?'selected':''}>Custom</option></select><input id="wcCustom" type="number" min="1" max="10000" aria-label="Durasi custom dalam hari" value="${draft.duration_days}" ${[10,30,365,1000].includes(draft.duration_days)?'hidden':''}></label>
-      <label>Tanggal mulai<input id="wcStart" type="date" value="${esc(draft.start_date)}"></label><label>Timezone<select id="wcZone">${Object.entries(zones).map(([z,n])=>`<option value="${z}" ${draft.timezone===z?'selected':''}>${n} · ${z}</option>`).join('')}</select></label></div>
-      <h4>Jam kirim setiap hari</h4><div id="wcTimes" class="wc-times"></div>
-      <div class="wc-row"><label class="wc-switch"><input id="wcLoop" type="checkbox" ${draft.loop?'checked':''}><span>Loop · kembali ke Hari 1 setelah hari terakhir</span></label><div class="wc-row"><button id="wcSave" class="wc-primary" type="button">Simpan Jadwal</button><button id="wcSend" type="button">Kirim Sekarang</button></div></div>
-      <div class="wc-summary"><div><b id="wcProgressLabel"></b><progress id="wcProgress" value="0" max="100" aria-label="Progres penyusunan konten"></progress><small id="wcSaveState"></small></div><div><b>Pengiriman terakhir</b><p id="wcLast"></p><small id="wcServerState"></small><div><button id="wcHistory" type="button">Lihat Riwayat</button></div></div></div><div id="wcMessage" class="wc-notice" role="status" aria-live="polite"></div>
-    </article>
-    <div class="wc-layout"><article class="wc-card"><div class="wc-head"><div><h3>Kalender Konten</h3><p id="wcPageLabel"></p></div><div class="wc-row"><button id="wcPrevious" type="button" aria-label="30 hari sebelumnya">←</button><button id="wcNext" type="button" aria-label="30 hari berikutnya">→</button></div></div><div class="wc-legend">${['empty','scheduled','delivered','failed'].map(s=>`<span class="wc-badge ${s}">${labels[s]}</span>`).join('')}</div><p><small>Tarik draft ke slot, atau pilih slot lalu tekan Gunakan. Klik Hari untuk mengedit semua jam. Perubahan disimpan dengan Simpan Jadwal.</small></p><div id="wcCalendar" class="wc-calendar"></div></article>
-    <aside class="wc-bank"><article class="wc-card"><div class="wc-head"><h3>Bank Konten</h3><button id="wcNew" type="button">+ Konten Baru</button></div><p>Draft tetap tersimpan dan bisa digunakan berulang.</p>
+    root.innerHTML=`<article class="wc-card wc-settings">
+      <div class="wc-settings-title"><div class="wc-eyebrow">PENGATURAN CEPAT</div><span id="wcRunning" class="wc-badge">${draft.enabled?'BERJALAN':'NONAKTIF'}</span><h3>Jadwal<br>Konten</h3><div class="wc-presets">${[10,30,365,1000].map(n=>`<button type="button" data-duration="${n}" class="${draft.duration_days===n?'selected':''}">${n} hari</button>`).join('')}</div></div>
+      <div class="wc-settings-main"><div class="wc-settings-top"><label class="wc-switch wc-toggle-box"><input id="wcEnabled" type="checkbox" ${draft.enabled?'checked':''}><span>Otomatis</span><b id="wcOnLabel">${draft.enabled?'ON':'OFF'}</b></label>
+      <label>Jumlah hari<input id="wcCustom" type="number" min="1" max="10000" value="${draft.duration_days}"><select id="wcDuration" hidden aria-label="Pilihan durasi">${[10,30,365,1000].map(n=>`<option value="${n}" ${n===draft.duration_days?'selected':''}>${n} hari</option>`).join('')}<option value="custom" ${![10,30,365,1000].includes(draft.duration_days)?'selected':''}>Custom</option></select></label>
+      <label>Zona waktu<select id="wcZone">${Object.entries(zones).map(([z,n])=>`<option value="${z}" ${draft.timezone===z?'selected':''}>${n} — ${z==='Asia/Jakarta'?'Jakarta':z.split('/').pop()}</option>`).join('')}</select></label>
+      <label class="wc-switch wc-toggle-box"><input id="wcLoop" type="checkbox" ${draft.loop?'checked':''}><span>Ulang Hari 1</span><small>LOOP</small></label><button id="wcSave" class="wc-primary" type="button">Simpan Jadwal</button></div>
+      <div class="wc-settings-bottom"><label>Mulai Hari 1<input id="wcStart" type="date" value="${esc(draft.start_date)}"></label><label>Channel tujuan<select id="wcTarget"><option value="">Pilih Channel</option>${availableTargets().map(t=>`<option value="${esc(t.id)}" ${t.id===draft.target_id?'selected':''}>${esc(t.name)}</option>`).join('')}</select></label><button id="wcSend" class="wc-primary" type="button">Kirim Sekarang</button><div class="wc-last"><small>STATUS TERAKHIR</small><b id="wcLast"></b><small id="wcServerState"></small></div></div>
+      <div class="wc-send-times"><b>Pengiriman per hari <span id="wcDailyCount"></span></b><div id="wcTimes" class="wc-times"></div><button id="wcVerify" type="button">Uji & verifikasi Channel</button><button id="wcHistory" type="button">Riwayat pengiriman</button></div></div>
+      <div id="wcMessage" class="wc-notice" role="status" aria-live="polite"></div></article>
+      <article class="wc-progress-card"><div class="wc-head"><div><h4>Progres penyusunan</h4><small id="wcProgressLabel"></small></div><strong id="wcPercent">0%</strong></div><progress id="wcProgress" value="0" max="100" aria-label="Progres penyusunan konten"></progress><small id="wcSaveState"></small></article>
+      <div class="wc-steps"><span>1 · Pilih bagian</span><span>2 · Buat konten / cari draft</span><span>3 · Tarik kartu</span><span>4 · Lepas ke hari dan jam</span></div>
+      <div class="wc-layout"><article class="wc-card wc-calendar-panel"><label class="wc-eyebrow">BAGIAN KONTEN</label><div class="wc-navigation"><button id="wcPrevious" type="button" aria-label="30 hari sebelumnya">‹</button><select id="wcPageSelect" aria-label="Pilih bagian kalender"></select><button id="wcNext" type="button" aria-label="30 hari berikutnya">›</button></div><p id="wcPageLabel"></p><div class="wc-legend">${['empty','scheduled','delivered','failed'].map(st=>`<span class="wc-badge ${st}">${labels[st]}</span>`).join('')}</div><div id="wcCalendar" class="wc-calendar"></div><div id="wcDaySummary" class="wc-day-summary">Pilih hari untuk mengatur seluruh slot pengiriman.</div></article>
+      <aside class="wc-bank"><article class="wc-card"><div class="wc-eyebrow">RIWAYAT KONTEN</div><div class="wc-head"><h3>Konten Tersedia</h3><span id="wcCount" class="wc-badge"></span><button id="wcNew" type="button">+ Buat Konten</button></div>
+      <details id="wcComposer" class="wc-composer" ${contents.length?'':'open'}><summary>Buat atau edit konten</summary>
       <form id="wcEditor" class="wc-editor"><label>Judul<input id="wcTitle" required maxlength="140" value="${esc(editor.title)}" placeholder="Edukasi bisnis hari ini"></label><label>Caption<textarea id="wcCaption" rows="6" maxlength="12000" placeholder="Tulis pesan untuk Channel BADAI…">${esc(editor.caption)}</textarea></label><div class="wc-format" aria-label="Format teks WhatsApp"><button data-format="*" type="button" aria-label="Bold"><b>B</b></button><button data-format="_" type="button" aria-label="Italic"><i>I</i></button><button data-format="~" type="button" aria-label="Strikethrough"><s>S</s></button><button data-format="&#96;&#96;&#96;" type="button" aria-label="Monospace">&lt;/&gt;</button></div><label>Gambar · JPG, PNG, WEBP · maks. 20 MB<input id="wcImage" type="file" accept="image/jpeg,image/png,image/webp"></label><button id="wcRemoveImage" type="button" ${!editor.image_path&&!file?'hidden':''}>Lepaskan gambar</button><small>Preview WhatsApp</small><div id="wcPreview" class="wc-preview"></div><button id="wcSaveDraft" class="wc-primary" type="submit">${editor.id?'Simpan Perubahan':'Simpan Draft'}</button><div id="wcEditorMessage" role="status"></div></form>
-    </article><article class="wc-card"><div class="wc-head"><h4>Daftar Konten <span id="wcCount"></span></h4><button id="wcReload" type="button" aria-label="Perbarui status pengiriman">↻ Status</button></div><div class="wc-search"><input id="wcSearch" aria-label="Cari konten" placeholder="Cari judul atau caption…"><select id="wcFilter" aria-label="Filter status konten"><option value="all">Semua status</option><option value="draft">Draft</option><option value="scheduled">Dijadwalkan</option></select></div><div id="wcBankList" class="wc-list"></div><div class="wc-row" style="margin-top:10px"><button id="wcBankPrev" type="button">←</button><small id="wcBankPage"></small><button id="wcBankNext" type="button">→</button></div></article></aside></div><dialog id="wcDialog"><h3 id="wcDialogTitle"></h3><div id="wcDialogBody" class="wc-dialog-body"></div><div class="wc-row"><button id="wcDialogCancel" type="button">Batal</button><button id="wcDialogApply" class="wc-primary" type="button">Terapkan</button></div></dialog>`;
+      </details><div id="wcReleaseZone" class="wc-release-zone"><b>Lepaskan di kanan untuk melepaskan dari kalender</b><small>Draft tetap tersimpan dan dapat digunakan lagi.</small></div><div class="wc-search"><input id="wcSearch" aria-label="Cari konten" placeholder="Cari judul, caption, atau status…"><select id="wcFilter" aria-label="Filter status konten"><option value="all">Semua status</option><option value="draft">Draft</option><option value="scheduled">Dijadwalkan</option><option value="delivered">Terpublikasi</option><option value="failed">Gagal</option></select></div><small>Desktop: tarik kartu ke hari dan jam di kiri. Mobile: pilih slot lalu tekan Gunakan.</small><div id="wcBankList" class="wc-list"></div><div class="wc-row"><button id="wcBankPrev" type="button">‹</button><small id="wcBankPage"></small><button id="wcBankNext" type="button">›</button><button id="wcReload" type="button" aria-label="Perbarui status pengiriman">Perbarui status</button></div></article></aside></div>
+      <dialog id="wcDialog"><h3 id="wcDialogTitle"></h3><div id="wcDialogBody" class="wc-dialog-body"></div><div class="wc-row"><button id="wcDialogCancel" type="button">Batal</button><button id="wcDialogApply" class="wc-primary" type="button">Terapkan</button></div></dialog>`;
     bind();renderTimes();renderCalendar();renderBank();updateSummary();updatePreview();
   }
   function bind(){
     q('wcTarget').onchange=e=>{if(dirty&&!confirm('Buang perubahan jadwal yang belum disimpan?')){e.target.value=draft.target_id;return;}chooseTarget(e.target.value);};
     q('wcEnabled').onchange=e=>{draft.enabled=e.target.checked;q('wcOnLabel').textContent=draft.enabled?'ON':'OFF';changed();};
-    q('wcDuration').onchange=e=>{q('wcCustom').hidden=e.target.value!=='custom';if(e.target.value!=='custom')resizeDuration(Number(e.target.value));};
+    q('wcDuration').onchange=e=>{if(e.target.value!=='custom')resizeDuration(Number(e.target.value));};
+    root.querySelectorAll('[data-duration]').forEach(b=>b.onclick=()=>resizeDuration(Number(b.dataset.duration)));
+    q('wcPageSelect').onchange=e=>{page=Number(e.target.value);renderCalendar();};
+    q('wcVerify').onclick=()=>sendNow(true);
     q('wcCustom').onchange=e=>resizeDuration(Number(e.target.value));
     q('wcStart').onchange=e=>{draft.start_date=e.target.value;changed();renderCalendar();};
     q('wcZone').onchange=e=>{draft.timezone=e.target.value;changed();renderCalendar();};
     q('wcLoop').onchange=e=>{draft.loop=e.target.checked;changed();renderCalendar();};
-    q('wcSave').onclick=saveSchedule;q('wcSend').onclick=sendNow;
+    q('wcSave').onclick=saveSchedule;q('wcSend').onclick=()=>sendNow(false);
     q('wcHistory').onclick=showHistory;
+    const release=q('wcReleaseZone');
+    release.ondragover=e=>{if(e.dataTransfer.types.includes('application/x-badai-content')){e.preventDefault();release.classList.add('over');}};
+    release.ondragleave=()=>release.classList.remove('over');
+    release.ondrop=e=>{e.preventDefault();release.classList.remove('over');let data;try{data=JSON.parse(e.dataTransfer.getData('application/x-badai-content'));}catch(_){return;}if(data.day){slots=slots.filter(s=>s.day_number!==data.day||s.send_time!==data.time);changed();renderCalendar();renderBank();message('Konten dilepaskan dari kalender. Draft tetap tersedia.');}};
     q('wcPrevious').onclick=()=>{page--;renderCalendar();};q('wcNext').onclick=()=>{page++;renderCalendar();};
     q('wcEditor').onsubmit=saveContent;
     q('wcTitle').oninput=e=>{editor.title=e.target.value;};
@@ -136,6 +147,7 @@ function create(api){
   function resizeDuration(n){
     if(!Number.isInteger(n)||n<1||n>10000){message('Durasi harus 1–10.000 hari.',true);q('wcCustom').value=draft.duration_days;return;}
     if(slots.some(s=>s.day_number>n)&&!confirm('Durasi lebih pendek akan melepaskan konten di luar rentang hari baru. Draft dan riwayat tetap tersimpan. Lanjutkan?')){q('wcDuration').value=String(draft.duration_days);q('wcCustom').value=draft.duration_days;return;}
+    q('wcCustom').value=n;q('wcDuration').value=[10,30,365,1000].includes(n)?String(n):'custom';root.querySelectorAll('[data-duration]').forEach(b=>b.classList.toggle('selected',Number(b.dataset.duration)===n));
     draft.duration_days=n;slots=slots.filter(s=>s.day_number<=n);page=Math.min(page,Math.ceil(n/30)-1);changed();renderCalendar();
   }
   function renderTimes(){
@@ -155,22 +167,25 @@ function create(api){
   function updateSummary(){
     if(!draft||!q('wcProgress'))return;
     const total=draft.duration_days*draft.send_times.length,count=slots.length;
-    q('wcProgressLabel').textContent=count+' / '+total+' slot tersusun ('+Math.round(count/total*100)+'%)';q('wcProgress').value=count/total*100;
+    q('wcProgressLabel').textContent=count+' dari '+total+' slot terisi · '+draft.duration_days+' hari';q('wcProgress').value=count/total*100;q('wcPercent').textContent=Math.round(count/total*100)+'%';q('wcDailyCount').textContent='· '+draft.send_times.length+' konten';q('wcRunning').textContent=draft.enabled?'BERJALAN':'NONAKTIF';
     q('wcSaveState').textContent=dirty?'Ada perubahan yang belum disimpan.':saved()?'Jadwal tersimpan.':'Jadwal belum disimpan.';
     const latest=logs.find(l=>l.settings_id===draft.id);
     q('wcLast').textContent=latest?(labels[latest.status]||latest.status)+' · '+new Intl.DateTimeFormat('id-ID',{timeZone:draft.timezone,dateStyle:'medium',timeStyle:'short'}).format(new Date(latest.updated_at))+(latest.error_code?' · '+latest.error_code:''):'Belum ada pengiriman.';
     const complete=!draft.loop&&dayDiff(dateIn(draft.timezone),draft.start_date)>=draft.duration_days;
     q('wcServerState').textContent=!capabilities.ready||!capabilities.scheduler_enabled?'Pengiriman otomatis menunggu koneksi dan verifikasi API Channel.':complete?'Jadwal selesai. Loop OFF; pengiriman berhenti.':draft.enabled?'Otomatis ON setelah jadwal disimpan.':'Otomatis OFF. Aktifkan dan simpan untuk mulai.';
-    q('wcSend').disabled=working||!saved()||dirty||!capabilities.ready;
+    q('wcSend').disabled=working||!saved()||dirty;
+    q('wcVerify').disabled=working||!saved()||dirty;
     q('wcSave').disabled=working||!loaded;
   }
   function renderCalendar(){
+    root.classList.toggle('wc-pasting',Boolean(clipboard));
     const start=page*30+1,end=Math.min(start+29,draft.duration_days),now=currentDay();
+    q('wcPageSelect').innerHTML=Array.from({length:Math.ceil(draft.duration_days/30)},(_,i)=>`<option value="${i}" ${i===page?'selected':''}>Bagian ${i+1} · Hari ${i*30+1}–${Math.min(i*30+30,draft.duration_days)}</option>`).join('');
     q('wcPageLabel').textContent='Hari '+start+'–'+end+' dari '+draft.duration_days+' · Siklus '+(now?.cycle||1)+' · '+zones[draft.timezone];
     q('wcPrevious').disabled=page===0;q('wcNext').disabled=end>=draft.duration_days;
     q('wcCalendar').innerHTML=Array.from({length:end-start+1},(_,i)=>{
       const day=start+i,date=addDays(draft.start_date,day-1+((now?.cycle||1)-1)*draft.duration_days);
-      return `<div class="wc-day ${now?.day===day?'today':''}"><button class="wc-day-title" data-edit-day="${day}" type="button">Hari ${day}<small>${esc(date)}</small></button>${[...draft.send_times].sort().map(time=>{
+      return `<div class="wc-day ${now?.day===day?'today':''}"><button class="wc-day-title" data-edit-day="${day}" type="button"><span>HARI</span><strong>${day}</strong><small>${esc(date)}</small></button>${[...draft.send_times].sort().map(time=>{
         const s=slot(day,time),c=content(s?.content_id),status=slotStatus(day,time);
         return `<div class="wc-slot ${c?'filled':''}" data-day="${day}" data-time="${time}" ${c?'draggable="true"':''} tabindex="0" role="group" aria-label="Hari ${day} jam ${time}, ${esc(labels[status])}"><small>${time}</small><span class="wc-badge ${status}">${labels[status]||esc(status)}</span>${c?`<b>${esc(c.title)}</b><div class="wc-slot-tools"><button type="button" data-copy-slot aria-label="Gandakan konten Hari ${day} jam ${time}">Salin</button><button type="button" data-move-slot aria-label="Pindahkan konten Hari ${day} jam ${time}">Pindah</button><button type="button" data-detach-slot aria-label="Lepaskan konten Hari ${day} jam ${time}">×</button></div>`:'<small>Tarik konten ke sini</small>'}<button type="button" data-pick-slot>${clipboard?'Tempel di sini':'Pilih slot'}</button></div>`;
       }).join('')}</div>`;
@@ -194,6 +209,7 @@ function create(api){
         if(clipboard){const data=clipboard;if(data.day===day&&data.time===time)return;assign(day,time,data.contentId);if(slot(day,time)?.content_id===data.contentId){if(data.day)slots=slots.filter(s=>s.day_number!==data.day||s.send_time!==data.time);clipboard=null;changed();renderCalendar();renderBank();}}
         else{selectedSlot={day,time};message('Slot Hari '+day+' jam '+time+' dipilih. Tekan Gunakan pada konten di bank.');renderBank();}
       };
+      el.onkeydown=e=>{if(e.target===el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();el.querySelector('[data-pick-slot]').click();}};
     });
     updateSummary();
     loadSlotHistory(start,end,now?.cycle||1);
@@ -211,7 +227,7 @@ function create(api){
   function renderBank(){
     const search=q('wcSearch').value.toLocaleLowerCase(),filter=q('wcFilter').value;
     const used=new Set([...settings.filter(s=>s.id!==draft.id).flatMap(s=>s.calendar_slots||[]),...slots].map(s=>s.content_id));
-    const list=contents.filter(c=>(c.title+' '+c.caption).toLocaleLowerCase().includes(search)&&(filter==='all'||(filter==='draft'?!used.has(c.id):used.has(c.id))));
+    const list=contents.filter(c=>(c.title+' '+c.caption).toLocaleLowerCase().includes(search)&&(filter==='all'||(filter==='draft'?!used.has(c.id):filter==='scheduled'?used.has(c.id):logs.some(l=>l.content_id===c.id&&l.status===filter))));
     bankPage=Math.max(0,Math.min(bankPage,Math.ceil(list.length/20)-1));
     q('wcCount').textContent='('+contents.length+')';q('wcBankPage').textContent=(list.length?bankPage*20+1:0)+'–'+Math.min((bankPage+1)*20,list.length)+' / '+list.length;
     q('wcBankPrev').disabled=bankPage===0;q('wcBankNext').disabled=(bankPage+1)*20>=list.length;
@@ -230,7 +246,7 @@ function create(api){
     const unsaved=file||(!original&&(editor.title||editor.caption))||(original&&(editor.title!==original.title||editor.caption!==original.caption||editor.image_path!==original.image_path));
     if(unsaved&&!confirm('Ganti isi editor? Pastikan perubahan draft sudah disimpan.'))return false;
     editor=id?{...content(id)}:{id:null,title:'',caption:'',image_path:null};file=null;if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl='';
-    q('wcTitle').value=editor.title;q('wcCaption').value=editor.caption;q('wcImage').value='';q('wcRemoveImage').hidden=!editor.image_path;q('wcSaveDraft').textContent=id?'Simpan Perubahan':'Simpan Draft';q('wcTitle').focus();updatePreview();return true;
+    q('wcComposer').open=true;q('wcTitle').value=editor.title;q('wcCaption').value=editor.caption;q('wcImage').value='';q('wcRemoveImage').hidden=!editor.image_path;q('wcSaveDraft').textContent=id?'Simpan Perubahan':'Simpan Draft';q('wcTitle').focus();updatePreview();return true;
   }
   async function updatePreview(){
     const generation=++imageGeneration,el=q('wcPreview');if(!el)return;
@@ -260,7 +276,7 @@ function create(api){
       const payload={id,title:editor.title.trim(),caption:editor.caption,image_path:path};
       const rows=await api.db('wa_channel_contents'+(editor.id?'?id=eq.'+encodeURIComponent(id):''),editor.id?'PATCH':'POST',{...payload,updated_at:new Date().toISOString()});
       if(!Array.isArray(rows)||!rows.length)throw Error('Draft tidak tersimpan. Periksa izin akun admin.');
-      contents=contents.filter(c=>c.id!==id);contents.unshift(rows[0]);editor={...rows[0]};file=null;message('Draft disimpan. Konten bisa digunakan berulang.');q('wcSaveDraft').textContent='Simpan Perubahan';renderBank();updatePreview();
+      contents=contents.filter(c=>c.id!==id);contents.unshift(rows[0]);editor={...rows[0]};file=null;message('Draft disimpan. Konten bisa digunakan berulang.');q('wcSaveDraft').textContent='Simpan Perubahan';q('wcComposer').open=false;renderBank();updatePreview();
     }catch(error){message(error.message,true);}finally{working=false;q('wcSaveDraft').disabled=false;updateSummary();}
   }
   async function deleteContent(id){
@@ -280,6 +296,7 @@ function create(api){
     q('wcDialogCancel').onclick=()=>q('wcDialog').close();q('wcDialogApply').onclick=apply;q('wcDialog').showModal();
   }
   function editDay(day){
+    q('wcDaySummary').textContent='HARI '+day+' · '+draft.send_times.map(time=>time+' '+(content(slot(day,time)?.content_id)?.title||'Kosong')).join(' / ');
     dialog('Edit seluruh slot · Hari '+day,[...draft.send_times].sort().map(time=>`<label>${time} ${zones[draft.timezone]}<select data-day-time="${time}"><option value="">Kosong</option>${contents.map(c=>`<option value="${esc(c.id)}" ${slot(day,time)?.content_id===c.id?'selected':''}>${esc(c.title)}</option>`).join('')}</select></label>`).join(''),()=>{
       slots=slots.filter(s=>s.day_number!==day);q('wcDialogBody').querySelectorAll('[data-day-time]').forEach(el=>{if(el.value)slots.push({day_number:day,send_time:el.dataset.dayTime,content_id:el.value});});changed();q('wcDialog').close();renderCalendar();renderBank();
     });
@@ -290,7 +307,7 @@ function create(api){
     q('wcDialogBody').querySelectorAll('[data-confirm-received]').forEach(b=>b.onclick=async()=>{
       const evidence=prompt('Tulis bukti pesan sudah terlihat di Channel (minimal 10 karakter). Ini akan menandai pengiriman sebagai Terkirim.');if(!evidence)return;
       b.disabled=true;
-      try{await rpc('wa_channel_confirm_received',{p_id:b.dataset.confirmReceived,p_evidence:evidence});const l=logs.find(x=>x.id===b.dataset.confirmReceived);l.status='delivered';l.delivery_evidence=evidence;q('wcDialog').close();renderCalendar();message('Penerimaan dikonfirmasi berdasarkan bukti admin.');}catch(error){q('wcDialog').close();message(error.message,true);}finally{b.disabled=false;}
+      try{await rpc('wa_channel_confirm_received',{p_id:b.dataset.confirmReceived,p_evidence:evidence});const l=logs.find(x=>x.id===b.dataset.confirmReceived);l.status='delivered';l.delivery_evidence=evidence;q('wcDialog').close();renderCalendar();await refreshCapabilities();message('Penerimaan dikonfirmasi. Simpan jadwal dengan Otomatis ON untuk mulai publikasi.');}catch(error){q('wcDialog').close();message(error.message,true);}finally{b.disabled=false;}
     });
   }
   async function saveSchedule(){
@@ -298,7 +315,7 @@ function create(api){
     try{valid();}catch(error){message(error.message,true);return;}
     let confirmEnable=false;
     if(draft.enabled&&!saved()?.enabled){
-      if(!capabilities.ready||!capabilities.scheduler_enabled){message('API Channel dan scheduler belum terverifikasi. Simpan dengan Otomatis OFF dahulu.',true);return;}
+      if(!capabilities.ready){message('Simpan dengan Otomatis OFF, lalu klik Uji & verifikasi Channel. Setelah pesan terlihat, konfirmasi penerimaan di Riwayat pengiriman.',true);return;}
       confirmEnable=confirm('Aktifkan pengiriman WhatsApp nyata untuk Channel ini sesuai jadwal yang disimpan?');if(!confirmEnable)return;
     }
     working=true;updateSummary();
@@ -307,15 +324,17 @@ function create(api){
       const row=Array.isArray(data)?data[0]:data;draft={...row,send_times:row.send_times.map(normalTime)};settings=settings.filter(s=>s.id!==row.id);settings.push({...row,calendar_slots:slots.map(s=>({...s}))});dirty=false;message('Jadwal disimpan. '+(draft.enabled?'Pengiriman otomatis aktif.':'Otomatis OFF.'));renderBank();
     }catch(error){message(error.message,true);}finally{working=false;updateSummary();}
   }
-  function sendNow(){
+  function sendNow(isTest=false){
     if(working||dirty||!saved())return;
     const options=slots.filter(s=>content(s.content_id));if(!options.length){message('Isi dan simpan minimal satu slot kalender.',true);return;}
-    const key=crypto.randomUUID();
-    dialog('Kirim Sekarang',`<p>Pilih satu slot tersimpan untuk dikirim sungguhan ke Channel ${esc(targets.find(t=>t.id===draft.target_id)?.name||'terpilih')}.</p><label>Konten<select id="wcNowSlot">${options.map((s,i)=>`<option value="${i}">Hari ${s.day_number} · ${s.send_time} · ${esc(content(s.content_id).title)}</option>`).join('')}</select></label><small>Pengiriman ini tercatat terpisah dari jadwal otomatis.</small>`,async()=>{
+    if(!isTest&&!capabilities.ready){message('Channel sesi aktif belum terverifikasi. Gunakan Uji & verifikasi Channel dahulu.',true);return;}
+    dialog(isTest?'Uji kirim ke Channel':'Kirim Sekarang',`<p>Pilih satu slot tersimpan untuk dikirim sungguhan ke Channel ${esc(targets.find(t=>t.id===draft.target_id)?.name||'terpilih')}.</p><label>Konten<select id="wcNowSlot">${options.map((s,i)=>`<option value="${i}">Hari ${s.day_number} · ${s.send_time} · ${esc(content(s.content_id).title)}</option>`).join('')}</select></label><small>${isTest?'Pesan ini benar-benar dikirim. Setelah terlihat di Channel, konfirmasi di Riwayat untuk membuka pengiriman otomatis.':'Pengiriman ini tercatat terpisah dari jadwal otomatis.'}</small>`,async()=>{
       if(working)return;working=true;q('wcDialogApply').disabled=true;
       try{
-        const s=options[Number(q('wcNowSlot').value)];await rpc('wa_channel_send_now',{p_settings_id:draft.id,p_day_number:s.day_number,p_send_time:s.send_time,p_request_key:key,p_confirm:true});
-        q('wcDialog').close();message('Permintaan masuk antrean server. Perbarui status untuk melihat hasil provider.');
+        const s=options[Number(q('wcNowSlot').value)],storageKey=['badai_channel_send',draft.id,draft.version,s.day_number,s.send_time,isTest?'test':'live'].join(':');
+        let key=sessionStorage.getItem(storageKey);if(!key){key=crypto.randomUUID();sessionStorage.setItem(storageKey,key);}
+        await rpc(isTest?'wa_channel_send_test':'wa_channel_send_now',{p_settings_id:draft.id,p_day_number:s.day_number,p_send_time:s.send_time,p_request_key:key,p_confirm:true});sessionStorage.removeItem(storageKey);
+      q('wcDialog').close();message('Permintaan masuk antrean server. Perbarui status, lalu konfirmasi penerimaan di Riwayat setelah pesan terlihat.');
       }catch(error){q('wcDialog').close();message(error.message,true);}finally{working=false;q('wcDialogApply').disabled=false;updateSummary();}
     },'Konfirmasi Kirim Nyata');
   }

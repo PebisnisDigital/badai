@@ -23,7 +23,7 @@ test('Channel UI: draft editor, image upload, formatting, drag/drop, day editing
       window.fetch=async(url,options={})=>{
         if(url.includes('/object/wa-marketing-media/')){f.uploads++;return new Response('{}',{status:200});}
         if(url.includes('/object/sign/'))return new Response(JSON.stringify({signedURL:'/object/sign/wa-marketing-media/fixture.png?token=fixture'}),{status:200});
-        if(url.includes('badai-wa-send'))return new Response(JSON.stringify({ready:false,scheduler_enabled:false,verified_types:[]}),{status:200});
+        if(url.includes('badai-wa-send')||url.includes('badai-wa-channel'))return new Response(JSON.stringify({ready:!!f.verified,scheduler_enabled:true,verified_types:f.verified?[{target_kind:'channel',message_type:'image'}]:[]}),{status:200});
         return new Response('',{status:404});
       };
       const api={base:'https://fixture.supabase.co',key:'fixture',sendUrl:'https://fixture.supabase.co/functions/v1/badai-wa-send',token:()=> 'fixture',db:async(path,method,body)=>{
@@ -31,6 +31,8 @@ test('Channel UI: draft editor, image upload, formatting, drag/drop, day editing
           f.saves.push(body);const row={...body.p_settings,version:body.p_expected_version+1,created_at:new Date().toISOString()};f.settings=[row];f.slots=body.p_slots.map(s=>({...s,settings_id:row.id}));return row;
         }
         if(path==='rpc/wa_channel_delete_content'){f.contents=f.contents.filter(c=>c.id!==body.p_content_id);f.slots=f.slots.filter(s=>s.content_id!==body.p_content_id);return f.settings.map(s=>({id:s.id,version:s.version}));}
+        if(path==='rpc/wa_channel_send_test'){f.logs.unshift({id:'70000000-0000-4000-8000-000000000001',settings_id:body.p_settings_id,content_id:f.slots[0].content_id,day_number:body.p_day_number,send_time:body.p_send_time,cycle_number:1,local_date:new Date().toISOString().slice(0,10),status:'api_accepted',provider_response:{message_id:'fixture-provider-id'},created_at:new Date().toISOString(),updated_at:new Date().toISOString(),is_test:true});return {id:f.logs[0].id};}
+        if(path==='rpc/wa_channel_confirm_received'){f.logs.find(l=>l.id===body.p_id).status='delivered';f.verified=true;return null;}
         const table=path.split('?')[0];
         if(table==='wa_channel_contents'&&method==='POST'){const row={...body,created_at:new Date().toISOString()};f.contents.unshift(row);return [row];}
         if(table==='wa_channel_contents'&&method==='PATCH'){const i=f.contents.findIndex(c=>c.id===body.id);f.contents[i]={...f.contents[i],...body};return [f.contents[i]];}
@@ -42,8 +44,9 @@ test('Channel UI: draft editor, image upload, formatting, drag/drop, day editing
       }};
       window.editor=window.BadaiChannel.create(api);window.editor.mount(document.querySelector('#channel'),[{id:'20000000-0000-4000-8000-000000000001',kind:'channel',name:'Channel BADAI',enabled:true}]);
     });
-    await page.locator('#wcTitle').waitFor();
-    assert.equal(await page.locator('.wc-day').count(),30);assert.equal(await page.locator('.wc-slot').count(),60);
+    await page.locator('#wcTitle').waitFor({state:'attached'});await page.locator('#wcNew').click();
+    assert.equal(await page.locator('.wc-day').count(),30);assert.equal(await page.locator('.wc-slot').count(),30);
+    await page.locator('[data-duration="30"]').click();await page.locator('[data-time-index="0"]').fill('08:00');await page.locator('[data-time-index="0"]').dispatchEvent('change');await page.locator('#wcAddTime').click();await page.locator('[data-time-index="1"]').fill('16:00');await page.locator('[data-time-index="1"]').dispatchEvent('change');
     await page.locator('#wcTitle').fill('Draft baru');await page.locator('#wcCaption').fill('Belajar AI bersama BADAI');
     await page.locator('#wcCaption').evaluate(el=>{el.focus();el.setSelectionRange(0,7);});await page.getByRole('button',{name:'Bold',exact:true}).click();
     assert.equal(await page.locator('#wcPreview b').innerText(),'Belajar');
@@ -55,23 +58,28 @@ test('Channel UI: draft editor, image upload, formatting, drag/drop, day editing
     const dt=await page.evaluateHandle(()=>new DataTransfer());
     await cards.first().dispatchEvent('dragstart',{dataTransfer:dt});await dest.dispatchEvent('dragover',{dataTransfer:dt});await dest.dispatchEvent('drop',{dataTransfer:dt});
     assert.equal(await dest.locator('b').innerText(),'Draft baru');assert.equal(await cards.count(),2);
-    await dest.locator('[data-copy-slot]').click();await page.locator('.wc-slot[data-day="2"][data-time="08:00"] [data-pick-slot]').click();
+    await dest.hover();await dest.locator('[data-copy-slot]').click();await page.locator('.wc-slot[data-day="2"][data-time="08:00"] [data-pick-slot]').click();
     assert.equal(await page.locator('.wc-slot.filled').count(),2);
-    await page.locator('.wc-slot[data-day="2"][data-time="08:00"] [data-move-slot]').click();await page.locator('.wc-slot[data-day="3"][data-time="08:00"] [data-pick-slot]').click();
+    await page.locator('.wc-slot[data-day="2"][data-time="08:00"]').hover();await page.locator('.wc-slot[data-day="2"][data-time="08:00"] [data-move-slot]').click();await page.locator('.wc-slot[data-day="3"][data-time="08:00"] [data-pick-slot]').click();
     assert.equal(await page.locator('.wc-slot[data-day="2"][data-time="08:00"]').locator('b').count(),0);
-    await page.locator('.wc-slot[data-day="3"][data-time="08:00"] [data-detach-slot]').click();assert.equal(await page.locator('.wc-slot.filled').count(),1);
+    await page.locator('.wc-slot[data-day="3"][data-time="08:00"]').hover();await page.locator('.wc-slot[data-day="3"][data-time="08:00"] [data-detach-slot]').click();assert.equal(await page.locator('.wc-slot.filled').count(),1);
     await page.locator('[data-edit-day="4"]').click();await page.locator('[data-day-time="16:00"]').selectOption('30000000-0000-4000-8000-000000000001');await page.locator('#wcDialogApply').click();
     assert.equal(await page.locator('.wc-slot.filled').count(),2);
-    await page.locator('#wcDuration').selectOption('1000');await page.locator('#wcNext').click();assert.match(await page.locator('#wcPageLabel').innerText(),/Hari 31–60/);
+    await page.locator('[data-duration="1000"]').click();await page.locator('#wcNext').click();assert.match(await page.locator('#wcPageLabel').innerText(),/Hari 31–60/);
     await page.locator('#wcPrevious').click();await page.locator('#wcAddTime').click();assert.equal(await page.locator('.wc-slot').count(),90);
     await page.locator('[data-remove-time="2"]').click();assert.equal(await page.locator('.wc-slot').count(),60);
     await page.locator('#wcLoop').check();await page.locator('#wcSave').click();await page.waitForFunction(()=>fixture.saves.length===1);
     const payload=await page.evaluate(()=>fixture.saves[0]);assert.equal(payload.p_settings.duration_days,1000);assert.equal(payload.p_settings.enabled,false);assert.equal(payload.p_settings.loop,true);assert.equal(payload.p_slots.length,2);
-    assert.equal(await page.locator('#wcSend').isDisabled(),true,'unverified connection cannot send');
+    assert.equal(await page.locator('#wcVerify').isDisabled(),false,'saved slots can be used for an explicit verification test');await page.locator('#wcSend').click();assert.match(await page.locator('#wcMessage').innerText(),/belum terverifikasi/);
+    await page.locator('#wcVerify').click();await page.locator('#wcDialogApply').click();await page.waitForFunction(()=>fixture.logs.length===1);
+    assert.equal(await page.evaluate(()=>fixture.settings[0].enabled),false,'a test must not enable publication');
+    await page.locator('#wcReload').click();await page.locator('#wcHistory').click();await page.locator('[data-confirm-received]').click();await page.waitForFunction(()=>fixture.verified===true);
+    await page.locator('#wcEnabled').check();await page.locator('#wcSave').click();await page.waitForFunction(()=>fixture.saves.length===2);
+    assert.equal(await page.evaluate(()=>fixture.saves[1].p_confirm_enable),true,'activation is an explicit admin action after receipt verification');
     await page.locator('#wcSearch').fill('Draft baru');assert.equal(await cards.count(),1);await cards.first().locator('[data-duplicate]').click();await page.locator('#wcSaveDraft').click();await page.waitForFunction(()=>fixture.contents.length===3);
     await page.locator('#wcSearch').fill('');await cards.filter({hasText:'Draft baru (salinan)'}).locator('[data-delete]').click();await page.waitForFunction(()=>fixture.contents.length===2);
-    assert.equal(await page.evaluate(()=>window.fixture.settings[0].enabled),false);
-    if(process.env.CHANNEL_SCREENSHOT){await page.screenshot({path:process.env.CHANNEL_SCREENSHOT,fullPage:true});}
+    assert.equal(await page.evaluate(()=>window.fixture.settings[0].enabled),true);
+    if(process.env.CHANNEL_SCREENSHOT){await page.setViewportSize({width:1000,height:760});await page.screenshot({path:process.env.CHANNEL_SCREENSHOT,fullPage:true});}
     await page.setViewportSize({width:390,height:844});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true,'mobile has no horizontal overflow');
     assert.deepEqual(errors,[]);

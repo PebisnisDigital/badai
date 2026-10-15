@@ -13,6 +13,10 @@ async function setup(options={}){
   const fetcher=async(url,init={})=>{
     routes.push(url);const body=init.body?JSON.parse(init.body):{};
     const response=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json'}});
+    if(url.endsWith('/auth/v1/user'))return response({id:'10000000-0000-4000-8000-000000000001'});
+    if(url.includes('/admin_team_members?'))return response(options.noOwner?[]:[{role:'owner'}]);
+    if(url.endsWith('/rpc/wa_channel_capabilities'))return response({text_verified:!options.unverified,image_verified:false,publication_enabled:false});
+    if(url.includes('/wa_marketing_targets?'))return response([{external_id:'123456789@newsletter'}]);
     if(url.endsWith('/rpc/wa_live_consume_worker_token'))return response(!options.replay);
     if(url.endsWith('/rpc/wa_channel_tick'))return response(0);
     if(url.endsWith('/rpc/wa_channel_claim'))return response(options.empty?null:job);
@@ -34,7 +38,8 @@ async function setup(options={}){
     const signature=await signWorkerProof(secret,nonce,time);
     return handler(new Request('https://fixture.supabase.co/functions/v1/badai-wa-channel',{method:'POST',headers:valid?{'Content-Type':'application/json','x-wa-worker-nonce':nonce,'x-wa-worker-time':String(time),'x-wa-worker-signature':signature}:{},body:JSON.stringify({action:'worker'})}));
   };
-  return {request,settlements,routes,submissions:()=>submissions};
+  const capabilityRequest=(authorized=true,origin)=>handler(new Request('https://fixture.supabase.co/functions/v1/badai-wa-channel?target_id=20000000-0000-4000-8000-000000000001',{headers:{...(authorized?{Authorization:'Bearer fixture-valid-user-token'}:{}),...(origin?{Origin:origin}:{})}}));
+  return {request,capabilityRequest,settlements,routes,submissions:()=>submissions};
 }
 test('worker rejects unsigned requests and replayed proofs',async()=>{
   const a=await setup();assert.equal((await a.request(false)).status,403);assert.equal(a.routes.length,0);
@@ -52,3 +57,12 @@ test('successful submission records API acceptance without claiming delivery',as
 test('provider timeout is UNKNOWN and makes exactly one POST',async()=>{const a=await setup({timeout:true});await a.request();assert.equal(a.submissions(),1);assert.equal(a.settlements[0].p_status,'unknown');});
 test('documented provider rejection is FAILED',async()=>{const a=await setup({rejected:true});await a.request();assert.equal(a.submissions(),1);assert.equal(a.settlements[0].p_status,'failed');});
 test('persistence failure after POST never attempts a second send or overwrites uncertainty',async()=>{const a=await setup({settleFails:true});await a.request();assert.equal(a.submissions(),1);assert.equal(a.settlements.length,1);});
+test('Channel readiness checks current owner, receipt verification, connection and ownership without sending',async()=>{
+  const a=await setup();const response=await a.capabilityRequest();assert.equal(response.status,200);const body=await response.json();assert.equal(body.ready,true);assert.equal(body.publication_enabled,false);assert.equal(a.submissions(),0);
+  for(const scenario of ['unverified','disconnected','notOwner']){const a=await setup({[scenario]:true});const response=await a.capabilityRequest();assert.equal((await response.json()).ready,false);assert.equal(a.submissions(),0);}
+});
+test('Channel readiness rejects signed-out users, non-owners and unapproved origins',async()=>{
+  const a=await setup();assert.equal((await a.capabilityRequest(false)).status,403);assert.equal(a.routes.length,0);
+  assert.equal((await a.capabilityRequest(true,'https://unapproved.example')).status,403);assert.equal(a.routes.length,0);
+  const b=await setup({noOwner:true});assert.equal((await b.capabilityRequest()).status,403);
+});

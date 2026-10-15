@@ -30,9 +30,11 @@ The `badai-wa-channel` Edge Function uses the existing stored Zawa credentials a
 the documented provider adapter. Database cron invokes it every 15 seconds with
 the existing HMAC worker proof, valid for 30 seconds and consumed exactly once.
 The endpoint intentionally has `verify_jwt=false`: it accepts only this custom
-worker authentication and exposes no browser/user actions.
+worker authentication for POST. A read-only GET separately validates a Supabase
+user bearer and active Owner/Super Admin membership before checking live
+connection, Channel ownership and session-specific receipt verification.
 
-Before enqueue and again before dispatch, the server checks the global live
+For normal publication, before enqueue and again before dispatch the server checks the global live
 flags, Channel verification for the current pairing fingerprint, target and
 administrator validity, saved schedule version and slot assignment. The worker
 also checks the live connection and Channel ownership before calling Zawa.
@@ -60,18 +62,31 @@ normalized error code.
 
 ## Deployment and activation
 
-1. Apply the checked-in `channel_automation` migration to the existing project.
+1. Apply the checked-in `channel_automation` and `channel_verification_flow`
+   migrations to the existing project.
 2. Deploy `supabase/functions/badai-wa-channel/index.ts` plus `_shared` imports.
    It uses existing `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and
    `WA_MARKETING_WORKER_SECRET` bindings. No new client secret is required.
 3. Deploy the repository to the existing Vercel project `badai`.
-4. An administrator selects an active Channel, saves drafts and calendar slots,
-   configures the existing verified live API, then turns Otomatis ON and confirms
-   the real publication action. Merely deploying or saving an OFF schedule cannot
-   send messages. Kirim Sekarang has its own explicit confirmation.
+4. Select an active Channel, create drafts and calendar slots, and save with
+   Otomatis OFF. Use **Uji & verifikasi Channel** to send one selected draft with
+   explicit confirmation. The server checks connection, ownership and pairing
+   before this controlled test, without enabling normal publication.
+5. After the message is visible in the actual Channel, confirm receipt with
+   evidence in **Riwayat pengiriman**. Receipt verification applies only to that
+   Channel, message type and pairing generation. API acceptance alone never
+   verifies a Channel. Test text and image separately when both are used.
+6. Turn Otomatis ON and save with confirmation. Once verified, this action can
+   enable the existing global publication flags, provided no older campaign
+   backlog exists. Turning a Channel schedule OFF cancels its pending work.
+   Kirim Sekarang has a separate confirmation, and request keys survive browser
+   reloads after uncertain enqueue acknowledgements.
 
-The reference screenshot was not attached; the implementation follows the written
-top-settings / left-calendar / right-bank layout and existing black/pink theme.
+The latest supplied screenshot is implemented as a compact light/green Channel
+panel with top settings, duration chips, a progress strip, six-column calendar,
+30-day range selection and an independent content bank. Other Admin sections
+retain their existing theme. New schedules default to 365 days, 06:00 WIB, loop
+ON, with actual automatic publication OFF until configured and confirmed.
 
 ## Verification
 

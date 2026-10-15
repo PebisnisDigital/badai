@@ -1,7 +1,7 @@
 import { connected, fingerprint, ownsChannel, requestBody, submit, type Credentials, type Media, type Snapshot } from './zawa.ts';
 import { verifyWorkerProof } from './worker-auth.ts';
 
-type Environment = { base: string; serviceKey: string; workerSecret: string };
+type Environment = { base: string; serviceKey: string; workerSecret: string; allowedOrigins?: string };
 type Job = { id: string; claim_token: string; session_fingerprint: string; snapshot: Snapshot };
 
 export function createChannelWorker(env: Environment, fetcher: typeof fetch = fetch) {
@@ -14,6 +14,25 @@ export function createChannelWorker(env: Environment, fetcher: typeof fetch = fe
     return data;
   }
   const rpc = (name: string, body: Record<string, unknown> = {}) => internal('/rest/v1/rpc/' + name, { method: 'POST', body: JSON.stringify(body) });
+  async function capabilities(req: Request) {
+    const bearer=req.headers.get('authorization')||'',target=new URL(req.url).searchParams.get('target_id')||'';
+    if(!/^Bearer [A-Za-z0-9_.-]{10,5000}$/.test(bearer)||!/^([a-f0-9]{8}-){1}[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(target))throw Error('wa_owner_required');
+    const auth=await fetcher(base+'/auth/v1/user',{headers:{apikey:env.serviceKey,Authorization:bearer},redirect:'error',signal:AbortSignal.timeout(10000)});
+    const user=await auth.json().catch(()=>null);
+    if(!auth.ok||!user?.id||!/^[a-f0-9-]{36}$/i.test(user.id))throw Error('wa_owner_required');
+    const members=await internal('/rest/v1/admin_team_members?select=role&status=eq.active&role=in.(owner,super_admin)&auth_user_id=eq.'+user.id+'&limit=1');
+    if(!Array.isArray(members)||members.length!==1)throw Error('wa_owner_required');
+    const access=await fetcher(base+'/rest/v1/rpc/wa_channel_capabilities',{method:'POST',headers:{apikey:env.serviceKey,Authorization:bearer,'Content-Type':'application/json'},body:JSON.stringify({p_target:target}),redirect:'error',signal:AbortSignal.timeout(15000)});
+    const proof=await access.json().catch(()=>null);if(!access.ok)throw Error('wa_channel_backend_failed');
+    let isConnected=false;
+    try{
+      const rows=await internal('/rest/v1/wa_marketing_connection_secure?select=provider_id,session_secret,session_epoch&limit=2');
+      const targets=await internal('/rest/v1/wa_marketing_targets?select=external_id&kind=eq.channel&enabled=eq.true&id=eq.'+target+'&limit=1');
+      if(rows?.length===1&&targets?.length===1){await connected(rows[0],fetcher);await ownsChannel(targets[0].external_id,rows[0],fetcher);isConnected=true;}
+    }catch(_){/* Connection state is separate from receipt verification. */}
+    return {connected:isConnected,ready:isConnected&&(proof.text_verified===true||proof.image_verified===true),scheduler_enabled:true,publication_enabled:proof.publication_enabled===true,
+      verified_types:[...(proof.text_verified?[{target_kind:'channel',message_type:'text'}]:[]),...(proof.image_verified?[{target_kind:'channel',message_type:'image'}]:[])]};
+  }
   const code = (error: unknown) => {
     const value = error instanceof Error ? error.message : '';
     return /^(wa_[a-z_]+|provider_[a-z_]+|invalid_[a-z_]+|unsupported_[a-z_]+|channel_not_owned|connection_not_configured|media_mimetype_mismatch|text_required|media_required|text_too_long)$/.test(value) ? value : 'wa_channel_preparation_failed';
@@ -37,7 +56,16 @@ export function createChannelWorker(env: Environment, fetcher: typeof fetch = fe
     return { url: url.href, mimetype: (response.headers.get('content-type') || '').split(';')[0], size, name: path.split('/').pop()! };
   }
   return async function handler(req: Request): Promise<Response> {
-    const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
+    const origin=req.headers.get('origin');
+    const allowed=(env.allowedOrigins||'https://badai.vercel.app,http://localhost:3000,http://127.0.0.1:3000').split(',').map(s=>s.trim());
+    const cors:Record<string,string>={'Vary':'Origin','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'authorization,apikey,content-type'};
+    if(origin&&allowed.includes(origin))cors['Access-Control-Allow-Origin']=origin;
+    const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors,'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
+    if(origin&&!allowed.includes(origin))return json({error:'wa_origin_not_allowed'},403);
+    if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
+    if(req.method==='GET'){
+      try{return json(await capabilities(req));}catch(error){return json({error:code(error)},error instanceof Error&&error.message==='wa_owner_required'?403:503);}
+    }
     if (req.method !== 'POST') return json({ error: 'wa_method_not_allowed' }, 405);
     if (!env.serviceKey || !base || !await verifyWorkerProof(req.headers, env.workerSecret)) return json({ error: 'wa_worker_unauthorized' }, 403);
     try {
