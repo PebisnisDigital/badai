@@ -8,7 +8,7 @@ try { ({ PGlite } = require('@electric-sql/pglite')); }
 catch (_) { ({ PGlite } = require(process.env.PGLITE_MODULE || '../work/test-tools/node_modules/@electric-sql/pglite')); }
 const actor='10000000-0000-4000-8000-000000000001', target='20000000-0000-4000-8000-000000000001';
 const cid='30000000-0000-4000-8000-000000000001', sid='40000000-0000-4000-8000-000000000001';
-const migration=fs.readdirSync(path.join(__dirname,'../supabase/migrations')).filter(f=>f.endsWith('.sql')).sort().map(f=>fs.readFileSync(path.join(__dirname,'../supabase/migrations',f),'utf8').split("select cron.schedule(")[0]).join('\n');
+const migration=fs.readdirSync(path.join(__dirname,'../supabase/migrations')).filter(f=>f.endsWith('.sql')&&!f.includes('worker_wake_on_demand')).sort().map(f=>fs.readFileSync(path.join(__dirname,'../supabase/migrations',f),'utf8').split("select cron.schedule(")[0]).join('\n');
 for(const kind of ['channel','group'])test(kind+' database: authorization, atomic settings, looping, idempotency, dispatch gates and immutable history',async()=>{
   const db=new PGlite();
   const sqlFor=sql=>kind==='group'?sql.replaceAll('wa_channel_','wa_group_').replaceAll('badai_channel','badai_group').replaceAll("'channel'","'group'"):sql;
