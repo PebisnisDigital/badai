@@ -10,7 +10,7 @@ const dayDiff=(a,b)=>Math.round((Date.parse(a+'T12:00:00Z')-Date.parse(b+'T12:00
 const formatText=text=>esc(text).replace(/```([\s\S]+?)```/g,'<code>$1</code>').replace(/\*([^*\n]+)\*/g,'<b>$1</b>').replace(/_([^_\n]+)_/g,'<i>$1</i>').replace(/~([^~\n]+)~/g,'<s>$1</s>');
 const defaultSettings=target=>({id:crypto.randomUUID(),target_id:target||'',enabled:false,duration_days:365,start_date:dateIn('Asia/Jakarta'),timezone:'Asia/Jakarta',send_times:['06:00'],loop:true,version:0});
 function create(api){
-  let host,root,targets=[],contents=[],settings=[],logs=[],draft,slots=[],page=0,dirty=false,loaded=false,loading=false,working=false,selectedSlot=null,clipboard=null,bankPage=0,loadError='';
+  let host,root,targetManager,targets=[],contents=[],settings=[],logs=[],draft,slots=[],page=0,dirty=false,loaded=false,loading=false,working=false,selectedSlot=null,clipboard=null,bankPage=0,loadError='';
   let editor={id:null,title:'',caption:'',image_path:null},file=null,previewUrl='',imageGeneration=0;
   let capabilities={ready:false,scheduler_enabled:false,verified_types:[]};
   const historyKeys=new Set();
@@ -22,7 +22,7 @@ function create(api){
   function saved(){return settings.find(s=>s.id===draft?.id);}
   function availableTargets(){return targets.filter(t=>t.kind==='channel'&&t.enabled);}
   function valid(){
-    if(!draft.target_id)throw Error('Pilih Channel aktif terlebih dahulu. Kelola tujuan di bagian bawah.');
+    if(!draft.target_id)throw Error('Pilih Channel aktif terlebih dahulu. Sinkronkan atau kelola Channel di pengaturan automasi.');
     if(!Number.isInteger(draft.duration_days)||draft.duration_days<1||draft.duration_days>10000)throw Error('Durasi harus 1–10.000 hari.');
     if(!/^\d{4}-\d{2}-\d{2}$/.test(draft.start_date)||!Number.isFinite(Date.parse(draft.start_date)))throw Error('Tanggal mulai tidak valid.');
     if(!draft.send_times.length||draft.send_times.length>24||draft.send_times.some(t=>!/^([01]\d|2[0-3]):[0-5]\d$/.test(t)))throw Error('Isi 1–24 jam pengiriman yang valid.');
@@ -91,11 +91,11 @@ function create(api){
     if(!loaded&&!draft){root.innerHTML='<div class="wc-card"><h3>Channel Automation</h3><p>'+(loadError?'Gagal memuat data Channel.':'Memuat pengaturan dan bank konten…')+'</p><button id="wcRetry" type="button">Muat ulang</button><div id="wcMessage" role="status" class="wc-notice"></div></div>';q('wcRetry').onclick=load;return;}
     root.innerHTML=`<article class="wc-card wc-settings">
       <div class="wc-settings-title"><div class="wc-eyebrow">PENGATURAN CEPAT</div><span id="wcRunning" class="wc-badge">${draft.enabled?'BERJALAN':'NONAKTIF'}</span><h3>Jadwal<br>Konten</h3><div class="wc-presets">${[10,30,365,1000].map(n=>`<button type="button" data-duration="${n}" class="${draft.duration_days===n?'selected':''}">${n} hari</button>`).join('')}</div></div>
-      <div class="wc-settings-main"><div class="wc-settings-top"><label class="wc-switch wc-toggle-box"><input id="wcEnabled" type="checkbox" ${draft.enabled?'checked':''}><span>Otomatis</span><b id="wcOnLabel">${draft.enabled?'ON':'OFF'}</b></label>
+      <div class="wc-settings-main"><section class="wc-destination" aria-label="Koneksi dan tujuan Channel"><label>Channel tujuan<select id="wcTarget"><option value="">Pilih Channel</option>${availableTargets().map(t=>`<option value="${esc(t.id)}" ${t.id===draft.target_id?'selected':''}>${esc(t.name)}</option>`).join('')}</select></label><div id="wcTargetManager"></div></section><div class="wc-settings-top"><label class="wc-switch wc-toggle-box"><input id="wcEnabled" type="checkbox" ${draft.enabled?'checked':''}><span>Otomatis</span><b id="wcOnLabel">${draft.enabled?'ON':'OFF'}</b></label>
       <label>Jumlah hari<input id="wcCustom" type="number" min="1" max="10000" value="${draft.duration_days}"><select id="wcDuration" hidden aria-label="Pilihan durasi">${[10,30,365,1000].map(n=>`<option value="${n}" ${n===draft.duration_days?'selected':''}>${n} hari</option>`).join('')}<option value="custom" ${![10,30,365,1000].includes(draft.duration_days)?'selected':''}>Custom</option></select></label>
       <label>Zona waktu<select id="wcZone">${Object.entries(zones).map(([z,n])=>`<option value="${z}" ${draft.timezone===z?'selected':''}>${n} — ${z==='Asia/Jakarta'?'Jakarta':z.split('/').pop()}</option>`).join('')}</select></label>
       <label class="wc-switch wc-toggle-box"><input id="wcLoop" type="checkbox" ${draft.loop?'checked':''}><span>Ulang Hari 1</span><small>LOOP</small></label><button id="wcSave" class="wc-primary" type="button">Simpan Jadwal</button></div>
-      <div class="wc-settings-bottom"><label>Mulai Hari 1<input id="wcStart" type="date" value="${esc(draft.start_date)}"></label><label>Channel tujuan<select id="wcTarget"><option value="">Pilih Channel</option>${availableTargets().map(t=>`<option value="${esc(t.id)}" ${t.id===draft.target_id?'selected':''}>${esc(t.name)}</option>`).join('')}</select></label><button id="wcSend" class="wc-primary" type="button">Kirim Sekarang</button><div class="wc-last"><small>STATUS TERAKHIR</small><b id="wcLast"></b><small id="wcServerState"></small></div></div>
+      <div class="wc-settings-bottom"><label>Mulai Hari 1<input id="wcStart" type="date" value="${esc(draft.start_date)}"></label><button id="wcSend" class="wc-primary" type="button">Kirim Sekarang</button><div class="wc-last"><small>STATUS TERAKHIR</small><b id="wcLast"></b><small id="wcServerState"></small></div></div>
       <div class="wc-send-times"><b>Pengiriman per hari <span id="wcDailyCount"></span></b><div id="wcTimes" class="wc-times"></div><button id="wcVerify" type="button">Uji & verifikasi Channel</button><button id="wcHistory" type="button">Riwayat pengiriman</button></div></div>
       <div id="wcMessage" class="wc-notice" role="status" aria-live="polite"></div></article>
       <article class="wc-progress-card"><div class="wc-head"><div><h4>Progres penyusunan</h4><small id="wcProgressLabel"></small></div><strong id="wcPercent">0%</strong></div><progress id="wcProgress" value="0" max="100" aria-label="Progres penyusunan konten"></progress><small id="wcSaveState"></small></article>
@@ -106,6 +106,8 @@ function create(api){
       <form id="wcEditor" class="wc-editor"><label>Judul<input id="wcTitle" required maxlength="140" value="${esc(editor.title)}" placeholder="Edukasi bisnis hari ini"></label><label>Caption<textarea id="wcCaption" rows="6" maxlength="12000" placeholder="Tulis pesan untuk Channel BADAI…">${esc(editor.caption)}</textarea></label><div class="wc-format" aria-label="Format teks WhatsApp"><button data-format="*" type="button" aria-label="Bold"><b>B</b></button><button data-format="_" type="button" aria-label="Italic"><i>I</i></button><button data-format="~" type="button" aria-label="Strikethrough"><s>S</s></button><button data-format="&#96;&#96;&#96;" type="button" aria-label="Monospace">&lt;/&gt;</button></div><label>Gambar · JPG, PNG, WEBP · maks. 20 MB<input id="wcImage" type="file" accept="image/jpeg,image/png,image/webp"></label><button id="wcRemoveImage" type="button" ${!editor.image_path&&!file?'hidden':''}>Lepaskan gambar</button><small>Preview WhatsApp</small><div id="wcPreview" class="wc-preview"></div><button id="wcSaveDraft" class="wc-primary" type="submit">${editor.id?'Simpan Perubahan':'Simpan Draft'}</button><div id="wcEditorMessage" role="status"></div></form>
       </details><div id="wcReleaseZone" class="wc-release-zone"><b>Lepaskan di kanan untuk melepaskan dari kalender</b><small>Draft tetap tersimpan dan dapat digunakan lagi.</small></div><div class="wc-search"><input id="wcSearch" aria-label="Cari konten" placeholder="Cari judul, caption, atau status…"><select id="wcFilter" aria-label="Filter status konten"><option value="all">Semua status</option><option value="draft">Draft</option><option value="scheduled">Dijadwalkan</option><option value="delivered">Terpublikasi</option><option value="failed">Gagal</option></select></div><small>Desktop: tarik kartu ke hari dan jam di kiri. Mobile: pilih slot lalu tekan Gunakan.</small><div id="wcBankList" class="wc-list"></div><div class="wc-row"><button id="wcBankPrev" type="button">‹</button><small id="wcBankPage"></small><button id="wcBankNext" type="button">›</button><button id="wcReload" type="button" aria-label="Perbarui status pengiriman">Perbarui status</button></div></article></aside></div>
       <dialog id="wcDialog"><h3 id="wcDialogTitle"></h3><div id="wcDialogBody" class="wc-dialog-body"></div><div class="wc-row"><button id="wcDialogCancel" type="button">Batal</button><button id="wcDialogApply" class="wc-primary" type="button">Terapkan</button></div></dialog>`;
+    // Keep catalog controls and their listeners when the schedule editor rerenders.
+    q('wcTargetManager').replaceWith(targetManager);
     bind();renderTimes();renderCalendar();renderBank();updateSummary();updatePreview();
   }
   function bind(){
@@ -341,9 +343,9 @@ function create(api){
   window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
   return {mount(container,catalog){
     targets=catalog;
-    if(!host){host=container;host.innerHTML='<div id="wcAutomation" class="wc"></div><details class="wc-targets"><summary>Kelola tujuan Channel & sinkronisasi Zawa</summary><div id="wcTargetManager"></div></details>';root=host.querySelector('#wcAutomation');render();load();}
+    if(!host){host=container;targetManager=document.createElement('div');targetManager.id='wcTargetManager';host.innerHTML='<div id="wcAutomation" class="wc"></div>';root=host.querySelector('#wcAutomation');render();load();}
     else if(draft&&q('wcTarget')){q('wcTarget').innerHTML='<option value="">Pilih Channel</option>'+availableTargets().map(t=>`<option value="${esc(t.id)}" ${t.id===draft.target_id?'selected':''}>${esc(t.name)}</option>`).join('');}
-    return host.querySelector('#wcTargetManager');
+    return targetManager;
   }};
 }
 window.BadaiChannel={create};

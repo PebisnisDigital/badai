@@ -65,12 +65,14 @@ async function syncTargets(kind){
 function renderTarget(kind){
   let root=document.querySelector('[data-wa-content="'+(kind==='group'?'groups':'channel')+'"]');
   if(!root)return;
-  if(kind==='channel'&&window.BadaiChannel){
+  const integrated=kind==='channel'&&window.BadaiChannel;
+  const expanded=root.querySelector('.wc-target-details')?.open;
+  if(integrated){
     window.__badaiChannelEditor ||= window.BadaiChannel.create({db,token,base:BASE,key:KEY,sendUrl:SEND_URL});
     root=window.__badaiChannelEditor.mount(root,catalog);
   }
   const targets=catalog.filter(t=>t.kind===kind);
-  root.innerHTML=
+  const legacyMarkup=
     '<div class="wa-feature-card"><h3>'+ (kind==='group'?'Grup WhatsApp':'WhatsApp Channel')+'</h3>'+
     '<p>Ambil daftar nama dan ID '+(kind==='group'?'grup':'Channel')+' langsung dari WhatsApp yang terhubung ke Zawa. Pilih tujuan aktif sesuai kampanye. Jika ada tujuan yang belum ditemukan, masih bisa ditambahkan manual.</p>'+
     '<div class="wa-sync-row"><button type="button" class="wa-primary-link" data-wa-sync="'+kind+'">↻ SINKRONKAN DARI ZAWA</button><small data-wa-sync-note="'+kind+'" aria-live="polite">'+escapeHtml(syncFeedback[kind]||'Tidak mengambil daftar anggota/pesan. Pengiriman otomatis tetap nonaktif.')+'</small></div>'+
@@ -86,6 +88,19 @@ function renderTarget(kind){
       '<button type="button" data-wa-remove="'+escapeHtml(t.id)+'" class="wa-danger-button">HAPUS</button></div></div>'
     ).join(''):'<p>Belum ada '+(kind==='group'?'grup':'Channel')+' yang ditambahkan.</p>')+'</div>'+
     '<div class="wa-alert">Tujuan baru dari Zawa disimpan <b>nonaktif</b> sampai Teh Vini mengaktifkan dan memilihnya dalam kampanye. Penyelarasan ini hanya membaca daftar; pengiriman, broadcast, dan scheduler tetap nonaktif.</div></div>';
+  if(integrated){
+    const template=document.createElement('template');template.innerHTML=legacyMarkup;
+    const sync=template.content.querySelector('.wa-sync-row');
+    sync.querySelector('button').textContent='↻ Sinkronkan Channel';
+    sync.querySelector('small').textContent=syncFeedback.channel||'Ambil daftar Channel dari WhatsApp yang terhubung.';
+    const details=document.createElement('details');details.className='wc-target-details';details.open=expanded??!targets.some(t=>t.enabled);
+    const summary=document.createElement('summary');summary.textContent='Kelola Channel · '+targets.length+' tersedia';details.append(summary);
+    const list=template.content.querySelector('.wa-target-list');details.append(list);
+    const manual=document.createElement('details');manual.className='wc-target-manual';
+    const manualTitle=document.createElement('summary');manualTitle.textContent='Tambahkan Channel manual';manual.append(manualTitle,template.content.querySelector('.wa-target-form'));details.append(manual);
+    const help=document.createElement('p');help.className='wc-target-help';help.textContent='Aktifkan Channel agar muncul di pilihan tujuan. Sinkronisasi tidak mengubah jadwal atau mengirim pesan.';details.append(help);
+    root.replaceChildren(sync,details);
+  }else root.innerHTML=legacyMarkup;
   root.querySelector('[data-wa-sync]')?.addEventListener('click',()=>syncTargets(kind));
   const form=root.querySelector('[data-wa-target-form]');
   form?.addEventListener('submit',async event=>{
