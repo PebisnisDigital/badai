@@ -65,11 +65,13 @@ async function syncTargets(kind){
 function renderTarget(kind){
   let root=document.querySelector('[data-wa-content="'+(kind==='group'?'groups':'channel')+'"]');
   if(!root)return;
-  const integrated=kind==='channel'&&window.BadaiChannel;
+  const integrated=window.BadaiChannel;
+  const targetLabel=kind==='group'?'Grup':'Channel';
   const expanded=root.querySelector('.wc-target-details')?.open;
   if(integrated){
-    window.__badaiChannelEditor ||= window.BadaiChannel.create({db,token,base:BASE,key:KEY,sendUrl:SEND_URL});
-    root=window.__badaiChannelEditor.mount(root,catalog);
+    const instanceKey=kind==='group'?'__badaiGroupEditor':'__badaiChannelEditor';
+    window[instanceKey] ||= window.BadaiChannel.create({db,token,base:BASE,key:KEY,sendUrl:SEND_URL},{kind});
+    root=window[instanceKey].mount(root,catalog);
   }
   const targets=catalog.filter(t=>t.kind===kind);
   const legacyMarkup=
@@ -91,14 +93,14 @@ function renderTarget(kind){
   if(integrated){
     const template=document.createElement('template');template.innerHTML=legacyMarkup;
     const sync=template.content.querySelector('.wa-sync-row');
-    sync.querySelector('button').textContent='↻ Sinkronkan Channel';
-    sync.querySelector('small').textContent=syncFeedback.channel||'Ambil daftar Channel dari WhatsApp yang terhubung.';
+    sync.querySelector('button').textContent='↻ Sinkronkan '+targetLabel;
+    sync.querySelector('small').textContent=syncFeedback[kind]||'Ambil daftar '+targetLabel+' dari WhatsApp yang terhubung.';
     const details=document.createElement('details');details.className='wc-target-details';details.open=expanded??!targets.some(t=>t.enabled);
-    const summary=document.createElement('summary');summary.textContent='Kelola Channel · '+targets.length+' tersedia';details.append(summary);
+    const summary=document.createElement('summary');summary.textContent='Kelola '+targetLabel+' · '+targets.length+' tersedia';details.append(summary);
     const list=template.content.querySelector('.wa-target-list');details.append(list);
     const manual=document.createElement('details');manual.className='wc-target-manual';
-    const manualTitle=document.createElement('summary');manualTitle.textContent='Tambahkan Channel manual';manual.append(manualTitle,template.content.querySelector('.wa-target-form'));details.append(manual);
-    const help=document.createElement('p');help.className='wc-target-help';help.textContent='Aktifkan Channel agar muncul di pilihan tujuan. Sinkronisasi tidak mengubah jadwal atau mengirim pesan.';details.append(help);
+    const manualTitle=document.createElement('summary');manualTitle.textContent='Tambahkan '+targetLabel+' manual';manual.append(manualTitle,template.content.querySelector('.wa-target-form'));details.append(manual);
+    const help=document.createElement('p');help.className='wc-target-help';help.textContent='Aktifkan '+targetLabel+' agar muncul di pilihan tujuan. Sinkronisasi tidak mengubah jadwal atau mengirim pesan.';details.append(help);
     root.replaceChildren(sync,details);
   }else root.innerHTML=legacyMarkup;
   root.querySelector('[data-wa-sync]')?.addEventListener('click',()=>syncTargets(kind));

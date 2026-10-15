@@ -113,7 +113,7 @@
   #pageWamarketing .wc .wc-time button{min-width:38px;min-height:44px;font-size:16px}
   #pageWamarketing .wc :is(.wc-send-times>button,.wc-times>button){min-height:44px;font-size:12px;padding:10px}
   #pageWamarketing .wc-progress-card{padding:16px 20px}
-  #pageWamarketing .wc #wcSaveState{font-size:12px}
+  #pageWamarketing .wc :is(#wcSaveState,#wgSaveState){font-size:12px}
   #pageWamarketing .wc-steps span{padding:10px 12px;font-size:12px}
   #pageWamarketing .wc-layout{grid-template-columns:minmax(0,1.3fr) minmax(360px,1fr);gap:18px}
   #pageWamarketing .wc-calendar-panel>.wc-eyebrow{font-size:10px;margin-left:52px}

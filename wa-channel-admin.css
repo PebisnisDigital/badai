@@ -51,7 +51,7 @@
 #pageWamarketing .wc progress{display:block;width:100%;height:6px;accent-color:var(--wc-accent);margin:5px 0 0;border-radius:4px;overflow:hidden}
 #pageWamarketing .wc progress::-webkit-progress-bar{background:#44303c}
 #pageWamarketing .wc progress::-webkit-progress-value{background:var(--wc-accent)}
-#pageWamarketing .wc #wcSaveState{font-size:9px}
+#pageWamarketing .wc :is(#wcSaveState,#wgSaveState){font-size:9px}
 #pageWamarketing .wc-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 #pageWamarketing .wc-steps span{background:#171519;border:1px solid var(--wc-line);border-radius:7px;padding:6px 8px;color:#bcb3bc;font-size:10px}
 #pageWamarketing .wc-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;align-items:start}
@@ -113,7 +113,7 @@
 #pageWamarketing .wc{color-scheme:dark}
 #pageWamarketing .wc input::placeholder,#pageWamarketing .wc textarea::placeholder{color:#9f959f;opacity:1}
 #pageWamarketing .wc-destination{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 14px;align-items:end;padding-bottom:14px;border-bottom:1px solid var(--wc-line)}
-#pageWamarketing #wcTargetManager{display:contents}
+#pageWamarketing :is(#wcTargetManager,#wgTargetManager){display:contents}
 #pageWamarketing .wc-destination .wa-sync-row{padding:0;gap:8px;align-items:center;margin:0;min-width:0}
 #pageWamarketing .wc-destination .wa-sync-row small{min-width:0;flex:1 1 180px;color:var(--wc-muted);font-size:12px}
 #pageWamarketing .wc .wa-sync-row button{background:var(--wc-soft);color:#ff9acb;border-color:#79405c;min-height:36px;white-space:nowrap}

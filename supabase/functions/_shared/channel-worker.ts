@@ -1,14 +1,16 @@
-import { connected, fingerprint, ownsChannel, requestBody, submit, type Credentials, type Media, type Snapshot } from './zawa.ts';
+import { connected, fingerprint, ownsChannel, ownsGroup, requestBody, submit, type Credentials, type Media, type Snapshot } from './zawa.ts';
 import { verifyWorkerProof } from './worker-auth.ts';
 
-type Environment = { base: string; serviceKey: string; workerSecret: string; allowedOrigins?: string };
+type Environment = { base: string; serviceKey: string; workerSecret: string; allowedOrigins?: string; kind?: 'channel' | 'group' };
 type Job = { id: string; claim_token: string; session_fingerprint: string; snapshot: Snapshot };
 
 export function createChannelWorker(env: Environment, fetcher: typeof fetch = fetch) {
   const base = env.base.replace(/\/$/, '');
+  const kind = env.kind || 'channel';
+  const ownsDestination = kind === 'group' ? ownsGroup : ownsChannel;
   const headers = { apikey: env.serviceKey, Authorization: 'Bearer ' + env.serviceKey, 'Content-Type': 'application/json' };
   async function internal(path: string, options: RequestInit = {}) {
-    const response = await fetcher(base + path, { ...options, headers, redirect: 'error', signal: AbortSignal.timeout(15000) });
+    const response = await fetcher(base + path.replaceAll('wa_channel_', 'wa_' + kind + '_'), { ...options, headers, redirect: 'error', signal: AbortSignal.timeout(15000) });
     const data = await response.json().catch(() => null);
     if (!response.ok) throw new Error('wa_channel_backend_failed');
     return data;
@@ -22,16 +24,16 @@ export function createChannelWorker(env: Environment, fetcher: typeof fetch = fe
     if(!auth.ok||!user?.id||!/^[a-f0-9-]{36}$/i.test(user.id))throw Error('wa_owner_required');
     const members=await internal('/rest/v1/admin_team_members?select=role&status=eq.active&role=in.(owner,super_admin)&auth_user_id=eq.'+user.id+'&limit=1');
     if(!Array.isArray(members)||members.length!==1)throw Error('wa_owner_required');
-    const access=await fetcher(base+'/rest/v1/rpc/wa_channel_capabilities',{method:'POST',headers:{apikey:env.serviceKey,Authorization:bearer,'Content-Type':'application/json'},body:JSON.stringify({p_target:target}),redirect:'error',signal:AbortSignal.timeout(15000)});
+    const access=await fetcher(base+'/rest/v1/rpc/wa_'+kind+'_capabilities',{method:'POST',headers:{apikey:env.serviceKey,Authorization:bearer,'Content-Type':'application/json'},body:JSON.stringify({p_target:target}),redirect:'error',signal:AbortSignal.timeout(15000)});
     const proof=await access.json().catch(()=>null);if(!access.ok)throw Error('wa_channel_backend_failed');
     let isConnected=false;
     try{
       const rows=await internal('/rest/v1/wa_marketing_connection_secure?select=provider_id,session_secret,session_epoch&limit=2');
-      const targets=await internal('/rest/v1/wa_marketing_targets?select=external_id&kind=eq.channel&enabled=eq.true&id=eq.'+target+'&limit=1');
-      if(rows?.length===1&&targets?.length===1){await connected(rows[0],fetcher);await ownsChannel(targets[0].external_id,rows[0],fetcher);isConnected=true;}
+      const targets=await internal('/rest/v1/wa_marketing_targets?select=external_id&kind=eq.'+kind+'&enabled=eq.true&id=eq.'+target+'&limit=1');
+      if(rows?.length===1&&targets?.length===1){await connected(rows[0],fetcher);await ownsDestination(targets[0].external_id,rows[0],fetcher);isConnected=true;}
     }catch(_){/* Connection state is separate from receipt verification. */}
     return {connected:isConnected,ready:isConnected&&(proof.text_verified===true||proof.image_verified===true),scheduler_enabled:true,publication_enabled:proof.publication_enabled===true,
-      verified_types:[...(proof.text_verified?[{target_kind:'channel',message_type:'text'}]:[]),...(proof.image_verified?[{target_kind:'channel',message_type:'image'}]:[])]};
+      verified_types:[...(proof.text_verified?[{target_kind:kind,message_type:'text'}]:[]),...(proof.image_verified?[{target_kind:kind,message_type:'image'}]:[])]};
   }
   const code = (error: unknown) => {
     const value = error instanceof Error ? error.message : '';
@@ -78,13 +80,14 @@ export function createChannelWorker(env: Environment, fetcher: typeof fetch = fe
       if (!job) return json({ processed: false });
       let providerAttempted = false;
       try {
+        if (job.snapshot.kind !== kind) throw Error('wa_destination_mismatch');
         const rows = await internal('/rest/v1/wa_marketing_connection_secure?select=provider_id,session_secret,session_epoch&limit=2');
         if (!Array.isArray(rows) || rows.length !== 1) throw Error('connection_not_configured');
         const credentials: Credentials = rows[0];
         const fp = await fingerprint(credentials);
         if (fp !== job.session_fingerprint) throw Error('wa_session_changed');
         await connected(credentials, fetcher);
-        await ownsChannel(job.snapshot.external_id, credentials, fetcher);
+        await ownsDestination(job.snapshot.external_id, credentials, fetcher);
         const media = await imageFor(job);
         requestBody(job.snapshot, media);
         const permitted = await rpc('wa_channel_dispatch', { p_id: job.id, p_claim: job.claim_token, p_fingerprint: fp });

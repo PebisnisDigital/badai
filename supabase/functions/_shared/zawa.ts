@@ -136,6 +136,16 @@ export async function ownsChannel(id: string, credentials: Credentials, fetcher:
   if (!Array.isArray(data.docs) || !data.docs.some((row: { id: string; isOwner: boolean }) => row.id === id && row.isOwner === true)) throw new Error('channel_not_owned');
 }
 
+// GET /group returns groups joined by the linked WhatsApp account. No member data is fetched.
+export async function ownsGroup(id: string, credentials: Credentials, fetcher: typeof fetch = fetch) {
+  const response = await fetcher(ZAWA_BASE + '/group', {
+    headers: providerHeaders(credentials), redirect: 'error', signal: AbortSignal.timeout(30000),
+  });
+  if (!response.ok) throw new Error('provider_group_unavailable');
+  const data = await response.json();
+  if (!Array.isArray(data.docs) || !data.docs.some((row: { id: string }) => row.id === id)) throw new Error('wa_group_not_joined');
+}
+
 export async function fingerprint(credentials: Credentials) {
   // Provider reset keeps its credentials. A private pairing generation prevents
   // an earlier link's delivery tests from unlocking a newly paired WhatsApp link.

@@ -9,10 +9,12 @@ catch (_) { ({ PGlite } = require(process.env.PGLITE_MODULE || '../work/test-too
 const actor='10000000-0000-4000-8000-000000000001', target='20000000-0000-4000-8000-000000000001';
 const cid='30000000-0000-4000-8000-000000000001', sid='40000000-0000-4000-8000-000000000001';
 const migration=fs.readdirSync(path.join(__dirname,'../supabase/migrations')).filter(f=>f.endsWith('.sql')).sort().map(f=>fs.readFileSync(path.join(__dirname,'../supabase/migrations',f),'utf8').split("select cron.schedule(")[0]).join('\n');
-test('Channel database: authorization, atomic settings, looping, idempotency, dispatch gates and immutable history',async()=>{
+for(const kind of ['channel','group'])test(kind+' database: authorization, atomic settings, looping, idempotency, dispatch gates and immutable history',async()=>{
   const db=new PGlite();
-  const query=async(sql,args=[])=>{const r=await db.query(sql,args);return r.rows;};
-  await db.exec(`
+  const sqlFor=sql=>kind==='group'?sql.replaceAll('wa_channel_','wa_group_').replaceAll('badai_channel','badai_group').replaceAll("'channel'","'group'"):sql;
+  const query=async(sql,args=[])=>{const r=await db.query(sqlFor(sql),args);return r.rows;};
+  const exec=sql=>db.exec(sqlFor(sql));
+  await exec(`
     create role anon; create role authenticated; create role service_role;
     create schema auth; create schema extensions;
     create table auth.users(id uuid primary key);
@@ -38,7 +40,7 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
   `);
   await db.exec(migration);
   await query("select set_config('request.jwt.claim.sub',$1,false)",[actor]);
-  await db.exec('set role authenticated');
+  await exec('set role authenticated');
   assert.equal((await query("select has_function_privilege('authenticated','public.wa_live_owner()','execute') as allowed"))[0].allowed,false,'legacy service-only grants remain unchanged');
   assert.equal((await query('select badai_channel.can_manage() as allowed'))[0].allowed,true,'authenticated owner can evaluate Channel RLS');
   for(const table of ['wa_channel_settings','wa_channel_contents','wa_channel_calendar_slots','wa_channel_delivery_logs']){
@@ -50,6 +52,13 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
   const slot=[{day_number:1,send_time:'08:00',content_id:cid}];
   const save=async(version,confirm=false,slots=slot)=> (await query('select public.wa_channel_save_schedule($1::jsonb,$2::jsonb,$3,$4) as s',[JSON.stringify(config),JSON.stringify(slots),version,confirm]))[0].s;
   let s=await save(0);assert.equal(s.version,1);assert.equal(s.enabled,false);
+  const otherTarget='20000000-0000-4000-8000-000000000002';
+  await db.exec(`reset role; insert into public.wa_marketing_targets values('${otherTarget}','${kind==='group'?'channel':'group'}',true,'123456789${kind==='group'?'@newsletter':'@g.us'}','Other destination'); set role authenticated`);
+  config.target_id=otherTarget;
+  await assert.rejects(()=>save(1),/wa_target_immutable/,'schedule cannot switch destination families');
+  config.id='40000000-0000-4000-8000-000000000002';
+  await assert.rejects(()=>save(0),/wa_target_disabled/,'new schedule rejects a destination of the other kind');
+  config.id=sid;config.target_id=target;
   await assert.rejects(()=>save(0),/wa_schedule_changed_reload/);
   config.send_times=['08:00','08:00'];await assert.rejects(()=>save(1),/wa_invalid_schedule/);config.send_times=['08:00','16:00'];
   await assert.rejects(()=>save(1,false,[{...slot[0],day_number:11}]),/wa_invalid_slots/);
@@ -62,37 +71,37 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
   const testKey='70000000-0000-4000-8000-000000000001';
   const testSend=async()=> (await query('select public.wa_channel_send_test($1,1,$2::time,$3,true) as j',[sid,'08:00',testKey]))[0].j;
   const testJob=await testSend();assert.equal((await testSend()).id,testJob.id,'verification test is idempotent');
-  await db.exec('reset role');
+  await exec('reset role');
   const verifiedJob=(await query('select public.wa_channel_claim() as j'))[0].j;
   assert.equal(verifiedJob.is_test,true,'only explicitly requested test bypasses publication flags');
   const testFp=(await query('select badai_channel.fingerprint() as fp'))[0].fp;
   assert.equal((await query('select public.wa_channel_dispatch($1,$2,$3) as ok',[verifiedJob.id,verifiedJob.claim_token,testFp]))[0].ok,true);
   await query('select public.wa_channel_settle($1,$2,$3,$4::jsonb,$5)',[verifiedJob.id,verifiedJob.claim_token,'api_accepted',JSON.stringify({http_status:200,message_id:'test-message'}),null]);
   assert.equal((await query('select badai_channel.verified($1,false) as ok',[target]))[0].ok,false,'API acceptance alone cannot verify publication');
-  await db.exec('set role authenticated');
+  await exec('set role authenticated');
   await assert.rejects(()=>query('select public.wa_channel_confirm_received($1,$2)',[testJob.id,'']),/wa_delivery_evidence_required/);
   await query('select public.wa_channel_confirm_received($1,$2)',[testJob.id,'Pesan terlihat di Channel BADAI uji.']);
-  await db.exec('reset role');
+  await exec('reset role');
   assert.equal((await query('select badai_channel.verified($1,false) as ok',[target]))[0].ok,true);
-  await db.exec("update public.wa_marketing_connection_secure set session_epoch=gen_random_uuid()");
+  await exec("update public.wa_marketing_connection_secure set session_epoch=gen_random_uuid()");
   assert.equal((await query('select badai_channel.verified($1,false) as ok',[target]))[0].ok,false,'receipt from an older pairing cannot unlock a new pairing');
-  await db.exec("update public.wa_marketing_connection_secure set session_epoch='50000000-0000-4000-8000-000000000001'");
-  await db.exec("update public.wa_marketing_live_settings set next_send_at=now()-interval '1 day'");
+  await exec("update public.wa_marketing_connection_secure set session_epoch='50000000-0000-4000-8000-000000000001'");
+  await exec("update public.wa_marketing_live_settings set next_send_at=now()-interval '1 day'");
 
-  await db.exec("insert into public.test_proofs select 'channel','text',badai_channel.fingerprint()");
+  await exec("insert into public.test_proofs select 'channel','text',badai_channel.fingerprint()");
   const fp=(await query('select badai_channel.fingerprint() as fp'))[0].fp;
   assert.equal(fp,require('node:crypto').createHash('sha256').update(JSON.stringify(['fixture-provider','fixture-secret','50000000-0000-4000-8000-000000000001'])).digest('hex'));
-  await db.exec('set role authenticated');
+  await exec('set role authenticated');
   s=await save(1,true);assert.equal(s.enabled,true);
   const request='60000000-0000-4000-8000-000000000001';
   const now=async()=> (await query('select public.wa_channel_send_now($1,1,$2::time,$3,true) as j',[sid,'08:00',request]))[0].j;
   const first=await now(),repeat=await now();assert.equal(first.id,repeat.id);assert.equal(repeat.duplicate,true);
-  await db.exec('reset role');
+  await exec('reset role');
   let j=(await query('select public.wa_channel_claim() as j'))[0].j;assert.equal(j.id,first.id);
   assert.equal((await query('select public.wa_channel_claim() as j'))[0].j,null,'concurrent worker does not claim twice');
   assert.equal((await query('select public.wa_channel_dispatch($1,$2,$3) as ok',[j.id,j.claim_token,fp]))[0].ok,true);
   await query('select public.wa_channel_settle($1,$2,$3,$4::jsonb,$5)',[j.id,j.claim_token,'unknown',JSON.stringify({http_status:504,error_code:'provider_gateway_timeout'}),'provider_gateway_timeout']);
-  await db.exec("update public.wa_marketing_live_settings set next_send_at=now()-interval '1 day'");
+  await exec("update public.wa_marketing_live_settings set next_send_at=now()-interval '1 day'");
   assert.equal((await query('select public.wa_channel_claim() as j'))[0].j,null,'unknown outcome is never retried');
   // Next cycle gets a new immutable log even for the same master content.
   const date2=(await query('select ($1::date+10)::text as d',[date]))[0].d;
@@ -101,7 +110,7 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
   assert.ok(a&&b&&a!==b);
   assert.equal((await query('select badai_channel.enqueue($1,1,$2::time,$3::date) as id',[sid,'08:00',date]))[0].id,null);
   assert.deepEqual((await query('select cycle_number from public.wa_channel_delivery_logs where request_key is null order by cycle_number')).map(x=>x.cycle_number),[1,2]);
-  await db.exec('set role authenticated');
+  await exec('set role authenticated');
   await query('update public.wa_channel_contents set caption=$1 where id=$2',['Edited master',cid]);
   assert.equal((await query('select snapshot from public.wa_channel_delivery_logs where id=$1',[a]))[0].snapshot.content_text,'Caption *bold*','log is an immutable snapshot');
   config.enabled=false;s=await save(s.version);
@@ -109,13 +118,13 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
   await query('select public.wa_channel_delete_content($1)',[cid]);
   assert.equal((await query('select count(*)::int as n from public.wa_channel_calendar_slots'))[0].n,0);
   assert.equal((await query('select count(*)::int as n from public.wa_channel_delivery_logs'))[0].n,4,'delete preserves history');
-  await db.exec('reset role');
+  await exec('reset role');
   await query("select set_config('request.jwt.claim.sub',$1,false)",['90000000-0000-4000-8000-000000000001']);
-  await db.exec('set role authenticated');
+  await exec('set role authenticated');
   assert.equal((await query('select badai_channel.can_manage() as allowed'))[0].allowed,false,'unrelated authenticated account is denied');
   assert.equal((await query('select count(*)::int as n from public.wa_channel_settings'))[0].n,0,'member has no RLS access');
   await assert.rejects(()=>save(s.version),/wa_owner_required/);
-  await db.exec('reset role; set role anon');
+  await exec('reset role; set role anon');
   await assert.rejects(()=>query('select * from public.wa_channel_contents'),/permission denied/);
   await db.close();
 });
