@@ -6,6 +6,21 @@ const {chromium}=require('playwright');
 const root=require('node:path').join(__dirname,'..');
 const browserOptions={executablePath:process.env.CHROMIUM_PATH||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),headless:true,args:['--no-sandbox']};
 
+test('Production landing handler emits valid scripts including injected social proof and QRIS controls',async()=>{
+  const nativeFetch=global.fetch;let body='',status=200;
+  try{
+    global.fetch=async url=>{
+      assert.match(String(url),/^https:\/\/raw\.githubusercontent\.com\/PebisnisDigital\/badai\//);
+      return new Response(fs.readFileSync(require('node:path').join(root,'index.html'),'utf8'));
+    };
+    await require('../api/landing-v6.js')({method:'GET',query:{},headers:{}},{setHeader(){return this;},status(code){status=code;return this;},send(value){body=value;return this;}});
+  }finally{global.fetch=nativeFetch;}
+  assert.equal(status,200);assert.ok(body.includes('qrisCheckStatusBtn'));
+  const scripts=[...body.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+  assert.ok(scripts.length>8,'exercise server-injected scripts as well as static HTML');
+  for(const [i,match] of scripts.entries())new (require('node:vm').Script)(match[1],{filename:'landing-script-'+i+'.js'});
+});
+
 for(const file of ['index.html','community-v2/index.html'])test(file+' QRIS: bounded polling, hidden/closed cancellation, recovery, expiry and payment success',async()=>{
   // Render the real payment UI and its complete registration script. A test-only
   // bridge exposes the normal screen transitions without creating a real invoice.

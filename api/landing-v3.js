@@ -37,7 +37,7 @@ module.exports = async function handler(req, res) {
 
     body = body.replace(
 `    if(icon) icon.textContent = settings?.icon || '🔥';`,
-`    if(icon){
+String.raw`    if(icon){
       const fallbackIcon = settings?.icon || '🔥';
       const iconUrl = String(settings?.icon_url || '').trim();
       icon.textContent = '';
