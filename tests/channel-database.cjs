@@ -25,6 +25,9 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
     create table public.wa_marketing_live_jobs(status text);
     create table public.test_proofs(kind text,typ text,fp text);
     create function public.wa_live_owner() returns boolean language sql security definer as $$ select exists(select 1 from public.admin_team_members where auth_user_id=auth.uid() and status='active' and role in ('owner','super_admin')) $$;
+    -- Match production: this legacy helper is service-only, not browser-callable.
+    revoke all on function public.wa_live_owner() from public,anon,authenticated;
+    grant execute on function public.wa_live_owner() to service_role;
     create function public.wa_live_assert_owner(uuid) returns void language plpgsql security definer as $$ begin if $1 is null or not exists(select 1 from public.admin_team_members where auth_user_id=$1 and status='active' and role in ('owner','super_admin')) then raise exception 'wa_owner_required'; end if; end $$;
     create function public.wa_live_verified(text,text,text) returns boolean language sql security definer as $$ select exists(select 1 from public.test_proofs where kind=$1 and typ=$2 and fp=$3) $$;
     insert into auth.users values('${actor}');
@@ -36,6 +39,11 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
   await db.exec(migration);
   await query("select set_config('request.jwt.claim.sub',$1,false)",[actor]);
   await db.exec('set role authenticated');
+  assert.equal((await query("select has_function_privilege('authenticated','public.wa_live_owner()','execute') as allowed"))[0].allowed,false,'legacy service-only grants remain unchanged');
+  assert.equal((await query('select badai_channel.can_manage() as allowed'))[0].allowed,true,'authenticated owner can evaluate Channel RLS');
+  for(const table of ['wa_channel_settings','wa_channel_contents','wa_channel_calendar_slots','wa_channel_delivery_logs']){
+    assert.equal((await query('select count(*)::int as n from public.'+table))[0].n,0,'Channel bootstrap can read '+table+' as authenticated');
+  }
   await query('insert into public.wa_channel_contents(id,title,caption) values($1,$2,$3)',[cid,'Judul','Caption *bold*']);
   const date=(await query("select (now() at time zone 'Asia/Jakarta')::date::text as d"))[0].d;
   let config={id:sid,target_id:target,enabled:false,duration_days:10,start_date:date,timezone:'Asia/Jakarta',send_times:['08:00','16:00'],loop:true};
@@ -104,6 +112,7 @@ test('Channel database: authorization, atomic settings, looping, idempotency, di
   await db.exec('reset role');
   await query("select set_config('request.jwt.claim.sub',$1,false)",['90000000-0000-4000-8000-000000000001']);
   await db.exec('set role authenticated');
+  assert.equal((await query('select badai_channel.can_manage() as allowed'))[0].allowed,false,'unrelated authenticated account is denied');
   assert.equal((await query('select count(*)::int as n from public.wa_channel_settings'))[0].n,0,'member has no RLS access');
   await assert.rejects(()=>save(s.version),/wa_owner_required/);
   await db.exec('reset role; set role anon');
