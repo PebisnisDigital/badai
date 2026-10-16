@@ -39,54 +39,54 @@ async function originalAdminHandler(req, res) {
 
     body = body.replace(
       `if($sp('socialProofPreviewTime')) $sp('socialProofPreviewTime').textContent = 'Contoh tampilan • data pembeli nyata';`,
-      `if($sp('socialProofPreviewTime')) $sp('socialProofPreviewTime').textContent = ($sp('socialProofAudienceMode')?.value === 'registrations')\n      ? 'Contoh • semua pendaftar, termasuk Gratisan'\n      : 'Contoh • pembelian terverifikasi';`
+      `if($sp('socialProofPreviewTime')) $sp('socialProofPreviewTime').textContent = ($sp('socialProofAudienceMode')?.value === 'registrations')\n      ? 'Contoh • semua pendaftar, termasuk Kuliah WhatsApp'\n      : 'Contoh • pembelian terverifikasi';`
     );
 
     body = body.replaceAll(
       'Data yang diputar hanya berasal dari <b>pembayaran berstatus LUNAS</b>.',
-      'Sumber data mengikuti pilihan <b>Data Social Proof</b> dan <b>Paket Member</b>: Gratisan, Pemula, Untung, atau semuanya.'
+      'Sumber data mengikuti pilihan <b>Data Social Proof</b> dan <b>Paket Member</b>: Kuliah WhatsApp, Pemula, Untung, atau semuanya.'
     );
 
     body = body.replaceAll(
       '<div><h3>Social Proof Penjualan</h3><p>Tampilkan notifikasi pembelian nyata dari data member yang sudah lunas.</p></div>',
-      '<div><h3>Social Proof Member BADAI</h3><p>Tampilkan aktivitas member dari Paket Gratisan, Pemula, dan Untung.</p></div>'
+      '<div><h3>Social Proof Member BADAI</h3><p>Tampilkan aktivitas member dari Kuliah WhatsApp, Pemula, dan Untung.</p></div>'
     );
 
     // Member management package option.
     body = body.replace(
       '<select id="managePlan">\n          <option value="newbie">Paket Pemula — Belajar AI + Update</option>',
-      '<select id="managePlan">\n          <option value="free">Paket Gratisan — Komunitas + KulWA</option>\n          <option value="newbie">Paket Pemula — Belajar AI + Update</option>'
+      '<select id="managePlan">\n          <option value="free">Kuliah WhatsApp — Komunitas + KulWA</option>\n          <option value="newbie">Paket Pemula — Belajar AI + Update</option>'
     );
 
     body = body.replace(
       `function planBadge(plan){\n    const value = plan === 'pro' ? 'PAKET UNTUNG' : 'PAKET PEMULA';\n    return '<span class="plan-badge ' + (plan === 'pro' ? 'pro' : 'newbie') + '">' + value + '</span>';\n  }`,
-      `function planBadge(plan){\n    let value = 'PAKET PEMULA';\n    let cls = 'newbie';\n    if(plan === 'free'){ value = 'PAKET GRATISAN'; cls = 'free'; }\n    else if(plan === 'pro'){ value = 'PAKET UNTUNG'; cls = 'pro'; }\n    return '<span class="plan-badge ' + cls + '">' + value + '</span>';\n  }`
+      `function planBadge(plan){\n    let value = 'PAKET PEMULA';\n    let cls = 'newbie';\n    if(plan === 'free'){ value = 'KULIAH WHATSAPP'; cls = 'free'; }\n    else if(plan === 'pro'){ value = 'PAKET UNTUNG'; cls = 'pro'; }\n    return '<span class="plan-badge ' + cls + '">' + value + '</span>';\n  }`
     );
 
-    // Marketing pricing UI now represents all three levels. Gratisan is fixed Rp0.
+    // Marketing pricing UI now represents all three levels. Kuliah WhatsApp is fixed Rp0.
     body = body.replaceAll(
       'Atur harga Paket Pemula dan Paket Untung.',
-      'Atur jenjang Paket Gratisan, Paket Pemula, dan Paket Untung.'
+      'Atur jenjang Kuliah WhatsApp, Paket Pemula, dan Paket Untung.'
     );
 
     body = body.replace(
       `<div class="marketing-price-grid">\n              <div class="manage-field">\n                <label>Harga Paket Pemula</label>`,
-      `<div class="marketing-price-grid badai-three-package-grid">\n              <div class="manage-field badai-free-price-field">\n                <label>Harga Paket Gratisan</label>\n                <div class="badai-free-price">Rp0 <small>GRATIS</small></div>\n                <div class="price-plan-note">Komunitas + KulWA rutin</div>\n              </div>\n\n              <div class="manage-field">\n                <label>Harga Paket Pemula</label>`
+      `<div class="marketing-price-grid badai-three-package-grid">\n              <div class="manage-field badai-free-price-field">\n                <label>Harga Kuliah WhatsApp</label>\n                <div class="badai-free-price">Rp0 <small>GRATIS</small></div>\n                <div class="price-plan-note">Komunitas + KulWA rutin</div>\n              </div>\n\n              <div class="manage-field">\n                <label>Harga Paket Pemula</label>`
     );
 
     body = body.replace(
       `              Untuk sementara pendaftaran dari landing page yang lama tetap menggunakan harga\n              <b>Paket Pemula</b> sampai pilihan paket dipasang di landing page.`,
-      `              <b>Paket Gratisan</b> selalu Rp0. Paket Pemula dan Paket Untung mengikuti harga yang kamu atur di sini.`
+      `              <b>Kuliah WhatsApp</b> selalu Rp0. Paket Pemula dan Paket Untung mengikuti harga yang kamu atur di sini.`
     );
 
     // Notification variables must understand all three membership plans.
     body = body.replaceAll(
       `r.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula'`,
-      `r.membership_plan === 'free' ? 'Paket Gratisan' : (r.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula')`
+      `r.membership_plan === 'free' ? 'Kuliah WhatsApp' : (r.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula')`
     );
     body = body.replaceAll(
       `row.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula'`,
-      `row.membership_plan === 'free' ? 'Paket Gratisan' : (row.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula')`
+      `row.membership_plan === 'free' ? 'Kuliah WhatsApp' : (row.membership_plan === 'pro' ? 'Paket Untung' : 'Paket Pemula')`
     );
     body = body.replaceAll(
       `harga:rupiah(r.amount || marketingSettings.product_price || 123000)`,
@@ -100,7 +100,7 @@ async function originalAdminHandler(req, res) {
     // Social Proof preview uses selected package instead of hard-coding Paket Untung.
     body = body.replaceAll(
       `.split('[paket]').join('Paket Untung')`,
-      `.split('[paket]').join((document.getElementById('socialProofPlanFilter')?.value === 'free' ? 'Paket Gratisan' : document.getElementById('socialProofPlanFilter')?.value === 'pro' ? 'Paket Untung' : 'Paket Pemula'))`
+      `.split('[paket]').join((document.getElementById('socialProofPlanFilter')?.value === 'free' ? 'Kuliah WhatsApp' : document.getElementById('socialProofPlanFilter')?.value === 'pro' ? 'Paket Untung' : 'Paket Pemula'))`
     );
 
     // Affiliate sales links: main LP plus direct links for each package.
@@ -185,7 +185,7 @@ async function originalAdminHandler(req, res) {
     field.innerHTML =
       '<label>Data Social Proof</label>' +
       '<select id="socialProofAudienceMode">' +
-        '<option value="registrations">Semua pendaftar — Gratisan + berbayar</option>' +
+        '<option value="registrations">Semua pendaftar — Kuliah WhatsApp + berbayar</option>' +
         '<option value="paid">Pembeli lunas saja — Pemula + Untung</option>' +
       '</select>' +
       '<div class="price-plan-note">Pilih sumber data yang boleh tampil.</div>';
@@ -196,7 +196,7 @@ async function originalAdminHandler(req, res) {
       const preview = document.getElementById('socialProofPreviewTime');
       if(preview){
         preview.textContent = select.value === 'registrations'
-          ? 'Contoh • semua pendaftar, termasuk Gratisan'
+          ? 'Contoh • semua pendaftar, termasuk Kuliah WhatsApp'
           : 'Contoh • pembelian terverifikasi';
       }
     });
@@ -214,7 +214,7 @@ async function originalAdminHandler(req, res) {
       '<label>Paket Member yang Ditampilkan</label>' +
       '<select id="socialProofPlanFilter">' +
         '<option value="all">Semua Paket</option>' +
-        '<option value="free">Paket Gratisan</option>' +
+        '<option value="free">Kuliah WhatsApp</option>' +
         '<option value="newbie">Paket Pemula</option>' +
         '<option value="pro">Paket Untung</option>' +
       '</select>' +
@@ -233,7 +233,7 @@ async function originalAdminHandler(req, res) {
     if(!select || select.querySelector('option[value="free"]')) return;
     const option = document.createElement('option');
     option.value = 'free';
-    option.textContent = 'Paket Gratisan — Komunitas + KulWA';
+    option.textContent = 'Kuliah WhatsApp — Komunitas + KulWA';
     select.insertBefore(option, select.firstChild);
   }
 
@@ -242,7 +242,7 @@ async function originalAdminHandler(req, res) {
     if(!panel || panel.querySelector('.badai-package-sync-note')) return;
     const note = document.createElement('div');
     note.className = 'badai-package-sync-note';
-    note.innerHTML = '<b>3 PAKET TERSINKRON</b><br>[paket] otomatis menjadi Paket Gratisan, Paket Pemula, atau Paket Untung. Untuk Gratisan, [harga] otomatis menjadi GRATIS.';
+    note.innerHTML = '<b>3 PILIHAN TERSINKRON</b><br>[paket] otomatis menjadi Kuliah WhatsApp, Paket Pemula, atau Paket Untung. Untuk Kuliah WhatsApp, [harga] otomatis menjadi GRATIS.';
     panel.insertBefore(note,panel.firstChild);
   }
 
