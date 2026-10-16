@@ -7212,7 +7212,7 @@ main section > .container > .badai-copy-kicker,
 
         <div class="selected-package-box">
           <div>
-            <span>PAKET YANG DIPILIH • AKSES 1 TAHUN</span>
+            <span id="selectedPackageMeta">PAKET YANG DIPILIH • AKSES 1 TAHUN</span>
             <strong id="selectedPackageLabel">Paket Pemula</strong>
           </div>
           <b id="selectedPackagePrice">Rp199.000</b>
@@ -7247,7 +7247,7 @@ main section > .container > .badai-copy-kicker,
             </div>
             <div class="free-success-row">
               <span class="free-success-check">✓</span>
-              <b>Belajar AI Gratisan</b>
+              <b>Belajar AI lewat Kuliah WhatsApp</b>
               <span>Senilai Rp29.000</span>
             </div>
           </div>
@@ -7583,7 +7583,7 @@ main section > .container > .badai-copy-kicker,
     free:[
       'KULIAH WHATSAPP RUTIN SETIAP HARI',
       'EBOOK AI & BISNIS',
-      'BELAJAR AI GRATISAN',
+      'BELAJAR AI LEWAT KULIAH WHATSAPP',
       'GABUNG KOMUNITAS BADAI',
       'MULAI BELAJAR TANPA BAYAR',
       'BISA UPGRADE KAPAN SAJA'
@@ -8211,7 +8211,7 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function selectedPackageName(){
-    if(selectedPackage === 'free') return 'Paket Gratisan';
+    if(selectedPackage === 'free') return 'Kuliah WhatsApp';
     return selectedPackage === 'pro' ? 'Paket Untung' : 'Paket Pemula';
   }
 
@@ -8238,10 +8238,12 @@ Mohon dibantu proses pendaftarannya ya.`
     const hidden = document.getElementById('selectedPackage');
     const label = document.getElementById('selectedPackageLabel');
     const price = document.getElementById('selectedPackagePrice');
+    const meta = document.getElementById('selectedPackageMeta');
 
     if(hidden) hidden.value = selectedPackage;
     if(label) label.textContent = selectedPackageName();
     if(price) price.textContent = formatRupiah(selectedPackagePrice());
+    if(meta) meta.textContent = selectedPackage === 'free' ? 'KULIAH WHATSAPP • GRATIS' : 'PAKET YANG DIPILIH • AKSES 1 TAHUN';
 
     document.querySelectorAll('[data-package-card]').forEach(card => {
       card.classList.toggle('is-selected', card.dataset.packageCard === selectedPackage);
@@ -8546,7 +8548,7 @@ Mohon dibantu proses pendaftarannya ya.`
     try {
       if(selectedPackage === 'free'){
         submitBtn.textContent = 'MENDAFTARKAN...';
-        setStatus('Sebentar, data Gratisan sedang disimpan...', false);
+        setStatus('Sebentar, pendaftaran Kuliah WhatsApp sedang disimpan...', false);
 
         const freeResponse = await fetch(SUPABASE_URL + '/functions/v1/register-free-lead',{
           method:'POST',
@@ -8568,7 +8570,7 @@ Mohon dibantu proses pendaftarannya ya.`
 
         const freeData = await freeResponse.json().catch(()=>({}));
         if(!freeResponse.ok || !freeData?.success){
-          throw new Error(freeData?.error || 'Gagal mendaftar Paket Gratisan');
+          throw new Error(freeData?.error || 'Gagal mendaftar Kuliah WhatsApp');
         }
 
         setStatus('Pendaftaran KULWA Rp0 berhasil. Silakan bergabung ke grup WhatsApp.', false);
