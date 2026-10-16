@@ -33,6 +33,10 @@
       "dest": "/api/admin-v5"
     },
     {
+      "src": "^/game-edukatif/?$",
+      "dest": "/game-edukatif/index.html"
+    },
+    {
       "src": "^/akses/?$",
       "dest": "/api/admin-v3?accesscompact=1"
     },
