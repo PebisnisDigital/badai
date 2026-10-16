@@ -119,7 +119,7 @@ async function originalAdminHandler(req, res) {
                 <i class="affiliate-link-switch"><input id="affiliateLinkMainEnabled" type="checkbox" checked><span></span></i>
               </label>
               <label class="affiliate-link-setting-row">
-                <div><b>Paket Gratisan</b><span>Langsung membawa calon member ke alur Paket Gratisan.</span><code id="affiliateFreePreview">/KODE-AFILIASI?paket=gratisan</code></div>
+                <div><b>LINK KULWA · Rp0</b><span>Link daftar Kuliah WhatsApp gratis. Setelah pendaftaran sukses, peserta diarahkan ke grup KULWA.</span><code id="affiliateFreePreview">/KODE-AFILIASI?paket=gratisan</code></div>
                 <i class="affiliate-link-switch"><input id="affiliateLinkFreeEnabled" type="checkbox" checked><span></span></i>
               </label>
               <label class="affiliate-link-setting-row">
