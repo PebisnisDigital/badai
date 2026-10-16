@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
 <style>
 :root{color-scheme:dark;--bg:#070707;--surface:#151014;--surface2:#1d141b;--stroke:#432639;--pink:#ff4fa3;--pale:#ffbad9;--text:#fff;--muted:#ada3a9}
 *{box-sizing:border-box}
@@ -17,7 +18,7 @@ html{scroll-behavior:smooth}
 body{margin:0;min-height:100vh;background:#050505;color:var(--text);font-family:"Nunito",Arial,sans-serif;font-size:14px}
 a{color:inherit}
 button,input{font:inherit}
-.app{max-width:740px;min-height:100vh;margin:0 auto;background:var(--bg);box-shadow:0 0 70px rgba(0,0,0,.7)}
+.app{max-width:700px;min-height:100vh;margin:0 auto;background:var(--bg);box-shadow:0 0 70px rgba(0,0,0,.7)}
 .topbar{height:68px;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #291d25;position:sticky;top:0;background:rgba(7,7,7,.96);backdrop-filter:blur(12px);z-index:10}
 .brand{display:inline-flex;align-items:center;max-width:150px;text-decoration:none}
 .brand img{width:120px;max-height:42px;object-fit:contain;object-position:left center}
@@ -54,6 +55,29 @@ h1 span{color:var(--pink)}
 .notice a{display:inline-flex;background:#ff4fa3;border-radius:10px;padding:12px 17px;text-decoration:none;font-size:11px;color:#130a10;font-weight:900}
 .empty{padding:30px 18px;border:1px dashed #503244;border-radius:12px;color:#bcaeba;text-align:center}
 .footer-note{margin:36px 0 0;text-align:center;font-size:10px;color:#766d73}
+.member-bottom-nav{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+  z-index:100;width:min(100%,700px);min-height:calc(65px + env(safe-area-inset-bottom,0px));
+  padding:5px 6px max(5px,env(safe-area-inset-bottom,5px));display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;box-sizing:border-box;
+  background:rgba(0,0,0,.98);border-top:1px solid #292028;
+  box-shadow:0 -8px 24px rgba(0,0,0,.18);backdrop-filter:blur(16px)
+}
+.member-bottom-nav a,.member-bottom-nav button{
+  min-width:0;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;padding:4px 2px;border:0;border-radius:13px;background:transparent;
+  color:#fff;text-decoration:none;text-align:center;cursor:pointer;box-sizing:border-box
+}
+.member-bottom-nav a:hover,.member-bottom-nav a:focus-visible{background:#241521}
+.member-bottom-nav a:focus-visible{outline:2px solid #ff4fa3;outline-offset:-2px}
+.member-bottom-nav .active,.member-bottom-nav .active:hover{background:#ff4fa3;color:#111}
+.member-bottom-nav .icon{font-size:17px;line-height:1}
+.member-bottom-nav .label{font-family:"Nunito",Arial,sans-serif;font-size:11px;font-weight:600;line-height:1.05}
+.member-bottom-nav .locked{opacity:.62;cursor:not-allowed}
+.member-bottom-nav .locked .label{display:grid;gap:3px;justify-items:center}
+.member-bottom-nav .soon{padding:3px 5px;border:1px solid #65304d;border-radius:99px;background:#24101a;color:#ff8fc5;font-size:6.5px;font-weight:900;line-height:1;letter-spacing:.04em;white-space:nowrap}
+@media(max-width:380px){.member-bottom-nav{gap:1px;padding-inline:3px}.member-bottom-nav .label{font-size:10px}}
+
 [hidden]{display:none!important}
 @media(max-width:480px){main{padding:24px 14px 70px}.topbar{padding:10px 14px}.game summary{padding:14px 12px;gap:9px}.name{font-size:12px}.gamebody{padding-left:12px;padding-right:12px}.prompt{font-size:12px}.searchwrap{top:68px}}
 </style>
@@ -61,8 +85,8 @@ h1 span{color:var(--pink)}
 <body>
 <div class="app">
 <header class="topbar">
-  <a class="brand" href="/akses" aria-label="Kembali ke member BADAI"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"></a>
-  <a class="back" href="/akses">← MEMBER AREA</a>
+  <a class="brand" href="/akses?screen=jaluruntung" aria-label="Kembali ke member BADAI"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"></a>
+  <a class="back" href="/akses?screen=jaluruntung">← MEMBER AREA</a>
 </header>
 <main>
   <div class="eyebrow">MATERI #022 · PAKET UNTUNG</div>
@@ -74,6 +98,13 @@ h1 span{color:var(--pink)}
   <section class="cards" id="gameList" aria-label="Daftar prompt game edukatif"></section>
   <p class="footer-note">KOMUNITAS BADAI · BELAJAR APA AJA DENGAN AI</p>
 </main>
+<nav class="member-bottom-nav" aria-label="Navigasi Member BADAI">
+  <a href="/akses?screen=kelas" aria-label="Pemula"><span class="icon"><i class="fi fi-rr-square-1" aria-hidden="true"></i></span><span class="label">Pemula</span></a>
+  <a href="/akses?screen=jaluruntung" class="active" aria-label="Untung, menu aktif" aria-current="page"><span class="icon"><i class="fi fi-rr-square-2" aria-hidden="true"></i></span><span class="label">Untung</span></a>
+  <button class="locked" type="button" disabled aria-disabled="true" aria-label="Afiliasi segera hadir" title="Afiliasi segera hadir"><span class="icon"><i class="fi fi-rr-square-3" aria-hidden="true"></i></span><span class="label">Afiliasi<span class="soon">SEGERA HADIR</span></span></button>
+  <a href="/akses?screen=mentor" aria-label="Grup BADAI"><span class="icon"><i class="fi fi-rr-square-4" aria-hidden="true"></i></span><span class="label">Grup</span></a>
+  <a href="/akses?screen=akun" aria-label="Akun member"><span class="icon"><i class="fi fi-rr-square-5" aria-hidden="true"></i></span><span class="label">Akun</span></a>
+</nav>
 </div>
 <script>
 (function(){
