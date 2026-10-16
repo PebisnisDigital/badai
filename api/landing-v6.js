@@ -319,21 +319,23 @@ module.exports = async function handler(req, res) {
     const newbieEl=document.getElementById('dynamicNewbiePrice');
     const proEl=document.getElementById('dynamicProPrice');
     const selectedEl=document.getElementById('selectedPackagePrice');
-    const selectedPlan=document.getElementById('selectedPackage')?.value === 'pro' ? 'pro' : 'newbie';
+    const selectedPlan=document.getElementById('selectedPackage')?.value || 'newbie';
+    const isFree=selectedPlan === 'free';
 
     if(!registrationOpen){
       setTextIfChanged(newbieEl,priceMask(closedNewbiePrice,newbieEl?.textContent));
       setTextIfChanged(proEl,priceMask(closedProPrice,proEl?.textContent));
       if(selectedEl){
-        const selectedAmount=selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice;
-        setTextIfChanged(selectedEl,priceMask(selectedAmount,selectedEl.textContent));
+        // KULWA/Gratisan selalu Rp0. Jangan tertimpa harga paket berbayar.
+        const selectedAmount=isFree ? 0 : (selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice);
+        setTextIfChanged(selectedEl,isFree ? 'Rp0' : priceMask(selectedAmount,selectedEl.textContent));
       }
     }else{
       if(newbieEl && closedNewbiePrice > 0) setTextIfChanged(newbieEl,realPrice(closedNewbiePrice));
       if(proEl && closedProPrice > 0) setTextIfChanged(proEl,realPrice(closedProPrice));
       if(selectedEl){
-        const selectedAmount=selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice;
-        if(selectedAmount > 0) setTextIfChanged(selectedEl,realPrice(selectedAmount));
+        const selectedAmount=isFree ? 0 : (selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice);
+        if(isFree || selectedAmount > 0) setTextIfChanged(selectedEl,realPrice(selectedAmount));
       }
     }
 
