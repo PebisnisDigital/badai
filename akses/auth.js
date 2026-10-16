@@ -136,7 +136,7 @@
   function memberPlanShortLabel(value){
     const plan = String(value || '').toLowerCase();
     if(plan === 'pro') return 'Paket Untung';
-    if(plan === 'free') return 'Paket Gratisan';
+    if(plan === 'free') return 'Kuliah WhatsApp';
     return 'Paket Pemula';
   }
 
@@ -360,7 +360,7 @@
 
   function affiliatePlanLabel(plan){
     if(plan === 'pro') return 'Paket Untung';
-    if(plan === 'free') return 'Paket Gratisan';
+    if(plan === 'free') return 'Kuliah WhatsApp';
     return 'Paket Pemula';
   }
 
@@ -575,7 +575,7 @@
     if(planName){
       planName.textContent = plan === 'pro'
         ? 'PAKET UNTUNG'
-        : (plan === 'free' ? 'PAKET GRATISAN' : 'PAKET PEMULA');
+        : (plan === 'free' ? 'KULIAH WHATSAPP' : 'PAKET PEMULA');
     }
     if(planDesc){
       planDesc.textContent = plan === 'pro'
@@ -997,7 +997,7 @@
 
         if(status){
           status.className = 'status error';
-          status.textContent = 'Paket Gratisan tidak memakai Member Area. Member Area khusus Paket Pemula dan Paket Untung.';
+          status.textContent = 'Kuliah WhatsApp tidak memerlukan Member Area. Member Area khusus Paket Pemula dan Paket Untung.';
         }
         return;
       }
