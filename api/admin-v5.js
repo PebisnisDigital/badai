@@ -119,15 +119,15 @@ async function originalAdminHandler(req, res) {
                 <i class="affiliate-link-switch"><input id="affiliateLinkMainEnabled" type="checkbox" checked><span></span></i>
               </label>
               <label class="affiliate-link-setting-row">
-                <div><b>LINK KULWA · Rp0</b><span>Link daftar Kuliah WhatsApp gratis. Setelah pendaftaran sukses, peserta diarahkan ke grup KULWA.</span><code id="affiliateFreePreview">/KODE-AFILIASI?paket=kulwa</code></div>
+                <div><b>KULWA · Rp0</b><span>Link daftar Kuliah WhatsApp gratis. Setelah pendaftaran sukses, peserta diarahkan ke grup KULWA.</span><code id="affiliateFreePreview">/KODE-AFILIASI?kulwa</code></div>
                 <i class="affiliate-link-switch"><input id="affiliateLinkFreeEnabled" type="checkbox" checked><span></span></i>
               </label>
               <label class="affiliate-link-setting-row">
-                <div><b>Paket Pemula</b><span>Untuk affiliate yang ingin langsung menjual Paket Pemula.</span><code id="affiliateNewbiePreview">/KODE-AFILIASI?paket=pemula</code></div>
+                <div><b>PEMULA</b><span>Link pendaftaran langsung ke pilihan PEMULA.</span><code id="affiliateNewbiePreview">/KODE-AFILIASI?pemula</code></div>
                 <i class="affiliate-link-switch"><input id="affiliateLinkNewbieEnabled" type="checkbox" checked><span></span></i>
               </label>
               <label class="affiliate-link-setting-row">
-                <div><b>Paket Untung</b><span>Untuk affiliate yang ingin langsung menjual Paket Untung.</span><code id="affiliateProPreview">/KODE-AFILIASI?paket=untung</code></div>
+                <div><b>UNTUNG</b><span>Link pendaftaran langsung ke pilihan UNTUNG.</span><code id="affiliateProPreview">/KODE-AFILIASI?untung</code></div>
                 <i class="affiliate-link-switch"><input id="affiliateLinkProEnabled" type="checkbox" checked><span></span></i>
               </label>
             </div>
@@ -318,9 +318,9 @@ async function originalAdminHandler(req, res) {
     const code = 'KODE-AFILIASI';
     const data = [
       ['affiliateMainPreview',origin + '/' + code],
-      ['affiliateFreePreview',origin + '/' + code + '?paket=kulwa'],
-      ['affiliateNewbiePreview',origin + '/' + code + '?paket=pemula'],
-      ['affiliateProPreview',origin + '/' + code + '?paket=untung']
+      ['affiliateFreePreview',origin + '/' + code + '?kulwa'],
+      ['affiliateNewbiePreview',origin + '/' + code + '?pemula'],
+      ['affiliateProPreview',origin + '/' + code + '?untung']
     ];
     data.forEach(function(row){ const node=el(row[0]); if(node) node.textContent=row[1]; });
   }
