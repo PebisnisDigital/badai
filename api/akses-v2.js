@@ -2603,7 +2603,7 @@ document.addEventListener('DOMContentLoaded', function(){
     {title:'BIKIN LKPD INTERAKTIF',video:'',description:'Ubah materi belajar menjadi LKPD interaktif yang lebih menarik untuk siswa.',content:''},
     {title:'BIKIN INFOGRAFIS',video:'',description:'Ubah informasi panjang menjadi infografis yang ringkas dan mudah dipahami.',content:''},
     {title:'BIKIN PRESENTASI',video:'',description:'Susun materi menjadi presentasi visual yang siap dipakai untuk mengajar atau menjual.',content:''},
-    {hideInactive:true,title:'BIKIN GAME EDUKASI',video:'',toolUrl:'https://badai.vercel.app/game-edukatif',buttonLabel:'LIHAT 114 PROMPT',ready:true,description:'Buka perpustakaan 114 ide game edukatif. Pilih judul game, buka prompt lengkap, lalu salin untuk membuat game dengan AI.',content:''},
+    {hideInactive:true,title:'BIKIN GAME EDUKASI',video:'',toolUrl:'/game-edukatif',buttonLabel:'AKSES',ready:true,description:'Buka perpustakaan 114 ide game edukatif. Pilih judul game, buka prompt lengkap, lalu salin untuk membuat game dengan AI.',content:''},
     {title:'WEB RAHASIA KUMPULAN PROMPT GRATIS',video:'',toolUrl:'https://www.meigen.ai/',buttonLabel:'AKSES',ready:true,tutorialSteps:['Buka MeiGen melalui tombol AKSES.','Jelajahi galeri prompt atau cari berdasarkan kebutuhan gambar dan video.','Pilih karya yang menarik, lalu baca prompt dan informasi kreator aslinya.','Sesuaikan prompt dengan ide sendiri sebelum digunakan pada AI pilihan.','Kalau memakai fitur pembuatan gambar atau video di MeiGen, periksa kebutuhan kredit dan biaya terlebih dahulu.'],description:'Jelajahi galeri prompt AI gratis untuk inspirasi gambar dan video. Pilih prompt, pelajari, lalu sesuaikan dengan ide sendiri.',content:''},
     {title:'BUAT VIDEO PENDEK DIBAYAR LYNK ID',video:'',ready:true,explanationSteps:['Materi ini mengenalkan cara membuat video pendek yang menarik dan memahami peluang monetisasinya melalui Lynk.id.','Mulai dari menentukan topik, menyiapkan naskah singkat, hingga membuat video dengan pembuka yang memancing perhatian.','Pelajari program, persyaratan, dan mekanisme pembayaran terbaru secara langsung di Lynk.id sebelum mengikuti peluang monetisasi.','Tidak semua video otomatis dibayar. Hasil bergantung pada program yang tersedia, ketentuan platform, dan performa konten.'],description:'Kenali cara membuat video pendek dan memahami peluang monetisasi melalui Lynk.id.',content:''},
     {title:'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',video:'',toolUrl:'https://repliz.com/referral/PPQSlz',buttonLabel:'TOOLS',ready:true,description:'Susun alur konten dan promosi agar aktivitas jualan di Instagram dan Threads lebih teratur.',content:''},
@@ -2646,12 +2646,13 @@ document.addEventListener('DOMContentLoaded', function(){
 
       var primaryUrl=hasMaterial?item.materialUrl:item.toolUrl;
       var primaryLabel=hasMaterial?'BUKA MATERI':(item.buttonLabel||'BUKA TOOLS');
+      var linkTarget=String(primaryUrl||'').charAt(0)==='/'?'':' target="_blank" rel="noopener noreferrer"';
       var hideInactive=item.hideInactive===true;
 
       var toolButton=hasExplanation
         ? '<button class="badai-card-action badai-card-action-tool" type="button" data-badai-material-dialog="explanation"'+dialogRef+'>PENJELASAN</button>'
         : (hasMaterial||hasTool)
-          ? '<a class="badai-card-action badai-card-action-tool" href="'+primaryUrl+'" target="_blank" rel="noopener noreferrer">'+primaryLabel+' <span>↗</span></a>'
+          ? '<a class="badai-card-action badai-card-action-tool" href="'+primaryUrl+'"'+linkTarget+'>'+primaryLabel+' <span>↗</span></a>'
           : (hideInactive?'':'<button class="badai-card-action badai-card-action-tool is-disabled" type="button" disabled>MATERI</button>');
 
       var videoButton=hasExplanation
