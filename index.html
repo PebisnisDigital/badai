@@ -8473,7 +8473,7 @@ Mohon dibantu proses pendaftarannya ya.`
   loadPaymentMethods();
 
   const requestedPackage = (new URLSearchParams(location.search).get('paket') || '').trim().toLowerCase();
-  if(requestedPackage === 'gratisan'){
+  if(requestedPackage === 'kulwa' || requestedPackage === 'gratisan'){
     setTimeout(() => openRegistrationModal('free'), 80);
   }
 
