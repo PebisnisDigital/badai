@@ -132,6 +132,13 @@ async function originalAdminHandler(req, res) {
               </label>
             </div>
 
+            <div class="manage-field" style="margin-top:16px">
+              <label for="affiliatePromoDriveUrl">BAHAN PROMOSI · LINK GOOGLE DRIVE</label>
+              <input id="affiliatePromoDriveUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://drive.google.com/drive/folders/..." style="width:100%">
+              <div class="price-plan-note">Isi tautan folder Google Drive yang bisa dibuka member. Jika kosong, tombol Bahan Promosi di Member Area tidak aktif. Atur akses berbagi folder agar member bisa melihat dan menyalin bahannya.</div>
+              <button id="affiliatePromoSaveButton" type="button" class="primary" style="margin-top:10px">SIMPAN LINK GOOGLE DRIVE</button>
+            </div>
+
             <div class="affiliate-link-rule-note"><b>1 KODE, BANYAK JALUR.</b> Semua link memakai kode affiliate yang sama. Pilihan ini nanti menentukan link mana yang tampil di menu Affiliasi member.</div>
             <div id="affiliateLinkSettingsStatus" class="team-status-note"></div>
           </div>
@@ -346,20 +353,30 @@ async function originalAdminHandler(req, res) {
   async function load(){
     if(!el('affiliateSalesLinkCard')) return;
     try{
-      const rows = await api('/rest/v1/affiliate_settings?id=eq.1&select=link_main_enabled,link_free_enabled,link_newbie_enabled,link_pro_enabled');
+      const rows = await api('/rest/v1/affiliate_settings?id=eq.1&select=link_main_enabled,link_free_enabled,link_newbie_enabled,link_pro_enabled,promo_drive_url');
       const s = rows?.[0];
       if(!s) return;
       el('affiliateLinkMainEnabled').checked = s.link_main_enabled !== false;
       el('affiliateLinkFreeEnabled').checked = s.link_free_enabled !== false;
       el('affiliateLinkNewbieEnabled').checked = s.link_newbie_enabled !== false;
       el('affiliateLinkProEnabled').checked = s.link_pro_enabled !== false;
+      if(el('affiliatePromoDriveUrl')) el('affiliatePromoDriveUrl').value = s.promo_drive_url || '';
       status('');
     }catch(err){ status('Gagal memuat pengaturan link: ' + (err.message || err)); }
   }
 
   window.__BADAI_SAVE_AFFILIATE_LINKS__ = async function(){
     if(!el('affiliateSalesLinkCard')) return true;
+    const driveUrl=String(el('affiliatePromoDriveUrl')?.value||'').trim();
+    if(driveUrl){
+      let parsed;
+      try{parsed=new URL(driveUrl)}catch(_){throw new Error('URL Google Drive tidak valid.')}
+      if(parsed.protocol!=='https:' || !['drive.google.com','docs.google.com'].includes(parsed.hostname)){
+        throw new Error('Masukkan URL Google Drive resmi (https://drive.google.com/...).')
+      }
+    }
     const settings = {
+      promo_drive_url:driveUrl,
       link_main_enabled:!!el('affiliateLinkMainEnabled')?.checked,
       link_free_enabled:!!el('affiliateLinkFreeEnabled')?.checked,
       link_newbie_enabled:!!el('affiliateLinkNewbieEnabled')?.checked,
@@ -380,6 +397,13 @@ async function originalAdminHandler(req, res) {
   function boot(){
     preview();
     load();
+    const driveSave=el('affiliatePromoSaveButton');
+    if(driveSave)driveSave.addEventListener('click',async function(){
+      driveSave.disabled=true;
+      try{await window.__BADAI_SAVE_AFFILIATE_LINKS__()}
+      catch(err){status('Gagal menyimpan: '+(err.message||err))}
+      finally{driveSave.disabled=false}
+    });
     document.querySelectorAll('[data-marketing-tab="affiliate"],[data-page="marketing"]').forEach(function(node){
       node.addEventListener('click',function(){setTimeout(load,120)});
     });
