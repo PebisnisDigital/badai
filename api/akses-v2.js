@@ -2771,21 +2771,6 @@ document.addEventListener('DOMContentLoaded', function(){
     ['kelas','Pemula','fi fi-rr-square-1'],['jaluruntung','Untung','fi fi-rr-square-2'],['afiliasi','Afiliasi','fi fi-rr-square-3'],['mentor','Grup','fi fi-rr-square-4'],['akun','Akun','fi fi-rr-square-5']
   ].forEach(function(menu){var button=document.querySelector('.footer [data-screen="'+menu[0]+'"]');if(!button)return;var label=button.querySelector('.label');var emoji=button.querySelector('.emoji');if(label)label.textContent=menu[1];if(emoji)emoji.innerHTML='<i class="'+menu[2]+'" aria-hidden="true"></i>'});
 
-  function lockAffiliateNav(){
-    var btn=document.querySelector('.footer [data-screen="afiliasi"]');
-    if(!btn)return;
-    btn.disabled=true;
-    btn.dataset.featureLocked='1';
-    btn.dataset.planLocked='1';
-    btn.setAttribute('aria-disabled','true');
-    btn.setAttribute('title','Segera hadir');
-    btn.classList.add('is-feature-coming-soon');
-    btn.classList.remove('active');
-    var label=btn.querySelector('.label');
-    if(label)label.innerHTML='Afiliasi<small class="affiliate-soon-badge">SEGERA HADIR</small>';
-  }
-  lockAffiliateNav();
-
   function normalizePlan(plan){
     var value=String(plan||'').trim().toLowerCase().replace(/[_-]+/g,' ');
     if(['pro','untung','paket untung','member untung'].includes(value))return'pro';
@@ -2812,9 +2797,42 @@ document.addEventListener('DOMContentLoaded', function(){
   function getUpgradeModal(){if(upgradeModal)return upgradeModal;upgradeModal=document.createElement('div');upgradeModal.className='badai-upgrade-modal';upgradeModal.innerHTML='<div class="badai-upgrade-card" role="dialog" aria-modal="true"><div class="badai-upgrade-lock">🔒</div><div class="badai-upgrade-kicker">AKSES TERKUNCI</div><h2 id="badaiUpgradeTitle">Menu ini masih terkunci</h2><p id="badaiUpgradeText">Naik paket untuk membuka akses ini.</p><div id="badaiUpgradeBenefits" class="badai-upgrade-benefits"></div><div class="badai-upgrade-actions"><a id="badaiUpgradeButton" href="#" target="_blank" rel="noopener noreferrer">UPGRADE SEKARANG</a><button type="button" data-close-upgrade>NANTI DULU</button></div></div>';document.body.appendChild(upgradeModal);upgradeModal.addEventListener('click',function(e){if(e.target===upgradeModal||(e.target.closest&&e.target.closest('[data-close-upgrade]')))upgradeModal.classList.remove('open')});return upgradeModal}
   function openUpgrade(feature,targetPackage){var modal=getUpgradeModal();var target=targetPackage==='Pemula'?'Paket Pemula':'Paket Untung';el('badaiUpgradeTitle').textContent=feature+' masih terkunci';el('badaiUpgradeText').textContent='Upgrade ke '+target+' untuk membuka menu '+feature+'.';el('badaiUpgradeBenefits').innerHTML=targetPackage==='Pemula'?'<span>✓ Buka seluruh menu Pemula</span><span>✓ Akses kelas dan update materi BADAI</span><span>✓ Tetap dapat Komunitas + KulWA</span>':'<span>✓ Menu Untung terbuka</span><span>✓ Program Affiliasi aktif</span><span>✓ Link afiliasi + bahan promosi + komisi</span>';var btn=el('badaiUpgradeButton');btn.textContent='UPGRADE KE '+target.toUpperCase();btn.href='https://wa.me/62881022445869?text='+encodeURIComponent('Halo Admin BADAI, saya ingin upgrade ke '+target+'.');modal.classList.add('open')}
 
-  function syncPlanAccess(){var level=levelFromPlan(currentPlan());var req={kelas:2,jaluruntung:3,afiliasi:3};Object.keys(req).forEach(function(screen){var btn=document.querySelector('.footer [data-screen="'+screen+'"]');if(!btn)return;var featureLocked=screen==='afiliasi';var locked=featureLocked||level<req[screen];btn.classList.toggle('is-plan-locked',locked&&!featureLocked);btn.classList.toggle('is-feature-coming-soon',featureLocked);btn.dataset.planLocked=locked?'1':'0';btn.dataset.featureLocked=featureLocked?'1':'0';btn.setAttribute('aria-disabled',locked?'true':'false');if(featureLocked)btn.disabled=true});lockAffiliateNav();document.querySelectorAll('[data-member-level]').forEach(function(card){card.classList.toggle('active',Number(card.getAttribute('data-member-level'))===level)});var active=document.querySelector('#kelas.screen.active,#jaluruntung.screen.active,#afiliasi.screen.active');if(active&&((active.id==='afiliasi')||level<(req[active.id]||1))&&typeof window.show==='function')window.show('kelas')}
+  function syncPlanAccess(){
+    var level=levelFromPlan(currentPlan());
+    var req={kelas:2,jaluruntung:3,afiliasi:3};
+    Object.keys(req).forEach(function(screen){
+      var btn=document.querySelector('.footer [data-screen="'+screen+'"]');
+      if(!btn)return;
+      var locked=level<req[screen];
+      btn.classList.toggle('is-plan-locked',locked);
+      btn.classList.remove('is-feature-coming-soon');
+      btn.dataset.planLocked=locked?'1':'0';
+      btn.dataset.featureLocked='0';
+      btn.setAttribute('aria-disabled',locked?'true':'false');
+      if(screen==='afiliasi'){
+        btn.disabled=locked;
+        btn.removeAttribute('title');
+        var label=btn.querySelector('.label');
+        if(label)label.textContent='Afiliasi';
+      }
+    });
+    document.querySelectorAll('[data-member-level]').forEach(function(card){
+      card.classList.toggle('active',Number(card.getAttribute('data-member-level'))===level)
+    });
+    var active=document.querySelector('#kelas.screen.active,#jaluruntung.screen.active,#afiliasi.screen.active');
+    if(active&&level<(req[active.id]||1)&&typeof window.show==='function')window.show('kelas')
+  }
 
-  document.addEventListener('click',function(e){var btn=e.target.closest?e.target.closest('.footer button'):null;if(!btn)return;var screen=btn.getAttribute('data-screen');if(screen==='afiliasi'){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();lockAffiliateNav();return}if(btn.dataset.planLocked!=='1')return;if(!['kelas','jaluruntung'].includes(screen))return;e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();if(screen==='kelas')openUpgrade('Pemula','Pemula');if(screen==='jaluruntung')openUpgrade('Untung','Untung')},true);
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest?e.target.closest('.footer button'):null;
+    if(!btn||btn.dataset.planLocked!=='1')return;
+    var screen=btn.getAttribute('data-screen');
+    if(!['kelas','jaluruntung','afiliasi'].includes(screen))return;
+    e.preventDefault();e.stopPropagation();
+    if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+    if(screen==='kelas')openUpgrade('Pemula','Pemula');
+    if(screen==='jaluruntung'||screen==='afiliasi')openUpgrade('Untung','Untung');
+  },true);
 
   async function resolveRealPlan(){
     try{
