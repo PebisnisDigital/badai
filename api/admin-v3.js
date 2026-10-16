@@ -566,7 +566,7 @@ module.exports = async function handler(req, res) {
     if(intro && intro.textContent !== 'Pilih link sesuai cara jualanmu.') intro.textContent='Pilih link sesuai cara jualanmu.';
 
     var cards=document.querySelectorAll('#afiliasi .badai-affiliate-link-card');
-    var titles=['Link Utama','Gratisan','Pemula','Untung'];
+    var titles=['Link Utama','Kuliah WhatsApp','Pemula','Untung'];
     cards.forEach(function(card,i){
       var h=card.querySelector('h3');
       var copy=card.querySelector('.badai-affiliate-copy');
