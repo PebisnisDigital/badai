@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070707">
+<meta name="robots" content="noindex,nofollow">
+<title>114 Prompt Game Edukatif — Member BADAI</title>
+<link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#070707;--surface:#151014;--surface2:#1d141b;--stroke:#432639;--pink:#ff4fa3;--pale:#ffbad9;--text:#fff;--muted:#ada3a9}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:#050505;color:var(--text);font-family:"Nunito",Arial,sans-serif;font-size:14px}
+a{color:inherit}
+button,input{font:inherit}
+.app{max-width:740px;min-height:100vh;margin:0 auto;background:var(--bg);box-shadow:0 0 70px rgba(0,0,0,.7)}
+.topbar{height:68px;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #291d25;position:sticky;top:0;background:rgba(7,7,7,.96);backdrop-filter:blur(12px);z-index:10}
+.brand{display:inline-flex;align-items:center;max-width:150px;text-decoration:none}
+.brand img{width:120px;max-height:42px;object-fit:contain;object-position:left center}
+.back{display:inline-flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid #56334a;border-radius:9px;text-decoration:none;color:#f0bdd8;font-size:11px;font-weight:900}
+main{padding:28px 22px 80px}
+.eyebrow{color:#ff9ccc;font-size:11px;letter-spacing:.14em;font-weight:900}
+h1{max-width:600px;margin:12px 0 9px;font:900 clamp(28px,6vw,38px)/1.12 "Raleway",sans-serif;letter-spacing:-.05em}
+h1 span{color:var(--pink)}
+.lead{margin:0 0 25px;color:#bab0b7;line-height:1.65;font-size:13px}
+.searchwrap{position:sticky;top:68px;z-index:9;padding:12px 0 14px;background:linear-gradient(180deg,#070707 83%,rgba(7,7,7,0));}
+.search{width:100%;min-height:47px;border:1px solid #563047;border-radius:12px;background:#1b1119;color:#fff;padding:12px 15px;outline:none;font-size:13px}
+.search:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,79,163,.12)}
+.search::placeholder{color:#96838d}
+.search:disabled{opacity:.5}
+.statusline{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:36px;margin-bottom:10px;color:#b3a6ae;font-size:11px;font-weight:800}
+.statusline span:last-child{color:#ff8ec6}
+.cards{display:grid;gap:10px}
+.game{border:1px solid var(--stroke);border-radius:16px;background:linear-gradient(165deg,#1a1118,#100e10);overflow:hidden}
+.game[open]{border-color:#905077}
+.game summary{list-style:none;display:flex;align-items:center;gap:13px;padding:17px 17px;min-height:66px;cursor:pointer}
+.game summary::-webkit-details-marker{display:none}
+.num{font-size:10px;font-weight:900;color:#d08baa;flex:none;border-radius:7px;background:#2b1723;padding:7px 8px}
+.name{font:900 14px/1.4 "Raleway",sans-serif;min-width:0;flex:1;overflow-wrap:anywhere}
+.chevron{width:9px;height:9px;flex:none;border-right:2px solid #ff84bd;border-bottom:2px solid #ff84bd;transform:rotate(45deg);transition:transform .2s;align-self:center;margin:0 5px 4px}
+.game[open] .chevron{transform:rotate(225deg);margin-top:6px;margin-bottom:0}
+.gamebody{padding:4px 17px 17px;border-top:1px solid #372131}
+.prompt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.75;color:#f0e3ea;font-size:13px;margin:15px 0 18px}
+.copy{border:0;border-radius:10px;min-height:42px;padding:10px 17px;font-weight:900;font-size:11px;color:#130a10;background:var(--pink);cursor:pointer;transition:filter .15s}
+.copy:hover{filter:brightness(1.08)}
+.copy:focus-visible,.back:focus-visible,summary:focus-visible{outline:2px solid #ffa8d2;outline-offset:3px}
+.notice{border:1px solid #563047;background:#170e15;border-radius:18px;padding:21px;line-height:1.65}
+.notice h2{font:900 18px "Raleway",sans-serif;margin:0 0 9px}
+.notice p{margin:0 0 17px;color:#c8b5c0;font-size:13px}
+.notice a{display:inline-flex;background:#ff4fa3;border-radius:10px;padding:12px 17px;text-decoration:none;font-size:11px;color:#130a10;font-weight:900}
+.empty{padding:30px 18px;border:1px dashed #503244;border-radius:12px;color:#bcaeba;text-align:center}
+.footer-note{margin:36px 0 0;text-align:center;font-size:10px;color:#766d73}
+[hidden]{display:none!important}
+@media(max-width:480px){main{padding:24px 14px 70px}.topbar{padding:10px 14px}.game summary{padding:14px 12px;gap:9px}.name{font-size:12px}.gamebody{padding-left:12px;padding-right:12px}.prompt{font-size:12px}.searchwrap{top:68px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <a class="brand" href="/akses" aria-label="Kembali ke member BADAI"><img src="https://i.ibb.co.com/j9prt6Xr/BADAI-LOGO-HORIZONTAL-UNDER50-KB-1.webp" alt="BADAI"></a>
+  <a class="back" href="/akses">← MEMBER AREA</a>
+</header>
+<main>
+  <div class="eyebrow">MATERI #022 · PAKET UNTUNG</div>
+  <h1><span>114 PROMPT</span> GAME EDUKATIF</h1>
+  <p class="lead">Pilih judul game, buka prompt lengkap, lalu salin untuk digunakan di AI.</p>
+  <div class="searchwrap"><input type="search" class="search" id="gameSearch" placeholder="Cari judul game..." aria-label="Cari judul game" autocomplete="off" disabled></div>
+  <div class="statusline"><span id="resultCount">Memeriksa akses member...</span><span id="libraryTotal"></span></div>
+  <div id="notice" aria-live="polite"></div>
+  <section class="cards" id="gameList" aria-label="Daftar prompt game edukatif"></section>
+  <p class="footer-note">KOMUNITAS BADAI · BELAJAR APA AJA DENGAN AI</p>
+</main>
+</div>
+<script>
+(function(){
+  'use strict';
+  var BASE='https://tlvxlekqrllkvcpgwmic.supabase.co';
+  var KEY='sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
+  var STORAGE='badai_member_session';
+  var all=[];
+  var list=document.getElementById('gameList');
+  var search=document.getElementById('gameSearch');
+  var status=document.getElementById('resultCount');
+  var total=document.getElementById('libraryTotal');
+  var notice=document.getElementById('notice');
+
+  function message(title,detail,action){
+    list.replaceChildren();
+    notice.replaceChildren();
+    var panel=document.createElement('div');panel.className='notice';
+    var heading=document.createElement('h2');heading.textContent=title;panel.appendChild(heading);
+    var p=document.createElement('p');p.textContent=detail;panel.appendChild(p);
+    if(action){
+      var a=document.createElement('a');a.href='/akses';a.textContent=action;panel.appendChild(a);
+    }
+    notice.appendChild(panel);
+    search.disabled=true;
+  }
+  function render(){
+    var query=search.value.toLocaleLowerCase('id-ID').trim();
+    var filtered=all.filter(function(item){return item.title.toLocaleLowerCase('id-ID').includes(query)});
+    var fragment=document.createDocumentFragment();
+    filtered.forEach(function(item){
+      var card=document.createElement('details');card.className='game';
+      var summary=document.createElement('summary');
+      var index=document.createElement('span');index.className='num';index.textContent='#'+String(item.id).padStart(3,'0');
+      var name=document.createElement('span');name.className='name';name.textContent=item.title;
+      var arrow=document.createElement('span');arrow.className='chevron';arrow.setAttribute('aria-hidden','true');
+      summary.append(index,name,arrow);
+      var body=document.createElement('div');body.className='gamebody';
+      var prompt=document.createElement('div');prompt.className='prompt';prompt.textContent=item.prompt;
+      var copy=document.createElement('button');copy.className='copy';copy.type='button';copy.textContent='SALIN PROMPT';copy.dataset.copy=String(item.id);
+      body.append(prompt,copy);card.append(summary,body);fragment.appendChild(card);
+    });
+    list.replaceChildren(fragment);
+    status.textContent=filtered.length+' game ditampilkan';
+    if(!filtered.length){
+      var empty=document.createElement('div');empty.className='empty';empty.textContent='Judul game tidak ditemukan. Coba kata kunci lain.';list.appendChild(empty);
+    }
+  }
+  async function copyText(value){
+    if(navigator.clipboard && window.isSecureContext){
+      try{await navigator.clipboard.writeText(value);return true}catch(_){}
+    }
+    var ta=document.createElement('textarea');ta.value=value;ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';
+    document.body.appendChild(ta);ta.select();
+    var result=false;try{result=document.execCommand('copy')}catch(_){}
+    ta.remove();return result;
+  }
+  list.addEventListener('click',async function(event){
+    var button=event.target.closest && event.target.closest('[data-copy]');
+    if(!button)return;
+    var id=Number(button.dataset.copy);
+    var item=all.find(function(x){return x.id===id});
+    if(!item)return;
+    var ok=await copyText(item.prompt);
+    var old='SALIN PROMPT';
+    button.textContent=ok?'TERSALIN ✓':'GAGAL, COBA LAGI';
+    window.setTimeout(function(){button.textContent=old},1900);
+  });
+  search.addEventListener('input',render);
+  async function boot(){
+    var stored;
+    try{stored=JSON.parse(localStorage.getItem(STORAGE)||'null')}catch(_){stored=null}
+    if(!stored||!stored.access_token){
+      status.textContent='Belum masuk';
+      message('Masuk ke Member BADAI','Gunakan akun BADAI yang aktif untuk membuka perpustakaan prompt ini.','MASUK MEMBER');
+      return;
+    }
+    var headers={apikey:KEY,Authorization:'Bearer '+stored.access_token};
+    try{
+      var userRes=await fetch(BASE+'/auth/v1/user',{headers:headers,cache:'no-store'});
+      if(!userRes.ok)throw new Error('session');
+      var dataRes=await fetch(BASE+'/rest/v1/badai_game_educational_prompts?select=id,title,prompt&order=id.asc&limit=200',{headers:headers,cache:'no-store'});
+      if(!dataRes.ok){
+        throw new Error('data-'+dataRes.status);
+      }
+      var rows=await dataRes.json();
+      if(!Array.isArray(rows))throw new Error('format');
+      if(!rows.length){
+        status.textContent='Akses terbatas';
+        message('Khusus Paket Untung','Materi 114 prompt game edukatif tersedia untuk member aktif Paket Untung. Jika sudah upgrade tetapi belum terbuka, masuk ulang lewat Member Area.','KEMBALI KE MEMBER');
+        return;
+      }
+      all=rows.map(function(x){return {id:Number(x.id),title:String(x.title||''),prompt:String(x.prompt||'')}});
+      search.disabled=false;notice.replaceChildren();
+      total.textContent=all.length+' PROMPT';
+      render();
+    }catch(err){
+      status.textContent='Gagal memuat';
+      if(err.message==='session'){
+        message('Sesi member berakhir','Silakan masuk ulang melalui Member Area BADAI.','MASUK KEMBALI');
+      }else{
+        message('Prompt belum bisa dimuat','Periksa koneksi internet lalu muat ulang halaman. Jika masih gagal, hubungi admin BADAI.','KEMBALI KE MEMBER');
+      }
+    }
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
