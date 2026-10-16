@@ -1277,6 +1277,27 @@ module.exports = async function handler(req, res) {
     cursor:not-allowed!important;
     box-shadow:none!important;
   }
+  .badai-material-guide-dialog{
+    width:min(92vw,520px)!important;
+    max-width:520px!important;
+    max-height:min(85vh,780px)!important;
+    margin:auto!important;
+    padding:0!important;
+    border:1px solid #5d2b45!important;
+    border-radius:20px!important;
+    background:#151015!important;
+    color:#fff!important;
+    box-shadow:0 25px 90px rgba(0,0,0,.75)!important;
+  }
+  .badai-material-guide-dialog::backdrop{background:rgba(0,0,0,.8);backdrop-filter:blur(4px)}
+  .badai-material-guide-inner{position:relative;padding:27px 23px 22px;font-family:"Nunito",Arial,sans-serif}
+  .badai-material-guide-close{position:absolute;right:15px;top:12px;border:0;background:none;color:#fff;cursor:pointer;font-size:17px}
+  .badai-material-guide-label{color:#ff79bd;font-weight:900;font-size:10px;letter-spacing:.12em}
+  .badai-material-guide-dialog h2{margin:12px 25px 10px 0;font:900 20px/1.22 "Raleway",Arial,sans-serif}
+  .badai-material-guide-dialog p{margin:0;color:#d3bac7;font-size:13px;line-height:1.6}
+  .badai-material-guide-dialog ol{padding-left:21px;margin:20px 0;color:#f7e9f0;font-size:13px;line-height:1.65}
+  .badai-material-guide-dialog li{margin-bottom:11px;padding-left:3px}
+  .badai-material-guide-done{width:100%;min-height:42px;background:#ff4fa3;color:white;border:0;border-radius:10px;font-weight:900;cursor:pointer}
   @media(max-width:560px){
     .badai-material-card-grid{
       grid-template-columns:repeat(2,minmax(0,1fr))!important;
@@ -2583,8 +2604,8 @@ document.addEventListener('DOMContentLoaded', function(){
     {title:'BIKIN INFOGRAFIS',video:'',description:'Ubah informasi panjang menjadi infografis yang ringkas dan mudah dipahami.',content:''},
     {title:'BIKIN PRESENTASI',video:'',description:'Susun materi menjadi presentasi visual yang siap dipakai untuk mengajar atau menjual.',content:''},
     {title:'BIKIN GAME EDUKASI',video:'',description:'Bikin permainan edukasi sederhana yang membantu proses belajar jadi lebih interaktif.',content:''},
-    {title:'WEB RAHASIA KUMPULAN PROMPT GRATIS',video:'',description:'Bikin web sederhana untuk menyimpan dan membagikan koleksi prompt secara rapi.',content:''},
-    {title:'BUAT VIDEO PENDEK DIBAYAR LYNK ID',video:'',description:'Pelajari alur membuat video pendek dan memanfaatkannya melalui fitur monetisasi Lynk ID.',content:''},
+    {title:'WEB RAHASIA KUMPULAN PROMPT GRATIS',video:'',toolUrl:'https://www.meigen.ai/',buttonLabel:'AKSES',ready:true,tutorialSteps:['Buka MeiGen melalui tombol AKSES.','Jelajahi galeri prompt atau cari berdasarkan kebutuhan gambar dan video.','Pilih karya yang menarik, lalu baca prompt dan informasi kreator aslinya.','Sesuaikan prompt dengan ide sendiri sebelum digunakan pada AI pilihan.','Kalau memakai fitur pembuatan gambar atau video di MeiGen, periksa kebutuhan kredit dan biaya terlebih dahulu.'],description:'Jelajahi galeri prompt AI gratis untuk inspirasi gambar dan video. Pilih prompt, pelajari, lalu sesuaikan dengan ide sendiri.',content:''},
+    {title:'BUAT VIDEO PENDEK DIBAYAR LYNK ID',video:'',ready:true,explanationSteps:['Materi ini mengenalkan cara membuat video pendek yang menarik dan memahami peluang monetisasinya melalui Lynk.id.','Mulai dari menentukan topik, menyiapkan naskah singkat, hingga membuat video dengan pembuka yang memancing perhatian.','Pelajari program, persyaratan, dan mekanisme pembayaran terbaru secara langsung di Lynk.id sebelum mengikuti peluang monetisasi.','Tidak semua video otomatis dibayar. Hasil bergantung pada program yang tersedia, ketentuan platform, dan performa konten.'],description:'Kenali cara membuat video pendek dan memahami peluang monetisasi melalui Lynk.id.',content:''},
     {title:'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',video:'',toolUrl:'https://repliz.com/referral/PPQSlz',buttonLabel:'TOOLS',ready:true,description:'Susun alur konten dan promosi agar aktivitas jualan di Instagram dan Threads lebih teratur.',content:''},
     {hideInactive:true,title:'STRATEGI JAGO JUALAN DI WHATSAPP',video:'',materialUrl:'https://akses-jjwa.pebisnisdigital.chatgpt.site/',description:'Pelajari cara membangun percakapan dan penawaran yang lebih nyaman lewat WhatsApp.',content:''},
     {hideInactive:true,title:'CONTEKAN 3 PESAN BIAR KONTAK BARU LEBIH CEPAT JADI PEMBELI',video:'',materialUrl:'https://pebisnis.digital/contekan-3-pesan-biar-kontak-baru-lebih-cepat-jadi-pembeli',description:'Pelajari tiga pola pesan untuk menindaklanjuti kontak baru tanpa terasa memaksa.',content:''},
@@ -2615,7 +2636,10 @@ document.addEventListener('DOMContentLoaded', function(){
       var hasMaterial=!!String(item.materialUrl||'').trim();
       var hasTool=!!String(item.toolUrl||'').trim();
       var hasVideo=!!String(item.video||'').trim();
-      var ready=item.ready===true || hasMaterial || hasTool || hasVideo;
+      var hasExplanation=Array.isArray(item.explanationSteps)&&item.explanationSteps.length>0;
+      var hasTutorial=Array.isArray(item.tutorialSteps)&&item.tutorialSteps.length>0;
+      var dialogRef=' data-badai-material-target="'+targetId+'" data-badai-material-index="'+entry.originalIndex+'"';
+      var ready=item.ready===true || hasMaterial || hasTool || hasVideo || hasExplanation || hasTutorial;
       var description=item.description
         ? item.description
         : (item.content ? item.content : 'Materi ini sedang disiapkan.');
@@ -2624,13 +2648,19 @@ document.addEventListener('DOMContentLoaded', function(){
       var primaryLabel=hasMaterial?'BUKA MATERI':(item.buttonLabel||'BUKA TOOLS');
       var hideInactive=item.hideInactive===true;
 
-      var toolButton=(hasMaterial||hasTool)
-        ? '<a class="badai-card-action badai-card-action-tool" href="'+primaryUrl+'" target="_blank" rel="noopener noreferrer">'+primaryLabel+' <span>↗</span></a>'
-        : (hideInactive?'':'<button class="badai-card-action badai-card-action-tool is-disabled" type="button" disabled>MATERI</button>');
+      var toolButton=hasExplanation
+        ? '<button class="badai-card-action badai-card-action-tool" type="button" data-badai-material-dialog="explanation"'+dialogRef+'>PENJELASAN</button>'
+        : (hasMaterial||hasTool)
+          ? '<a class="badai-card-action badai-card-action-tool" href="'+primaryUrl+'" target="_blank" rel="noopener noreferrer">'+primaryLabel+' <span>↗</span></a>'
+          : (hideInactive?'':'<button class="badai-card-action badai-card-action-tool is-disabled" type="button" disabled>MATERI</button>');
 
-      var videoButton=hasVideo
-        ? '<a class="badai-card-action badai-card-action-video" href="'+item.video+'" target="_blank" rel="noopener noreferrer">▶ TUTORIAL</a>'
-        : (hideInactive?'':'<button class="badai-card-action badai-card-action-video is-disabled" type="button" disabled>▶ TUTORIAL</button>');
+      var videoButton=hasExplanation
+        ? ''
+        : hasVideo
+          ? '<a class="badai-card-action badai-card-action-video" href="'+item.video+'" target="_blank" rel="noopener noreferrer">▶ TUTORIAL</a>'
+          : hasTutorial
+            ? '<button class="badai-card-action badai-card-action-video" type="button" data-badai-material-dialog="tutorial"'+dialogRef+'>▶ TUTORIAL</button>'
+            : (hideInactive?'':'<button class="badai-card-action badai-card-action-video is-disabled" type="button" disabled>▶ TUTORIAL</button>');
 
       var visibleActionCount=(toolButton?1:0)+(videoButton?1:0);
       var actionsHtml='<div class="badai-material-card-divider"></div>'+
@@ -2648,6 +2678,39 @@ document.addEventListener('DOMContentLoaded', function(){
 
   renderMemberMaterials('chapterGrid',pemulaMaterials,'Materi Pemula',1);
   renderMemberMaterials('profitRouteGrid',untungMaterials,'Materi Untung',11);
+
+  function openBadaiMaterialDialog(item,type){
+    var steps=type==='explanation'?item.explanationSteps:item.tutorialSteps;
+    if(!Array.isArray(steps)||!steps.length)return;
+    var dialog=el('badaiMaterialGuideDialog');
+    if(!dialog){
+      dialog=document.createElement('dialog');
+      dialog.id='badaiMaterialGuideDialog';
+      dialog.className='badai-material-guide-dialog';
+      dialog.setAttribute('aria-labelledby','badaiMaterialGuideTitle');
+      dialog.innerHTML='<div class="badai-material-guide-inner"><button type="button" class="badai-material-guide-close" aria-label="Tutup penjelasan">✕</button><div class="badai-material-guide-label" id="badaiMaterialGuideLabel"></div><h2 id="badaiMaterialGuideTitle"></h2><p id="badaiMaterialGuideLead"></p><ol id="badaiMaterialGuideSteps"></ol><button class="badai-material-guide-done" type="button">MENGERTI</button></div>';
+      document.body.appendChild(dialog);
+      dialog.querySelector('.badai-material-guide-close').addEventListener('click',function(){dialog.close()});
+      dialog.querySelector('.badai-material-guide-done').addEventListener('click',function(){dialog.close()});
+      dialog.addEventListener('click',function(event){if(event.target===dialog)dialog.close()});
+    }
+    el('badaiMaterialGuideLabel').textContent=type==='explanation'?'PENJELASAN MATERI':'TUTORIAL SINGKAT';
+    el('badaiMaterialGuideTitle').textContent=item.title;
+    el('badaiMaterialGuideLead').textContent=item.description||'';
+    var list=el('badaiMaterialGuideSteps');
+    list.replaceChildren();
+    steps.forEach(function(step){var li=document.createElement('li');li.textContent=step;list.appendChild(li)});
+    if(!dialog.open)dialog.showModal();
+  }
+  document.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('[data-badai-material-dialog]');
+    if(!button)return;
+    var target=button.getAttribute('data-badai-material-target');
+    var index=Number(button.getAttribute('data-badai-material-index'));
+    var items=target==='chapterGrid'?pemulaMaterials:target==='profitRouteGrid'?untungMaterials:null;
+    if(!items||!Number.isInteger(index)||index<0||index>=items.length)return;
+    openBadaiMaterialDialog(items[index],button.getAttribute('data-badai-material-dialog'));
+  });
 
   [
     ['kelas','Pemula','fi fi-rr-square-1'],['jaluruntung','Untung','fi fi-rr-square-2'],['afiliasi','Afiliasi','fi fi-rr-square-3'],['mentor','Grup','fi fi-rr-square-4'],['akun','Akun','fi fi-rr-square-5']
