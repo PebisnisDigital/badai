@@ -7228,8 +7228,8 @@ main section > .container > .badai-copy-kicker,
 
       <div id="freeSuccessStage" class="free-success-stage hidden">
         <div class="free-success-kicker">PENDAFTARAN BERHASIL ✓</div>
-        <h3>Gratisan BADAI</h3>
-        <p id="freeSuccessGreeting">Akses gratis untuk mulai belajar bersama BADAI.</p>
+        <h3>Pendaftaran KULWA Berhasil!</h3>
+        <p id="freeSuccessGreeting">Terima kasih sudah mendaftar. Klik tombol di bawah untuk bergabung ke Grup KULWA BADAI.</p>
 
         <div class="free-success-card">
           <div class="free-success-title">Yang kamu dapatkan:</div>
@@ -7253,14 +7253,14 @@ main section > .container > .badai-copy-kicker,
           </div>
 
           <div class="free-success-total">
-            <b>TOTAL SENILAI</b>
-            <div><s>Rp117.000</s><strong>GRATIS</strong></div>
+            <b>BIAYA PENDAFTARAN</b>
+            <div><strong>Rp0 · GRATIS</strong></div>
           </div>
 
-          <a class="free-success-cta" href="https://chat.whatsapp.com/LCGm5LowkYG3NiHKItShC6" target="_blank" rel="noopener noreferrer">
-            MASUK KULIAH BADAI
+          <a class="free-success-cta" href="https://chat.whatsapp.com/CM7NrbY5NDt7dj23yJVb3h" target="_blank" rel="noopener noreferrer">
+            GABUNG GRUP KULWA SEKARANG
           </a>
-          <small>Klik tombol di atas untuk langsung bergabung ke Kuliah WhatsApp BADAI.</small>
+          <small>Gratis Rp0, tanpa pembayaran. Klik tombol di atas untuk masuk ke grup WhatsApp KULWA BADAI.</small>
         </div>
       </div>
 
@@ -8285,8 +8285,8 @@ Mohon dibantu proses pendaftarannya ya.`
     if(greeting){
       const first = String(nama || '').trim().split(/\s+/)[0] || '';
       greeting.textContent = first
-        ? 'Berhasil, Kak ' + first + '. Akses Gratisan kamu sudah terbuka.'
-        : 'Akses gratis untuk mulai belajar bersama BADAI.';
+        ? 'Berhasil, Kak ' + first + '! Pendaftaran KULWA kamu sudah tercatat. Silakan gabung grup WhatsApp di bawah.'
+        : 'Pendaftaran KULWA berhasil dicatat. Silakan gabung grup WhatsApp di bawah.';
     }
   }
 
@@ -8360,12 +8360,12 @@ Mohon dibantu proses pendaftarannya ya.`
     if(title) title.textContent = 'Daftar ' + selectedPackageName();
     if(desc){
       desc.textContent = isFree
-        ? 'Cukup isi Nama, Email, dan WA. Setelah daftar, konten Gratisan langsung terbuka di sini.'
+        ? 'Daftar KULWA GRATIS (Rp0). Cukup isi nama, email, dan WhatsApp. Setelah berhasil, link Grup KULWA langsung muncul di popup.'
         : 'Isi data di bawah ini untuk melanjutkan pendaftaran ' + selectedPackageName() + '.';
     }
     if(status){
       status.textContent = isFree
-        ? 'Gratis. Tidak perlu password dan tidak perlu pembayaran.'
+        ? 'Biaya Rp0. Tidak perlu password, QRIS, atau pembayaran.'
         : 'Setelah data berhasil tercatat, WhatsApp admin akan terbuka. Kamu yang mengirim pesannya.';
       status.style.color = '#7e7e7e';
     }
@@ -8571,7 +8571,7 @@ Mohon dibantu proses pendaftarannya ya.`
           throw new Error(freeData?.error || 'Gagal mendaftar Paket Gratisan');
         }
 
-        setStatus('Berhasil! Konten Gratisan sudah terbuka.', false);
+        setStatus('Pendaftaran KULWA Rp0 berhasil. Silakan bergabung ke grup WhatsApp.', false);
         submitBtn.textContent = 'BERHASIL ✓';
         showFreeSuccessStage(nama);
         return;
