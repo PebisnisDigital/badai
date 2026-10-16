@@ -2585,7 +2585,7 @@ document.addEventListener('DOMContentLoaded', function(){
     {title:'BIKIN GAME EDUKASI',video:'',description:'Bikin permainan edukasi sederhana yang membantu proses belajar jadi lebih interaktif.',content:''},
     {title:'WEB RAHASIA KUMPULAN PROMPT GRATIS',video:'',description:'Bikin web sederhana untuk menyimpan dan membagikan koleksi prompt secara rapi.',content:''},
     {title:'BUAT VIDEO PENDEK DIBAYAR LYNK ID',video:'',description:'Pelajari alur membuat video pendek dan memanfaatkannya melalui fitur monetisasi Lynk ID.',content:''},
-    {title:'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',video:'',description:'Susun alur konten dan promosi agar aktivitas jualan di Instagram dan Threads lebih teratur.',content:''},
+    {title:'JUALAN OTOMATIS DI INSTAGRAM DAN THREADS',video:'',toolUrl:'https://repliz.com/referral/PPQSlz',buttonLabel:'TOOLS',ready:true,description:'Susun alur konten dan promosi agar aktivitas jualan di Instagram dan Threads lebih teratur.',content:''},
     {hideInactive:true,title:'STRATEGI JAGO JUALAN DI WHATSAPP',video:'',materialUrl:'https://akses-jjwa.pebisnisdigital.chatgpt.site/',description:'Pelajari cara membangun percakapan dan penawaran yang lebih nyaman lewat WhatsApp.',content:''},
     {hideInactive:true,title:'CONTEKAN 3 PESAN BIAR KONTAK BARU LEBIH CEPAT JADI PEMBELI',video:'',materialUrl:'https://pebisnis.digital/contekan-3-pesan-biar-kontak-baru-lebih-cepat-jadi-pembeli',description:'Pelajari tiga pola pesan untuk menindaklanjuti kontak baru tanpa terasa memaksa.',content:''},
     {hideInactive:true,title:'BIKIN KELAS ONLINE',video:'https://youtu.be/I4NbR8jdEY0',description:'Susun materi, struktur, dan akses kelas online dari pengetahuan yang kamu punya.',content:''},
@@ -2621,7 +2621,7 @@ document.addEventListener('DOMContentLoaded', function(){
         : (item.content ? item.content : 'Materi ini sedang disiapkan.');
 
       var primaryUrl=hasMaterial?item.materialUrl:item.toolUrl;
-      var primaryLabel=hasMaterial?'BUKA MATERI':'BUKA TOOLS';
+      var primaryLabel=hasMaterial?'BUKA MATERI':(item.buttonLabel||'BUKA TOOLS');
       var hideInactive=item.hideInactive===true;
 
       var toolButton=(hasMaterial||hasTool)
