@@ -1298,6 +1298,20 @@ module.exports = async function handler(req, res) {
   .badai-material-guide-dialog ol{padding-left:21px;margin:20px 0;color:#f7e9f0;font-size:13px;line-height:1.65}
   .badai-material-guide-dialog li{margin-bottom:11px;padding-left:3px}
   .badai-material-guide-done{width:100%;min-height:42px;background:#ff4fa3;color:white;border:0;border-radius:10px;font-weight:900;cursor:pointer}
+  .badai-material-prompt-dialog{width:min(94vw,600px)!important;max-width:600px!important}
+  .badai-material-prompt-input{
+    display:block;width:100%;min-height:270px;max-height:min(52vh,520px);
+    margin:18px 0 11px;padding:14px;resize:vertical;box-sizing:border-box;
+    border:1px solid #694058;border-radius:12px;outline:none;
+    background:#0c0a0c;color:#f6ecf1;white-space:pre-wrap;
+    font:600 12.5px/1.7 "Nunito",Arial,sans-serif
+  }
+  .badai-material-prompt-input:focus{border-color:#ff4fa3;box-shadow:0 0 0 3px rgba(255,79,163,.12)}
+  .badai-material-prompt-copy{width:100%;min-height:44px;border:0;border-radius:10px;
+    background:#ff4fa3;color:#111;font:900 12px "Nunito",Arial,sans-serif;cursor:pointer}
+  .badai-material-prompt-status{min-height:18px;margin:9px 0 0;color:#ffacd5;font-size:11px;text-align:center}
+  @media(max-width:560px){.badai-material-prompt-input{font-size:11.5px;min-height:240px;max-height:45vh}}
+
   @media(max-width:560px){
     .badai-material-card-grid{
       grid-template-columns:repeat(2,minmax(0,1fr))!important;
@@ -2602,7 +2616,7 @@ document.addEventListener('DOMContentLoaded', function(){
     {title:'BIKIN KOMIK DIGITAL',video:'',description:'Bikin cerita, karakter, dan panel komik digital menggunakan bantuan AI.',content:''},
     {title:'BIKIN LKPD INTERAKTIF',video:'',description:'Ubah materi belajar menjadi LKPD interaktif yang lebih menarik untuk siswa.',content:''},
     {title:'BIKIN INFOGRAFIS',video:'',description:'Ubah informasi panjang menjadi infografis yang ringkas dan mudah dipahami.',content:''},
-    {title:'BIKIN PRESENTASI',video:'',description:'Susun materi menjadi presentasi visual yang siap dipakai untuk mengajar atau menjual.',content:''},
+    {title:'BIKIN PRESENTASI',video:'',ready:true,promptText:"Bertindaklah sebagai desainer presentasi profesional.\n\nBuatkan presentasi berjudul \"Pentingnya Belajar AI untuk Pemula\" dengan 10 slide.\n\nTarget audiens: ibu rumah tangga, guru, karyawan, dan pemula yang belum memahami AI.\n\nKetentuan:\n1. Bahasa Indonesia sederhana, mudah dimengerti.\n2. Ukuran slide 16:9 (landscape).\n3. Gaya visual modern, profesional, kreatif.\n4. Warna dasar hitam dan putih dengan aksen pink.\n5. Setiap slide hanya memuat satu ide utama.\n6. Gunakan judul besar, teks singkat, dan visual yang relevan.\n7. Hindari paragraf panjang dan teks yang terlalu kecil.\n8. Buat pembukaan menarik, contoh penggunaan AI sehari-hari, dan penutup yang memotivasi untuk mencoba AI.\n9. Gunakan desain berbeda yang tetap konsisten pada setiap slide.\n10. Jangan membuat data atau statistik fiktif.\n\nBuatkan file presentasi PowerPoint (.pptx) yang teks dan elemen desainnya dapat diedit, bukan sekadar gambar slide. Jika pembuatan file belum tersedia, tampilkan outline lengkap per slide terlebih dahulu.\n\nBerikan file presentasi yang bisa saya unduh.",tutorialSteps:['Buka chatgpt.com dan mulai percakapan baru.','Klik PROMPT pada materi ini, lalu tekan SALIN PROMPT.','Tempel prompt ke ChatGPT. Ubah topik atau jumlah slide jika dibutuhkan, lalu kirim.','Tunggu ChatGPT menyiapkan presentasi PowerPoint (.pptx). Jika belum bisa membuat file, gunakan outline slide yang dihasilkan untuk melanjutkan di PowerPoint atau Canva.','Periksa 10 slide satu per satu: judul harus jelas, teks singkat, visual relevan, dan tidak ada fakta yang dibuat-buat.','Jika hasil kurang rapi, minta ChatGPT memperbaiki desain. Unduh file .pptx apabila tersedia, lalu buka di PowerPoint untuk menyesuaikan isi.'],description:'Susun materi menjadi presentasi visual yang siap dipakai untuk mengajar atau menjual.',content:''},
     {hideInactive:true,title:'BIKIN GAME EDUKASI',video:'',toolUrl:'/game-edukatif',buttonLabel:'AKSES',ready:true,tutorialSteps:['Klik AKSES untuk membuka perpustakaan 114 prompt game edukatif BADAI.','Gunakan kolom pencarian untuk menemukan judul game yang ingin dibuat.','Ketuk judul game untuk membaca prompt lengkapnya.','Tekan SALIN PROMPT, lalu tempelkan ke AI pembuat game atau website yang kamu gunakan.','Sesuaikan tema, tingkat kelas, soal, warna, dan aturan permainan dengan kebutuhan murid sebelum membuat game.','Uji game sampai tombol, jawaban, dan skornya bekerja dengan benar sebelum dibagikan.'],description:'Buka perpustakaan 114 ide game edukatif. Pilih judul game, buka prompt lengkap, lalu salin untuk membuat game dengan AI.',content:''},
     {title:'WEB RAHASIA KUMPULAN PROMPT GRATIS',video:'',toolUrl:'https://www.meigen.ai/',buttonLabel:'AKSES',ready:true,tutorialSteps:['Buka MeiGen melalui tombol AKSES.','Jelajahi galeri prompt atau cari berdasarkan kebutuhan gambar dan video.','Pilih karya yang menarik, lalu baca prompt dan informasi kreator aslinya.','Sesuaikan prompt dengan ide sendiri sebelum digunakan pada AI pilihan.','Kalau memakai fitur pembuatan gambar atau video di MeiGen, periksa kebutuhan kredit dan biaya terlebih dahulu.'],description:'Jelajahi galeri prompt AI gratis untuk inspirasi gambar dan video. Pilih prompt, pelajari, lalu sesuaikan dengan ide sendiri.',content:''},
     {title:'BUAT VIDEO PENDEK DIBAYAR LYNK ID',video:'',ready:true,explanationSteps:['Materi ini mengenalkan cara membuat video pendek yang menarik dan memahami peluang monetisasinya melalui Lynk.id.','Mulai dari menentukan topik, menyiapkan naskah singkat, hingga membuat video dengan pembuka yang memancing perhatian.','Pelajari program, persyaratan, dan mekanisme pembayaran terbaru secara langsung di Lynk.id sebelum mengikuti peluang monetisasi.','Tidak semua video otomatis dibayar. Hasil bergantung pada program yang tersedia, ketentuan platform, dan performa konten.'],description:'Kenali cara membuat video pendek dan memahami peluang monetisasi melalui Lynk.id.',content:''},
@@ -2637,9 +2651,10 @@ document.addEventListener('DOMContentLoaded', function(){
       var hasTool=!!String(item.toolUrl||'').trim();
       var hasVideo=!!String(item.video||'').trim();
       var hasExplanation=Array.isArray(item.explanationSteps)&&item.explanationSteps.length>0;
+      var hasPrompt=!!String(item.promptText||'').trim();
       var hasTutorial=Array.isArray(item.tutorialSteps)&&item.tutorialSteps.length>0;
       var dialogRef=' data-badai-material-target="'+targetId+'" data-badai-material-index="'+entry.originalIndex+'"';
-      var ready=item.ready===true || hasMaterial || hasTool || hasVideo || hasExplanation || hasTutorial;
+      var ready=item.ready===true || hasMaterial || hasTool || hasVideo || hasExplanation || hasPrompt || hasTutorial;
       var description=item.description
         ? item.description
         : (item.content ? item.content : 'Materi ini sedang disiapkan.');
@@ -2649,9 +2664,11 @@ document.addEventListener('DOMContentLoaded', function(){
       var linkTarget=String(primaryUrl||'').charAt(0)==='/'?'':' target="_blank" rel="noopener noreferrer"';
       var hideInactive=item.hideInactive===true;
 
-      var toolButton=hasExplanation
-        ? '<button class="badai-card-action badai-card-action-tool" type="button" data-badai-material-dialog="explanation"'+dialogRef+'>PENJELASAN</button>'
-        : (hasMaterial||hasTool)
+      var toolButton=hasPrompt
+        ? '<button class="badai-card-action badai-card-action-tool" type="button" data-badai-material-dialog="prompt"'+dialogRef+'>PROMPT</button>'
+        : hasExplanation
+          ? '<button class="badai-card-action badai-card-action-tool" type="button" data-badai-material-dialog="explanation"'+dialogRef+'>PENJELASAN</button>'
+          : (hasMaterial||hasTool)
           ? '<a class="badai-card-action badai-card-action-tool" href="'+primaryUrl+'"'+linkTarget+'>'+primaryLabel+' <span>↗</span></a>'
           : (hideInactive?'':'<button class="badai-card-action badai-card-action-tool is-disabled" type="button" disabled>MATERI</button>');
 
@@ -2703,6 +2720,41 @@ document.addEventListener('DOMContentLoaded', function(){
     steps.forEach(function(step){var li=document.createElement('li');li.textContent=step;list.appendChild(li)});
     if(!dialog.open)dialog.showModal();
   }
+  function openBadaiPromptDialog(item){
+    if(!item || !String(item.promptText||'').trim())return;
+    var dialog=el('badaiMaterialPromptDialog');
+    if(!dialog){
+      dialog=document.createElement('dialog');
+      dialog.id='badaiMaterialPromptDialog';
+      dialog.className='badai-material-guide-dialog badai-material-prompt-dialog';
+      dialog.setAttribute('aria-labelledby','badaiMaterialPromptTitle');
+      dialog.innerHTML='<div class="badai-material-guide-inner"><button class="badai-material-guide-close" type="button" aria-label="Tutup prompt">✕</button><div class="badai-material-guide-label">PROMPT SIAP PAKAI</div><h2 id="badaiMaterialPromptTitle">BIKIN PRESENTASI</h2><p>Salin prompt berikut lalu tempelkan ke ChatGPT. Teks bisa disesuaikan sebelum disalin.</p><textarea class="badai-material-prompt-input" id="badaiMaterialPromptInput" aria-label="Prompt bikin presentasi" spellcheck="false"></textarea><button class="badai-material-prompt-copy" type="button">SALIN PROMPT</button><div class="badai-material-prompt-status" id="badaiMaterialPromptStatus" aria-live="polite"></div></div>';
+      document.body.appendChild(dialog);
+      dialog.querySelector('.badai-material-guide-close').addEventListener('click',function(){dialog.close()});
+      dialog.addEventListener('click',function(event){if(event.target===dialog)dialog.close()});
+      dialog.querySelector('.badai-material-prompt-copy').addEventListener('click',async function(){
+        var area=el('badaiMaterialPromptInput');
+        var status=el('badaiMaterialPromptStatus');
+        var success=false;
+        try{
+          if(navigator.clipboard && window.isSecureContext){
+            await navigator.clipboard.writeText(area.value);
+            success=true;
+          }
+        }catch(_){}
+        if(!success){
+          area.focus();area.select();
+          try{success=document.execCommand('copy')}catch(_){}
+          area.setSelectionRange(0,0);
+        }
+        status.textContent=success?'Prompt berhasil disalin. Tempelkan ke ChatGPT.':'Gagal menyalin otomatis. Pilih teks prompt lalu salin secara manual.';
+      });
+    }
+    el('badaiMaterialPromptTitle').textContent=item.title;
+    el('badaiMaterialPromptInput').value=item.promptText;
+    el('badaiMaterialPromptStatus').textContent='';
+    if(!dialog.open)dialog.showModal();
+  }
   document.addEventListener('click',function(event){
     var button=event.target.closest&&event.target.closest('[data-badai-material-dialog]');
     if(!button)return;
@@ -2710,7 +2762,9 @@ document.addEventListener('DOMContentLoaded', function(){
     var index=Number(button.getAttribute('data-badai-material-index'));
     var items=target==='chapterGrid'?pemulaMaterials:target==='profitRouteGrid'?untungMaterials:null;
     if(!items||!Number.isInteger(index)||index<0||index>=items.length)return;
-    openBadaiMaterialDialog(items[index],button.getAttribute('data-badai-material-dialog'));
+    var dialogType=button.getAttribute('data-badai-material-dialog');
+    if(dialogType==='prompt')openBadaiPromptDialog(items[index]);
+    else openBadaiMaterialDialog(items[index],dialogType);
   });
 
   [
