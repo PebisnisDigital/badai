@@ -222,7 +222,7 @@ module.exports = async function handler(req, res) {
   #afiliasi .badai-affiliate-link-list{
     display:grid!important;
     grid-template-columns:1fr!important;
-    grid-template-rows:repeat(4,minmax(94px,1fr))!important;
+    grid-template-rows:repeat(5,minmax(94px,1fr))!important;
     gap:8px!important;
     margin-top:8px!important;
     flex:1 1 auto!important;
@@ -400,7 +400,7 @@ module.exports = async function handler(req, res) {
     }
     #afiliasi .badai-affiliate-link-list{
       grid-template-columns:1fr!important;
-      grid-template-rows:repeat(4,minmax(103px,1fr))!important;
+      grid-template-rows:repeat(5,minmax(103px,1fr))!important;
       gap:7px!important;
     }
     #afiliasi .badai-affiliate-link-card{
@@ -505,7 +505,7 @@ module.exports = async function handler(req, res) {
     color:#c6c6c6!important;
   }
   #afiliasi .badai-affiliate-tabs{
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
     gap:8px!important;
     margin:0 0 16px!important;
     padding:7px!important;
