@@ -8472,9 +8472,16 @@ Mohon dibantu proses pendaftarannya ya.`
   loadMarketingConfig();
   loadPaymentMethods();
 
-  const requestedPackage = (new URLSearchParams(location.search).get('paket') || '').trim().toLowerCase();
-  if(requestedPackage === 'kulwa' || requestedPackage === 'gratisan'){
-    setTimeout(() => openRegistrationModal('free'), 80);
+  const affiliateLinkParams = new URLSearchParams(location.search);
+  const legacyPackage = (affiliateLinkParams.get('paket') || '').trim().toLowerCase();
+  const requestedPlan = affiliateLinkParams.has('kulwa') ? 'free'
+    : affiliateLinkParams.has('pemula') ? 'newbie'
+    : affiliateLinkParams.has('untung') ? 'pro'
+    : (legacyPackage === 'kulwa' || legacyPackage === 'gratisan') ? 'free'
+    : legacyPackage === 'pemula' ? 'newbie'
+    : legacyPackage === 'untung' ? 'pro' : '';
+  if(requestedPlan){
+    setTimeout(() => openRegistrationModal(requestedPlan), 80);
   }
 
   let landingAutoSyncBusy = false;
