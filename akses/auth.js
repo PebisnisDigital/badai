@@ -1068,6 +1068,20 @@
 
     populateAccount(profile, user);
     await configureMembership(profile);
+
+    // Deep links from the game-prompt library keep members inside BADAI navigation.
+    // Only open a destination after Supabase verifies an active member session.
+    const requestedScreen = new URLSearchParams(window.location.search).get('screen');
+    if(['kelas','jaluruntung','mentor','akun'].includes(requestedScreen)){
+      const destination = document.querySelector('.footer button[data-screen="'+requestedScreen+'"]');
+      if(destination && !destination.disabled && destination.dataset.planLocked !== '1'){
+        destination.click();
+      }
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('screen');
+      window.history.replaceState(window.history.state,'',cleanUrl.pathname+cleanUrl.search+cleanUrl.hash);
+    }
+
     setAccountStatus('', '');
     console.log('BADAI member access:', profile?.email || '', memberLifecycleState(profile));
   }
