@@ -21,6 +21,10 @@ module.exports = async function handler(req, res) {
       return;
     }
 
+    // v6 inherits the full legacy handler chain. Retire only its social-proof
+    // controller; coupon, registration and other legacy features stay installed.
+    body = body.replace(/<script\b[^>]*id="badai-social-proof-script"[^>]*>[\s\S]*?<\/script>/i, '');
+
     const style = String.raw`
 <style id="badai-social-proof-v6-style">
 #badaiSocialProof{display:none!important}
@@ -65,13 +69,12 @@ module.exports = async function handler(req, res) {
     const script = String.raw`
 <script id="badai-social-proof-v6-script">
 (function(){
-  const SUPABASE_URL = 'https://tlvxlekqrllkvcpgwmic.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
+  const publicData = window.BadaiLandingPublic;
   let settings = null;
   let feed = [];
   let idx = 0;
   let showTimer = null;
-  let hideTimer = null;
+  let loadFlight = null;
   let refreshTimer = null;
   let box = null;
 
@@ -147,68 +150,61 @@ module.exports = async function handler(req, res) {
       else meta.innerHTML='<span class="badai-sp6-new">◉ Baru mendaftar</span> • '+when;
     }
     el.classList.add('show');
+    el.animate?.([{opacity:0},{opacity:1}],{duration:250});
   }
 
   function hide(){ if(box) box.classList.remove('show'); }
   function schedule(delay){ clearTimeout(showTimer); showTimer=setTimeout(cycle,delay); }
 
   function cycle(){
-    clearTimeout(hideTimer);
+    showTimer=null;
+    if(!publicData.visible()){ hide(); return; }
     if(!settings?.enabled || !feed.length){ hide(); return; }
-    if(!allowed()){ hide(); schedule(700); return; }
-    render(feed[idx % feed.length]);
-    idx=(idx+1)%feed.length;
-    hideTimer=setTimeout(()=>{
-      hide();
-      schedule(Math.max(2,Number(settings.interval_seconds || 9))*1000);
-    },Math.max(2,Number(settings.duration_seconds || 5))*1000);
+    if(allowed()){
+      render(feed[idx % feed.length]);
+      idx=(idx+1)%feed.length;
+    }else hide();
+    // Animation uses the local feed; it never fetches on a card transition.
+    schedule(2000);
   }
 
-  async function rpc(name,payload){
-    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + name,{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify(payload || {})
-    });
-    const data=await r.json().catch(()=>[]);
-    if(!r.ok) throw new Error((data && (data.message||data.error)) || ('RPC '+name+' gagal'));
-    return data;
-  }
-
-  async function load(){
-    try{
-      const sRows=await rpc('get_social_proof_settings',{});
-      settings=Array.isArray(sRows)?sRows[0]:sRows;
-      if(!settings?.enabled){ hide(); return; }
-      const rows=await rpc('get_social_proof_feed',{p_limit:Number(settings.max_items||20)});
-      feed=Array.isArray(rows)?rows:[];
-      if(!feed.length){ hide(); return; }
-      ensureBox(); setPosition(); schedule(700);
-
+  function refresh(){
+    if(!publicData.visible())return;
+    if(loadFlight)return loadFlight;
+    clearTimeout(refreshTimer);
+    loadFlight=publicData.socialProof().then(data=>{
+      settings=data.settings;feed=data.feed;
+      if(!settings?.enabled || !feed.length){clearTimeout(showTimer);showTimer=null;hide();return;}
+      ensureBox();setPosition();
+      if(!showTimer)schedule(0);
       const modal=document.getElementById('registrationModal');
       if(modal && !modal.__badaiSp6Observed){
         modal.__badaiSp6Observed=true;
         new MutationObserver(()=>{
-          if(!allowed()) hide();
-          else schedule(250);
+          if(!allowed())hide();
+          else if(publicData.visible()&&!showTimer)schedule(0);
         }).observe(modal,{attributes:true,attributeFilter:['class']});
       }
-    }catch(err){
-      hide();
-      console.error('BADAI Social Proof:',err);
-    }
+    }).catch(()=>{
+      // Keep the last public feed during a temporary failure; retry is bounded.
+      if(publicData.visible()&&feed.length&&!showTimer)schedule(0);
+    }).finally(()=>{
+      loadFlight=null;
+      if(publicData.visible())refreshTimer=setTimeout(refresh,Math.max(1,publicData.nextSocialAt()-Date.now()));
+    });
+    return loadFlight;
   }
 
-  function refresh(){
-    clearTimeout(showTimer);clearTimeout(hideTimer);hide();
-    settings=null;feed=[];idx=0;load();
+  function pause(){
+    clearTimeout(refreshTimer);clearTimeout(showTimer);showTimer=null;hide();
   }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});
+  else refresh();
+  window.addEventListener('focus',refresh);
+  document.addEventListener('visibilitychange',()=>{if(publicData.visible())refresh();else pause();});
+  window.addEventListener('pagehide',pause);
+  window.addEventListener('pageshow',refresh);
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',load,{once:true});
-  else load();
-
-  window.addEventListener('focus',()=>{ if(document.visibilityState==='visible') refresh(); });
-  refreshTimer=setInterval(refresh,60000);
 })();
 </script>`;
 
@@ -272,12 +268,10 @@ module.exports = async function handler(req, res) {
     const registrationModeScript = String.raw`
 <script id="badai-registration-mode-script">
 (function(){
-  const SUPABASE_URL='https://tlvxlekqrllkvcpgwmic.supabase.co';
-  const SUPABASE_KEY='sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
+  const publicData=window.BadaiLandingPublic;
   let registrationOpen=true;
   let closedNewbiePrice=0;
   let closedProPrice=0;
-  let busy=false;
 
   function priceMask(amount, fallbackText){
     const numeric = Math.round(Math.abs(Number(amount || 0)));
@@ -330,14 +324,7 @@ module.exports = async function handler(req, res) {
         const selectedAmount=isFree ? 0 : (selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice);
         setTextIfChanged(selectedEl,isFree ? 'Rp0' : priceMask(selectedAmount,selectedEl.textContent));
       }
-    }else{
-      if(newbieEl && closedNewbiePrice > 0) setTextIfChanged(newbieEl,realPrice(closedNewbiePrice));
-      if(proEl && closedProPrice > 0) setTextIfChanged(proEl,realPrice(closedProPrice));
-      if(selectedEl){
-        const selectedAmount=isFree ? 0 : (selectedPlan === 'pro' ? closedProPrice : closedNewbiePrice);
-        if(isFree || selectedAmount > 0) setTextIfChanged(selectedEl,realPrice(selectedAmount));
-      }
-    }
+    } // Open prices are rendered by the shared configuration/coupon consumer.
 
     const advantage=document.getElementById('proPriceAdvantageCopy');
     const smart=document.getElementById('proSmartSaving');
@@ -368,7 +355,7 @@ module.exports = async function handler(req, res) {
     const submit=document.querySelector('.register-submit');
     if(submit){
       if(!submit.dataset.openLabel) submit.dataset.openLabel=submit.textContent.trim();
-      submit.disabled=!registrationOpen;
+      if(!registrationOpen)submit.disabled=true;
       if(!registrationOpen) submit.textContent='PENDAFTARAN BELUM DIBUKA';
       else if(submit.textContent==='PENDAFTARAN BELUM DIBUKA') submit.textContent=submit.dataset.openLabel;
     }
@@ -389,27 +376,15 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  async function loadMode(){
-    if(busy) return;
-    busy=true;
-    try{
-      const r=await fetch(SUPABASE_URL+'/rest/v1/marketing_public_config?id=eq.1&select=registration_open,newbie_price,pro_price',{
-        headers:{apikey:SUPABASE_KEY},
-        cache:'no-store'
-      });
-      if(!r.ok) return;
-      const rows=await r.json();
-      const config=rows?.[0] || {};
-      registrationOpen=config.registration_open!==false;
-      closedNewbiePrice=Number(config.newbie_price || 0);
-      closedProPrice=Number(config.pro_price || 0);
-      window.BADAI_REGISTRATION_OPEN=registrationOpen;
-      applyMode();
-    }catch(_){
-    }finally{
-      busy=false;
-    }
+  function applyConfig(config){
+    if(!config)return;
+    registrationOpen=config.registration_open!==false;
+    closedNewbiePrice=Number(config.newbie_price ?? config.product_price ?? 0);
+    closedProPrice=Number(config.pro_price ?? config.product_price ?? 0);
+    window.BADAI_REGISTRATION_OPEN=registrationOpen;
+    applyMode();
   }
+  document.addEventListener('badai:marketing-config',e=>applyConfig(e.detail));
 
   document.addEventListener('click',function(e){
     if(registrationOpen) return;
@@ -432,7 +407,7 @@ module.exports = async function handler(req, res) {
   const observer=new MutationObserver(()=>{ if(!registrationOpen) maskPrices(); });
   function boot(){
     applyMode();
-    loadMode();
+    applyConfig(publicData.peekConfig());
     ['dynamicNewbiePrice','dynamicProPrice','selectedPackagePrice'].forEach(id=>{
       const el=document.getElementById(id);
       if(el) observer.observe(el,{childList:true,subtree:true,characterData:true});
@@ -442,9 +417,7 @@ module.exports = async function handler(req, res) {
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
   else boot();
 
-  window.addEventListener('focus',loadMode);
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadMode()});
-  setInterval(loadMode,10000);
+  // The shared public loader owns the sole 10-second configuration timer.
 })();
 </script>`;
 

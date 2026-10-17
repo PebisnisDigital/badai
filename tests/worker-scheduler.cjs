@@ -129,28 +129,34 @@ test('SQL scheduler wakes only eligible work, preserves gates and throttling, an
         send_times=array[(date_trunc('minute',clock_timestamp())::time)] where id=$1`,[settings[kind]]);
       await query(`update public.wa_${kind}_calendar_slots set send_time=date_trunc('minute',clock_timestamp())::time where settings_id=$1`,[settings[kind]]);
     }
-    await releaseThrottle();assert.equal(await dispatch(),1);assert.match(await lastUrl(),/badai-wa-channel$/);
+    await releaseThrottle();assert.equal(await dispatch(),1);
+    // Both due jobs can have the same timestamp; the UUID tie-breaker may
+    // choose either family. Follow the selected job without inventing priority.
+    const firstUrl=await lastUrl();assert.match(firstUrl,/badai-wa-(channel|group)$/);
+    const firstFamily=firstUrl.endsWith('channel')?'channel':'group';
+    const secondFamily=firstFamily==='channel'?'group':'channel';
     for(const kind of ['channel','group']){
       assert.equal(await value(`select count(*)::int from public.wa_${kind}_delivery_logs where request_key is null`),1);
       assert.equal(await value(`select cycle_number from public.wa_${kind}_delivery_logs where request_key is null`),2);
     }
     assert.equal(await dispatch(),0,'repeated due tick does not make duplicate HTTP calls or deliveries');
-    const claim=await value('select public.wa_channel_claim()');assert.ok(claim?.id);await completeHttp();
+    const claim=await value('select public.wa_'+firstFamily+'_claim()');assert.ok(claim?.id);await completeHttp();
     assert.equal(await dispatch(),0,'shared throttle and active preparation block other families');
-    await query("update public.wa_channel_delivery_logs set status='dispatching',lease_until=now()-interval '1 second' where id=$1",[claim.id]);
-    await releaseThrottle();assert.equal(await dispatch(),1);assert.match(await lastUrl(),/badai-wa-group$/);
-    assert.equal(await value('select status from public.wa_channel_delivery_logs where id=$1',[claim.id]),'unknown','abandoned dispatch is settled without a network call or retry');
-    const groupClaim=await value('select public.wa_group_claim()');assert.ok(groupClaim?.id);
-    await query("update public.wa_group_delivery_logs set lease_until=now()-interval '1 second' where id=$1",[groupClaim.id]);
+    await query("update public.wa_"+firstFamily+"_delivery_logs set status='dispatching',lease_until=now()-interval '1 second' where id=$1",[claim.id]);
+    await releaseThrottle();assert.equal(await dispatch(),1);assert.ok((await lastUrl()).endsWith('badai-wa-'+secondFamily));
+    assert.equal(await value('select status from public.wa_'+firstFamily+'_delivery_logs where id=$1',[claim.id]),'unknown','abandoned dispatch is settled without a network call or retry');
+    const secondClaim=await value('select public.wa_'+secondFamily+'_claim()');assert.ok(secondClaim?.id);
+    await query("update public.wa_"+secondFamily+"_delivery_logs set lease_until=now()-interval '1 second' where id=$1",[secondClaim.id]);
     await completeHttp();await releaseThrottle();assert.equal(await dispatch(),0);
-    assert.equal(await value('select status from public.wa_group_delivery_logs where id=$1',[groupClaim.id]),'failed','expired preparation does not wake another worker');
+    assert.equal(await value('select status from public.wa_'+secondFamily+'_delivery_logs where id=$1',[secondClaim.id]),'failed','expired preparation does not wake another worker');
 
     // Expired queued occurrences are cancelled locally; loop OFF is completed
     // locally too. Neither needs a network call to discover there is no work.
-    await query("update public.wa_channel_delivery_logs set status='queued',created_at=now()-interval '6 minutes' where id=$1",[claim.id]);
+    const channelJobId=firstFamily==='channel'?claim.id:secondClaim.id;
+    await query("update public.wa_channel_delivery_logs set status='queued',created_at=now()-interval '6 minutes' where id=$1",[channelJobId]);
     await query('update public.wa_group_settings set loop=false where id=$1',[settings.group]);
     assert.equal(await dispatch(),0);
-    assert.equal(await value('select status from public.wa_channel_delivery_logs where id=$1',[claim.id]),'cancelled');
+    assert.equal(await value('select status from public.wa_channel_delivery_logs where id=$1',[channelJobId]),'cancelled');
     assert.equal(await value('select enabled from public.wa_group_settings where id=$1',[settings.group]),false);
 
     // Legacy recovery retains its existing pause-after-uncertainty behavior.

@@ -69,6 +69,10 @@
       "dest": "/admin-workspace.css"
     },
     {
+      "src": "^/landing-public\\.js$",
+      "dest": "/landing-public.js"
+    },
+    {
       "src": "^/[^/]+/?$",
       "dest": "/api/landing-v6"
     },

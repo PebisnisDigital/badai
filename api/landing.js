@@ -1,6 +1,6 @@
 module.exports = async function handler(req, res) {
   try {
-    const ref = process.env.VERCEL_GIT_COMMIT_SHA || 'main';
+    const ref = process.env.VERCEL_GIT_COMMIT_SHA || process.env.RAILWAY_GIT_COMMIT_SHA || process.env.COMMIT_REF || 'main';
     const sourceUrl = `https://raw.githubusercontent.com/PebisnisDigital/badai/${encodeURIComponent(ref)}/index.html`;
     const source = await fetch(sourceUrl, { headers: { 'User-Agent': 'BADAI-Landing/1.0' } });
 
@@ -98,7 +98,7 @@ module.exports = async function handler(req, res) {
     state.discount_amount = 0;
     state.final_amount = 0;
     setFeedback(message || '', '');
-    try{ window.dispatchEvent(new Event('focus')); }catch(_){ }
+    document.dispatchEvent(new CustomEvent('badai:coupon-change'));
   }
 
   async function waitForPriceSync(finalAmount){
@@ -145,7 +145,7 @@ module.exports = async function handler(req, res) {
         state.code = '';
         state.plan = '';
         setFeedback((result && result.message) || 'Kode kupon tidak valid atau sedang tidak aktif.', 'error');
-        try{ window.dispatchEvent(new Event('focus')); }catch(_){ }
+        document.dispatchEvent(new CustomEvent('badai:coupon-change'));
         return false;
       }
 
@@ -160,12 +160,13 @@ module.exports = async function handler(req, res) {
       if(input) input.value = state.code;
 
       setFeedback('✓ Kupon ' + state.code + ' aktif • Hemat ' + formatRp(state.discount_amount) + ' • Total ' + formatRp(state.final_amount), 'ok');
-      try{ window.dispatchEvent(new Event('focus')); }catch(_){ }
+      document.dispatchEvent(new CustomEvent('badai:coupon-change'));
       await waitForPriceSync(state.final_amount);
       return true;
     }catch(err){
       state.valid = false;
       setFeedback('Kupon belum bisa dicek. Coba lagi.', 'error');
+      document.dispatchEvent(new CustomEvent('badai:coupon-change'));
       return false;
     }finally{
       validating = false;
@@ -174,6 +175,14 @@ module.exports = async function handler(req, res) {
   }
 
   window.__BADAI_VALIDATE_COUPON = validateCoupon;
+
+  document.addEventListener('badai:marketing-config', function(e){
+    if(!state.valid) return;
+    var price = Number(e.detail && e.detail[state.plan + '_price']);
+    if(Number.isFinite(price) && price !== state.original_amount){
+      clearCoupon('Harga paket berubah. Klik PAKAI untuk memeriksa kupon kembali.');
+    }
+  });
 
   window.fetch = async function(input, init){
     var url = typeof input === 'string' ? input : (input && input.url ? input.url : '');
@@ -198,27 +207,6 @@ module.exports = async function handler(req, res) {
 
       var regInit = Object.assign({}, init || {}, {body:JSON.stringify(regBody)});
       return nativeFetch(input, regInit);
-    }
-
-    if(url.indexOf('/rest/v1/marketing_public_config') !== -1 && method === 'GET' && state.valid){
-      var configResponse = await nativeFetch(input, init);
-      if(!configResponse.ok) return configResponse;
-
-      var configRows = await configResponse.clone().json().catch(function(){ return null; });
-      if(Array.isArray(configRows) && configRows[0] && state.plan === currentPlan()){
-        if(state.plan === 'pro') configRows[0].pro_price = state.final_amount;
-        else configRows[0].newbie_price = state.final_amount;
-
-        var headers = new Headers(configResponse.headers);
-        headers.set('content-type','application/json; charset=utf-8');
-        headers.delete('content-length');
-        return new Response(JSON.stringify(configRows), {
-          status:configResponse.status,
-          statusText:configResponse.statusText,
-          headers:headers
-        });
-      }
-      return configResponse;
     }
 
     return nativeFetch(input, init);

@@ -2,6 +2,7 @@
 
 <html lang="id">
 <head>
+<script src="/landing-public.js?v=20261017-1"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#070707" name="theme-color"/>
@@ -7677,6 +7678,7 @@ Mohon dibantu proses pendaftarannya ya.`
 
   let selectedPackage = 'newbie';
   let paymentMethods = [];
+  let registrationSubmitting = false;
   let selectedPaymentMethodId = '';
   let qrisPollTimer = null;
   let qrisCountdownTimer = null;
@@ -7793,7 +7795,7 @@ Mohon dibantu proses pendaftarannya ya.`
       box.innerHTML = '<div class="payment-method-loading">Belum ada metode pembayaran yang aktif.</div>';
       renderSelectedPaymentDetail();
       const submit = document.querySelector('.register-submit');
-      if(submit) submit.disabled = selectedPackage === 'free' ? false : true;
+      if(submit) submit.disabled = registrationSubmitting || window.BADAI_REGISTRATION_OPEN === false || selectedPackage !== 'free';
       return;
     }
 
@@ -7837,29 +7839,21 @@ Mohon dibantu proses pendaftarannya ya.`
         renderSelectedPaymentDetail();
 
         const submit = document.querySelector('.register-submit');
-        if(submit) submit.disabled = selectedPackage === 'free' ? false : !selectedPaymentMethodId;
+        if(submit) submit.disabled = registrationSubmitting || window.BADAI_REGISTRATION_OPEN === false || (selectedPackage !== 'free' && !selectedPaymentMethodId);
       });
     }
 
     const submit = document.querySelector('.register-submit');
-    if(submit) submit.disabled = selectedPackage === 'free' ? false : !selectedPaymentMethodId;
+    if(submit) submit.disabled = registrationSubmitting || window.BADAI_REGISTRATION_OPEN === false || (selectedPackage !== 'free' && !selectedPaymentMethodId);
 
     renderSelectedPaymentDetail();
   }
 
-  async function loadPaymentMethods(){
-    try{
-      const res = await fetch(
-        SUPABASE_URL + '/rest/v1/payment_methods?active=eq.true&select=id,method_type,provider,display_name,instructions,qris_image_url,payment_url,bank_name,account_number,account_holder,sort_order&order=sort_order.asc,created_at.asc',
-        {headers:{'apikey':SUPABASE_PUBLISHABLE_KEY}}
-      );
-      if(!res.ok) throw new Error('Gagal memuat metode pembayaran');
-      paymentMethods = await res.json() || [];
-      renderPaymentMethods();
-    }catch(_){
-      paymentMethods = [];
-      renderPaymentMethods();
-    }
+  async function loadPaymentMethods(force=false){
+    const methods = await window.BadaiLandingPublic.paymentMethods(force);
+    paymentMethods = methods;
+    renderPaymentMethods();
+    return methods;
   }
 
   function stopQrisStatusPolling(){
@@ -8206,8 +8200,8 @@ Mohon dibantu proses pendaftarannya ya.`
   function selectedPackagePrice(){
     if(selectedPackage === 'free') return 0;
     return selectedPackage === 'pro'
-      ? Number(marketingConfig.pro_price || marketingConfig.product_price || 0)
-      : Number(marketingConfig.newbie_price || marketingConfig.product_price || 0);
+      ? Number(marketingConfig.pro_price ?? marketingConfig.product_price ?? 0)
+      : Number(marketingConfig.newbie_price ?? marketingConfig.product_price ?? 0);
   }
 
   function selectedPackageName(){
@@ -8216,8 +8210,8 @@ Mohon dibantu proses pendaftarannya ya.`
   }
 
   function syncPriceAdvantage(){
-    const newbie = Number(marketingConfig.newbie_price || marketingConfig.product_price || 0);
-    const pro = Number(marketingConfig.pro_price || marketingConfig.product_price || 0);
+    const newbie = Number(marketingConfig.newbie_price ?? marketingConfig.product_price ?? 0);
+    const pro = Number(marketingConfig.pro_price ?? marketingConfig.product_price ?? 0);
     const badge = document.getElementById('proSmartSaving');
     const copy = document.getElementById('proPriceAdvantageCopy');
     if(!badge) return;
@@ -8376,6 +8370,11 @@ Mohon dibantu proses pendaftarannya ya.`
     registrationModal?.classList.add('open');
     registrationModal?.setAttribute('aria-hidden','false');
     if(resumePayment)resumeQrisPolling();
+    if(!isFree && !resumePayment){
+      loadPaymentMethods().catch(() => {
+        setStatus('Metode pembayaran belum dapat diperbarui. Tutup dan buka kembali formulir untuk mencoba lagi.', true);
+      });
+    }
 
     // Auto-focus only on true desktop. Tablet keyboards can resize the visual viewport.
     const canAutoFocusRegistration =
@@ -8446,31 +8445,30 @@ Mohon dibantu proses pendaftarannya ya.`
     return output;
   }
 
-  async function loadMarketingConfig(){
-    try{
-      const res = await fetch(
-        SUPABASE_URL + '/rest/v1/marketing_public_config?id=eq.1&select=product_price,newbie_price,pro_price,registration_notification',
-        { headers:{ 'apikey':SUPABASE_PUBLISHABLE_KEY } }
-      );
-      if(!res.ok) return;
-      const rows = await res.json();
-      if(rows?.[0]){
-        marketingConfig = rows[0];
+  let baseMarketingConfig = {...marketingConfig};
 
-        const newbieEl = document.getElementById('dynamicNewbiePrice');
-        const proEl = document.getElementById('dynamicProPrice');
-
-        if(newbieEl) newbieEl.textContent = formatRupiah(marketingConfig.newbie_price || marketingConfig.product_price);
-        if(proEl) proEl.textContent = formatRupiah(marketingConfig.pro_price || marketingConfig.product_price);
-
-        syncSelectedPackageUI();
-      }
-    }catch(_){}
+  function applyMarketingConfig(config){
+    if(config) baseMarketingConfig = {...baseMarketingConfig, ...config};
+    marketingConfig = {...baseMarketingConfig};
+    const coupon = window.__BADAI_COUPON_STATE;
+    if(coupon?.valid && ['newbie','pro'].includes(coupon.plan)){
+      marketingConfig[coupon.plan + '_price'] = coupon.final_amount;
+    }
+    const newbieEl = document.getElementById('dynamicNewbiePrice');
+    const proEl = document.getElementById('dynamicProPrice');
+    if(newbieEl) newbieEl.textContent = formatRupiah(marketingConfig.newbie_price ?? marketingConfig.product_price);
+    if(proEl) proEl.textContent = formatRupiah(marketingConfig.pro_price ?? marketingConfig.product_price);
+    syncSelectedPackageUI();
+    if(!qrisPublicToken && submitBtn){
+      submitBtn.disabled = registrationSubmitting || baseMarketingConfig.registration_open === false ||
+        (selectedPackage !== 'free' && !selectedPaymentMethodId);
+    }
   }
 
+  document.addEventListener('badai:marketing-config', e => applyMarketingConfig(e.detail));
+  document.addEventListener('badai:coupon-change', () => applyMarketingConfig());
   syncSelectedPackageUI();
-  loadMarketingConfig();
-  loadPaymentMethods();
+  window.BadaiLandingPublic.config().then(applyMarketingConfig).catch(() => {});
 
   const affiliateLinkParams = new URLSearchParams(location.search);
   const legacyPackage = (affiliateLinkParams.get('paket') || '').trim().toLowerCase();
@@ -8483,34 +8481,6 @@ Mohon dibantu proses pendaftarannya ya.`
   if(requestedPlan){
     setTimeout(() => openRegistrationModal(requestedPlan), 80);
   }
-
-  let landingAutoSyncBusy = false;
-
-  async function autoSyncLanding(){
-    if(landingAutoSyncBusy || document.visibilityState !== 'visible') return;
-
-    const qrisStage = document.getElementById('qrisPaymentStage');
-    if(qrisStage && !qrisStage.classList.contains('hidden')) return;
-
-    landingAutoSyncBusy = true;
-    try{
-      await Promise.all([
-        loadMarketingConfig(),
-        loadPaymentMethods()
-      ]);
-    }catch(_){
-    }finally{
-      landingAutoSyncBusy = false;
-    }
-  }
-
-  setInterval(autoSyncLanding, 10000);
-  window.addEventListener('focus', autoSyncLanding);
-  document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible'){
-      autoSyncLanding();
-    }
-  });
 
   function normalizeWhatsapp(value){
     let digits = String(value || '').replace(/\D/g, '');
@@ -8527,6 +8497,7 @@ Mohon dibantu proses pendaftarannya ya.`
 
   form.addEventListener('submit', async function(e){
     e.preventDefault();
+    if(registrationSubmitting) return;
 
     if(selectedPackage !== 'free' && (!selectedPaymentMethodId || !selectedPaymentMethod())){
       setStatus('Pilih metode pembayaran dulu.', true);
@@ -8548,9 +8519,11 @@ Mohon dibantu proses pendaftarannya ya.`
     }
 
     const originalText = submitBtn.textContent;
+    registrationSubmitting = true;
     submitBtn.disabled = true;
     submitBtn.textContent = 'MENYIMPAN DATA...';
     setStatus('Sebentar, data pendaftaran sedang dicatat...', false);
+    let qrisCreationStarted = false;
 
     try {
       if(selectedPackage === 'free'){
@@ -8586,11 +8559,20 @@ Mohon dibantu proses pendaftarannya ya.`
         return;
       }
 
+      const methodId = selectedPaymentMethodId;
+      const plan = selectedPackage;
+      await loadPaymentMethods(true);
+      if(!registrationModal?.classList.contains('open')) throw new Error('Formulir pendaftaran sudah ditutup.');
+      if(window.BADAI_REGISTRATION_OPEN === false) throw new Error('Pendaftaran sedang ditutup.');
+      if(plan !== selectedPackage || methodId !== selectedPaymentMethodId || !selectedPaymentMethod()){
+        throw new Error('Metode pembayaran berubah atau tidak tersedia. Pilih metode pembayaran yang aktif sebelum melanjutkan.');
+      }
       const payment = selectedPaymentMethod();
 
       if(payment?.method_type === 'qris' && payment?.provider === 'buatqris'){
         submitBtn.textContent = 'MEMBUAT QRIS...';
         setStatus('Sebentar, QRIS pembayaran sedang dibuat...', false);
+        qrisCreationStarted = true;
         await createBuatQrisPayment({nama,email,wa});
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
@@ -8707,13 +8689,15 @@ Mohon dibantu proses pendaftarannya ya.`
       window.location.href = whatsappUrl;
     } catch (err) {
       const message = String(err?.message || 'Terjadi kesalahan.');
-      if(selectedPaymentMethod()?.provider === 'buatqris'){
+      if(qrisCreationStarted && selectedPaymentMethod()?.provider === 'buatqris'){
         setStatus('Data pendaftaran sudah dicatat, tetapi QRIS belum berhasil dibuat. ' + message, true);
       }else{
         setStatus('Data belum berhasil tercatat. ' + message, true);
       }
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
+    } finally {
+      registrationSubmitting = false;
     }
   });
 })();

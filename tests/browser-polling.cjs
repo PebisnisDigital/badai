@@ -28,7 +28,7 @@ for(const file of ['index.html','community-v2/index.html'])test(file+' QRIS: bou
   html=html.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi,(_,source)=>{
     if(!source.includes('async function checkQrisPayment('))return '';
     const pos=source.lastIndexOf('})();');
-    return '<script>'+source.slice(0,pos)+'window.paymentScreen={open:openRegistrationModal,close:closeRegistrationModal,show:showQrisStage};\n'+source.slice(pos)+'</script>';
+    return '<script>'+fs.readFileSync(root+'/landing-public.js','utf8')+'</script><script>'+source.slice(0,pos)+'window.paymentScreen={open:openRegistrationModal,close:closeRegistrationModal,show:showQrisStage};\n'+source.slice(pos)+'</script>';
   });
   const server=http.createServer((req,res)=>{res.setHeader('Content-Type','text/html');res.end(html);});
   await new Promise(r=>server.listen(0,'127.0.0.1',r));
