@@ -2,6 +2,7 @@
   const SUPABASE_URL = 'https://tlvxlekqrllkvcpgwmic.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R';
   const STORAGE_KEY = 'badai_member_session';
+  const LOGIN_TIMEOUT_MS = 15000;
 
   const style = document.createElement('style');
   style.textContent = `
@@ -33,6 +34,7 @@
       width:100%;min-height:50px;margin-top:14px;border:0;border-radius:14px;
       background:#ff4fa3;color:#080808;font:900 13px Arial,Helvetica,sans-serif;cursor:pointer
     }
+    #badaiAuthGate button:disabled{cursor:wait;opacity:.75}
     #badaiAuthGate .status{min-height:19px;margin-top:10px;text-align:center;color:#8d8d8d;font-size:11px}
     #badaiAuthGate .status.error{color:#ff8d8d}
     #badaiMemberLogout{cursor:pointer}
@@ -117,6 +119,24 @@
     }
 
     return data;
+  }
+
+  function memberLoginError(err){
+    if(err?.name === 'AbortError'){
+      return 'Pemeriksaan terlalu lama. Coba ganti Wi-Fi/data seluler, lalu masuk lagi.';
+    }
+
+    const message = String(err?.message || '');
+    if(/invalid login credentials|invalid_grant|email or password/i.test(message)){
+      return 'Email atau password belum cocok. Periksa kembali, ya.';
+    }
+    if(/too many requests|rate limit|request rate limit|429/i.test(message)){
+      return 'Terlalu banyak percobaan. Tunggu sebentar sebelum masuk lagi.';
+    }
+    if(err instanceof TypeError || /failed to fetch|networkerror|network request failed|load failed/i.test(message)){
+      return 'Tidak bisa menghubungi layanan login. Periksa internet atau coba jaringan lain.';
+    }
+    return message || 'Login gagal. Silakan coba lagi.';
   }
 
   function normalizeWhatsapp(value){
@@ -893,9 +913,19 @@
     document.getElementById('badaiMemberLogin').addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      const button = e.currentTarget.querySelector('button[type="submit"]');
+      if(button?.disabled) return;
+
       const email = document.getElementById('badaiMemberEmail').value.trim().toLowerCase();
       const password = document.getElementById('badaiMemberPassword').value;
       const status = document.getElementById('badaiMemberStatus');
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), LOGIN_TIMEOUT_MS);
+      if(button){
+        button.disabled = true;
+        button.textContent = 'MEMERIKSA...';
+      }
 
       status.className = 'status';
       status.textContent = 'Memeriksa akses...';
@@ -903,15 +933,22 @@
       try{
         const data = await api('/auth/v1/token?grant_type=password', {
           method:'POST',
-          body:JSON.stringify({email,password})
+          body:JSON.stringify({email,password}),
+          signal:controller.signal
         }, false);
 
         saveSession(data);
-        await verifyAccess();
+        await verifyAccess(controller.signal);
       }catch(err){
         clearSession();
         status.className = 'status error';
-        status.textContent = err.message || 'Login gagal.';
+        status.textContent = memberLoginError(err);
+      }finally{
+        clearTimeout(timeout);
+        if(button){
+          button.disabled = false;
+          button.textContent = 'MASUK SEKARANG';
+        }
       }
     });
   }
@@ -962,18 +999,23 @@
     }
   }
 
-  async function verifyAccess(){
+  async function verifyAccess(signal){
     const status = document.getElementById('badaiMemberStatus');
+    // Also bound checks for saved/QRIS sessions, not only manual logins.
+    const controller = signal ? null : new AbortController();
+    const requestSignal = signal || controller.signal;
+    const timeout = controller ? setTimeout(() => controller.abort(), LOGIN_TIMEOUT_MS) : null;
 
     try{
-      const user = await api('/auth/v1/user');
+      const user = await api('/auth/v1/user', {signal:requestSignal});
       const userId = user?.id;
 
       if(!userId) throw new Error('Session tidak valid.');
 
       const rows = await api(
         '/rest/v1/profiles?id=eq.' + encodeURIComponent(userId) +
-        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at,avatar_key,birth_place,birth_date,full_address,marketing_consent,marketing_consent_at'
+        '&select=id,email,full_name,whatsapp,role,member_status,membership_plan,membership_started_at,membership_expires_at,membership_grace_until,membership_lifecycle_status,last_renewed_at,avatar_key,birth_place,birth_date,full_address,marketing_consent,marketing_consent_at',
+        {signal:requestSignal}
       );
 
       const profile = rows?.[0];
@@ -1010,8 +1052,10 @@
 
       if(status){
         status.className = 'status error';
-        status.textContent = err.message || 'Akses tidak valid.';
+        status.textContent = memberLoginError(err);
       }
+    }finally{
+      if(timeout) clearTimeout(timeout);
     }
   }
 
