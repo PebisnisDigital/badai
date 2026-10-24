@@ -73,6 +73,10 @@
       "dest": "/landing-public.js"
     },
     {
+      "src": "^/bikingameedukasi/?$",
+      "dest": "/bikingameedukasi/index.html"
+    },
+    {
       "src": "^/[^/]+/?$",
       "dest": "/api/landing-v6"
     },
