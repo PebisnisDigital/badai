@@ -56,23 +56,23 @@ button,a{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible
 <a class="back" href="/" aria-label="Kembali ke BADAI">‹</a>
 <div class="headericon" aria-hidden="true">AI</div>
 <div class="heading"><strong>TRAINING WHATSAPP</strong><small>Bikin Game Edukasi Pakai AI • Simulasi kelas</small></div>
-<span class="status" id="statusBadge">● MC mulai 18.00</span>
+<span class="status" id="statusBadge">● Preview lengkap</span>
 </div><div class="progress" aria-label="Progres materi"><span id="bar"></span></div></header>
 <section class="intro">
 <div class="brand">BAD<span>AI</span> / KELAS GRATIS</div>
 <h1>Belajar Bikin <em>Game Edukasi</em> Pakai AI</h1>
-<p>Sejak <b>18.00 WIB</b>, Mbak Nonny mengingatkan peserta tiap 15 menit. Training bersama Teh Vini baru dimulai <b>19.30 WIB</b>.</p>
+<p><b>Simulasi lengkap untuk MC dan pemateri.</b> Mbak Nonny memberikan pengingat setiap 15 menit mulai pukul 18.00, lalu membuka training pukul 19.30 bersama Teh Vini. Semua chat bisa dibaca sekarang.</p>
 <div class="hosts">
 <div class="host"><span class="avatar n">N</span><div><strong>Mbak Nonny</strong><small>MC • Owner KOKO SALAMA</small></div></div>
 <div class="host"><span class="avatar v">V</span><div><strong>Teh Vini</strong><small>Pemateri • Founder BADAI</small></div></div>
 </div>
 </section>
 <main id="chat" class="chat" role="log" aria-label="Simulasi obrolan training" aria-live="off">
-<div id="welcome" class="welcome">Ini adalah <b>simulasi chat</b>, bukan WhatsApp sungguhan.<br>Mbak Nonny mulai pukul <b>18.00 WIB</b> • Training dimulai pukul <b>19.30 WIB</b>.<br>Pesan muncul mengikuti jadwal WIB saat halaman terbuka.</div>
+<div id="welcome" class="welcome">Mode <b>PREVIEW TERBUKA</b> • Ini simulasi chat, bukan pesan WhatsApp sungguhan. Semua pesan Mbak Nonny dan Teh Vini langsung ditampilkan agar bisa dibaca dan diperiksa sebelum training. Jam pada bubble adalah <b>jadwal simulasi</b>.</div>
 </main>
 <div class="controls">
-<div class="controlrow"><button id="next" class="primary">▶ Mulai Training</button><button id="auto">Putar otomatis</button><button id="all">Lihat semua</button></div>
-<div class="footline"><span id="count">0 / 6 pengingat</span><button id="reset">↺ Tampilkan ulang</button></div><div id="scheduleNote" class="schedule-note" aria-live="polite">MC mulai 18.00 WIB</div>
+<div class="controlrow"><button id="next" class="primary" type="button">MC 18.00</button><button id="auto" type="button">Teh Vini</button><button id="all" type="button">Praktik</button></div>
+<div class="footline"><span id="count">Semua chat terbuka</span><button id="reset" type="button">↑ Kembali ke atas</button></div><div id="scheduleNote" class="schedule-note">Jadwal simulasi: MC 18.00 • Training 19.30 WIB</div>
 </div>
 </div>
 <div class="toasty" role="status" id="toast">Berhasil disalin</div>
@@ -87,7 +87,7 @@ const chat=document.getElementById("chat");
 const next=document.getElementById("next"),auto=document.getElementById("auto"),all=document.getElementById("all");
 const count=document.getElementById("count"),bar=document.getElementById("bar");
 const scheduleNote=document.getElementById("scheduleNote"),statusBadge=document.getElementById("statusBadge");
-let pos=0,timer=null,toastTimer=null;
+let pos=0,toastTimer=null;
 const wa="https://chat.whatsapp.com/K8UDdwE9CRpCp5Z4F2Aij7";
 const quiz=[
 {q:"Hewan apa yang berbunyi 'meong'?",a:["Kucing","Sapi","Ayam"],ok:0},
@@ -111,35 +111,34 @@ if(m.type==="cta")extra='<div class="cardbox"><h3>'+esc(m.title)+'</h3><p>'+fmt(
 d.innerHTML='<span class="avatar '+(m.who==="vini"?"v":"n")+'" aria-hidden="true">'+avatar+'</span><div class="bubble"><div class="sender">'+sender+'</div>'+(m.type==="text"||!m.type?'<div class="message">'+fmt(m.text)+'</div>':"")+extra+'<div class="time">'+timeFor(m,i)+' ✓✓</div></div>';
 return d
 }
-function jakartaState(){
-const d=new Date(Date.now()+7*60*60*1000).toISOString(),date=d.slice(0,10),clock=d.slice(11,16);
-const past=date>eventDate,today=date===eventDate;
-const available=past?reminders.length:today?reminders.filter(m=>m.at<=clock).length:0;
-return {past,available,started:past||(today&&clock>="19:30")};
-}
 function update(){
-const state=jakartaState(),n=items.length;
-count.textContent=state.started?pos+" / "+n+" pesan • "+Math.round(pos/n*100)+"%":Math.min(pos,reminders.length)+" / 6 pengingat";
-bar.style.width=(pos/n*100)+"%";
-next.textContent=!state.started?"⏳ Training mulai 19.30":pos===n?"Selesai ✓":"Lanjut materi →";
-next.disabled=!state.started||pos===n;
-all.disabled=!state.started||pos===n;
-auto.disabled=!state.started||pos===n;
-statusBadge.textContent=state.started?"● Training dimulai":state.available?"● Mbak Nonny aktif":"● MC mulai 18.00";
-scheduleNote.textContent=state.past?"Tayangan ulang • 24 Oktober 2026":state.started?"Materi dibuka pukul 19.30 WIB":state.available<reminders.length?"Pengingat berikutnya "+reminders[state.available].at+" WIB • Training 19.30 WIB":"Training mulai pukul 19.30 WIB";
-if(pos===n)stopAuto();
+const n=items.length;
+count.textContent=n+" chat terbuka • preview penuh";
+bar.style.width="100%";
+statusBadge.textContent="● Preview lengkap";
+scheduleNote.textContent="Jadwal simulasi: MC 18.00 WIB • Training 19.30 WIB";
 }
-function syncSchedule(){
-const s=jakartaState();
-const target=s.available+(s.started?2:0);
-let last=null;
-while(pos<target)last=advance(true);
-if(last)last.scrollIntoView({behavior:"auto",block:"end"});
+function advance(skipScroll){
+if(pos>=items.length)return null;
+const welcome=document.getElementById("welcome");
+if(welcome)welcome.remove();
+const item=items[pos];
+const node=makeMessage(item,pos);
+node.id="message-"+pos;
+chat.appendChild(node);
+pos++;
+if(item.type==="quiz")renderQuiz();
+if(!skipScroll)node.scrollIntoView({behavior:"smooth",block:"center"});
+return node;
+}
+function showAllMessages(){
+while(pos<items.length)advance(true);
 update();
 }
-function advance(skipScroll){if(pos>=items.length){stopAuto();return}const welcome=document.getElementById("welcome");if(welcome)welcome.remove();const item=items[pos];const node=makeMessage(item,pos);chat.appendChild(node);pos++;if(item.type==="quiz")renderQuiz();update();if(!skipScroll)node.scrollIntoView({behavior:"smooth",block:"end"});return node}
-function stopAuto(){clearInterval(timer);timer=null;auto.textContent="Putar otomatis"}
-function runAuto(){if(!jakartaState().started)return;if(timer){stopAuto();return}auto.textContent="Jeda ⏸";timer=setInterval(function(){if(pos<items.length)advance();else stopAuto()},1450)}
+function jumpTo(index){
+const node=document.getElementById("message-"+index);
+if(node)node.scrollIntoView({behavior:"smooth",block:"center"});
+}
 function renderQuiz(){
 const box=document.getElementById("quizContent");if(!box)return;
 const score=document.getElementById("quizScore");if(score)score.textContent=quizScore;
@@ -156,12 +155,17 @@ if(ans&&!answered){answered=true;const v=Number(ans.dataset.answer),q=quiz[quizI
 const action=ev.target.closest("[data-quiz-action]");if(action){if(action.dataset.quizAction==="restart"){quizIndex=0;quizScore=0}else quizIndex++;renderQuiz()}
 });
 let boxButtons;
-next.addEventListener("click",function(){if(!jakartaState().started)return;stopAuto();advance()});
-auto.addEventListener("click",runAuto);
-all.addEventListener("click",function(){if(!jakartaState().started)return;stopAuto();while(pos<items.length)advance(true);chat.lastElementChild.scrollIntoView({behavior:"smooth",block:"end"})});
-document.getElementById("reset").addEventListener("click",function(){stopAuto();chat.innerHTML='<div id="welcome" class="welcome">Mbak Nonny menyapa mulai <b>18.00 WIB</b>. Materi baru dibuka <b>19.30 WIB</b>.</div>';pos=0;quizIndex=0;quizScore=0;syncSchedule()});
-syncSchedule();
-setInterval(syncSchedule,10000);
+next.addEventListener("click",function(){jumpTo(0)});
+auto.addEventListener("click",function(){
+jumpTo(items.findIndex(function(m){return m.who==="vini"}));
+});
+all.addEventListener("click",function(){
+jumpTo(items.findIndex(function(m){return m.type==="prompt"}));
+});
+document.getElementById("reset").addEventListener("click",function(){
+window.scrollTo({top:0,behavior:"smooth"});
+});
+showAllMessages();
 })();
 </script>
 </body></html>
