@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0c0a0d">
+<meta name="theme-color" content="#075e54">
 <meta name="description" content="Simulasi Training Bikin Game Edukasi Pakai AI bersama Mbak Nonny dan Teh Vini dari Komunitas BADAI. Belajar lewat tampilan chat WhatsApp interaktif.">
 <title>Training Bikin Game Edukasi Pakai AI | BADAI</title>
 <link rel="icon" type="image/webp" href="https://i.ibb.co.com/8gdhCWVF/BADAI-FAVICON-TRANSPARENT-UNDER50-KB-1.webp">
@@ -49,6 +49,59 @@ button,a{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible
 @media(prefers-reduced-motion:reduce){.bubblewrap{animation:none}.progress > span{transition:none}}
 .schedule-note{font-size:10px;color:#f7b4d3;padding:6px 3px 1px;font-weight:800;text-align:center}.intro p b{color:#ffbddd}
 .guidecard .message{font-size:12px;color:#f3d8e7;margin-bottom:12px}.guide-svg{display:block;width:100%;height:auto;border:2px solid #79506c;border-radius:12px;margin:10px 0;background:#faf7fc}.guidefine{font-size:10px;color:#c3a8b7!important}.guide-source{display:inline-block;color:#ffc1df;font-size:11px;font-weight:800;text-decoration:underline;margin-top:11px}.guidecard .action{margin:4px 8px 4px 0}
+/* Tampilan menyerupai tema terang WhatsApp; bukan tampilan/aplikasi resmi WhatsApp. */
+:root{color-scheme:light;--bg:#efeae2;--panel:#fff;--line:#d6ddd8;--pink:#075e54;--pale:#d9fdd3;--muted:#667781;--white:#111b21;--green:#008069}
+body{background:#e3e8e4;color:#111b21;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.shell{background:#f0f2f5;box-shadow:0 0 35px #3d50452a}
+.header{background:#075e54;border-bottom-color:#075e54;backdrop-filter:none}
+.back{border-color:#ffffff36;background:#ffffff17;color:#fff}
+.headericon{background:#d9fdd3;color:#075e54;box-shadow:none}
+.heading strong{color:white}.heading small{color:#d5eee8}
+.status{color:#e4fff5;border-color:#ffffff55;background:#ffffff19}
+.progress{background:#1c806f}.progress>span{background:#b4ffb1}
+.intro{background:#fff;border-bottom:1px solid #dce3df}
+.brand{color:#075e54}.brand span{color:#00a884}
+.intro h1{color:#111b21}.intro h1 em{color:#008069}
+.intro p{color:#51646d}.intro p b{color:#075e54}
+.host{background:#f7faf8;border-color:#d8e3dc}
+.host strong{color:#111b21}.host small{color:#63757a}
+.avatar.n{background:#d5e6f9;color:#215e90}.avatar.v{background:#dcf8cc;color:#17633b}
+.chat{background-color:#efeae2;background-image:radial-gradient(circle at 13px 18px,#cbd5c930 1.4px,transparent 1.7px),radial-gradient(circle at 38px 35px,#b3c9b52c 1.5px,transparent 1.7px);background-size:54px 58px;padding-top:18px}
+.welcome{border:1px solid #d8e0d5;background:#fff9d9;color:#53666a;border-radius:10px}
+.sys{background:#fff8;color:#52646c;border:1px solid #d3dcd8;box-shadow:0 2px 4px #33473312}
+.sys small{color:#52646c}
+.bubble{background:#fff;border:0;border-radius:10px 10px 10px 2px;box-shadow:0 1px 2px #52665933;padding:9px 10px 7px}
+.bubblewrap.v .bubble{background:#d9fdd3;border:0;border-radius:10px 10px 2px 10px}
+.sender{color:#176f5e;font-size:11px}.bubblewrap.n .sender{color:#286aa0}
+.message,.bubblewrap .message{color:#111b21;line-height:1.55;font-size:13.5px}
+.message strong,.bubblewrap.v .message strong{color:#111b21;font-weight:700}
+.time{color:#667781;margin:0;font-size:10px;white-space:nowrap}
+.bubble-meta{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:9px}
+.bubble-copy{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:30px;padding:5px 9px;background:#f0f2f5;border:1px solid #cbd9d3;border-radius:8px;color:#075e54;font-size:11px;font-weight:700;line-height:1.2}
+.bubblewrap.v .bubble-copy{background:#ffffffbd;border-color:#a4d7ac}
+.bubble-copy:hover{background:#ddede5}.bubble-copy.copied{background:#c1edd5;color:#075e54;border-color:#8ac5a4}
+.cardbox{background:#f6faf7;border:1px solid #c9ddd3;color:#111b21;border-radius:9px}
+.cardbox h3{color:#075e54}
+.cardbox p{color:#50636a}
+.prompttext{color:#111b21;background:#fff;border:1px solid #c8d6ce}
+.action{background:#008069;color:white}.action.alt{background:#fff;color:#075e54;border-color:#b6d2c1}
+.quizquestion{color:#111b21}.quizscore{color:#176d5f}
+.answer{background:white;color:#111b21;border:1px solid #c9d9d0}
+.answer.correct{background:#d9fdd3;color:#135e35;border-color:#74c693}
+.answer.wrong{background:#ffe5e5;color:#8d2424;border-color:#e6a4a4}
+.quizfeedback{color:#41565e}
+.controls{background:#f0f2f5;border-top:1px solid #d8e0dd;box-shadow:0 -5px 14px #374e3d1a}
+.controlrow button{background:white;color:#075e54;border-color:#cbd7d0}
+.controlrow button.primary{background:#008069;color:white;border-color:#008069}
+.footline{color:#55676d}.footline button{color:#075e54}
+.schedule-note{color:#53666a}
+.toasty{background:#075e54;color:white}
+.guidecard .message{color:#28383d}
+.guide-svg{border-color:#c2d5cb}
+.guidefine{color:#65777b!important}.guide-source{color:#075e54}
+button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2px}
+@media(max-width:400px){.bubble{max-width:89%}.bubble-meta{gap:7px}.bubble-copy{font-size:10px}}
+
 </style>
 </head>
 <body>
@@ -69,7 +122,7 @@ button,a{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible
 </div>
 </section>
 <main id="chat" class="chat" role="log" aria-label="Simulasi obrolan training" aria-live="off">
-<div id="welcome" class="welcome">Mode <b>PREVIEW TERBUKA</b> • Ini simulasi chat, bukan pesan WhatsApp sungguhan. Semua pesan Mbak Nonny dan Teh Vini langsung ditampilkan agar bisa dibaca dan diperiksa sebelum training. Jam pada bubble adalah <b>jadwal simulasi</b>.</div>
+<div id="welcome" class="welcome"><b>PREVIEW NASKAH TRAINING</b> • Chat ini hanya simulasi. Tekan <b>Salin WA</b> di setiap bubble untuk mengambil teks dengan format WhatsApp (termasuk *tebal* dan paragraf), lalu tempel ke grup saat giliran MC atau pemateri. Jam bubble adalah jadwal latihan.</div>
 </main>
 <div class="controls">
 <div class="controlrow"><button id="next" class="primary" type="button">MC 18.00</button><button id="auto" type="button">Teh Vini</button><button id="all" type="button">Praktik</button></div>
@@ -100,6 +153,37 @@ function esc(v){return String(v).replace(/[&<>"']/g,function(c){return {"&":"&am
 function fmt(v){return esc(v).replace(/\*([^*\n]+)\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>")}
 function timeFor(m,i){if(m.at)return m.at;let minutes=19*60+30+Math.floor(Math.max(0,i-reminders.length)*.8);return String(Math.floor(minutes/60)).padStart(2,"0")+":"+String(minutes%60).padStart(2,"0")}
 function showToast(s){const t=document.getElementById("toast");t.textContent=s;t.style.display="block";clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.style.display="none"},1900)}
+
+function waTextFor(m){
+ if(!m||m.type==="divider"||m.type==="system")return "";
+ if(!m.type||m.type==="text")return m.text||"";
+ const head=m.title?"*"+m.title+"*":"";
+ const body=m.text||"";
+ let text=[head,body].filter(Boolean).join("\n\n");
+ if(m.type==="guide"){
+  if(m.step===1)text+="\n\nBuka Gemini: https://gemini.google.com/";
+  text+="\nPanduan resmi: https://support.google.com/gemini/answer/16047321?hl=id-ID";
+ }
+ if(m.type==="cta")text+="\n\nGrup WhatsApp:\n"+wa;
+ return text;
+}
+async function copyToClipboard(value){
+ try{
+  if(!navigator.clipboard||!navigator.clipboard.writeText)throw new Error("clipboard unavailable");
+  await navigator.clipboard.writeText(value);
+  return true;
+ }catch(error){
+  const ta=document.createElement("textarea");
+  ta.value=value;
+  ta.setAttribute("readonly","");
+  ta.style.position="fixed";ta.style.opacity="0";ta.style.left="-9999px";
+  document.body.appendChild(ta);ta.focus();ta.select();
+  let ok=false;
+  try{ok=document.execCommand("copy")}catch(e){}
+  ta.remove();
+  return ok;
+ }
+}
 function quizHtml(){return '<div class="quizscore">Skor: <span id="quizScore">0</span> / 3</div><div id="quizContent"></div>'}
 const GUIDE_IMAGES=[null,"<svg class=\"guide-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 600 300\" role=\"img\" aria-label=\"Ilustrasi cara buka menu Gemini Canvas\"><style>.tiny{font:15px Arial,sans-serif;fill:#696074}</style><rect width=\"600\" height=\"300\" rx=\"16\" fill=\"#faf7fc\"/><rect x=\"15\" y=\"15\" width=\"570\" height=\"36\" rx=\"10\" fill=\"#ebe6ef\"/><circle cx=\"35\" cy=\"33\" r=\"5\" fill=\"#ff7097\"/><circle cx=\"54\" cy=\"33\" r=\"5\" fill=\"#fbc75d\"/><circle cx=\"72\" cy=\"33\" r=\"5\" fill=\"#8acfa0\"/><text x=\"100\" y=\"39\" font-size=\"17\" font-family=\"Arial\" fill=\"#595069\" font-weight=\"bold\">gemini.google.com</text><text x=\"31\" y=\"88\" font-size=\"22\" font-family=\"Arial\" fill=\"#694a9a\" font-weight=\"bold\">✦ Gemini</text><text x=\"40\" y=\"119\" class=\"tiny\">Apa yang ingin kamu buat?</text><rect x=\"29\" y=\"145\" width=\"531\" height=\"111\" rx=\"18\" fill=\"white\" stroke=\"#ddd3e5\" stroke-width=\"3\"/><text x=\"48\" y=\"177\" class=\"tiny\">Tanya Gemini...</text><rect x=\"48\" y=\"201\" width=\"49\" height=\"42\" rx=\"12\" fill=\"#ff4fa3\"/><text x=\"73\" y=\"231\" text-anchor=\"middle\" font-size=\"31\" font-family=\"Arial\" fill=\"#201121\">+</text><path d=\"M106 222 H129\" stroke=\"#ff4fa3\" stroke-width=\"6\"/><rect x=\"137\" y=\"202\" width=\"165\" height=\"42\" rx=\"12\" fill=\"#39223a\"/><text x=\"160\" y=\"229\" font-size=\"20\" font-family=\"Arial\" fill=\"#fff\" font-weight=\"bold\">Canvas</text><text x=\"353\" y=\"228\" class=\"tiny\">Pilih + lalu Canvas</text><text x=\"29\" y=\"283\" font-size=\"14\" font-family=\"Arial\" fill=\"#736a7a\">ILUSTRASI • tampilan asli dapat berbeda</text></svg>","<svg class=\"guide-svg\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 600 300\" role=\"img\" aria-label=\"Ilustrasi prompt di Gemini Canvas menjadi game di Pratinjau\"><style>.tiny{font:15px Arial,sans-serif;fill:#696074}</style><rect width=\"600\" height=\"300\" rx=\"16\" fill=\"#faf7fc\"/><rect x=\"15\" y=\"15\" width=\"570\" height=\"36\" rx=\"10\" fill=\"#ebe6ef\"/><circle cx=\"35\" cy=\"33\" r=\"5\" fill=\"#ff7097\"/><circle cx=\"54\" cy=\"33\" r=\"5\" fill=\"#fbc75d\"/><circle cx=\"72\" cy=\"33\" r=\"5\" fill=\"#8acfa0\"/><text x=\"100\" y=\"39\" font-size=\"17\" font-family=\"Arial\" fill=\"#595069\" font-weight=\"bold\">Salin prompt, lalu Kirim</text><text x=\"31\" y=\"88\" font-size=\"22\" font-family=\"Arial\" fill=\"#694a9a\" font-weight=\"bold\">✦ Gemini / Canvas</text><rect x=\"23\" y=\"76\" width=\"250\" height=\"187\" rx=\"14\" fill=\"white\" stroke=\"#ddd3e5\"/><text x=\"37\" y=\"103\" font-family=\"Arial\" font-size=\"16\" font-weight=\"bold\" fill=\"#493d51\">Tempel prompt</text><rect x=\"36\" y=\"116\" width=\"225\" height=\"96\" rx=\"11\" fill=\"#f1edf5\"/><text x=\"48\" y=\"144\" class=\"tiny\">Buat game tebak hewan</text><text x=\"48\" y=\"167\" class=\"tiny\">5 soal, skor, main lagi...</text><rect x=\"171\" y=\"219\" width=\"88\" height=\"32\" rx=\"10\" fill=\"#ff4fa3\"/><text x=\"215\" y=\"240\" font-family=\"Arial\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"bold\" fill=\"#210e1c\">Kirim ↗</text><path d=\"M282 161 H316\" stroke=\"#ff4fa3\" stroke-width=\"6\"/><path d=\"m308 150 13 11-13 11\" fill=\"none\" stroke=\"#ff4fa3\" stroke-width=\"5\"/><rect x=\"328\" y=\"76\" width=\"243\" height=\"187\" rx=\"14\" fill=\"white\" stroke=\"#ddd3e5\"/><rect x=\"343\" y=\"87\" width=\"213\" height=\"36\" rx=\"11\" fill=\"#f3dcea\"/><text x=\"450\" y=\"111\" font-size=\"16\" font-family=\"Arial\" text-anchor=\"middle\" fill=\"#8d2858\" font-weight=\"bold\">Pratinjau / Preview</text><text x=\"449\" y=\"151\" font-size=\"17\" font-family=\"Arial\" text-anchor=\"middle\" font-weight=\"bold\" fill=\"#4f4050\">TEBAK HEWAN</text><text x=\"449\" y=\"177\" class=\"tiny\" text-anchor=\"middle\">Mana yang bisa terbang?</text><rect x=\"344\" y=\"188\" width=\"211\" height=\"30\" rx=\"8\" fill=\"#c8f4d7\"/><text x=\"449\" y=\"209\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"15\" fill=\"#32674a\">Burung ✓</text><rect x=\"344\" y=\"228\" width=\"211\" height=\"25\" rx=\"8\" fill=\"#e9e2ef\"/><text x=\"449\" y=\"246\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"14\" fill=\"#5c4f60\">Kucing</text><text x=\"29\" y=\"283\" font-size=\"14\" font-family=\"Arial\" fill=\"#736a7a\">ILUSTRASI • tampilan asli dapat berbeda</text></svg>"];
 function makeMessage(m,i){
@@ -111,7 +195,7 @@ if(m.type==="guide")extra='<div class="cardbox guidecard"><h3>'+esc(m.title)+'</
 if(m.type==="prompt")extra='<div class="cardbox"><h3>'+esc(m.title)+'</h3><pre class="prompttext" id="promptText">'+esc(m.text)+'</pre><button class="action" id="copyPrompt" type="button">Salin Prompt</button></div>';
 if(m.type==="quiz")extra='<div class="cardbox"><h3>'+esc(m.title)+'</h3><p>'+esc(m.text)+'</p>'+quizHtml()+'</div>';
 if(m.type==="cta")extra='<div class="cardbox"><h3>'+esc(m.title)+'</h3><p>'+fmt(m.text)+'</p><a class="action" href="'+wa+'" target="_blank" rel="noopener noreferrer">Masuk Grup WA ↗</a></div>';
-d.innerHTML='<span class="avatar '+(m.who==="vini"?"v":"n")+'" aria-hidden="true">'+avatar+'</span><div class="bubble"><div class="sender">'+sender+'</div>'+(m.type==="text"||!m.type?'<div class="message">'+fmt(m.text)+'</div>':"")+extra+'<div class="time">'+timeFor(m,i)+' ✓✓</div></div>';
+d.innerHTML='<span class="avatar '+(m.who==="vini"?"v":"n")+'" aria-hidden="true">'+avatar+'</span><div class="bubble"><div class="sender">'+sender+'</div>'+(m.type==="text"||!m.type?'<div class="message">'+fmt(m.text)+'</div>':"")+extra+'<div class="bubble-meta"><button type="button" class="bubble-copy" data-copy-index="'+i+'" aria-label="Salin chat '+esc(sender)+' ke WhatsApp">⧉ Salin WA</button><span class="time">'+timeFor(m,i)+' ✓✓</span></div></div>';
 return d
 }
 function update(){
@@ -151,8 +235,22 @@ box.innerHTML='<div class="quizquestion">Soal '+(quizIndex+1)+' / '+quiz.length+
 answered=false
 }
 chat.addEventListener("click",async function(ev){
+const bubbleCopy=ev.target.closest("[data-copy-index]");
+if(bubbleCopy){
+ const ix=Number(bubbleCopy.dataset.copyIndex);
+ const msg=items[ix];
+ if(!msg)return;
+ const ok=await copyToClipboard(waTextFor(msg));
+ if(ok){
+  bubbleCopy.classList.add("copied");
+  bubbleCopy.textContent="✓ Tersalin";
+  setTimeout(function(){bubbleCopy.classList.remove("copied");bubbleCopy.textContent="⧉ Salin WA";},1500);
+  showToast("Teks WhatsApp tersalin!");
+ }else showToast("Tidak bisa menyalin otomatis. Coba browser lain.");
+ return;
+}
 const copy=ev.target.closest("#copyPrompt");
-if(copy){const value=document.getElementById("promptText").textContent;try{await navigator.clipboard.writeText(value);showToast("Prompt disalin!") }catch(e){const t=document.createElement("textarea");t.value=value;t.style.position="fixed";t.style.left="-9999px";document.body.appendChild(t);t.select();const ok=document.execCommand("copy");t.remove();showToast(ok?"Prompt disalin!":"Pilih lalu salin prompt manual")}return}
+if(copy){const value=document.getElementById("promptText").textContent;const ok=await copyToClipboard(value);showToast(ok?"Prompt disalin!":"Tidak bisa menyalin otomatis.");return}
 const ans=ev.target.closest("[data-answer]");
 if(ans&&!answered){answered=true;const v=Number(ans.dataset.answer),q=quiz[quizIndex];if(v===q.ok)quizScore++;document.getElementById("quizScore").textContent=quizScore;boxButtons=chat.querySelectorAll("[data-answer]");boxButtons.forEach(function(b){b.disabled=true;if(Number(b.dataset.answer)===q.ok)b.classList.add("correct");else if(Number(b.dataset.answer)===v)b.classList.add("wrong")});document.getElementById("quizFeedback").textContent=v===q.ok?"Benar! Hebat, lanjut yuk.":"Belum tepat. Jawaban benar: "+q.a[q.ok]+".";document.getElementById("quizNextWrap").innerHTML='<button class="action alt quiznext" data-quiz-action="next">'+(quizIndex===quiz.length-1?"Lihat Nilai":"Soal Berikutnya →")+'</button>';return}
 const action=ev.target.closest("[data-quiz-action]");if(action){if(action.dataset.quizAction==="restart"){quizIndex=0;quizScore=0}else quizIndex++;renderQuiz()}
