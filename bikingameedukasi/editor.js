@@ -274,6 +274,7 @@ root.BadaiEditor={create:function(ctx){
   }catch(e){state("Gagal impor: "+e.message)}finally{file.value=""}
  }
  function reset(){
+  if(day()===5){state("Bahan Marketing berasal dari database bersama. Gunakan Muat Terbaru atau Impor Backup untuk memulihkan; reset ke file awal dinonaktifkan.");return}
   if(!root.confirm("Kembalikan naskah BERSAMA Hari "+day()+" ke versi awal website?"))return;
   close();const arr=current();arr.splice(0,arr.length,...COPY(original[day()]));persist();rerender();
  }
