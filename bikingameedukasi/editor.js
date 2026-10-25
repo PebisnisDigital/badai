@@ -196,7 +196,7 @@ root.BadaiEditor={create:function(ctx){
   if(!node||!m||(!m.who&&m.type!=="hostnote"))return;
   const target=node.querySelector(".bubble")||node;
   const div=ctx.document.createElement("div");div.className="script-inline-edit";
-  div.innerHTML='<div class="se-title"><b>✎ Edit '+(m.type==="hostnote"?"catatan host":"bubble WhatsApp")+'</b><small>Lokal di browser ini</small></div>'+
+  div.innerHTML='<div class="se-title"><b>✎ Edit '+(m.type==="hostnote"?"catatan host":"bubble WhatsApp")+'</b><small>Tersimpan untuk seluruh tim</small></div>'+
    '<div class="se-fields">'+(m.who?'<label>Pengirim<select data-se-who><option value="vini">Teh Vini</option><option value="nonny">Mbak Nonny</option></select></label>':"")+
    '<label>Jam<input type="time" data-se-at></label>'+
    ((m.type==="hostnote"||m.title!==undefined)?'<label class="se-full">Judul<input data-se-title type="text" maxlength="500"></label>':"")+
@@ -237,7 +237,7 @@ root.BadaiEditor={create:function(ctx){
   const copy=COPY(m);arr.splice(idx+1,0,copy);persist();rerender(copy);
  }
  function remove(m){
-  if(!root.confirm("Hapus pesan dari naskah lokal browser ini?"))return;
+  if(!root.confirm("Hapus pesan ini dari naskah bersama tim BADAI?"))return;
   close();const arr=current(),idx=arr.indexOf(m);if(idx>=0)arr.splice(idx,1);
   persist();rerender();
  }
@@ -247,20 +247,20 @@ root.BadaiEditor={create:function(ctx){
   const url=URL.createObjectURL(new Blob([data],{type:"application/json"}));
   const a=ctx.document.createElement("a");a.href=url;a.download="BADAI-backup-naskah.json";ctx.document.body.appendChild(a);a.click();a.remove();
   root.setTimeout(()=>URL.revokeObjectURL(url),4000);
-  state("Backup diunduh. Simpan untuk pindah HP/browser.");
+  state("Backup naskah bersama berhasil diunduh.");
  }
  async function importData(){
   const f=file.files&&file.files[0];if(!f)return;
   try{
    if(f.size>MAX)throw Error("File terlalu besar");
    const days=readJSON(await f.text());
-   if(!root.confirm("Ganti semua editan lokal dengan isi file backup?"))return;
+   if(!root.confirm("Timpa naskah bersama Hari 1 dan Hari 2 dengan file backup ini?"))return;
    close();["1","2"].forEach(k=>ctx.catalog[k].splice(0,ctx.catalog[k].length,...days[k]));persist();rerender();
    state("✓ Berhasil mengimpor backup naskah.");
   }catch(e){state("Gagal impor: "+e.message)}finally{file.value=""}
  }
  function reset(){
-  if(!root.confirm("Reset naskah Hari "+day()+" ke versi asli website? Editan lokal hari ini hilang."))return;
+  if(!root.confirm("Kembalikan naskah BERSAMA Hari "+day()+" ke versi awal website?"))return;
   close();const arr=current();arr.splice(0,arr.length,...COPY(original[day()]));persist();rerender();
  }
  function act(ev){
@@ -275,19 +275,23 @@ root.BadaiEditor={create:function(ctx){
   if(el.hasAttribute("data-se-add")){add(m);return}
   if(el.hasAttribute("data-se-delete")){remove(m);return}
  }
- function mount(){
-  recover();
+ async function mount(){
+  toggle.hidden=true;actions.hidden=true;
+  state("Memeriksa login tim BADAI...");
+  try{await authorize();await pull(true)}
+  catch(e){state("Mode baca • "+e.message+". Silakan login di /admin.");toggle.hidden=true}
+  root.setInterval(function(){if(authorized&&!on&&!open&&!dirty[1]&&!dirty[2])void pull(false)},25000);
   toggle.addEventListener("click",function(){
    close();on=!on;panel.classList.toggle("editing",on);
    toggle.textContent=on?"✓ Selesai Edit":"✎ Mode Edit";
    toggle.setAttribute("aria-pressed",String(on));actions.hidden=!on;
-   state(on?"Mode Edit aktif • hanya di browser ini":"Mode baca • naskah lokal tetap tersimpan");
+   state(on?"Mode Edit tim aktif • perubahan otomatis disimpan di database BADAI":"Mode baca • naskah bersama tetap tersimpan");
    ctx.render();
   });
   actions.addEventListener("click",function(ev){
    const el=ev.target.closest("[data-editor-action]");if(!el)return;
    const op=el.dataset.editorAction;
-   if(op==="add")add();else if(op==="export")exportData();else if(op==="import")file.click();else if(op==="reset")reset();
+   if(op==="add")add();else if(op==="export")exportData();else if(op==="import")file.click();else if(op==="reset")reset();else if(op==="reload")void reload();
   });
   file.addEventListener("change",importData);
   ctx.chat.addEventListener("click",function(ev){
