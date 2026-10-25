@@ -16,6 +16,7 @@ function verifyItem(x){
  if(x.testimonial&&(!/^https:\/\/i\.ibb\.co(?:\.com)?\/[A-Za-z0-9/_\-.]+$/.test(x.testimonial.url||"")))throw Error("Alamat testimoni tidak aman");
  if(x.lpVideos&&(!Array.isArray(x.lpVideos)||x.lpVideos.some(v=>!/^[a-zA-Z0-9_-]{11}$/.test(v.id||""))))throw Error("Video tidak valid");
  if(x.demo&&!/^[a-z0-9-]+$/.test(x.demo.slug||""))throw Error("Nama ilustrasi tidak valid");
+ if(x.imageUrl!==undefined&&(typeof x.imageUrl!=="string"||x.imageUrl.length>1000||(x.imageUrl&&!/^https:\/\/[a-z0-9][a-z0-9.-]+(?:\/|$)/i.test(x.imageUrl))))throw Error("Link gambar harus HTTPS yang valid");
  return x;
 }
 function readJSON(txt){
@@ -31,16 +32,20 @@ function readJSON(txt){
   if(!Array.isArray(obj.days["3"])||obj.days["3"].length>900||!obj.days["3"].length)throw Error("Daftar pesan Hari 3 tidak valid");
   obj.days["3"].forEach(verifyItem);
  }
+ if(obj.days["5"]!==undefined){
+  if(!Array.isArray(obj.days["5"])||obj.days["5"].length>900||!obj.days["5"].length)throw Error("Daftar Bahan Marketing tidak valid");
+  obj.days["5"].forEach(verifyItem);
+ }
  return obj.days;
 }
 root.BadaiEditor={create:function(ctx){
- const original={1:COPY(ctx.catalog[1]),2:COPY(ctx.catalog[2]),3:COPY(ctx.catalog[3])};
+ const original={1:COPY(ctx.catalog[1]),2:COPY(ctx.catalog[2]),3:COPY(ctx.catalog[3]),5:COPY(ctx.catalog[5])};
  const panel=ctx.document.getElementById("scriptEditor"),toggle=ctx.document.getElementById("editorToggle"),actions=ctx.document.getElementById("editorActions"),status=ctx.document.getElementById("editorStatus"),file=ctx.document.getElementById("editorImportFile");
  let on=false,open=null,timer=null,authorized=false,teamUserId="",loading=false;
  const sbURL="https://tlvxlekqrllkvcpgwmic.supabase.co";
  const pubKey="sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R";
  const allowedRoles=["owner","super_admin","admin","marketing","mentor"];
- const revisions={1:0,2:0,3:0},saving={1:false,2:false,3:false},dirty={1:false,2:false,3:false},conflicts={1:false,2:false,3:false};
+ const revisions={1:0,2:0,3:0,5:0},saving={1:false,2:false,3:false,5:false},dirty={1:false,2:false,3:false,5:false},conflicts={1:false,2:false,3:false,5:false};
  const day=()=>ctx.getDay(),current=()=>ctx.catalog[day()],locate=m=>current()?.indexOf(m)??-1;
  function state(t){status.textContent=t}
  async function session(){
@@ -86,7 +91,7 @@ root.BadaiEditor={create:function(ctx){
    let hasUpdate=false;
    for(const row of rows){
     const k=String(row.day);
-    if(k!=="1"&&k!=="2"&&k!=="3")continue;
+    if(k!=="1"&&k!=="2"&&k!=="3"&&k!=="5")continue;
     if(!Array.isArray(row.content)||row.content.length<1||row.content.length>900)throw Error("Naskah bersama tidak valid");
     row.content.forEach(verifyItem);
     if(row.revision>revisions[k]){
@@ -145,18 +150,19 @@ root.BadaiEditor={create:function(ctx){
   timer=root.setTimeout(persist,1300);
  }
  async function reload(){
-  if((dirty[1]||dirty[2]||dirty[3]||open)&&!root.confirm("Ambil versi tim terbaru? Perubahan yang belum tersimpan akan hilang. Unduh backup dahulu."))return;
+  if((dirty[1]||dirty[2]||dirty[3]||dirty[5]||open)&&!root.confirm("Ambil versi tim terbaru? Perubahan yang belum tersimpan akan hilang. Unduh backup dahulu."))return;
   open=null;root.clearTimeout(timer);
-  dirty[1]=false;dirty[2]=false;dirty[3]=false;conflicts[1]=false;conflicts[2]=false;conflicts[3]=false;
-  revisions[1]=0;revisions[2]=0;revisions[3]=0;
+  dirty[1]=false;dirty[2]=false;dirty[3]=false;dirty[5]=false;conflicts[1]=false;conflicts[2]=false;conflicts[3]=false;conflicts[5]=false;
+  revisions[1]=0;revisions[2]=0;revisions[3]=0;revisions[5]=0;
   ctx.catalog[1].splice(0,ctx.catalog[1].length,...COPY(original[1]));
   ctx.catalog[2].splice(0,ctx.catalog[2].length,...COPY(original[2]));
   ctx.catalog[3].splice(0,ctx.catalog[3].length,...COPY(original[3]));
+  ctx.catalog[5].splice(0,ctx.catalog[5].length,...COPY(original[5]));
   await pull(true);ctx.render();
  }
  function rerender(m){
   ctx.render();
-  if(m){const i=ctx.getItems().indexOf(m),node=ctx.document.getElementById("message-"+i);if(node)node.scrollIntoView({behavior:"smooth",block:"center"})}
+  if(m){const i=ctx.getItems().indexOf(m),node=ctx.document.getElementById("message-"+i);if(node){if(node.classList?.contains("marketing-card"))node.open=true;node.scrollIntoView({behavior:"smooth",block:"center"})}}
  }
  function preview(){
   if(!open)return;
@@ -165,8 +171,9 @@ root.BadaiEditor={create:function(ctx){
  }
  function save(closeEditor){
   if(!open)return;
-  const el=open.el,m=open.msg,oldTime=m.at,area=el.querySelector("[data-se-text]"),at=el.querySelector("[data-se-at]"),title=el.querySelector("[data-se-title]"),who=el.querySelector("[data-se-who]"),layout=el.querySelector("[data-se-layout]"),align=el.querySelector("[data-se-align]");
+  const el=open.el,m=open.msg,oldTime=m.at,area=el.querySelector("[data-se-text]"),at=el.querySelector("[data-se-at]"),title=el.querySelector("[data-se-title]"),who=el.querySelector("[data-se-who]"),layout=el.querySelector("[data-se-layout]"),align=el.querySelector("[data-se-align]"),cover=el.querySelector("[data-se-image]");
   if(area)m.text=area.value;
+  if(cover&&(!cover.value.trim()||/^https:\/\/[a-z0-9][a-z0-9.-]+(?:\/|$)/i.test(cover.value.trim())))m.imageUrl=cover.value.trim();
   if(title)m.title=title.value;
   if(at&&validTime(at.value))m.at=at.value;
   if(who)m.who=who.value==="nonny"?"nonny":"vini";
@@ -208,13 +215,14 @@ root.BadaiEditor={create:function(ctx){
    ((m.type==="hostnote"||m.title!==undefined)?'<label class="se-full">Judul<input data-se-title type="text" maxlength="500"></label>':"")+
    '<label>Lebar<select data-se-layout><option value="normal">Normal</option><option value="wide">Lebar</option><option value="compact">Ringkas</option></select></label>'+
    '<label>Rata teks<select data-se-align><option value="left">Kiri</option><option value="center">Tengah</option><option value="right">Kanan</option></select></label></div>'+
-   '<div class="se-format"><button data-se-format="bold"><b>B</b></button><button data-se-format="italic"><i>I</i></button><button data-se-format="strike"><s>S</s></button><button data-se-format="mono">Kode</button><button data-se-format="quote">❞ Quote</button><button data-se-format="point">• Poin</button><button data-se-format="number">1.2.3.</button><button data-se-format="enter">↵</button></div>'+
+   (m.marketing?'<label class="se-full">Link gambar promosi (HTTPS)<input data-se-image type="url" placeholder="https://i.ibb.co.com/.../gambar.webp" maxlength="1000"></label>':'')+
+  '<div class="se-format"><button data-se-format="bold"><b>B</b></button><button data-se-format="italic"><i>I</i></button><button data-se-format="strike"><s>S</s></button><button data-se-format="mono">Kode</button><button data-se-format="quote">❞ Quote</button><button data-se-format="point">• Poin</button><button data-se-format="number">1.2.3.</button><button data-se-format="enter">↵</button></div>'+
    '<textarea data-se-text rows="7" maxlength="85000" aria-label="Edit tulisan WhatsApp"></textarea>'+
    '<div class="se-preview-label">PREVIEW FORMAT WHATSAPP</div><div class="se-preview" data-se-preview></div>'+
    '<div class="se-commands"><button class="se-save" data-se-save>Simpan</button><button data-se-close>Tutup</button><button data-se-move="-1">↑ Naik</button><button data-se-move="1">↓ Turun</button><button data-se-dup>Duplikat</button><button data-se-add>+ Di bawah</button><button class="se-danger" data-se-delete>Hapus</button></div>';
   target.appendChild(div);open={el:div,msg:m};
   const select=(key,value)=>{const elem=div.querySelector("[data-se-"+key+"]");if(elem)elem.value=value};
-  select("text",m.text||"");select("at",m.at);
+  select("text",m.text||"");select("at",m.at);select("image",m.imageUrl||"");
   select("title",m.title||"");select("who",m.who||"vini");
   select("layout",layouts.includes(m.layout)?m.layout:"normal");select("align",aligns.includes(m.align)?m.align:"left");
   preview();div.scrollIntoView({block:"nearest",behavior:"smooth"});
@@ -249,7 +257,7 @@ root.BadaiEditor={create:function(ctx){
  }
  function exportData(){
   close();
-  const data=JSON.stringify({version:1,exportedAt:new Date().toISOString(),days:{"1":ctx.catalog[1],"2":ctx.catalog[2],"3":ctx.catalog[3]}},null,2);
+  const data=JSON.stringify({version:1,exportedAt:new Date().toISOString(),days:{"1":ctx.catalog[1],"2":ctx.catalog[2],"3":ctx.catalog[3],"5":ctx.catalog[5]}},null,2);
   const url=URL.createObjectURL(new Blob([data],{type:"application/json"}));
   const a=ctx.document.createElement("a");a.href=url;a.download="BADAI-backup-naskah.json";ctx.document.body.appendChild(a);a.click();a.remove();
   root.setTimeout(()=>URL.revokeObjectURL(url),4000);
@@ -261,11 +269,12 @@ root.BadaiEditor={create:function(ctx){
    if(f.size>MAX)throw Error("File terlalu besar");
    const days=readJSON(await f.text());
    if(!root.confirm("Timpa naskah tim sesuai hari yang ada di file backup ini?"))return;
-   close();["1","2","3"].forEach(k=>{if(days[k]){ctx.catalog[k].splice(0,ctx.catalog[k].length,...days[k]);dirty[k]=true;void saveDay(k)}});rerender();
+   close();["1","2","3","5"].forEach(k=>{if(days[k]){ctx.catalog[k].splice(0,ctx.catalog[k].length,...days[k]);dirty[k]=true;void saveDay(k)}});rerender();
    state("✓ Berhasil mengimpor backup naskah.");
   }catch(e){state("Gagal impor: "+e.message)}finally{file.value=""}
  }
  function reset(){
+  if(day()===5){state("Bahan Marketing berasal dari database bersama. Gunakan Muat Terbaru atau Impor Backup untuk memulihkan; reset ke file awal dinonaktifkan.");return}
   if(!root.confirm("Kembalikan naskah BERSAMA Hari "+day()+" ke versi awal website?"))return;
   close();const arr=current();arr.splice(0,arr.length,...COPY(original[day()]));persist();rerender();
  }
@@ -286,7 +295,7 @@ root.BadaiEditor={create:function(ctx){
   state("Memeriksa login tim BADAI...");
   try{await authorize();await pull(true)}
   catch(e){state("Mode baca • "+e.message+". Silakan login di /admin.");toggle.hidden=true}
-  root.setInterval(function(){if(authorized&&!on&&!open&&!dirty[1]&&!dirty[2]&&!dirty[3])void pull(false)},25000);
+  root.setInterval(function(){if(authorized&&!on&&!open&&!dirty[1]&&!dirty[2]&&!dirty[3]&&!dirty[5])void pull(false)},25000);
   toggle.addEventListener("click",function(){
    close();on=!on;panel.classList.toggle("editing",on);
    toggle.textContent=on?"✓ Selesai Edit":"✎ Mode Edit";

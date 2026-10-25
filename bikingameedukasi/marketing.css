@@ -1,0 +1,33 @@
+
+.marketing-nav-button{display:flex;width:calc(100% - 28px);margin:7px 14px 2px;align-items:center;justify-content:center;gap:9px;background:linear-gradient(110deg,#a11e64,#f03a94);color:#fff;border:1px solid #f4a3cb;border-radius:13px;padding:12px 10px;font-family:Raleway,Nunito,sans-serif;font-weight:900;letter-spacing:.5px;box-shadow:0 5px 16px #ff4fa326}
+.marketing-nav-button span{font-family:Nunito,sans-serif;background:#fff2;border:1px solid #fff3;border-radius:50px;padding:4px 7px;font-size:10px;letter-spacing:0;font-weight:700}
+.marketing-nav-button.is-active{background:#fff;color:#ae216e;box-shadow:0 0 0 2px #ff4fa3}
+.marketing-toolbar{padding:17px;background:#17111b;border-top:1px solid #443041;border-bottom:1px solid #443041}
+.marketing-toolbar[hidden]{display:none}
+.marketing-toolbar label{display:block;font-weight:900;font-size:12px;margin-bottom:7px}
+.marketing-toolbar input{width:100%;min-height:44px;border-radius:12px;border:1px solid #645066;background:#fff;color:#19151a;padding:11px 13px;font-size:13px}
+.marketing-toolbar small{display:block;color:#ffb9db;font-size:11px;margin-top:8px}
+.marketing-toolbar p{font-size:11px;color:#d6bed0;line-height:1.6;margin:8px 0 0}
+.marketing-card{width:100%;border:1px solid #483542;border-radius:14px;background:#161119;overflow:hidden;margin:0 0 10px;box-shadow:0 3px 13px #0003}
+.marketing-card[hidden]{display:none!important}
+.marketing-card[open]{border-color:#d34f92;background:#1c1320}
+.marketing-summary{display:flex;gap:12px;align-items:center;cursor:pointer;padding:13px 12px;list-style:none}
+.marketing-summary::-webkit-details-marker{display:none}
+.marketing-card-number{border-radius:11px;background:#eddded;color:#863b69;font-size:12px;font-weight:900;min-width:43px;text-align:center;padding:11px 5px}
+.marketing-card-titles{flex:1;min-width:0}
+.marketing-card-titles strong{display:block;font-size:13px;color:#fff;font-weight:900}
+.marketing-card-titles small{display:block;color:#d1bbcb;font-size:11px;line-height:1.4;margin-top:5px;overflow-wrap:anywhere}
+.marketing-chevron{font-size:24px;color:var(--pink);transition:transform .2s}
+.marketing-card[open] .marketing-chevron{transform:rotate(180deg)}
+.marketing-bubble{margin:0 11px 12px;padding:12px;background:#e5f8e7;color:#151c17;border-radius:14px;box-shadow:none;max-width:none;width:auto;position:relative}
+.marketing-copy-label{font-weight:900;font-size:10px;color:#137453;margin:13px 0 8px}
+.marketing-bubble .message{font-size:13px;line-height:1.7;overflow-wrap:anywhere;white-space:normal}
+.marketing-bubble .message blockquote{margin:8px 0;border-left:3px solid #2b915c;padding-left:10px;font-style:italic}
+.marketing-bubble .bubble-meta{margin-top:15px;flex-wrap:wrap}
+.marketing-image-empty,.marketing-image{border:1px dashed #88bd9b;border-radius:12px;padding:14px;text-align:center;background:#f8fff9}
+.marketing-image-empty span{display:block;font-size:23px}
+.marketing-image-empty b{display:block;color:#3e7050;font-size:12px;margin:3px 0}
+.marketing-image-empty small{display:block;color:#5d7463;font-size:10px}
+.marketing-image img{display:block;width:100%;max-height:440px;object-fit:contain;border-radius:8px;margin:0 auto 9px}
+.marketing-image a{font-size:11px;color:#116d52;font-weight:900}
+@media(max-width:420px){.marketing-summary{padding:11px 9px;gap:9px}.marketing-bubble{margin:0 7px 9px;padding:10px}.marketing-summary strong{font-size:12px}}
