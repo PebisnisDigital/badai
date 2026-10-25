@@ -45,6 +45,9 @@ root.BadaiEditor={create:function(ctx){
  const sbURL="https://tlvxlekqrllkvcpgwmic.supabase.co";
  const pubKey="sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R";
  const allowedRoles=["owner","super_admin","admin","marketing","mentor"];
+ const posterButton=ctx.document.getElementById("marketingPosterUpload");
+ const posterInput=ctx.document.getElementById("marketingPosterZip");
+ const posterStatus=ctx.document.getElementById("marketingPosterStatus");
  const revisions={1:0,2:0,3:0,5:0},saving={1:false,2:false,3:false,5:false},dirty={1:false,2:false,3:false,5:false},conflicts={1:false,2:false,3:false,5:false};
  const day=()=>ctx.getDay(),current=()=>ctx.catalog[day()],locate=m=>current()?.indexOf(m)??-1;
  function state(t){status.textContent=t;status.dataset.important=String(/⚠|gagal|konflik|belum tersimpan|login tim dibutuhkan|sesi admin habis|akses ditolak/i.test(t))}
@@ -82,6 +85,7 @@ root.BadaiEditor={create:function(ctx){
   if(!Array.isArray(team)||!team.some(x=>x.status==="active"&&allowedRoles.includes(x.role)))throw Error("Akun bukan editor tim BADAI aktif");
   teamUserId=auth.user.id;authorized=true;
   toggle.hidden=false;
+  if(posterButton)posterButton.hidden=false;
  }
  async function pull(showStatus){
   if(!authorized)return;
@@ -273,6 +277,47 @@ root.BadaiEditor={create:function(ctx){
    state("✓ Berhasil mengimpor backup naskah.");
   }catch(e){state("Gagal impor: "+e.message)}finally{file.value=""}
  }
+ async function importMarketingPosters(){
+  const zip=posterInput.files&&posterInput.files[0];
+  if(!zip)return;
+  let buttonText=posterButton.textContent;
+  try{
+   if(!authorized)throw Error("Login tim BADAI dulu.");
+   if(!root.BADAI_MARKETING_ZIP)throw Error("Modul pembaca ZIP belum dimuat.");
+   if(day()!==5)throw Error("Buka BAHAN MARKETING dulu.");
+   if(dirty[5]||saving[5]||conflicts[5])throw Error("Simpan perubahan naskah atau Muat Terbaru dulu sebelum mengimpor gambar.");
+   if(ctx.catalog[5].filter(x=>x.marketing).length!==51)throw Error("Belum memuat 51 copywriting. Tekan Muat Terbaru dan coba lagi.");
+   const images=await root.BADAI_MARKETING_ZIP.extract(zip);
+   if(!root.confirm("Pasang 51 gambar dari ZIP ini ke 51 copywriting BADAI? Gambar sebelumnya (jika ada) akan diganti."))return;
+   posterButton.disabled=true;
+   posterStatus.hidden=false;
+   posterStatus.textContent="Mengunggah 0/51 gambar...";
+   const urls=await root.BADAI_MARKETING_ZIP.upload(images,{sbURL,pubKey,session},(done,total)=>{
+     posterStatus.textContent="Mengunggah "+done+"/"+total+" gambar...";
+   });
+   if(conflicts[5]||dirty[5])throw Error("Naskah diubah rekan tim saat unggah. Tekan Muat Terbaru lalu impor ulang.");
+   for(const item of ctx.catalog[5]){
+     const n=Number(item.marketing?.number);
+     if(!Number.isInteger(n)||n<1||n>51||!urls[n])throw Error("Pemetaan gambar ke kartu tidak sesuai.");
+   }
+   for(const item of ctx.catalog[5])item.imageUrl=urls[item.marketing.number];
+   dirty[5]=true;
+   posterStatus.textContent="51 gambar terunggah, menyimpan tautan ke 51 kartu...";
+   await saveDay("5");
+   if(dirty[5]||conflicts[5])throw Error("Gambar sudah diunggah, tetapi penyimpanan tautan tertunda. Tekan Muat Terbaru dan impor ulang ZIP.");
+   ctx.render();
+   posterStatus.textContent="✓ 51 gambar terpasang di 51 kartu. Siap dibuka dan diunduh.";
+   posterButton.textContent="↻ Ganti 51 Gambar";
+  }catch(e){
+   const message=String(e?.message||e);
+   posterStatus.textContent="⚠ "+message;
+   posterStatus.hidden=false;
+   state("⚠ Gagal impor gambar: "+message);
+  }finally{
+   posterButton.disabled=false;
+   posterInput.value="";
+  }
+ }
  function reset(){
   if(day()===5){state("Bahan Marketing berasal dari database bersama. Gunakan Muat Terbaru atau Impor Backup untuk memulihkan; reset ke file awal dinonaktifkan.");return}
   if(!root.confirm("Kembalikan naskah BERSAMA Hari "+day()+" ke versi awal website?"))return;
@@ -309,6 +354,7 @@ root.BadaiEditor={create:function(ctx){
    if(op==="add")add();else if(op==="export")exportData();else if(op==="import")file.click();else if(op==="reset")reset();else if(op==="reload")void reload();
   });
   file.addEventListener("change",importData);
+  if(posterButton&&posterInput){posterButton.addEventListener("click",function(){if(!authorized){state("Login tim diperlukan.");return}posterInput.click()});posterInput.addEventListener("change",function(){void importMarketingPosters()})}
   ctx.chat.addEventListener("click",function(ev){
    if(!on)return;
    if(ev.target.closest(".script-inline-edit")){act(ev);return}
