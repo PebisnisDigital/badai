@@ -228,7 +228,7 @@ root.BadaiEditor={create:function(ctx){
  function add(after){
   close();
   const arr=current(),idx=after?arr.indexOf(after):-1;
-  const m={who:after?.who||"vini",at:after?.at||"19:30",text:"Tulis pesan baru..."};
+  const m={who:after?.who||"vini",at:after?.at||arr[arr.length-1]?.at||"19:30",text:"Tulis pesan baru..."};
   if(idx<0)arr.push(m);else arr.splice(idx+1,0,m);
   persist();rerender(m);const ix=ctx.getItems().indexOf(m);if(ix>=0)edit(ix);
  }
