@@ -223,7 +223,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 </div>
 <input type="file" id="editorImportFile" accept="application/json,.json" hidden>
 </section>
-<section id="marketingToolbar" class="marketing-toolbar" hidden><label for="marketingFilter">Cari trigger atau kata kunci</label><input id="marketingFilter" type="search" placeholder="Misalnya: survival, saving, proof..."><small id="marketingSearchCount">51 Conversion Card • buka tab untuk membaca.</small><p>Gambar tiap kartu bisa ditambahkan dari Mode Edit tim. Copywriting tetap bisa disalin tanpa gambar.</p></section>
+<section id="marketingToolbar" class="marketing-toolbar" hidden><input id="marketingFilter" type="search" aria-label="Cari copywriting" placeholder="Cari dari 51 copywriting..." autocomplete="off"><small id="marketingSearchCount" role="status" aria-live="polite"></small></section>
 <main id="chat" class="chat" role="log" aria-label="Simulasi obrolan training" aria-live="off">
 <div id="welcome" class="welcome"><b>PREVIEW NASKAH TRAINING</b> • Satu bubble berisi satu pesan. Saat ada <b>pemisah waktu</b>, berhenti dulu dan lanjut hanya setelah jam berikutnya tiba. Bubble dengan jam yang sama boleh dikirim berurutan tanpa pemisah. Tekan <b>Salin WA</b> pada bubble yang ingin dikirim; pemisah waktu bukan untuk disalin. Jam bubble adalah jadwal latihan.</div>
 </main>
@@ -487,6 +487,7 @@ return d
 }
 function update(){
  const active=!!dayCatalog[activeDay];
+ document.querySelector(".shell")?.classList.toggle("marketing-mode",activeDay===5);
  count.textContent=activeDay===5?((dayCatalog[5]||[]).length?dayCatalog[5].length+" copywriting • Bahan Marketing":"Login tim untuk melihat bahan marketing"):active?items.filter(function(m){return !!m.who}).length+" bubble siap salin • Hari "+activeDay:"Materi Hari "+activeDay+" menyusul";
  bar.style.width=active?"100%":"0%";
  statusBadge.textContent=activeDay===5?((dayCatalog[5]||[]).length?"● Bank marketing siap":"● Login tim diperlukan"):active?"● Hari "+activeDay+" siap":"● Menyusul";
@@ -494,12 +495,14 @@ function update(){
  marketingToolbar.hidden=activeDay!==5||!(dayCatalog[5]||[]).length;
  scheduleNote.textContent=activeDay===5?"BAHAN MARKETING • Klik tab trigger, lihat copywriting, Salin WA. Gambar bisa ditambahkan tim.":activeDay===3?"Hari 3 disiapkan nanti. Semua 51 copywriting tersedia di BAHAN MARKETING setelah Hari 4.":active?"Hari "+activeDay+" • Ikuti jeda waktu sesuai rundown. Jangan salin sekaligus.":"Hari 4 belum diisi.";
  daySubheading.textContent=dayTopic[activeDay];
+ const topTitle=document.querySelector(".heading strong");
+ if(topTitle)topTitle.textContent=activeDay===5?"BADAI • TIM":"TRAINING WHATSAPP";
  const hero=document.querySelector(".intro h1");
  if(hero)hero.innerHTML=activeDay===5?"BAHAN <em>MARKETING</em>":activeDay===3?"Hari <em>3</em>":"Belajar Bikin <em>Game Edukasi</em> Pakai AI";
  const category=document.querySelector(".intro .brand");
  if(category)category.innerHTML=activeDay===5?"BAD<span>AI</span> / 51 COPYWRITING":activeDay===3?"BAD<span>AI</span> / TRAINING":"BAD<span>AI</span> / KELAS GRATIS";
  dayIntro.innerHTML=activeDay===5
- ?"<b>BAHAN MARKETING BADAI • 51 CONVERSION CARD.</b> Setiap tab memiliki hook dan pembuka berbeda sesuai trigger PDF; bagian 30 materi, benefit, CTA, kupon dan NB konsisten. <b>Salin WA</b> untuk broadcast, atau <b>Mode Edit</b> setelah login tim untuk menyesuaikan tulisan serta menambahkan gambar. Tidak ada pengiriman WA otomatis."
+ ?"51 copywriting siap salin dan edit oleh tim BADAI."
  :activeDay===1
  ?"<b>HARI 1 • SABTU, 24 OKTOBER 2026.</b> Belajar bikin game tebak hewan lewat Gemini Canvas, praktik dan sertifikat. Semua naskah lama tetap utuh."
  :activeDay===2
@@ -536,8 +539,8 @@ function renderDay(day,pushState){
  items=day===5?(dayCatalog[5]||[]):buildItems(dayCatalog[day]||[]);
  pos=0;quizIndex=0;quizScore=0;answered=false;
  chat.innerHTML=items.length
-  ?'<div id="welcome" class="welcome"><b>PREVIEW HARI '+day+'</b> • Kirim bubble satu per satu. Kalau jam berganti, baca penanda JEDA dulu. Catatan admin dan pemisah tidak perlu dikirim ke peserta.</div>'
-  :day===5?'<div class="welcome"><b>KHUSUS TIM BADAI</b> • Bahan Marketing tersimpan aman di database dan hanya bisa dibuka oleh akun tim yang login. Silakan <a href="/admin" target="_blank" rel="noopener noreferrer">login Admin BADAI</a>, lalu buka ulang menu ini.</div>':'<div class="welcome"><b>HARI '+day+' BELUM DIISI</b> • Materi menyusul. Silakan pilih Hari 1, 2 atau 3.</div>';
+  ?(day===5?"":'<div id="welcome" class="welcome"><b>PREVIEW HARI '+day+'</b> • Kirim bubble satu per satu. Kalau jam berganti, baca penanda JEDA dulu. Catatan admin dan pemisah tidak perlu dikirim ke peserta.</div>')
+  :day===5?'<div class="welcome"><b>BAHAN MARKETING KHUSUS TIM</b><p>Login untuk membuka 51 copywriting.</p><a href="/admin" target="_blank" rel="noopener noreferrer">Login Admin BADAI</a></div>':'<div class="welcome"><b>HARI '+day+' BELUM DIISI</b> • Materi menyusul. Silakan pilih Hari 1, 2 atau 3.</div>';
  showAllMessages();
  if(day===5){const first=chat.querySelector(".marketing-card");if(first)first.open=true;marketingFilter.value="";marketingSearchCount.textContent=(dayCatalog[5]||[]).length+" Conversion Card tersedia."}
  if(pushState){
