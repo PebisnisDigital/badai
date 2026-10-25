@@ -47,7 +47,7 @@ root.BadaiEditor={create:function(ctx){
  const allowedRoles=["owner","super_admin","admin","marketing","mentor"];
  const revisions={1:0,2:0,3:0,5:0},saving={1:false,2:false,3:false,5:false},dirty={1:false,2:false,3:false,5:false},conflicts={1:false,2:false,3:false,5:false};
  const day=()=>ctx.getDay(),current=()=>ctx.catalog[day()],locate=m=>current()?.indexOf(m)??-1;
- function state(t){status.textContent=t}
+ function state(t){status.textContent=t;status.dataset.important=String(/⚠|gagal|konflik|belum tersimpan|login tim dibutuhkan|sesi admin habis|akses ditolak/i.test(t))}
  async function session(){
   let data;
   try{data=JSON.parse(root.localStorage.getItem("badai_admin_session")||"null")}catch(e){}
