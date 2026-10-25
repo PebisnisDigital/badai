@@ -190,7 +190,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 .bubblewrap.se-align-right .message{text-align:right}
 .bubblewrap.editing-bubble:hover .bubble{outline:1px dashed #ff77b8}
 @media(max-width:450px){.script-inline-edit{padding:9px}.se-format button{padding:7px 5px}.script-editor-actions button{font-size:9px}}
-</style>
+.message blockquote{border-left:3px solid #ff83bc;margin:4px 0;padding:3px 0 3px 9px;font-style:italic;color:#f8d6e6}.message code,.se-preview code{font-family:monospace;background:#261e26;border-radius:4px;padding:2px 4px}\n</style>
 </head>
 <body>
 <div class="shell">
@@ -328,6 +328,7 @@ function fmt(v){
 return esc(v).replace(/\*([^*\n]+)\*/g,"<strong>$1</strong>")
  .replace(/_([^_\n]+)_/g,"<em>$1</em>")
  .replace(/~([^~\n]+)~/g,"<del>$1</del>")
+ .replace(/\x60{3}([\s\S]*?)\x60{3}/g,"<code>$1</code>")
  .replace(/(https:\/\/promptbase\.com\/puzzle-games)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
  .replace(/(https:\/\/badai\.vercel\.app\/)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
  .replace(/^&gt;\s?(.+)$/gm,"<blockquote>$1</blockquote>")
