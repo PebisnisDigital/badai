@@ -101,3 +101,19 @@
  .marketing-mode .controls{padding:7px 9px max(7px,env(safe-area-inset-bottom))}
 }
 @media(prefers-reduced-motion:reduce){.marketing-chevron{transition:none}}
+
+/* Quick 51-poster importer and one-click image downloads */
+.marketing-tools-row{display:flex;align-items:center;gap:8px}
+.marketing-tools-row input{flex:1;min-width:0}
+.marketing-tools-row #marketingPosterUpload{flex:0 0 auto;background:#f02e8e;border:1px solid #ed4296;
+ color:white;padding:10px 11px;border-radius:10px;font-size:11px;font-weight:900;min-height:42px;cursor:pointer}
+.marketing-tools-row #marketingPosterUpload[hidden]{display:none!important}
+.marketing-tools-row #marketingPosterUpload:disabled{opacity:.5;cursor:wait}
+.marketing-toolbar #marketingPosterStatus:not(:empty){display:block;color:#9a2d6b;font-weight:800;line-height:1.5;
+ margin:9px 2px 0;font-size:11px}
+.marketing-bubble .marketing-download{background:#fff;border:1px solid #e6b1ca;
+ color:#962966;min-height:39px;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer}
+.marketing-bubble .marketing-download:disabled{opacity:.6}
+@media(max-width:400px){.marketing-tools-row{flex-wrap:wrap}
+.marketing-tools-row input{flex:1 1 100%}
+.marketing-tools-row #marketingPosterUpload{width:100%;min-height:36px}}

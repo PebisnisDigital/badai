@@ -223,7 +223,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 </div>
 <input type="file" id="editorImportFile" accept="application/json,.json" hidden>
 </section>
-<section id="marketingToolbar" class="marketing-toolbar" hidden><input id="marketingFilter" type="search" aria-label="Cari copywriting" placeholder="Cari dari 51 copywriting..." autocomplete="off"><small id="marketingSearchCount" role="status" aria-live="polite"></small></section>
+<section id="marketingToolbar" class="marketing-toolbar" hidden><div class="marketing-tools-row"><input id="marketingFilter" type="search" aria-label="Cari copywriting" placeholder="Cari dari 51 copywriting..." autocomplete="off"><button id="marketingPosterUpload" type="button" hidden aria-label="Pasang semua 51 gambar">↑ Pasang 51 Gambar</button></div><input type="file" id="marketingPosterZip" accept=".zip,application/zip,application/x-zip-compressed" hidden><small id="marketingPosterStatus" role="status" aria-live="polite"></small><small id="marketingSearchCount" role="status" aria-live="polite"></small></section>
 <main id="chat" class="chat" role="log" aria-label="Simulasi obrolan training" aria-live="off">
 <div id="welcome" class="welcome"><b>PREVIEW NASKAH TRAINING</b> • Satu bubble berisi satu pesan. Saat ada <b>pemisah waktu</b>, berhenti dulu dan lanjut hanya setelah jam berikutnya tiba. Bubble dengan jam yang sama boleh dikirim berurutan tanpa pemisah. Tekan <b>Salin WA</b> pada bubble yang ingin dikirim; pemisah waktu bukan untuk disalin. Jam bubble adalah jadwal latihan.</div>
 </main>
@@ -234,6 +234,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 </div>
 <div class="toasty" role="status" id="toast">Berhasil disalin</div>
 <script src="/bikingameedukasi/marketing-ui.js"></script>
+<script src="/bikingameedukasi/marketing-zip.js"></script>
 <script src="/bikingameedukasi/editor.js"></script>
 <script>
 (function(){

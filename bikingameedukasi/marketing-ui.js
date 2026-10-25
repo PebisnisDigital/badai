@@ -13,7 +13,7 @@
   d.innerHTML='<summary class="marketing-summary"><span class="marketing-card-number">'+String(n).padStart(2,"0")+'</span><strong class="marketing-card-title">'+ctx.esc(name)+'</strong><span class="marketing-chevron" aria-hidden="true">⌄</span></summary>'+
   '<div class="bubble marketing-bubble">'+image+
   '<div class="message">'+ctx.fmt(m.text||"")+'</div><div class="bubble-meta">'+
-  '<button class="bubble-copy" type="button" data-copy-index="'+i+'">⧉ Salin WA</button>'+
+  '<button class="bubble-copy" type="button" data-copy-index="'+i+'">⧉ Salin WA</button>'+  (src?'<button class="marketing-download" type="button" data-marketing-download="'+n+'">↓ Unduh Gambar</button>':"")+
   (ctx.editor?ctx.editor.button(i):"")+'</div></div>';
   return d;
  };
@@ -27,6 +27,34 @@
     el.hidden=!show;if(show)visible++;
    });
    count.textContent=visible+" dari 51 copywriting";
+  });
+  chat.addEventListener("click",async function(ev){
+   const trigger=ev.target.closest("button[data-marketing-download]");
+   if(!trigger)return;
+   ev.preventDefault();
+   const card=trigger.closest(".marketing-card");
+   const src=card?.querySelector(".marketing-image img")?.src;
+   const num=Number(trigger.dataset.marketingDownload);
+   if(!src||!/^[1-9]\d*$/.test(String(num)))return;
+   const original=trigger.textContent;
+   trigger.disabled=true;trigger.textContent="Menyiapkan gambar...";
+   try{
+    const res=await fetch(src,{mode:"cors"});
+    if(!res.ok)throw new Error("Gambar tidak bisa diunduh ("+res.status+")");
+    const image=await res.blob();
+    if(image.type&&image.type!=="image/webp")throw new Error("Berkas bukan WebP");
+    const url=URL.createObjectURL(image);
+    const a=document.createElement("a");
+    a.href=url;a.download="BADAI_Conversion_Card_"+String(num).padStart(2,"0")+".webp";
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),10000);
+   }catch(e){
+    trigger.textContent="Gagal unduh • buka gambar di atas";
+    return;
+   }finally{
+    trigger.disabled=false;
+    if(trigger.textContent==="Menyiapkan gambar...")trigger.textContent=original;
+   }
   });
   chat.addEventListener("toggle",function(ev){
    if(!ev.target.matches?.(".marketing-card")||!ev.target.open)return;
