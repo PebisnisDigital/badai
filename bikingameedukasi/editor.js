@@ -31,18 +31,122 @@ function readJSON(txt){
 root.BadaiEditor={create:function(ctx){
  const original={1:COPY(ctx.catalog[1]),2:COPY(ctx.catalog[2])};
  const panel=ctx.document.getElementById("scriptEditor"),toggle=ctx.document.getElementById("editorToggle"),actions=ctx.document.getElementById("editorActions"),status=ctx.document.getElementById("editorStatus"),file=ctx.document.getElementById("editorImportFile");
- let on=false,open=null,timer=null,storageOK=true;
+ let on=false,open=null,timer=null,authorized=false,teamUserId="",loading=false;
+ const sbURL="https://tlvxlekqrllkvcpgwmic.supabase.co";
+ const pubKey="sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R";
+ const allowedRoles=["owner","super_admin","admin","marketing","mentor"];
+ const revisions={1:0,2:0},saving={1:false,2:false},dirty={1:false,2:false},conflicts={1:false,2:false};
  const day=()=>ctx.getDay(),current=()=>ctx.catalog[day()],locate=m=>current()?.indexOf(m)??-1;
  function state(t){status.textContent=t}
+ async function session(){
+  let data;
+  try{data=JSON.parse(root.localStorage.getItem("badai_admin_session")||"null")}catch(e){}
+  if(!data||!data.access_token||!data.user?.id)throw Error("Login dulu lewat halaman /admin");
+  if(Number(data.expires_at||0)*1000<Date.now()+45000){
+   if(!data.refresh_token)throw Error("Sesi admin habis, silakan login ulang");
+   const r=await fetch(sbURL+"/auth/v1/token?grant_type=refresh_token",{
+    method:"POST",headers:{"apikey":pubKey,"Content-Type":"application/json"},
+    body:JSON.stringify({refresh_token:data.refresh_token})});
+   if(!r.ok)throw Error("Sesi admin habis, login ulang");
+   data=await r.json();root.localStorage.setItem("badai_admin_session",JSON.stringify(data));
+  }
+  return data;
+ }
+ async function api(path,opts){
+  const auth=await session();
+  const headers=Object.assign({"apikey":pubKey,"Authorization":"Bearer "+auth.access_token,"Content-Type":"application/json"},opts?.headers||{});
+  const response=await fetch(sbURL+path,{method:opts?.method||"GET",headers:headers,body:opts?.body,cache:"no-store"});
+  const raw=await response.text();let json=null;
+  try{json=raw?JSON.parse(raw):null}catch(e){}
+  if(!response.ok){
+   const err=new Error(json?.message||json?.msg||"Server gagal ("+response.status+")");
+   err.status=response.status;throw err;
+  }
+  return json;
+ }
+ async function authorize(){
+  const auth=await session();
+  const person=await api("/auth/v1/user");
+  if(person?.id!==auth.user.id)throw Error("Identitas sesi tidak cocok");
+  const team=await api("/rest/v1/admin_team_members?auth_user_id=eq."+encodeURIComponent(auth.user.id)+"&select=role,status");
+  if(!Array.isArray(team)||!team.some(x=>x.status==="active"&&allowedRoles.includes(x.role)))throw Error("Akun bukan editor tim BADAI aktif");
+  teamUserId=auth.user.id;authorized=true;
+  toggle.hidden=false;
+ }
+ async function pull(showStatus){
+  if(!authorized)return;
+  try{
+   const rows=await api("/rest/v1/training_script_documents?select=day,revision,content,updated_at");
+   if(!Array.isArray(rows))throw Error("Respons naskah salah format");
+   let hasUpdate=false;
+   for(const row of rows){
+    const k=String(row.day);
+    if(k!=="1"&&k!=="2")continue;
+    if(!Array.isArray(row.content)||row.content.length<1||row.content.length>900)throw Error("Naskah bersama tidak valid");
+    row.content.forEach(verifyItem);
+    if(row.revision>revisions[k]){
+     if(dirty[k]||saving[k]||(open&&k===String(day()))){
+      conflicts[k]=true;
+      state("⚠ Rekan tim telah mengubah Hari "+k+". Unduh backup, lalu Muat Terbaru.");
+      continue;
+     }
+     ctx.catalog[k].splice(0,ctx.catalog[k].length,...COPY(row.content));
+     revisions[k]=row.revision;hasUpdate=true;
+    }
+   }
+   if(hasUpdate)ctx.render();
+   if(showStatus)state("✓ Naskah tim terhubung • revisi bersama siap diedit");
+  }catch(e){state("Gagal sinkron: "+e.message)}
+ }
+ async function saveDay(k){
+  if(!authorized){state("Login tim dibutuhkan untuk menyimpan");return}
+  if(conflicts[k]){state("⚠ Konflik naskah Hari "+k+". Simpan backup dan Muat Terbaru.");return}
+  if(saving[k])return;
+  saving[k]=true;
+  try{
+   while(dirty[k]){
+    dirty[k]=false;
+    const body=COPY(ctx.catalog[k]);body.forEach(verifyItem);
+    if(body.length>900||JSON.stringify(body).length>950000)throw Error("Naskah terlalu besar");
+    state("Menyimpan naskah bersama Hari "+k+"...");
+    if(!revisions[k]){
+     const result=await api("/rest/v1/training_script_documents",{
+      method:"POST",headers:{"Prefer":"return=representation"},
+      body:JSON.stringify({day:Number(k),content:body,updated_by:teamUserId})});
+     if(!result?.[0]?.revision)throw Error("Simpan awal tidak terkonfirmasi");
+     revisions[k]=result[0].revision;
+    }else{
+     const result=await api("/rest/v1/rpc/save_training_script",{
+      method:"POST",
+      body:JSON.stringify({p_day:Number(k),p_expected_revision:revisions[k],p_content:body})});
+     if(!result?.length){conflicts[k]=true;throw Error("Versi naskah sudah diubah rekan tim. Muat Terbaru untuk melihatnya.")}
+     revisions[k]=result[0].revision;
+    }
+    state("✓ Tersimpan untuk tim • Hari "+k+" revisi "+revisions[k]);
+   }
+  }catch(e){
+   if(e.status===409)conflicts[k]=true;
+   dirty[k]=true;state("⚠ Belum tersimpan: "+e.message);
+  }finally{saving[k]=false}
+ }
  function persist(){
   root.clearTimeout(timer);
-  try{root.localStorage.setItem(KEY,JSON.stringify({version:1,days:{"1":ctx.catalog[1],"2":ctx.catalog[2]}}));state("✓ Tersimpan di browser ini • tidak mengubah situs untuk pengunjung lain")}
-  catch(e){storageOK=false;state("Penyimpanan browser gagal • gunakan backup JSON")}
+  const k=String(day());
+  dirty[k]=true;void saveDay(k);
  }
- function soon(){root.clearTimeout(timer);timer=root.setTimeout(persist,500)}
- function recover(){
-  try{const saved=root.localStorage.getItem(KEY);if(saved){const backup=readJSON(saved);["1","2"].forEach(k=>ctx.catalog[k].splice(0,ctx.catalog[k].length,...backup[k]));state("✓ Naskah edit tersimpan ditemukan di browser ini")}}
-  catch(e){state("Backup lokal tidak terbaca atau penyimpanan dinonaktifkan; naskah asli aman")}
+ function soon(){
+  root.clearTimeout(timer);
+  dirty[String(day())]=true;
+  timer=root.setTimeout(persist,1300);
+ }
+ async function reload(){
+  if((dirty[1]||dirty[2]||open)&&!root.confirm("Ambil versi tim terbaru? Perubahan yang belum tersimpan akan hilang. Unduh backup dahulu."))return;
+  open=null;root.clearTimeout(timer);
+  dirty[1]=false;dirty[2]=false;conflicts[1]=false;conflicts[2]=false;
+  revisions[1]=0;revisions[2]=0;
+  ctx.catalog[1].splice(0,ctx.catalog[1].length,...COPY(original[1]));
+  ctx.catalog[2].splice(0,ctx.catalog[2].length,...COPY(original[2]));
+  await pull(true);ctx.render();
  }
  function rerender(m){
   ctx.render();
