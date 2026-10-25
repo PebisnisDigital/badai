@@ -73,6 +73,14 @@
       "dest": "/landing-public.js"
     },
     {
+      "src": "^/hero-cinematic\\.css$",
+      "dest": "/hero-cinematic.css"
+    },
+    {
+      "src": "^/hero-cinematic\\.js$",
+      "dest": "/hero-cinematic.js"
+    },
+    {
       "src": "^/bikingameedukasi/?$",
       "dest": "/bikingameedukasi/index.html"
     },

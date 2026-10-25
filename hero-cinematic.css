@@ -1,0 +1,212 @@
+/* BADAI HOME: cinematic hero. Static-first and mobile respectful. */
+.hero.hero-cinematic{
+  position:relative;
+  isolation:isolate;
+  background:#070707;
+}
+.hero.hero-cinematic > .container{position:relative;z-index:2}
+.hero-cinematic-film{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 42% at 54% 30%,rgba(144,16,95,.22),transparent 83%),
+    #070707;
+}
+.hero-cinematic-video{
+  display:block;
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  object-fit:cover;
+  object-position:center;
+  opacity:0;
+  transform:scale(1.06);
+  filter:brightness(.44) saturate(.95);
+  transition:opacity 1.6s ease;
+  pointer-events:none;
+}
+.hero-cinematic.is-video-playing .hero-cinematic-video{opacity:.44}
+.hero-cinematic-ambient{
+  position:absolute;inset:-24% -45%;
+  background:
+    radial-gradient(ellipse 23% 35% at 26% 32%,rgba(255,50,146,.11),transparent 100%),
+    radial-gradient(ellipse 30% 39% at 77% 59%,rgba(110,42,138,.12),transparent 100%);
+  opacity:.8;
+  animation:badaiHeroAtmosphere 22s ease-in-out infinite alternate;
+  will-change:transform;
+}
+.hero-cinematic-vignette{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,rgba(7,7,7,.64) 0%,rgba(7,7,7,.35) 50%,rgba(7,7,7,.67) 100%),
+    linear-gradient(180deg,rgba(7,7,7,.44) 0%,rgba(7,7,7,.27) 35%,rgba(7,7,7,.75) 80%,#070707 100%);
+}
+.hero-cinematic::after{z-index:1}
+.hero-cinematic .badge{
+  position:relative;
+  border-color:rgba(255,100,183,.37);
+  background:rgba(29,12,23,.76);
+  box-shadow:0 5px 30px rgba(255,53,138,.08);
+  backdrop-filter:blur(8px);
+}
+.hero-cinematic .hero-copy{text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.hero-cinematic .cta{
+  position:relative;
+  z-index:3;
+  box-shadow:0 10px 38px rgba(255,65,162,.18),inset 0 1px 0 rgba(255,255,255,.28);
+}
+.hero-visual-scene{
+  position:relative;
+  isolation:isolate;
+  width:100%;
+  max-width:680px;
+  margin:26px auto 24px;
+  perspective:1050px;
+}
+.hero-visual-scene::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-12% -9%;
+  border-radius:50%;
+  background:
+    radial-gradient(ellipse closest-side,rgba(255,55,165,.19),transparent 76%);
+  opacity:.9;
+  animation:badaiHeroHalo 9s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+.hero-visual-scene .hero-video.hero-image{
+  position:relative;
+  z-index:1;
+  margin:0!important;
+  border:1px solid rgba(255,123,198,.32);
+  box-shadow:
+    0 24px 62px rgba(0,0,0,.57),
+    0 0 0 1px rgba(255,255,255,.025),
+    0 0 45px rgba(255,67,160,.08);
+  transform:perspective(1050px) rotateX(var(--hero-tilt-x,0deg)) rotateY(var(--hero-tilt-y,0deg));
+  transition:transform .35s ease-out,box-shadow .6s ease;
+  will-change:transform;
+}
+.hero-visual-scene .hero-video.hero-image::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(112deg,transparent 26%,rgba(255,255,255,.065) 45%,transparent 61%);
+  transform:translateX(-140%);
+  animation:badaiHeroGlint 10s ease-in-out infinite;
+  pointer-events:none;
+}
+.hero-visual-scene .hero-video.hero-image img{
+  animation:badaiHeroFloat 8s ease-in-out infinite alternate;
+  transform-origin:50% 60%;
+  will-change:transform;
+}
+.hero-floating-label{
+  position:absolute;
+  z-index:3;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border:1px solid rgba(255,146,203,.38);
+  border-radius:10px;
+  padding:7px 10px;
+  color:#fff;
+  background:rgba(21,13,20,.86);
+  backdrop-filter:blur(12px);
+  box-shadow:0 12px 26px rgba(0,0,0,.42),0 0 19px rgba(255,63,157,.12);
+  font-family:"Raleway",Arial,sans-serif;
+  font-size:clamp(9px,2vw,11px);
+  font-weight:850;
+  line-height:1.2;
+  letter-spacing:.015em;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.hero-floating-label::before{
+  content:"";width:6px;height:6px;flex:0 0 6px;
+  border-radius:50%;
+  background:#ff61aa;
+  box-shadow:0 0 10px rgba(255,79,163,.75);
+}
+.hero-floating-label--top{
+  top:-12px;
+  right:3.5%;
+  animation:badaiHeroLabelUp 6s ease-in-out infinite alternate;
+}
+.hero-floating-label--bottom{
+  bottom:-11px;
+  left:3.5%;
+  animation:badaiHeroLabelDown 7.5s ease-in-out infinite alternate;
+}
+.hero-cinematic .hero-proof-strip{
+  box-shadow:0 17px 43px rgba(0,0,0,.47);
+}
+.badai-footer-video-credit{
+  display:block;margin-top:11px;
+  font-size:10px;line-height:1.5;
+  color:#777;
+}
+.badai-footer-video-credit a{color:#999;text-decoration:underline;text-underline-offset:2px}
+.badai-footer-video-credit a:hover{color:#ff79ba}
+@keyframes badaiHeroAtmosphere{
+  0%{transform:translate3d(-3%,-1%,0) scale(1)}
+  100%{transform:translate3d(4%,3%,0) scale(1.045)}
+}
+@keyframes badaiHeroHalo{
+  0%{transform:scale(.93);opacity:.48}
+  100%{transform:scale(1.08);opacity:.92}
+}
+@keyframes badaiHeroFloat{
+  0%{transform:translate3d(0,4px,0) scale(1.014)}
+  100%{transform:translate3d(0,-6px,0) scale(1.025)}
+}
+@keyframes badaiHeroGlint{
+  0%,48%{transform:translateX(-140%);opacity:0}
+  58%{opacity:.75}
+  75%,100%{transform:translateX(140%);opacity:0}
+}
+@keyframes badaiHeroLabelUp{
+  from{transform:translate3d(0,-2px,0)}
+  to{transform:translate3d(-5px,6px,0)}
+}
+@keyframes badaiHeroLabelDown{
+  from{transform:translate3d(0,2px,0)}
+  to{transform:translate3d(6px,-5px,0)}
+}
+@media(max-width:600px){
+  .hero.hero-cinematic{padding-top:52px}
+  .hero-cinematic-video{object-position:52% center}
+  .hero-cinematic-vignette{
+    background:
+      linear-gradient(90deg,rgba(7,7,7,.58),rgba(7,7,7,.36),rgba(7,7,7,.60)),
+      linear-gradient(180deg,rgba(7,7,7,.55) 0%,rgba(7,7,7,.40) 39%,rgba(7,7,7,.75) 83%,#070707);
+  }
+  .hero-visual-scene{margin:22px auto 22px}
+  .hero-floating-label{border-radius:8px;padding:6px 8px;font-size:9px}
+  .hero-floating-label--top{top:-9px;right:2%}
+  .hero-floating-label--bottom{bottom:-9px;left:2%}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-cinematic-video{display:none!important}
+  .hero-cinematic-ambient,
+  .hero-visual-scene::before,
+  .hero-visual-scene .hero-video.hero-image img,
+  .hero-visual-scene .hero-video.hero-image::after,
+  .hero-floating-label,
+  .hero-cinematic .hero-stamp-word.is-stamping,
+  .hero-cinematic .hero-stamp-stage.is-hit,
+  .hero-cinematic .hero-stamp-stage.is-hit::before,
+  .hero-cinematic .hero-stamp-stage.is-hit::after{
+    animation:none!important;
+  }
+  .hero-visual-scene .hero-video.hero-image{transform:none!important;transition:none!important}
+}
