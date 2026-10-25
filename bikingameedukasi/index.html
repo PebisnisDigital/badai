@@ -157,7 +157,40 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 .lp-video-buttons button,.lp-video-buttons a{flex:1;min-width:115px;padding:10px 7px;border-radius:9px;border:1px solid #b6d6c7;background:#e6f7ef;color:#075e54;font-size:11px;font-weight:900;text-decoration:none;text-align:center;cursor:pointer}
 .lp-video-buttons button{background:#008069;color:#fff;border-color:#008069}
 @media(max-width:420px){.lp-video-card{padding:8px}.lp-video-head,.lp-video-head span{font-size:9px}.lp-video-buttons button,.lp-video-buttons a{min-width:90px;font-size:10px}}
-</style>
+
+.script-editor-bar{position:relative;z-index:4;background:#19121a;border-bottom:1px solid #493043;padding:10px 13px;display:grid;gap:7px}
+.script-editor-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.script-editor-head b{font-size:12px;color:#ffe1ef}
+.script-editor-head a{font-size:10px;color:#ffb7d7}
+.script-editor-head button{border:1px solid #ff4fa3;border-radius:10px;background:#ff4fa3;color:#200b15;font-size:11px;font-weight:900;padding:9px 11px}
+.script-editor-head button[hidden],.script-editor-actions[hidden]{display:none!important}
+.script-editor-status{font-size:10px;color:#e4bbd2;line-height:1.5}
+.script-editor-actions{display:flex;gap:7px;flex-wrap:wrap}
+.script-editor-actions button{border:1px solid #824862;border-radius:8px;background:#35202f;color:#ffe3f2;padding:8px;font-size:10px;font-weight:900}
+.script-editor-actions button[data-editor-action="reload"]{background:#225344;border-color:#359b78}
+.se-quick{border:1px solid #ff7cba;border-radius:7px;padding:4px 8px;margin-right:5px;background:#ff4fa3;color:#200b15;font-size:10px;font-weight:900}
+.se-quick.secondary{background:transparent;color:#ffc6e0}
+.script-inline-edit{display:grid;gap:10px;background:#f9eff5;color:#201320;border:1px solid #ff8ac6;box-shadow:0 5px 18px #0003;padding:12px;border-radius:12px;margin-top:12px;min-width:0}
+.se-title{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap}.se-title b{font-size:13px;color:#67233f}.se-title small{font-size:9px;color:#875b73}
+.se-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.se-fields label{display:grid;gap:4px;font-size:10px;font-weight:900;color:#633c50;min-width:0}.se-fields .se-full{grid-column:1/-1}
+.se-fields input,.se-fields select{width:100%;min-width:0;min-height:37px;border:1px solid #d5b8c8;border-radius:7px;background:#fff;color:#231924;font-size:12px;padding:7px}
+.se-format,.se-commands{display:flex;flex-wrap:wrap;gap:6px}
+.se-format button,.se-commands button{border:1px solid #d9b2c5;border-radius:7px;padding:8px 9px;background:#fff;color:#50263b;font-weight:800;font-size:11px;min-height:34px}
+.se-format button{flex:1;min-width:35px}
+.script-inline-edit textarea{resize:vertical;width:100%;max-width:100%;min-height:130px;border-radius:9px;padding:11px;font:500 12px/1.55 Nunito,Arial,sans-serif;color:#18121a;background:#fff;border:1px solid #d6a7bf}
+.se-preview-label{font-size:10px;font-weight:900;color:#773253}
+.se-preview{background:#e3f8df;color:#213f30;border-radius:10px;border:1px solid #b5d6b3;min-height:35px;padding:10px;font-size:12px;line-height:1.65;overflow-wrap:anywhere}
+.se-preview blockquote{border-left:3px solid #207a62;margin:4px 0;padding-left:8px;font-style:italic}
+.se-commands button{flex:1;min-width:62px}.se-commands button.se-save{background:#148365;color:#fff;border-color:#148365}.se-commands button.se-danger{color:#9a263e;border-color:#db9db0}
+.script-editor-bar.editing{background:#281723}
+.bubblewrap.se-layout-wide .bubble{max-width:95%}
+.bubblewrap.se-layout-compact .bubble{max-width:70%;padding:7px 9px 5px}
+.bubblewrap.se-align-center .message{text-align:center}
+.bubblewrap.se-align-right .message{text-align:right}
+.bubblewrap.editing-bubble:hover .bubble{outline:1px dashed #ff77b8}
+@media(max-width:450px){.script-inline-edit{padding:9px}.se-format button{padding:7px 5px}.script-editor-actions button{font-size:9px}}
+.message blockquote{border-left:3px solid #ff83bc;margin:4px 0;padding:3px 0 3px 9px;font-style:italic;color:#f8d6e6}.message code,.se-preview code{font-family:monospace;background:#261e26;border-radius:4px;padding:2px 4px}\n</style>
 </head>
 <body>
 <div class="shell">
@@ -177,6 +210,18 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 </div>
 </section>
 <nav id="exampleNav" class="example-nav" aria-label="Akses cepat gambar materi dan testimoni" hidden></nav>
+<section id="scriptEditor" class="script-editor-bar" aria-label="Editor tim BADAI">
+<div class="script-editor-head"><b>✎ Editor Naskah Bersama</b><button id="editorToggle" type="button" aria-pressed="false" hidden>✎ Mode Edit</button><a href="/admin" target="_blank" rel="noopener">Login Admin</a></div>
+<div id="editorStatus" class="script-editor-status" role="status">Memeriksa akses tim BADAI...</div>
+<div id="editorActions" class="script-editor-actions" hidden>
+<button type="button" data-editor-action="add">+ Bubble</button>
+<button type="button" data-editor-action="export">↓ Backup</button>
+<button type="button" data-editor-action="import">↑ Impor</button>
+<button type="button" data-editor-action="reload">↻ Muat Terbaru</button>
+<button type="button" data-editor-action="reset">Reset Hari Ini</button>
+</div>
+<input type="file" id="editorImportFile" accept="application/json,.json" hidden>
+</section>
 <main id="chat" class="chat" role="log" aria-label="Simulasi obrolan training" aria-live="off">
 <div id="welcome" class="welcome"><b>PREVIEW NASKAH TRAINING</b> • Satu bubble berisi satu pesan. Saat ada <b>pemisah waktu</b>, berhenti dulu dan lanjut hanya setelah jam berikutnya tiba. Bubble dengan jam yang sama boleh dikirim berurutan tanpa pemisah. Tekan <b>Salin WA</b> pada bubble yang ingin dikirim; pemisah waktu bukan untuk disalin. Jam bubble adalah jadwal latihan.</div>
 </main>
@@ -186,6 +231,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 </div>
 </div>
 <div class="toasty" role="status" id="toast">Berhasil disalin</div>
+<script src="/bikingameedukasi/editor.js"></script>
 <script>
 (function(){
 "use strict";
@@ -240,6 +286,7 @@ function buildItems(source){
  return result;
 }
 let items=[];
+let scriptEditor=null;
 const chat=document.getElementById("chat");
 const dayButtons=Array.from(document.querySelectorAll("[data-day]"));
 
@@ -277,7 +324,16 @@ const quiz=[
 ];
 let quizIndex=0,quizScore=0,answered=false;
 function esc(v){return String(v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-function fmt(v){return esc(v).replace(/\*([^*\n]+)\*/g,"<strong>$1</strong>").replace(/_([^_\n]+)_/g,"<em>$1</em>").replace(/(https:\/\/promptbase\.com\/puzzle-games)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>').replace(/(https:\/\/badai\.vercel\.app\/)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\n/g,"<br>")}
+function fmt(v){
+return esc(v).replace(/\*([^*\n]+)\*/g,"<strong>$1</strong>")
+ .replace(/_([^_\n]+)_/g,"<em>$1</em>")
+ .replace(/~([^~\n]+)~/g,"<del>$1</del>")
+ .replace(/\x60{3}([\s\S]*?)\x60{3}/g,"<code>$1</code>")
+ .replace(/(https:\/\/promptbase\.com\/puzzle-games)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
+ .replace(/(https:\/\/badai\.vercel\.app\/)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
+ .replace(/^&gt;\s?(.+)$/gm,"<blockquote>$1</blockquote>")
+ .replace(/\n/g,"<br>");
+}
 function timeFor(m,i){if(m.at)return m.at;let minutes=19*60+30+Math.floor(Math.max(0,i-reminders.length)*.8);return String(Math.floor(minutes/60)).padStart(2,"0")+":"+String(minutes%60).padStart(2,"0")}
 function showToast(s){const t=document.getElementById("toast");t.textContent=s;t.style.display="block";clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.style.display="none"},1900)}
 
@@ -366,7 +422,7 @@ d.innerHTML='<div class="hostnote-head">KHUSUS '+hostName+' · '+esc(m.at||"")+'
 return d;
 }
 if(m.type==="system"||m.type==="divider"){const d=document.createElement("div");d.className="sys";d.innerHTML=esc(m.title)+(m.text?"<small>"+esc(m.text)+"</small>":"");return d}
-const d=document.createElement("div");d.className="bubblewrap "+(m.who==="vini"?"v":"n");
+const d=document.createElement("div");d.className="bubblewrap "+(m.who==="vini"?"v":"n")+(scriptEditor?" "+scriptEditor.bubbleClass(m)+(scriptEditor.isOn()?" editing-bubble":""):"");
 const sender=m.who==="vini"?"Teh Vini • Pemateri":(m.broadcast?"Mbak Nonny • BC Reminder":"Mbak Nonny • MC"),avatar=m.who==="vini"?"V":"N";
 let extra="";
 if(m.type==="guide")extra='<div class="cardbox guidecard"><h3>'+esc(m.title)+'</h3><div class="message">'+fmt(m.text)+'</div>'+GUIDE_IMAGES[m.step]+'<p class="guidefine">Ilustrasi petunjuk, bukan screenshot layar Gemini.</p>'+(m.step===1?'<a class="action" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Buka Gemini ↗</a> ':'')+'<a class="guide-source" href="https://support.google.com/gemini/answer/16047321?hl=id-ID" target="_blank" rel="noopener noreferrer">Panduan resmi Gemini ↗</a></div>';
@@ -414,7 +470,7 @@ if(m.demo){
  '</figure>';
 }
 
-d.innerHTML='<span class="avatar '+(m.who==="vini"?"v":"n")+'" aria-hidden="true">'+avatar+'</span><div class="bubble"><div class="sender">'+sender+'</div>'+(m.type==="text"||!m.type?'<div class="message">'+fmt(m.text)+'</div>':"")+extra+'<div class="bubble-meta"><button type="button" class="bubble-copy" data-copy-index="'+i+'" aria-label="Salin chat '+esc(sender)+' ke WhatsApp">⧉ Salin WA</button><span class="time">'+timeFor(m,i)+' ✓✓</span></div></div>';
+d.innerHTML='<span class="avatar '+(m.who==="vini"?"v":"n")+'" aria-hidden="true">'+avatar+'</span><div class="bubble"><div class="sender">'+sender+'</div>'+(m.type==="text"||!m.type?'<div class="message">'+fmt(m.text)+'</div>':"")+extra+'<div class="bubble-meta"><button type="button" class="bubble-copy" data-copy-index="'+i+'" aria-label="Salin chat '+esc(sender)+' ke WhatsApp">⧉ Salin WA</button>'+(scriptEditor?scriptEditor.button(i):"")+'<span class="time">'+timeFor(m,i)+' ✓✓</span></div></div>';
 return d
 }
 function update(){
@@ -454,6 +510,7 @@ while(pos<items.length)advance(true);
 update();
 }
 function renderDay(day,pushState){
+ if(scriptEditor&&day!==activeDay)scriptEditor.onDaySwitch();
  activeDay=day;
  items=buildItems(dayCatalog[day]||[]);
  pos=0;quizIndex=0;quizScore=0;answered=false;
@@ -560,6 +617,13 @@ document.getElementById("reset").addEventListener("click",function(){
 window.scrollTo({top:0,behavior:"smooth"});
 });
 renderDay(activeDay,false);
+if(window.BadaiEditor){
+ scriptEditor=window.BadaiEditor.create({
+  catalog:dayCatalog,getDay:()=>activeDay,getItems:()=>items,
+  document:document,chat:chat,render:()=>renderDay(activeDay,false),format:fmt
+ });
+ void scriptEditor.mount();
+}
 })();
 </script>
 </body></html>
