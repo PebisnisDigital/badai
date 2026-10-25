@@ -425,7 +425,7 @@ return d;
 }
 if(m.type==="system"||m.type==="divider"){const d=document.createElement("div");d.className="sys";d.innerHTML=esc(m.title)+(m.text?"<small>"+esc(m.text)+"</small>":"");return d}
 const d=document.createElement("div");d.className="bubblewrap "+(m.who==="vini"?"v":"n")+(scriptEditor?" "+scriptEditor.bubbleClass(m)+(scriptEditor.isOn()?" editing-bubble":""):"");
-const sender=m.who==="vini"?"Teh Vini • Pemateri":(m.broadcast?"Mbak Nonny • BC Reminder":"Mbak Nonny • MC"),avatar=m.who==="vini"?"V":"N";
+const sender=m.who==="vini"?"Teh Vini • Pemateri":(m.broadcast?(activeDay===3?"Mbak Nonny • BC Promosi":"Mbak Nonny • BC Reminder"):"Mbak Nonny • MC"),avatar=m.who==="vini"?"V":"N";
 let extra="";
 if(m.type==="guide")extra='<div class="cardbox guidecard"><h3>'+esc(m.title)+'</h3><div class="message">'+fmt(m.text)+'</div>'+GUIDE_IMAGES[m.step]+'<p class="guidefine">Ilustrasi petunjuk, bukan screenshot layar Gemini.</p>'+(m.step===1?'<a class="action" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Buka Gemini ↗</a> ':'')+'<a class="guide-source" href="https://support.google.com/gemini/answer/16047321?hl=id-ID" target="_blank" rel="noopener noreferrer">Panduan resmi Gemini ↗</a></div>';
 if(m.type==="prompt")extra='<div class="cardbox"><h3>'+esc(m.title)+'</h3><pre class="prompttext" id="promptText">'+esc(m.text)+'</pre><button class="action" id="copyPrompt" type="button">Salin Prompt</button></div>';
@@ -483,6 +483,10 @@ function update(){
  exampleNav.hidden=activeDay!==2;
  scheduleNote.textContent=activeDay===3?"Hari 3 • 51 Conversion Card. Saat ini baru Card #01, satu BC utuh yang bisa disalin. Slot berikutnya belum berisi pesan.":active?"Hari "+activeDay+" • Ikuti jeda waktu sesuai rundown. Jangan salin sekaligus.":"Hari 4 belum diisi.";
  daySubheading.textContent=dayTopic[activeDay];
+ const hero=document.querySelector(".intro h1");
+ if(hero)hero.innerHTML=activeDay===3?"Bank <em>51 Conversion Card</em>":"Belajar Bikin <em>Game Edukasi</em> Pakai AI";
+ const category=document.querySelector(".intro .brand");
+ if(category)category.innerHTML=activeDay===3?"BAD<span>AI</span> / BANK BC PROMOSI":"BAD<span>AI</span> / KELAS GRATIS";
  dayIntro.innerHTML=activeDay===1
  ?"<b>HARI 1 • SABTU, 24 OKTOBER 2026.</b> Belajar bikin game tebak hewan lewat Gemini Canvas, praktik dan sertifikat. Semua naskah lama tetap utuh."
  :activeDay===2
