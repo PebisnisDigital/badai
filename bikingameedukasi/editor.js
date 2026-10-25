@@ -242,7 +242,7 @@ root.BadaiEditor={create:function(ctx){
   persist();rerender();
  }
  function exportData(){
-  close();persist();
+  close();
   const data=JSON.stringify({version:1,exportedAt:new Date().toISOString(),days:{"1":ctx.catalog[1],"2":ctx.catalog[2]}},null,2);
   const url=URL.createObjectURL(new Blob([data],{type:"application/json"}));
   const a=ctx.document.createElement("a");a.href=url;a.download="BADAI-backup-naskah.json";ctx.document.body.appendChild(a);a.click();a.remove();
@@ -255,7 +255,7 @@ root.BadaiEditor={create:function(ctx){
    if(f.size>MAX)throw Error("File terlalu besar");
    const days=readJSON(await f.text());
    if(!root.confirm("Timpa naskah bersama Hari 1 dan Hari 2 dengan file backup ini?"))return;
-   close();["1","2"].forEach(k=>ctx.catalog[k].splice(0,ctx.catalog[k].length,...days[k]));persist();rerender();
+   close();["1","2"].forEach(k=>{ctx.catalog[k].splice(0,ctx.catalog[k].length,...days[k]);dirty[k]=true;void saveDay(k)});rerender();
    state("✓ Berhasil mengimpor backup naskah.");
   }catch(e){state("Gagal impor: "+e.message)}finally{file.value=""}
  }
