@@ -26,16 +26,21 @@ function readJSON(txt){
   if(!Array.isArray(obj.days[k])||obj.days[k].length>900||!obj.days[k].length)throw Error("Daftar pesan Hari "+k+" tidak valid");
   obj.days[k].forEach(verifyItem);
  }
+ // Backup lama dari Hari 1–2 tetap bisa diimpor.
+ if(obj.days["3"]!==undefined){
+  if(!Array.isArray(obj.days["3"])||obj.days["3"].length>900||!obj.days["3"].length)throw Error("Daftar pesan Hari 3 tidak valid");
+  obj.days["3"].forEach(verifyItem);
+ }
  return obj.days;
 }
 root.BadaiEditor={create:function(ctx){
- const original={1:COPY(ctx.catalog[1]),2:COPY(ctx.catalog[2])};
+ const original={1:COPY(ctx.catalog[1]),2:COPY(ctx.catalog[2]),3:COPY(ctx.catalog[3])};
  const panel=ctx.document.getElementById("scriptEditor"),toggle=ctx.document.getElementById("editorToggle"),actions=ctx.document.getElementById("editorActions"),status=ctx.document.getElementById("editorStatus"),file=ctx.document.getElementById("editorImportFile");
  let on=false,open=null,timer=null,authorized=false,teamUserId="",loading=false;
  const sbURL="https://tlvxlekqrllkvcpgwmic.supabase.co";
  const pubKey="sb_publishable_CttQA-59OaKmYm2GnzB_Hw_eHfVCv_R";
  const allowedRoles=["owner","super_admin","admin","marketing","mentor"];
- const revisions={1:0,2:0},saving={1:false,2:false},dirty={1:false,2:false},conflicts={1:false,2:false};
+ const revisions={1:0,2:0,3:0},saving={1:false,2:false,3:false},dirty={1:false,2:false,3:false},conflicts={1:false,2:false,3:false};
  const day=()=>ctx.getDay(),current=()=>ctx.catalog[day()],locate=m=>current()?.indexOf(m)??-1;
  function state(t){status.textContent=t}
  async function session(){
@@ -81,7 +86,7 @@ root.BadaiEditor={create:function(ctx){
    let hasUpdate=false;
    for(const row of rows){
     const k=String(row.day);
-    if(k!=="1"&&k!=="2")continue;
+    if(k!=="1"&&k!=="2"&&k!=="3")continue;
     if(!Array.isArray(row.content)||row.content.length<1||row.content.length>900)throw Error("Naskah bersama tidak valid");
     row.content.forEach(verifyItem);
     if(row.revision>revisions[k]){
@@ -140,12 +145,13 @@ root.BadaiEditor={create:function(ctx){
   timer=root.setTimeout(persist,1300);
  }
  async function reload(){
-  if((dirty[1]||dirty[2]||open)&&!root.confirm("Ambil versi tim terbaru? Perubahan yang belum tersimpan akan hilang. Unduh backup dahulu."))return;
+  if((dirty[1]||dirty[2]||dirty[3]||open)&&!root.confirm("Ambil versi tim terbaru? Perubahan yang belum tersimpan akan hilang. Unduh backup dahulu."))return;
   open=null;root.clearTimeout(timer);
-  dirty[1]=false;dirty[2]=false;conflicts[1]=false;conflicts[2]=false;
-  revisions[1]=0;revisions[2]=0;
+  dirty[1]=false;dirty[2]=false;dirty[3]=false;conflicts[1]=false;conflicts[2]=false;conflicts[3]=false;
+  revisions[1]=0;revisions[2]=0;revisions[3]=0;
   ctx.catalog[1].splice(0,ctx.catalog[1].length,...COPY(original[1]));
   ctx.catalog[2].splice(0,ctx.catalog[2].length,...COPY(original[2]));
+  ctx.catalog[3].splice(0,ctx.catalog[3].length,...COPY(original[3]));
   await pull(true);ctx.render();
  }
  function rerender(m){
@@ -243,7 +249,7 @@ root.BadaiEditor={create:function(ctx){
  }
  function exportData(){
   close();
-  const data=JSON.stringify({version:1,exportedAt:new Date().toISOString(),days:{"1":ctx.catalog[1],"2":ctx.catalog[2]}},null,2);
+  const data=JSON.stringify({version:1,exportedAt:new Date().toISOString(),days:{"1":ctx.catalog[1],"2":ctx.catalog[2],"3":ctx.catalog[3]}},null,2);
   const url=URL.createObjectURL(new Blob([data],{type:"application/json"}));
   const a=ctx.document.createElement("a");a.href=url;a.download="BADAI-backup-naskah.json";ctx.document.body.appendChild(a);a.click();a.remove();
   root.setTimeout(()=>URL.revokeObjectURL(url),4000);
@@ -254,8 +260,8 @@ root.BadaiEditor={create:function(ctx){
   try{
    if(f.size>MAX)throw Error("File terlalu besar");
    const days=readJSON(await f.text());
-   if(!root.confirm("Timpa naskah bersama Hari 1 dan Hari 2 dengan file backup ini?"))return;
-   close();["1","2"].forEach(k=>{ctx.catalog[k].splice(0,ctx.catalog[k].length,...days[k]);dirty[k]=true;void saveDay(k)});rerender();
+   if(!root.confirm("Timpa naskah tim sesuai hari yang ada di file backup ini?"))return;
+   close();["1","2","3"].forEach(k=>{if(days[k]){ctx.catalog[k].splice(0,ctx.catalog[k].length,...days[k]);dirty[k]=true;void saveDay(k)}});rerender();
    state("✓ Berhasil mengimpor backup naskah.");
   }catch(e){state("Gagal impor: "+e.message)}finally{file.value=""}
  }
@@ -280,7 +286,7 @@ root.BadaiEditor={create:function(ctx){
   state("Memeriksa login tim BADAI...");
   try{await authorize();await pull(true)}
   catch(e){state("Mode baca • "+e.message+". Silakan login di /admin.");toggle.hidden=true}
-  root.setInterval(function(){if(authorized&&!on&&!open&&!dirty[1]&&!dirty[2])void pull(false)},25000);
+  root.setInterval(function(){if(authorized&&!on&&!open&&!dirty[1]&&!dirty[2]&&!dirty[3])void pull(false)},25000);
   toggle.addEventListener("click",function(){
    close();on=!on;panel.classList.toggle("editing",on);
    toggle.textContent=on?"✓ Selesai Edit":"✎ Mode Edit";

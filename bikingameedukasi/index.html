@@ -203,7 +203,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 <section class="intro">
 <div class="brand">BAD<span>AI</span> / KELAS GRATIS</div>
 <h1>Belajar Bikin <em>Game Edukasi</em> Pakai AI</h1>
-<p id="dayIntro"><b>Pilih Hari 1 atau Hari 2 di bagian bawah.</b> Semuanya berupa preview naskah siap salin WhatsApp. Ada petunjuk khusus MC, jeda per waktu, prompt praktik, dan sesi tanya jawab. Hari 3 dan Hari 4 disiapkan menyusul.</p>
+<p id="dayIntro"><b>Pilih Hari 1, 2, atau 3 di bagian bawah.</b> Hari 3 berisi bank BC promosi 51 Conversion Card (mulai dari Card #01). Tekan <b>Salin WA</b> untuk mengirim, atau <b>Mode Edit</b> bila login sebagai tim BADAI.</p>
 <div class="hosts">
 <div class="host"><span class="avatar n">N</span><div><strong>Mbak Nonny</strong><small>MC • Owner KOKO SALAMA</small></div></div>
 <div class="host"><span class="avatar v">V</span><div><strong>Teh Vini</strong><small>Pemateri • Founder BADAI</small></div></div>
@@ -259,8 +259,10 @@ day2Lessons.forEach(function(m){
 });
 
 const day1Lessons=reminders.concat(lessons);
-const dayCatalog={1:day1Lessons,2:day2Lessons};
-const dayTopic={1:"Sabtu, 24 Oktober • Game Tebak Hewan",2:"Minggu, 25 Oktober • Tebak Huruf Hijaiyah",3:"Rencana sesi lanjutan, belum disiapkan",4:"Rencana promosi penutupan, belum disiapkan"};
+// Bank Copywriting Hari 3: tambahkan satu card per trigger; tetap satu bubble BC per card.
+const day3Lessons=[{"type":"divider","at":"06:00","title":"BC HARI 3 • CONVERSION CARD #01 — SURVIVAL"},{"type":"hostnote","for":"nonny","at":"06:00","title":"CARD 01/51 · SURVIVAL · KEBUTUHAN HIDUP","text":"Ini naskah BC pertama dari 51 Conversion Card. Inspirasi Card #1 Survival dari PDF: kebutuhan hidup dan tanggung jawab keluarga. Pesan telah diadaptasi menjadi ajakan belajar keterampilan AI tanpa menjanjikan penghasilan atau penyelesaian utang.\n\nSenin 26 Oktober 2026, pukul 06.00 WIB. Kirim 1 bubble lengkap menggunakan Salin WA; tidak perlu menyalin petunjuk ini.\n\nUntuk edisi berikutnya: 09.00, 12.00, 15.00, 18.00, 21.00 (selang 3 jam). HANYA card 01 yang disiapkan sekarang; jadwal ini belum mengirim pesan otomatis.\n\nPastikan bonus pihak ketiga, kupon, kuota, masa promo dan ketentuan paket benar-benar tersedia sebelum BC. Gunakan akun tim di halaman /admin untuk Edit dan Simpan Bersama. Penerima lain tanpa login editor hanya dapat membaca/salin."},{"who":"nonny","at":"06:00","broadcast":true,"text":"🥹 *KEBUTUHAN HIDUP TERUS BERTAMBAH... MASA KITA GAK NYIAPIN KETERAMPILAN BARU DARI SEKARANG?*\n\nBapak/Ibu, kemarin kita baru belajar bikin Game Edukasi pakai AI.\n\nDari yang awalnya mikir susah, ternyata bisa dicoba sendiri dari HP.\n\nNah, aku jadi kepikiran...\n\n> \"Kalau bikin satu game saja sudah bisa, gimana kalau kita pelajari kemampuan AI yang lainnya?\"\n\nMisalnya bikin video, animasi, poster, website, sampai bahan ajar buat guru.\n\n*Itulah kenapa Teh Vini bikin Komunitas BADAI.*\n\nTempat kita belajar AI bareng, mulai dari yang paling dasar, tanpa harus jago teknologi dulu.\n\n--------------\n\n🔥 *MATERI BADAI:*\n\n1. AI Educator\n2. Geo-Spasial\n3. AI Influencer\n4. Bikin Animasi Manusia Gua\n5. Bikin DIY Craft\n6. Bikin Animasi Paper\n7. Unboxing AI\n8. Bikin Squidgame AI\n9. Video Miniatur\n10. Bikin Mobil Kayu\n11. Bikin Aplikasi\n12. Bikin Poster\n13. Bikin Presentasi\n14. Bikin Buku\n15. Bikin Web App\n16. Bikin RPP\n17. Bikin LKPD\n18. Bikin Komik Digital\n19. Bikin LKPD Interaktif\n20. Bikin Infografis\n21. Bikin Game Edukasi\n22. Web Rahasia Kumpulan Prompt Gratis\n23. Buat Video Pendek Dibayar Lynk.id\n24. Jualan Otomatis di Instagram & Threads\n25. Strategi Jago Jualan di WhatsApp\n26. Contekan Pesan agar Kontak Baru Lebih Cepat Jadi Pembeli\n27. Bikin Kelas Online\n28. Strategi Dapat Kontak Berkualitas\n29. Strategi Dapat Ribuan Kontak Nonstop\n30. Dapat Kontak Langsung Dapat Transferan\n\n*BENEFIT YANG DIDAPATKAN:*\n- Member area\n- Bonus VIU GRATIS nonton film sepuasnya\n- Bonus CANVA EDU gratis\n- Ikutan Program Affiliasi Tanpa Jualan dapat Komisi\n- Grup Support BADAI\n- Layanan SCRIBD dapat Ebook premium Bebas Pilih\n\n---\n\n👇 *DAFTAR BADAI SEKARANG:*\nhttps://badai.vercel.app\n\nGunakan kode kupon:\n*UDAHPRAKTEK*\n\n---\n\n*NB:*\n\n- Promo berakhir *Selasa, 27 Oktober 2026 pukul 23.59 WIB*.\n- Lebih cepat jika kuota maksimal 200 pendaftar sudah terpenuhi.\n- Yang mau dibantu daftarin, langsung japri Mbak Nonny atau Teh Vini biar sat-set. 😍"}];
+const dayCatalog={1:day1Lessons,2:day2Lessons,3:day3Lessons};
+const dayTopic={1:"Sabtu, 24 Oktober • Game Tebak Hewan",2:"Minggu, 25 Oktober • Tebak Huruf Hijaiyah",3:"Senin, 26 Oktober • 51 Conversion Card / BC Promosi (01/51)",4:"Rencana promosi penutupan, belum disiapkan"};
 let activeDay=Number(new URLSearchParams(window.location.search).get("hari"))||2;
 if(![1,2,3,4].includes(activeDay))activeDay=2;
 // One time divider per clock change. Previous editorial dividers are folded into
@@ -423,7 +425,7 @@ return d;
 }
 if(m.type==="system"||m.type==="divider"){const d=document.createElement("div");d.className="sys";d.innerHTML=esc(m.title)+(m.text?"<small>"+esc(m.text)+"</small>":"");return d}
 const d=document.createElement("div");d.className="bubblewrap "+(m.who==="vini"?"v":"n")+(scriptEditor?" "+scriptEditor.bubbleClass(m)+(scriptEditor.isOn()?" editing-bubble":""):"");
-const sender=m.who==="vini"?"Teh Vini • Pemateri":(m.broadcast?"Mbak Nonny • BC Reminder":"Mbak Nonny • MC"),avatar=m.who==="vini"?"V":"N";
+const sender=m.who==="vini"?"Teh Vini • Pemateri":(m.broadcast?(activeDay===3?"Mbak Nonny • BC Promosi":"Mbak Nonny • BC Reminder"):"Mbak Nonny • MC"),avatar=m.who==="vini"?"V":"N";
 let extra="";
 if(m.type==="guide")extra='<div class="cardbox guidecard"><h3>'+esc(m.title)+'</h3><div class="message">'+fmt(m.text)+'</div>'+GUIDE_IMAGES[m.step]+'<p class="guidefine">Ilustrasi petunjuk, bukan screenshot layar Gemini.</p>'+(m.step===1?'<a class="action" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Buka Gemini ↗</a> ':'')+'<a class="guide-source" href="https://support.google.com/gemini/answer/16047321?hl=id-ID" target="_blank" rel="noopener noreferrer">Panduan resmi Gemini ↗</a></div>';
 if(m.type==="prompt")extra='<div class="cardbox"><h3>'+esc(m.title)+'</h3><pre class="prompttext" id="promptText">'+esc(m.text)+'</pre><button class="action" id="copyPrompt" type="button">Salin Prompt</button></div>';
@@ -479,13 +481,19 @@ function update(){
  bar.style.width=active?"100%":"0%";
  statusBadge.textContent=active?"● Hari "+activeDay+" siap":"● Menyusul";
  exampleNav.hidden=activeDay!==2;
- scheduleNote.textContent=active?"Hari "+activeDay+" • Ikuti jeda waktu sesuai rundown. Jangan salin sekaligus.":"Hari 3 & Hari 4 akan diisi nanti.";
+ scheduleNote.textContent=activeDay===3?"Hari 3 • 51 Conversion Card. Saat ini baru Card #01, satu BC utuh yang bisa disalin. Slot berikutnya belum berisi pesan.":active?"Hari "+activeDay+" • Ikuti jeda waktu sesuai rundown. Jangan salin sekaligus.":"Hari 4 belum diisi.";
  daySubheading.textContent=dayTopic[activeDay];
+ const hero=document.querySelector(".intro h1");
+ if(hero)hero.innerHTML=activeDay===3?"Bank <em>51 Conversion Card</em>":"Belajar Bikin <em>Game Edukasi</em> Pakai AI";
+ const category=document.querySelector(".intro .brand");
+ if(category)category.innerHTML=activeDay===3?"BAD<span>AI</span> / BANK BC PROMOSI":"BAD<span>AI</span> / KELAS GRATIS";
  dayIntro.innerHTML=activeDay===1
  ?"<b>HARI 1 • SABTU, 24 OKTOBER 2026.</b> Belajar bikin game tebak hewan lewat Gemini Canvas, praktik dan sertifikat. Semua naskah lama tetap utuh."
  :activeDay===2
  ?"<b>HARI 2 • MINGGU, 25 OKTOBER 2026.</b> BC 18.00–18.45, perkenalan 19.00, training 19.30. Versi RINGKAS: prompt gratis, <b>MAU</b>, 30 materi singkat, 10 ilustrasi + 8 video LP sebagai pilihan, 3 testimoni sebagai opsi, penawaran dua paket dan kupon. <b>Sesi formal selesai 20.25, mulai pendaftaran 20.27, BC penawaran 20.30 WIB.</b>"
- :"<b>HARI "+activeDay+" belum tersedia.</b> Tombolnya sudah disiapkan untuk materi lanjutan. Hari 1 dan Hari 2 tetap bisa dibuka.";
+ :activeDay===3
+ ?"<b>HARI 3 • SENIN, 26 OKTOBER 2026.</b> BANK COPYWRITING 51 Conversion Card. <b>Card #01: SURVIVAL</b> tersedia sebagai satu bubble BC lengkap siap Salin WA dan edit bersama tim. Card #02–51 disusun bertahap; belum dibuat atau dijadwalkan otomatis. Slot hari ini: 06.00, 09.00, 12.00, 15.00, 18.00, 21.00 WIB."
+ :"<b>HARI "+activeDay+" belum tersedia.</b> Tombolnya sudah disiapkan untuk materi lanjutan. Hari 1, 2, dan 3 tetap bisa dibuka.";
  dayButtons.forEach(function(btn){
   const selected=Number(btn.dataset.day)===activeDay;
   btn.classList.toggle("is-active",selected);
