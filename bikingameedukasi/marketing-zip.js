@@ -33,7 +33,7 @@ async function extract(file){
   if(end>bytes.length||local+30>bytes.length)fail("ZIP rusak (lokasi file).");
   const name=decoder.decode(bytes.slice(offset+46,offset+46+flen));
   offset=end;
-  const match=name.match(/(?:^|\/)BADAI_Conversion_Card_(\d{2})\.webp$/i);
+  const match=name.match(/(?:^|\/)(?:BADAI_Conversion_Card_|BADAI_)(\d{2})\.webp$/i);
   if(!match)continue;
   const n=Number(match[1]);
   if(n<1||n>51||images.has(n))fail("Nomor kartu duplikat/tidak valid: "+match[1]);
@@ -49,7 +49,7 @@ async function extract(file){
   if(image.length!==usize||!webp(image))fail("Gambar #"+n+" tidak valid sebagai WebP.");
   images.set(n,image);
  }
- if(images.size!==51)fail("ZIP hanya berisi "+images.size+" gambar bernomor. Diperlukan 51.");
+ if(images.size!==51)fail("ZIP berisi "+images.size+"/51 gambar cocok. Nama harus BADAI_Conversion_Card_01.webp–51.webp atau BADAI_01.webp–51.webp.");
  return [...images.entries()].sort((a,b)=>a[0]-b[0]).map(([number,bytes])=>({number,bytes}));
 }
 async function upload(images,credentials,onProgress){
