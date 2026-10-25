@@ -142,6 +142,21 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 .testimonial-actions{display:flex;gap:8px;flex-wrap:wrap}
 .testimonial-actions a{display:flex;align-items:center;justify-content:center;min-height:40px;padding:8px 11px;background:#008069;color:#fff;text-decoration:none;border-radius:9px;font-size:11px;font-weight:900}
 .testimonial-help{font-size:10px;color:#52675e;margin:9px 0 1px;line-height:1.6}
+
+.lp-video-list{display:grid;gap:10px;margin:11px 0}
+.lp-video-card{padding:10px;background:#fff;border:1px solid #c4dccf;border-radius:12px;color:#1f3a30}
+.lp-video-head{display:flex;align-items:center;justify-content:space-between;gap:6px;color:#075e54;font-size:10px;font-weight:900}
+.lp-video-head span{background:#e5f4ed;color:#2b664d;padding:4px 7px;border-radius:8px;font-size:9px;white-space:nowrap}
+.lp-video-title{font-weight:900;font-size:12px;line-height:1.4;margin:8px 0}
+.lp-video-stage{position:relative;max-width:340px;aspect-ratio:9/13;margin:auto;background:linear-gradient(135deg,#123a30,#2a2d36);border-radius:13px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.lp-video-stage img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.lp-video-stage iframe{width:100%;height:100%;border:0;position:absolute;inset:0}
+.lp-video-play{position:relative;z-index:1;border:2px solid #fff7;border-radius:25px;background:#075e54e8;color:white;font-weight:900;padding:12px 18px;box-shadow:0 4px 15px #0006}
+.lp-video-detail{font-size:11px;line-height:1.5;color:#546c62;margin:10px 0}
+.lp-video-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.lp-video-buttons button,.lp-video-buttons a{flex:1;min-width:115px;padding:10px 7px;border-radius:9px;border:1px solid #b6d6c7;background:#e6f7ef;color:#075e54;font-size:11px;font-weight:900;text-decoration:none;text-align:center;cursor:pointer}
+.lp-video-buttons button{background:#008069;color:#fff;border-color:#008069}
+@media(max-width:420px){.lp-video-card{padding:8px}.lp-video-head,.lp-video-head span{font-size:9px}.lp-video-buttons button,.lp-video-buttons a{min-width:90px;font-size:10px}}
 </style>
 </head>
 <body>
@@ -187,11 +202,21 @@ day2Lessons.forEach(function(m){
  const match=m.text.match(/^\*(?:\d+)\. ([^*\n]+)\*/);
  if(match&&demoByName.has(match[1]))m.demo=demoByName.get(match[1]);
 });
+/* Landing page punya 8 video UNIK. Hanya DIY Craft yang diberi judul
+ * spesifik; 7 video lain hanya berlabel Video AI (referensi umum). */
+const lpVideoExamples=[{"name":"AI Influencer","id":"Z9cAgG3RvEw","lpNumber":1,"kind":"general"},{"name":"Bikin Animasi Manusia Gua","id":"GNdqcDyZ9fw","lpNumber":2,"kind":"general"},{"name":"Bikin Animasi Paper","id":"k8KnLPwr594","lpNumber":3,"kind":"general"},{"name":"Unboxing AI","id":"1aHkcblz-nc","lpNumber":4,"kind":"general"},{"name":"Bikin Squidgame AI","id":"P4Xp_JiXyQo","lpNumber":6,"kind":"general"},{"name":"Video Miniatur","id":"-U8wkxJF6ms","lpNumber":7,"kind":"general"},{"name":"Bikin DIY Craft","id":"AzRXWuV8Mk0","lpNumber":8,"kind":"specific"},{"name":"Bikin Mobil Kayu","id":"Fy7PoleLo4E","lpNumber":9,"kind":"general"}];
+const lpVideoByName=new Map(lpVideoExamples.map(v=>[v.name,v]));
+day2Lessons.forEach(function(m){
+ if(m.who!=="vini"||!m.text)return;
+ const mt=m.text.match(/^\*\d+\. ([^*\n]+)\*/);
+ if(mt&&lpVideoByName.has(mt[1]))m.lpVideos=[lpVideoByName.get(mt[1])];
+});
+
 // Panduan host diletakkan tepat saat daftar materi disampaikan.
 day2Lessons.splice(day2Lessons.findIndex(m=>m.at==="20:21"),0,{
  type:"hostnote",for:"vini",at:"20:21",
  title:"TUGAS TEH VINI: KIRIM GAMBAR CONTOH DAN CAPTION",
- text:"Pada 10 materi pilihan, bubble materi otomatis disertai contoh gambar ILUSTRASI. Tekan Unduh PNG, lalu lampirkan file gambarnya secara manual ke WhatsApp. Gunakan tombol Salin WA pada bubble materi yang sama untuk mengirim teks atau menjadikannya caption. Tombol Lihat gambar membuka visual lebih besar. Gambar-gambar ini demo buatan untuk memvisualisasikan hasil, BUKAN karya/testimoni member dan tidak boleh diklaim sebagai hasil member asli. Tidak semua 30 materi diberi contoh visual pada tahap pertama; sisanya teks tetap utuh. Browser tidak bisa otomatis mengirim file dan teks ke grup tanpa integrasi WhatsApp yang diotorisasi."
+ text:"Pada 10 materi pilihan, bubble materi otomatis disertai gambar ILUSTRASI. Pada delapan materi video AI, tampil juga tautan video unik dari galeri asli landing page BADAI. Khusus DIY Craft diberi nama DIY Craft secara eksplisit di LP; tujuh video lainnya diberi label umum 'Video AI' saja, jadi jangan diklaim sebagai hasil khusus dari masing-masing kelas. Untuk video gunakan Putar Demo, Buka YouTube, atau Salin Teks + Link agar teks dan tautannya bisa dikirim ke WhatsApp. Hindari mengunduh atau mengunggah ulang video YouTube tanpa izin. Tekan Unduh PNG, lalu lampirkan file gambarnya secara manual ke WhatsApp. Gunakan tombol Salin WA pada bubble materi yang sama untuk mengirim teks atau menjadikannya caption. Tombol Lihat gambar membuka visual lebih besar. Gambar-gambar ini demo buatan untuk memvisualisasikan hasil, BUKAN karya/testimoni member dan tidak boleh diklaim sebagai hasil member asli. Tidak semua 30 materi diberi contoh visual pada tahap pertama; sisanya teks tetap utuh. Browser tidak bisa otomatis mengirim file dan teks ke grup tanpa integrasi WhatsApp yang diotorisasi."
 });
 const day1Lessons=reminders.concat(lessons);
 const dayCatalog={1:day1Lessons,2:day2Lessons};
@@ -226,18 +251,22 @@ const dayButtons=Array.from(document.querySelectorAll("[data-day]"));
 
 const exampleNav=document.getElementById("exampleNav");
 const testimonialNav=[{"id":"heni","name":"Heni"},{"id":"aliyyah","name":"Aliyyah"},{"id":"mukromah","name":"Mukromah"}];
-exampleNav.innerHTML='<strong>LIHAT GAMBAR MATERI DAN TESTIMONI</strong><small>Pilih contoh untuk langsung menuju bubble gambar dan teks WhatsApp.</small>'+
+exampleNav.innerHTML='<strong>LIHAT DEMO MATERI, VIDEO LP & TESTIMONI</strong><small>Tap pilihan untuk menuju bubble materi, video asli LP atau testimoni.</small>'+
  '<div class="example-nav-list">'+materialDemoAssets.map(function(m){
   return '<button type="button" data-jump-demo="'+m.slug+'">'+m.name+'</button>';
  }).join("")+
+ lpVideoExamples.map(function(v){return '<button type="button" data-jump-lpvideo="'+v.id+'">Video: '+v.name+'</button>'}).join("")+
  testimonialNav.map(function(m){return '<button type="button" data-jump-testimonial="'+m.id+'">Testimoni '+m.name+'</button>'}).join("")+
  '</div>';
 exampleNav.addEventListener("click",function(ev){
  const d=ev.target.closest("[data-jump-demo]");
+ const v=ev.target.closest("[data-jump-lpvideo]");
  const t=ev.target.closest("[data-jump-testimonial]");
- if(!d&&!t)return;
+ if(!d&&!v&&!t)return;
  const index=items.findIndex(function(m){
-  return d?m.demo?.slug===d.dataset.jumpDemo:m.testimonial?.id===t.dataset.jumpTestimonial;
+  if(d)return m.demo?.slug===d.dataset.jumpDemo;
+  if(v)return (m.lpVideos||[]).some(video=>video.id===v.dataset.jumpLpvideo);
+  return m.testimonial?.id===t.dataset.jumpTestimonial;
  });
  if(index>=0)jumpTo(index);
 });
@@ -358,6 +387,26 @@ if(m.testimonial){
  '</figure>';
 }
 if(m.type==="quiz")extra='<div class="cardbox"><h3>'+esc(m.title)+'</h3><p>'+esc(m.text)+'</p>'+quizHtml()+'</div>';
+if(m.lpVideos&&m.lpVideos.length){
+ extra+='<div class="lp-video-list">'+m.lpVideos.map(function(v){
+  const youtube="https://www.youtube.com/watch?v="+encodeURIComponent(v.id);
+  const thumb="https://i.ytimg.com/vi/"+encodeURIComponent(v.id)+"/hqdefault.jpg";
+  const exact=v.kind==="specific";
+  const badge=exact?"DEMO DIY CRAFT":"VIDEO AI UMUM";
+  const detail=exact
+   ?"Video ini secara khusus berlabel DIY Craft di landing page BADAI."
+   :"Landing page menamai video ini sebagai Video AI. Ditampilkan sebagai referensi visual video AI, bukan klaim bahwa video ini dibuat khusus dari kelas yang sedang dibahas.";
+  return '<article class="lp-video-card">'+
+   '<div class="lp-video-head">VIDEO ASLI DARI LANDING PAGE <span>'+esc(exact?"DEMO SESUAI MATERI":"CONTOH UMUM")+'</span></div>'+
+   '<div class="lp-video-title">Contoh LP #'+String(v.lpNumber).padStart(2,"0")+' — '+esc(badge)+'</div>'+
+   '<div class="lp-video-stage" data-stage-video="'+esc(v.id)+'">'+
+   '<img loading="lazy" decoding="async" src="'+thumb+'" alt="Thumbnail video AI dari landing page BADAI">'+
+   '<button type="button" class="lp-video-play" data-play-lp="'+esc(v.id)+'">▶ Putar Demo</button></div>'+
+   '<p class="lp-video-detail">'+esc(detail)+'</p>'+
+   '<div class="lp-video-buttons"><a href="'+youtube+'" target="_blank" rel="noopener noreferrer">↗ Buka YouTube</a>'+
+   '<button type="button" data-copy-video="'+i+'" data-video-id="'+esc(v.id)+'">⧉ Salin Teks + Link</button></div></article>';
+ }).join("")+'</div>';
+}
 // Preview gambar tetap berada di bubble materi yang sama, bukan pesan WhatsApp terpisah.
 if(m.demo){
  const url="/bikingameedukasi/examples/"+encodeURIComponent(m.demo.slug)+".svg";
@@ -385,7 +434,7 @@ function update(){
  dayIntro.innerHTML=activeDay===1
  ?"<b>HARI 1 • SABTU, 24 OKTOBER 2026.</b> Belajar bikin game tebak hewan lewat Gemini Canvas, praktik dan sertifikat. Semua naskah lama tetap utuh."
  :activeDay===2
- ?"<b>HARI 2 • MINGGU, 25 OKTOBER 2026.</b> BC 18.00–18.45, perkenalan 19.00, training 19.30. Setelah prompt gratis, sesi <b>MAU</b>, 30 materi BADAI (10 disertai ilustrasi visual), dan 3 testimoni member dari landing page, Teh Vini membandingkan <b>Pemula Rp299.000</b> dan <b>Untung Rp199.000</b>, menjelaskan kupon UDAHPRAKTEK dan promo, lalu Mbak Nonny BC pendaftaran setelah penutupan."
+ ?"<b>HARI 2 • MINGGU, 25 OKTOBER 2026.</b> BC 18.00–18.45, perkenalan 19.00, training 19.30. Setelah prompt gratis, sesi <b>MAU</b>, 30 materi BADAI (10 ilustrasi + 8 video demo dari LP), dan 3 testimoni member dari landing page, Teh Vini membandingkan <b>Pemula Rp299.000</b> dan <b>Untung Rp199.000</b>, menjelaskan kupon UDAHPRAKTEK dan promo, lalu Mbak Nonny BC pendaftaran setelah penutupan."
  :"<b>HARI "+activeDay+" belum tersedia.</b> Tombolnya sudah disiapkan untuk materi lanjutan. Hari 1 dan Hari 2 tetap bisa dibuka.";
  dayButtons.forEach(function(btn){
   const selected=Number(btn.dataset.day)===activeDay;
@@ -444,6 +493,36 @@ box.innerHTML='<div class="quizquestion">Soal '+(quizIndex+1)+' / '+quiz.length+
 answered=false
 }
 chat.addEventListener("click",async function(ev){
+const videoPlay=ev.target.closest("[data-play-lp]");
+if(videoPlay){
+ const id=videoPlay.dataset.playLp;
+ if(!lpVideoExamples.some(v=>v.id===id))return;
+ const stage=videoPlay.closest("[data-stage-video]");
+ if(!stage)return;
+ const frame=document.createElement("iframe");
+ frame.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id)+"?autoplay=1&rel=0&playsinline=1";
+ frame.title="Video demo dari landing page BADAI";
+ frame.allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share";
+ frame.allowFullscreen=true;
+ frame.loading="lazy";
+ stage.replaceChildren(frame);
+ return;
+}
+const copyVideo=ev.target.closest("[data-copy-video]");
+if(copyVideo){
+ const index=Number(copyVideo.dataset.copyVideo);
+ const id=copyVideo.dataset.videoId;
+ const m=items[index];
+ const v=(m?.lpVideos||[]).find(x=>x.id===id);
+ if(!v)return;
+ const desc=v.kind==="specific"
+  ?"*Demo DIY Craft dari landing page BADAI:*"
+  :"*Contoh video AI umum dari landing page BADAI (referensi video, bukan contoh khusus materi ini):*";
+ const caption=waTextFor(m)+"\n\n"+desc+"\nhttps://www.youtube.com/watch?v="+v.id;
+ const ok=await copyToClipboard(caption);
+ showToast(ok?"Teks materi + link demo tersalin!":"Gagal menyalin otomatis.");
+ return;
+}
 const pngButton=ev.target.closest("[data-download-png]");
 if(pngButton){
  const slug=pngButton.dataset.downloadPng;
