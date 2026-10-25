@@ -286,6 +286,7 @@ function buildItems(source){
  return result;
 }
 let items=[];
+let scriptEditor=null;
 const chat=document.getElementById("chat");
 const dayButtons=Array.from(document.querySelectorAll("[data-day]"));
 
@@ -323,7 +324,15 @@ const quiz=[
 ];
 let quizIndex=0,quizScore=0,answered=false;
 function esc(v){return String(v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-function fmt(v){return esc(v).replace(/\*([^*\n]+)\*/g,"<strong>$1</strong>").replace(/_([^_\n]+)_/g,"<em>$1</em>").replace(/(https:\/\/promptbase\.com\/puzzle-games)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>').replace(/(https:\/\/badai\.vercel\.app\/)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\n/g,"<br>")}
+function fmt(v){
+return esc(v).replace(/\*([^*\n]+)\*/g,"<strong>$1</strong>")
+ .replace(/_([^_\n]+)_/g,"<em>$1</em>")
+ .replace(/~([^~\n]+)~/g,"<del>$1</del>")
+ .replace(/(https:\/\/promptbase\.com\/puzzle-games)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
+ .replace(/(https:\/\/badai\.vercel\.app\/)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
+ .replace(/^&gt;\s?(.+)$/gm,"<blockquote>$1</blockquote>")
+ .replace(/\n/g,"<br>");
+}
 function timeFor(m,i){if(m.at)return m.at;let minutes=19*60+30+Math.floor(Math.max(0,i-reminders.length)*.8);return String(Math.floor(minutes/60)).padStart(2,"0")+":"+String(minutes%60).padStart(2,"0")}
 function showToast(s){const t=document.getElementById("toast");t.textContent=s;t.style.display="block";clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.style.display="none"},1900)}
 
@@ -412,7 +421,7 @@ d.innerHTML='<div class="hostnote-head">KHUSUS '+hostName+' · '+esc(m.at||"")+'
 return d;
 }
 if(m.type==="system"||m.type==="divider"){const d=document.createElement("div");d.className="sys";d.innerHTML=esc(m.title)+(m.text?"<small>"+esc(m.text)+"</small>":"");return d}
-const d=document.createElement("div");d.className="bubblewrap "+(m.who==="vini"?"v":"n");
+const d=document.createElement("div");d.className="bubblewrap "+(m.who==="vini"?"v":"n")+(scriptEditor?" "+scriptEditor.bubbleClass(m)+(scriptEditor.isOn()?" editing-bubble":""):"");
 const sender=m.who==="vini"?"Teh Vini • Pemateri":(m.broadcast?"Mbak Nonny • BC Reminder":"Mbak Nonny • MC"),avatar=m.who==="vini"?"V":"N";
 let extra="";
 if(m.type==="guide")extra='<div class="cardbox guidecard"><h3>'+esc(m.title)+'</h3><div class="message">'+fmt(m.text)+'</div>'+GUIDE_IMAGES[m.step]+'<p class="guidefine">Ilustrasi petunjuk, bukan screenshot layar Gemini.</p>'+(m.step===1?'<a class="action" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Buka Gemini ↗</a> ':'')+'<a class="guide-source" href="https://support.google.com/gemini/answer/16047321?hl=id-ID" target="_blank" rel="noopener noreferrer">Panduan resmi Gemini ↗</a></div>';
@@ -460,7 +469,7 @@ if(m.demo){
  '</figure>';
 }
 
-d.innerHTML='<span class="avatar '+(m.who==="vini"?"v":"n")+'" aria-hidden="true">'+avatar+'</span><div class="bubble"><div class="sender">'+sender+'</div>'+(m.type==="text"||!m.type?'<div class="message">'+fmt(m.text)+'</div>':"")+extra+'<div class="bubble-meta"><button type="button" class="bubble-copy" data-copy-index="'+i+'" aria-label="Salin chat '+esc(sender)+' ke WhatsApp">⧉ Salin WA</button><span class="time">'+timeFor(m,i)+' ✓✓</span></div></div>';
+d.innerHTML='<span class="avatar '+(m.who==="vini"?"v":"n")+'" aria-hidden="true">'+avatar+'</span><div class="bubble"><div class="sender">'+sender+'</div>'+(m.type==="text"||!m.type?'<div class="message">'+fmt(m.text)+'</div>':"")+extra+'<div class="bubble-meta"><button type="button" class="bubble-copy" data-copy-index="'+i+'" aria-label="Salin chat '+esc(sender)+' ke WhatsApp">⧉ Salin WA</button>'+(scriptEditor?scriptEditor.button(i):"")+'<span class="time">'+timeFor(m,i)+' ✓✓</span></div></div>';
 return d
 }
 function update(){
@@ -500,6 +509,7 @@ while(pos<items.length)advance(true);
 update();
 }
 function renderDay(day,pushState){
+ if(scriptEditor&&day!==activeDay)scriptEditor.onDaySwitch();
  activeDay=day;
  items=buildItems(dayCatalog[day]||[]);
  pos=0;quizIndex=0;quizScore=0;answered=false;
@@ -606,6 +616,13 @@ document.getElementById("reset").addEventListener("click",function(){
 window.scrollTo({top:0,behavior:"smooth"});
 });
 renderDay(activeDay,false);
+if(window.BadaiEditor){
+ scriptEditor=window.BadaiEditor.create({
+  catalog:dayCatalog,getDay:()=>activeDay,getItems:()=>items,
+  document:document,chat:chat,render:()=>renderDay(activeDay,false),format:fmt
+ });
+ void scriptEditor.mount();
+}
 })();
 </script>
 </body></html>
