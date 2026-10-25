@@ -49,7 +49,8 @@
 .marketing-image{padding:0 0 14px;text-align:left}
 .marketing-image img{width:100%;max-height:460px;display:block;object-fit:contain;border-radius:9px;
  border:1px solid #eee7ed;background:#faf9fa}
-.marketing-image a{display:inline-block;margin-top:8px;color:#ad2e73;font-size:12px;font-weight:800;text-decoration:none}
+.marketing-image-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.marketing-image a{display:inline-block;color:#ad2e73;font-size:12px;font-weight:800;text-decoration:none;padding:8px 2px}
 
 /* Mode Marketing: buang elemen training yang tidak relevan, pertahankan navigasi dan editor. */
 .shell.marketing-mode{background:#faf9fb}
@@ -114,6 +115,13 @@
 .marketing-bubble .marketing-download{background:#fff;border:1px solid #e6b1ca;
  color:#962966;min-height:39px;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer}
 .marketing-bubble .marketing-download:disabled{opacity:.6}
+.marketing-bubble .marketing-image-actions .marketing-download{background:#ef4199;color:#fff;border-color:#ef4199}
+.marketing-bubble .marketing-text-download{background:#fff;border:1px solid #e6b1ca;
+ color:#962966;min-height:39px;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer}
+.marketing-bubble .marketing-image-actions button:hover{filter:brightness(.95)}
+@media(max-width:400px){.marketing-image-actions{gap:6px}
+ .marketing-image-actions button{flex:1 1 auto;padding:9px 7px;font-size:11px}
+ .marketing-image-actions a{flex:1 1 100%;padding:3px 2px}}
 @media(max-width:400px){.marketing-tools-row{flex-wrap:wrap}
 .marketing-tools-row input{flex:1 1 100%}
 .marketing-tools-row #marketingPosterUpload{width:100%;min-height:36px}}
