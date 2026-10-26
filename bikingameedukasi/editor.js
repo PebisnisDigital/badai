@@ -77,6 +77,26 @@ root.BadaiEditor={create:function(ctx){
   }
   return json;
  }
+  async function pullPublicMarketing(){
+   // Public readers use the publishable key only; editing still requires
+   // a verified team session and the existing protected RLS policies.
+   const response=await fetch(sbURL+"/rest/v1/training_script_documents?day=eq.5&select=day,revision,content",{
+    headers:{"apikey":pubKey},cache:"no-store"});
+   if(!response.ok)throw Error("Gagal mengambil materi publik ("+response.status+")");
+   const rows=await response.json(),row=Array.isArray(rows)?rows[0]:null;
+   if(!row||!Array.isArray(row.content)||row.content.length!==51)throw Error("Bank 51 materi marketing belum lengkap");
+   const numbers=new Set();
+   for(const item of row.content){
+    verifyItem(item);
+    const number=Number(item.marketing?.number);
+    if(!Number.isInteger(number)||number<1||number>51||numbers.has(number))throw Error("Nomor Conversion Card tidak valid");
+    numbers.add(number);
+   }
+   if(authorized||dirty[5]||saving[5])return;
+   ctx.catalog[5].splice(0,ctx.catalog[5].length,...COPY(row.content));
+   revisions[5]=Number(row.revision)||0;
+   ctx.render();
+  }
  async function authorize(){
   const auth=await session();
   const person=await api("/auth/v1/user");
@@ -337,9 +357,21 @@ root.BadaiEditor={create:function(ctx){
  }
  async function mount(){
   toggle.hidden=true;actions.hidden=true;
-  state("Memeriksa login tim BADAI...");
-  try{await authorize();await pull(true)}
-  catch(e){state("Mode baca • "+e.message+". Silakan login di /admin.");toggle.hidden=true}
+   state("Memuat Bahan Marketing publik...");
+   let publicError="";
+   try{await pullPublicMarketing()}
+   catch(e){publicError=e.message}
+   try{await authorize();await pull(true);ctx.render()}
+   catch(e){
+    toggle.hidden=true;
+    state(ctx.catalog[5].length
+     ?"✓ Bahan Marketing publik • salin teks dan unduh gambar tanpa login"
+     :"⚠ Bahan Marketing gagal dimuat: "+(publicError||e.message));
+    if(publicError&&ctx.getDay()===5){
+     const notice=ctx.chat.querySelector(".welcome");
+     if(notice)notice.textContent="Bahan Marketing belum bisa dimuat. Coba muat ulang halaman.";
+    }
+   }
   root.setInterval(function(){if(authorized&&!on&&!open&&!dirty[1]&&!dirty[2]&&!dirty[3]&&!dirty[5])void pull(false)},25000);
   toggle.addEventListener("click",function(){
    close();on=!on;panel.classList.toggle("editing",on);
@@ -379,7 +411,7 @@ root.BadaiEditor={create:function(ctx){
    if(ev.key==="Escape"){ev.preventDefault();close()}
   });
  }
- return{mount:mount,isOn:()=>on,
+  return{mount:mount,isOn:()=>on,canEdit:()=>authorized,
  button:index=>on?'<button type="button" class="se-quick" data-editor-open="'+index+'">✎ Edit</button><button type="button" class="se-quick secondary" data-editor-add="'+index+'">+ Bawah</button>':"",
  bubbleClass:m=>"se-layout-"+(layouts.includes(m.layout)?m.layout:"normal")+" se-align-"+(aligns.includes(m.align)?m.align:"left"),
  onDaySwitch:()=>close()};

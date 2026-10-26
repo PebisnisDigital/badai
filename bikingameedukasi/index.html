@@ -159,6 +159,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 @media(max-width:420px){.lp-video-card{padding:8px}.lp-video-head,.lp-video-head span{font-size:9px}.lp-video-buttons button,.lp-video-buttons a{min-width:90px;font-size:10px}}
 
 .script-editor-bar{position:relative;z-index:4;background:#19121a;border-bottom:1px solid #493043;padding:10px 13px;display:grid;gap:7px}
+.script-editor-bar[hidden]{display:none!important}
 .script-editor-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .script-editor-head b{font-size:12px;color:#ffe1ef}
 .script-editor-head a{font-size:10px;color:#ffb7d7}
@@ -204,7 +205,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #008069;outline-offset:2p
 <section class="intro">
 <div class="brand">BAD<span>AI</span> / KELAS GRATIS</div>
 <h1>Belajar Bikin <em>Game Edukasi</em> Pakai AI</h1>
-<p id="dayIntro"><b>Pilih Hari 1–4 untuk naskah training.</b> Klik <b>BAHAN MARKETING</b> setelah Hari 4 untuk membuka 51 Conversion Card, teks WhatsApp, dan slot gambar. Login sebagai tim BADAI untuk membaca dan mengedit bank copywriting.</p>
+<p id="dayIntro"><b>Pilih Hari 1–4 untuk naskah training.</b> Klik <b>BAHAN MARKETING</b> setelah Hari 4 untuk membuka 51 Conversion Card, menyalin teks WhatsApp, dan mengunduh gambar tanpa login. Hanya pengeditan yang memerlukan login tim.</p>
 <div class="hosts">
 <div class="host"><span class="avatar n">N</span><div><strong>Mbak Nonny</strong><small>MC • Owner KOKO SALAMA</small></div></div>
 <div class="host"><span class="avatar v">V</span><div><strong>Teh Vini</strong><small>Pemateri • Founder BADAI</small></div></div>
@@ -265,8 +266,8 @@ day2Lessons.forEach(function(m){
 const day1Lessons=reminders.concat(lessons);
 // Bank Copywriting Hari 3: tambahkan satu card per trigger; tetap satu bubble BC per card.
 const day3Lessons=[{"type":"system","at":"06:00","title":"HARI 3 DIJEDA SEMENTARA","text":"Bank 51 Conversion Card sudah dipindahkan ke menu BAHAN MARKETING setelah Hari 4. Susunan BC khusus Hari 3 bisa dibuat nanti."}];
-/* Materi marketing tidak dibundel di file publik; hanya diambil dari
- * Supabase setelah admin/tim BADAI login dan lolos RLS. */
+/* Materi marketing dibaca publik dari baris hari 5 saja.
+ * Izin menulis tetap dilindungi login tim dan Supabase RLS. */
 const marketingLessons=[];
 const dayCatalog={1:day1Lessons,2:day2Lessons,3:day3Lessons,5:marketingLessons};
 const dayTopic={1:"Sabtu, 24 Oktober • Game Tebak Hewan",2:"Minggu, 25 Oktober • Tebak Huruf Hijaiyah",3:"Senin, 26 Oktober • Penyusunan BC ditunda",4:"Rencana promosi penutupan, belum disiapkan",5:"BAHAN MARKETING • Bank 51 Conversion Card"};
@@ -489,9 +490,11 @@ return d
 function update(){
  const active=!!dayCatalog[activeDay];
  document.querySelector(".shell")?.classList.toggle("marketing-mode",activeDay===5);
- count.textContent=activeDay===5?((dayCatalog[5]||[]).length?dayCatalog[5].length+" copywriting • Bahan Marketing":"Login tim untuk melihat bahan marketing"):active?items.filter(function(m){return !!m.who}).length+" bubble siap salin • Hari "+activeDay:"Materi Hari "+activeDay+" menyusul";
+  count.textContent=activeDay===5?((dayCatalog[5]||[]).length?dayCatalog[5].length+" copywriting • Akses publik":"Memuat bahan marketing publik..."):active?items.filter(function(m){return !!m.who}).length+" bubble siap salin • Hari "+activeDay:"Materi Hari "+activeDay+" menyusul";
  bar.style.width=active?"100%":"0%";
- statusBadge.textContent=activeDay===5?((dayCatalog[5]||[]).length?"● Bank marketing siap":"● Login tim diperlukan"):active?"● Hari "+activeDay+" siap":"● Menyusul";
+  statusBadge.textContent=activeDay===5?((dayCatalog[5]||[]).length?"● Publik • Siap diunduh":"● Memuat materi publik"):active?"● Hari "+activeDay+" siap":"● Menyusul";
+  const editorBar=document.getElementById("scriptEditor");
+  if(editorBar)editorBar.hidden=activeDay===5&&!scriptEditor?.canEdit();
  exampleNav.hidden=activeDay!==2;
  marketingToolbar.hidden=activeDay!==5||!(dayCatalog[5]||[]).length;
  scheduleNote.textContent=activeDay===5?"BAHAN MARKETING • Klik tab trigger, lihat copywriting, Salin WA. Gambar bisa ditambahkan tim.":activeDay===3?"Hari 3 disiapkan nanti. Semua 51 copywriting tersedia di BAHAN MARKETING setelah Hari 4.":active?"Hari "+activeDay+" • Ikuti jeda waktu sesuai rundown. Jangan salin sekaligus.":"Hari 4 belum diisi.";
@@ -503,7 +506,7 @@ function update(){
  const category=document.querySelector(".intro .brand");
  if(category)category.innerHTML=activeDay===5?"BAD<span>AI</span> / 51 COPYWRITING":activeDay===3?"BAD<span>AI</span> / TRAINING":"BAD<span>AI</span> / KELAS GRATIS";
  dayIntro.innerHTML=activeDay===5
- ?"51 copywriting siap salin dan edit oleh tim BADAI."
+  ?"51 copywriting dan gambar promosi bisa disalin serta diunduh tanpa login. Pengeditan khusus tim BADAI."
  :activeDay===1
  ?"<b>HARI 1 • SABTU, 24 OKTOBER 2026.</b> Belajar bikin game tebak hewan lewat Gemini Canvas, praktik dan sertifikat. Semua naskah lama tetap utuh."
  :activeDay===2
@@ -541,7 +544,7 @@ function renderDay(day,pushState){
  pos=0;quizIndex=0;quizScore=0;answered=false;
  chat.innerHTML=items.length
   ?(day===5?"":'<div id="welcome" class="welcome"><b>PREVIEW HARI '+day+'</b> • Kirim bubble satu per satu. Kalau jam berganti, baca penanda JEDA dulu. Catatan admin dan pemisah tidak perlu dikirim ke peserta.</div>')
-  :day===5?'<div class="welcome"><b>BAHAN MARKETING KHUSUS TIM</b><p>Login untuk membuka 51 copywriting.</p><a href="/admin" target="_blank" rel="noopener noreferrer">Login Admin BADAI</a></div>':'<div class="welcome"><b>HARI '+day+' BELUM DIISI</b> • Materi menyusul. Silakan pilih Hari 1, 2 atau 3.</div>';
+   :day===5?'<div class="welcome"><b>MEMUAT BAHAN MARKETING</b><p>51 copywriting dan gambar sedang disiapkan. Tidak perlu login.</p></div>':'<div class="welcome"><b>HARI '+day+' BELUM DIISI</b> • Materi menyusul. Silakan pilih Hari 1, 2 atau 3.</div>';
  showAllMessages();
  if(day===5){const first=chat.querySelector(".marketing-card");if(first)first.open=true;marketingFilter.value="";marketingSearchCount.textContent=(dayCatalog[5]||[]).length+" Conversion Card tersedia."}
  if(pushState){
