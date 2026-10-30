@@ -5785,6 +5785,9 @@ button[data-admin-busy="1"]::after{
         <button class="marketing-category-tab" data-marketing-tab="materials" type="button">
           <span>🧰</span><b>Bahan Promosi</b>
         </button>
+        <button class="marketing-category-tab" data-marketing-tab="pesonaflix" type="button">
+          <span>🎬</span><b>PESONAFLIX</b>
+        </button>
       </div>
 
       <form id="marketingForm" class="marketing-stack">
@@ -6213,6 +6216,62 @@ button[data-admin-busy="1"]::after{
             </div>
 
             <div id="affiliateMaterialList" class="affiliate-material-list"></div>
+          </div>
+        </div>
+
+        <div class="marketing-category-panel" data-marketing-panel="pesonaflix">
+          <div class="marketing-card" id="pesonaflixAdminCard">
+            <div class="marketing-card-head">
+              <span class="marketing-number">PF</span>
+              <div>
+                <h3>Produk PESONAFLIX</h3>
+                <p>Harga dan pemesanan jasa website. Tidak mengubah harga atau member BADAI.</p>
+              </div>
+            </div>
+            <div class="marketing-price-grid">
+              <div class="manage-field">
+                <label for="pfNormalPrice">Harga Normal (Rp)</label>
+                <input id="pfNormalPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="Belum ditentukan"/>
+              </div>
+              <div class="manage-field">
+                <label for="pfPromoPrice">Harga Launching (Rp)</label>
+                <input id="pfPromoPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="Opsional"/>
+              </div>
+              <div class="manage-field">
+                <label for="pfQuota">Kuota Pesanan</label>
+                <input id="pfQuota" type="number" min="1" step="1" inputmode="numeric" placeholder="Kosong = tidak dibatasi"/>
+              </div>
+              <div class="manage-field">
+                <label for="pfCommission">Komisi Mitra (%)</label>
+                <input id="pfCommission" type="number" min="0" max="100" step="0.01" inputmode="decimal"/>
+              </div>
+            </div>
+            <div class="buatqris-enable-row">
+              <div><b>Aktifkan Harga Launching</b><span>Checkout menampilkan harga promo jika diaktifkan.</span></div>
+              <label class="switch-control"><input id="pfPromoEnabled" type="checkbox"/><span></span></label>
+            </div>
+            <div class="buatqris-enable-row">
+              <div><b>Buka Pemesanan PESONAFLIX</b><span>Biarkan OFF sampai pembayaran dan formulir diuji.</span></div>
+              <label class="switch-control"><input id="pfSalesOpen" type="checkbox"/><span></span></label>
+            </div>
+            <div id="pfAdminMessage" class="team-status-note" role="status">Memuat pengaturan...</div>
+            <button id="pfSaveSettings" type="button" class="primary marketing-save">SIMPAN HARGA PESONAFLIX</button>
+          </div>
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">2</span>
+              <div><h3>Pesanan PESONAFLIX</h3><p>Transaksi jasa terpisah dari membership BADAI.</p></div>
+            </div>
+            <button id="pfRefreshOrders" type="button">MUAT PESANAN</button>
+            <div id="pfOrderList" class="team-status-note">Belum ada data.</div>
+          </div>
+          <div class="marketing-card">
+            <div class="marketing-card-head">
+              <span class="marketing-number">3</span>
+              <div><h3>Produksi Website</h3><p>Pantau preview, revisi, dan URL final klien.</p></div>
+            </div>
+            <button id="pfRefreshJobs" type="button">MUAT PRODUKSI</button>
+            <div id="pfJobList" class="team-status-note">Belum ada pekerjaan.</div>
           </div>
         </div>
 
@@ -13379,5 +13438,6 @@ Kalau masih ingin lanjut, silakan selesaikan pembayaran dan kirim bukti transfer
   }
 })();
 </script>
+<script src="/pesonaflix-admin.js" defer></script>
 </body>
 </html>

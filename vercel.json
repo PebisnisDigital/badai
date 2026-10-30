@@ -53,6 +53,10 @@
       "dest": "/wa-marketing-admin.js"
     },
     {
+      "src": "^/pesonaflix-admin\\.js$",
+      "dest": "/pesonaflix-admin.js"
+    },
+    {
       "src": "^/wa-zawa-ui\\.js$",
       "dest": "/wa-zawa-ui.js"
     },
